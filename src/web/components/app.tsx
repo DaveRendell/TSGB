@@ -1,5 +1,14 @@
 import * as React from "react"
+import Memory from "../../emulator/memory"
+import MemoryExplorer from "./memoryExplorer"
 
-export default function App() {
-  return <h1>Hello, World</h1>
+interface Props {
+  memory: Memory
+}
+
+export default function App({ memory }) {
+  return (<main>
+      <h1>TSGB</h1>
+      <MemoryExplorer memory={memory} />
+    </main>)
 }
