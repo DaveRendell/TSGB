@@ -5,21 +5,25 @@ import { addressDisplay, valueDisplay } from "../helpers/displayHexNumbers"
 interface Props {
   address: number
   memory: Memory
+  programCounter: number
   key: number
 }
 
-export default function MemoryTableRow({ address, memory }: Props) {
-  const [value, setValue] = React.useState(memory.read8(address))
+export default function MemoryTableRow({
+  address, memory, programCounter
+}: Props) {
+  const [value, setValue] = React.useState(memory.at(address).read())
   const [inputValue, setInputValue] = React.useState(valueDisplay(value))
 
   const update = () => {
-    memory.write8(address, parseInt(inputValue))
-    setValue(memory.read8(address))
+    memory.at(address).write(parseInt(inputValue))
+    setValue(memory.at(address).read())
     setInputValue(valueDisplay(value))
   }
 
   return (
     <tr>
+      <td>{programCounter === address ? "PC ->" : " "}</td>
       <td><code>{addressDisplay(address)}</code></td>
       <td><code>{valueDisplay(value)}</code></td>
       <td>{value}</td>

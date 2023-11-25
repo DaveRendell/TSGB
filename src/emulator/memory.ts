@@ -1,3 +1,5 @@
+import { MutableValue } from "../types"
+
 export default class Memory {
   private data: Uint8Array
 
@@ -6,11 +8,10 @@ export default class Memory {
     program.forEach((value, i) => this.write8(i, value))
   }
 
-  read8(address: number): number {
-    return this.data[address]
-  }
-
-  write8(address: number, value: number): void {
-    this.data[address] = value
+  at(address: number): MutableValue<8> {
+    return {
+      read: () => this.data[address],
+      write: (value: number) => this.data[address] = value
+    }
   }
 }

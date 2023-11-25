@@ -1,14 +1,23 @@
 import * as React from "react"
-import Memory from "../../emulator/memory"
 import MemoryExplorer from "./memoryExplorer"
+import CPU from "../../emulator/cpu"
+import CpuController from "./cpuController"
 
 interface Props {
-  memory: Memory
+  cpu: CPU
 }
 
-export default function App({ memory }) {
+export default function App({ cpu }: Props) {
+  
+  // Reload this component when execution of CPU is complete
+  const [toggle, setToggle] = React.useState(false)
+  cpu.onInstructionComplete = () => { setToggle(!toggle) }
+
+  const programCounter = cpu.registers.get16("PC").read()
+
   return (<main>
       <h1>TSGB</h1>
-      <MemoryExplorer memory={memory} />
+      <CpuController cpu={cpu} />
+      <MemoryExplorer memory={cpu.memory} programCounter={programCounter} />
     </main>)
 }

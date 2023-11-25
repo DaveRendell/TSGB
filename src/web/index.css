@@ -10,3 +10,13 @@ body {
 .memory-table th {
   min-width: 4em;
 }
+
+.flex-horizonally {
+  display: flex;
+  justify-content: left;
+  align-items: flex-start;
+}
+
+.flex-horizonally > * + * {
+  margin-left: 2em;
+}

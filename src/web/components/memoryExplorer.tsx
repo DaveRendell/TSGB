@@ -5,9 +5,10 @@ import MemoryTableRow from "./memoryTableRow"
 
 interface Props {
   memory: Memory
+  programCounter: number
 }
 
-export default function MemoryExplorer({ memory }: Props) {
+export default function MemoryExplorer({ memory, programCounter }: Props) {
   const [baseAddress, setBaseAddress] = React.useState(0x0000)
   const [length, setLength] = React.useState(25)
 
@@ -39,6 +40,7 @@ export default function MemoryExplorer({ memory }: Props) {
     <table className="memory-table">
       <thead>
         <tr>
+          <th></th>
           <th>Address</th>
           <th>Hex</th>
           <th>Dec</th>
@@ -49,7 +51,8 @@ export default function MemoryExplorer({ memory }: Props) {
         { addresses.map(address => <MemoryTableRow
           key={address}
           address={address}
-          memory={memory} 
+          memory={memory}
+          programCounter={programCounter}
         />)}
       </tbody>
       
