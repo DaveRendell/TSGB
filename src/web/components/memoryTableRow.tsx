@@ -1,32 +1,65 @@
 import * as React from "react"
 import Memory from "../../emulator/memory"
-import { addressDisplay, valueDisplay } from "../helpers/displayHexNumbers"
+import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers"
+import { from2sComplement } from "../../emulator/instructions/instructionHelpers"
+import { decodeInstruction } from "../../emulator/instruction"
 
 interface Props {
   address: number
   memory: Memory
   programCounter: number
+  breakpoints: Set<number>
+  toggle: () => void
   key: number
 }
 
 export default function MemoryTableRow({
-  address, memory, programCounter
+  address, memory, programCounter, breakpoints, toggle
 }: Props) {
-  const [value, setValue] = React.useState(memory.at(address).read())
-  const [inputValue, setInputValue] = React.useState(valueDisplay(value))
+  const memoryLocation = memory.at(address)
+  const [value, setValue] = React.useState(0)
+  const [inputValue, setInputValue] = React.useState("")
+
+
+  const updateDisplay = () => {
+    setValue(memoryLocation.read())
+    toggle()
+    setInputValue(valueDisplay(memoryLocation.read()))
+  }
+
+  React.useEffect(updateDisplay, [memoryLocation.read(), programCounter])
 
   const update = () => {
-    memory.at(address).write(parseInt(inputValue))
-    setValue(memory.at(address).read())
-    setInputValue(valueDisplay(value))
+    memoryLocation.write(parseInt(inputValue))
+    updateDisplay()
+  }
+
+  const toggleBreakpoint = () => {
+    if (breakpoints.has(address)) { breakpoints.delete(address) }
+    else { breakpoints.add(address) }
+    toggle()
+  }
+
+  let instructionDescription: string
+  try {
+    const instruction = decodeInstruction(value)
+    const parameters = new Array(instruction.parameterBytes)
+        .fill(0)
+        .map((_, i) => memory.at(address + 1 + i).read())
+    instructionDescription = instruction.description(parameters)
+  } catch (e) {
+    instructionDescription = "???"
   }
 
   return (
     <tr>
-      <td>{programCounter === address ? "PC ->" : " "}</td>
+      <td>{programCounter === address ? "PC ->" : ""}</td>
+      <td><input type="checkbox" checked={breakpoints.has(address)} onChange={toggleBreakpoint}/></td>
       <td><code>{addressDisplay(address)}</code></td>
       <td><code>{valueDisplay(value)}</code></td>
       <td>{value}</td>
+      <td>{from2sComplement(value)}</td>
+      <td><code>{instructionDescription}</code></td>
       <td>
         <input
           className="narrow"

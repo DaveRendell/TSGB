@@ -25,6 +25,7 @@ export default class CpuRegisters {
   }
 
   get8 = (name: Register8Name): MutableValue<8> => ({
+    intSize: 8,
     read: () => this.values8Bit[name],
     write: (value) => this.values8Bit[name] = value
   })
@@ -32,10 +33,12 @@ export default class CpuRegisters {
   get16 = (name: Register16Name): MutableValue<16> =>
     name == "PC" || name == "SP"
       ? {
+        intSize: 16,
         read: () => this.values16Bit[name],
         write: (value) => this.values16Bit[name] = value
       }
       : {
+        intSize: 16,
         read: () => {
           const h = this.values8Bit[name[0]]
           const l = this.values8Bit[name[1]]
@@ -50,6 +53,7 @@ export default class CpuRegisters {
       }
 
   getFlag = (name: FlagName): MutableValue<1> => ({
+    intSize: 1,
     read: () => (this.values8Bit["F"] & FLAG_MASKS[name]) === 0 ? 0 : 1,
     write: (value) => this.values8Bit["F"] = value
       ? this.values8Bit["F"] | FLAG_MASKS[name]

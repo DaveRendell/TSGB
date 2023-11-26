@@ -1,7 +1,7 @@
 import * as React from "react"
 import CPU from "../../emulator/cpu"
 import { FlagName, Register16Name, Register8Name } from "../../types"
-import { addressDisplay, valueDisplay } from "../helpers/displayHexNumbers"
+import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers"
 
 interface Props {
   cpu: CPU
@@ -21,6 +21,7 @@ export default function CpuController({ cpu }: Props) {
   return (<section>
     <h2>CPU Controller</h2>
     <button onClick={() => cpu.executeNextInstruction()}>Execute next instruction</button>
+    <button onClick={() => cpu.runUntilHalted()}>Run until halt</button>
     <h3>Registers</h3>
     <div className="flex-horizonally">
       <div>

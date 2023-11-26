@@ -5,13 +5,14 @@ export default class Memory {
 
   constructor(program: number[] = []) {
     this.data = new Uint8Array(0x10000)
-    program.forEach((value, i) => this.write8(i, value))
+    program.forEach((value, i) => this.at(i).write(value))
   }
 
   at(address: number): MutableValue<8> {
     return {
+      intSize: 8,
       read: () => this.data[address],
-      write: (value: number) => this.data[address] = value
+      write: (value: number) => { this.data[address] = value }
     }
   }
 }

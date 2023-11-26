@@ -18,6 +18,10 @@ export default function App({ cpu }: Props) {
   return (<main>
       <h1>TSGB</h1>
       <CpuController cpu={cpu} />
-      <MemoryExplorer memory={cpu.memory} programCounter={programCounter} />
+      <MemoryExplorer
+        memory={cpu.memory}
+        programCounter={programCounter}
+        breakpoints={cpu.breakpoints}
+      />
     </main>)
 }

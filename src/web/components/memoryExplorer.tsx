@@ -1,14 +1,16 @@
 import * as React from "react"
 import Memory from "../../emulator/memory"
-import { addressDisplay } from "../helpers/displayHexNumbers"
+import { addressDisplay } from "../../helpers/displayHexNumbers"
 import MemoryTableRow from "./memoryTableRow"
 
 interface Props {
   memory: Memory
   programCounter: number
+  breakpoints: Set<number>
 }
 
-export default function MemoryExplorer({ memory, programCounter }: Props) {
+export default function MemoryExplorer({ memory, programCounter, breakpoints }: Props) {
+  const [toggle, setToggle] = React.useState(false)
   const [baseAddress, setBaseAddress] = React.useState(0x0000)
   const [length, setLength] = React.useState(25)
 
@@ -28,7 +30,7 @@ export default function MemoryExplorer({ memory, programCounter }: Props) {
       className="narrow"
       type="number"
       value={lengthInput}
-      onChange={e => setLength(parseInt(e.target.value))}
+      onChange={e => setLengthInput(parseInt(e.target.value))}
     /> values starting at
     address <input 
       className="narrow"
@@ -41,9 +43,12 @@ export default function MemoryExplorer({ memory, programCounter }: Props) {
       <thead>
         <tr>
           <th></th>
+          <th>Break</th>
           <th>Address</th>
           <th>Hex</th>
           <th>Dec</th>
+          <th>Signed</th>
+          <th>Command</th>
           <th>Update</th>
         </tr>
       </thead>
@@ -53,6 +58,8 @@ export default function MemoryExplorer({ memory, programCounter }: Props) {
           address={address}
           memory={memory}
           programCounter={programCounter}
+          breakpoints={breakpoints}
+          toggle={() => setToggle(!toggle)}
         />)}
       </tbody>
       
