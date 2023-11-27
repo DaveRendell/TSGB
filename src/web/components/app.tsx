@@ -2,6 +2,7 @@ import * as React from "react"
 import MemoryExplorer from "./memoryExplorer"
 import CPU from "../../emulator/cpu"
 import CpuController from "./cpuController"
+import GameLoader from "./gameLoader"
 
 interface Props {
   cpu: CPU
@@ -17,6 +18,7 @@ export default function App({ cpu }: Props) {
 
   return (<main>
       <h1>TSGB</h1>
+      <GameLoader memory={cpu.memory} />
       <CpuController cpu={cpu} />
       <MemoryExplorer
         memory={cpu.memory}

@@ -15,4 +15,11 @@ export default class Memory {
       write: (value: number) => { this.data[address] = value }
     }
   }
+
+  async loadBios(file: File) {
+    const byteArray = (await file.stream().getReader().read()).value
+    if (byteArray) {
+      byteArray.forEach((byte, i) => this.data[i] = byte)
+    }
+  }
 }

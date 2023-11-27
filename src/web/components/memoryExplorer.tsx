@@ -47,6 +47,7 @@ export default function MemoryExplorer({ memory, programCounter, breakpoints }: 
           <th>Address</th>
           <th>Hex</th>
           <th>Dec</th>
+          <th>Binary</th>
           <th>Signed</th>
           <th>Command</th>
           <th>Update</th>

@@ -2,7 +2,7 @@ import * as React from "react"
 import Memory from "../../emulator/memory"
 import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers"
 import { from2sComplement } from "../../emulator/instructions/instructionHelpers"
-import { decodeInstruction } from "../../emulator/instruction"
+import { Instruction, decodeInstruction } from "../../emulator/instruction"
 
 interface Props {
   address: number
@@ -41,14 +41,29 @@ export default function MemoryTableRow({
   }
 
   let instructionDescription: string
+  let isUnknown: boolean
+
+  const getInstructionAt = (memoryLocation: number): Instruction | undefined => {
+    try {
+      const code = memory.at(memoryLocation).read()
+      return decodeInstruction(code, memory.at(memoryLocation + 1).read())
+    } catch { return undefined }
+  }
+
   try {
-    const instruction = decodeInstruction(value)
+    const instruction = decodeInstruction(value, memory.at(address + 1).read())
     const parameters = new Array(instruction.parameterBytes)
-        .fill(0)
-        .map((_, i) => memory.at(address + 1 + i).read())
+      .fill(0)
+      .map((_, i) => memory.at(address + 1 + i).read())
     instructionDescription = instruction.description(parameters)
+    isUnknown = false
   } catch (e) {
     instructionDescription = "???"
+    const instructionMinusOne = getInstructionAt((address - 1) & 0xFFFF)
+    const instructionMinusTwo = getInstructionAt((address - 2) & 0xFFFF)
+    isUnknown =
+      (!instructionMinusOne || instructionMinusOne.parameterBytes < 1)
+      && (!instructionMinusTwo || instructionMinusTwo.parameterBytes < 2)
   }
 
   return (
@@ -58,8 +73,9 @@ export default function MemoryTableRow({
       <td><code>{addressDisplay(address)}</code></td>
       <td><code>{valueDisplay(value)}</code></td>
       <td>{value}</td>
+      <td><code>{value.toString(2).padStart(8, "0")}</code></td>
       <td>{from2sComplement(value)}</td>
-      <td><code>{instructionDescription}</code></td>
+      <td><code>{isUnknown ? "ERROR?" : instructionDescription}</code></td>
       <td>
         <input
           className="narrow"

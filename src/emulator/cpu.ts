@@ -25,10 +25,17 @@ export default class CPU {
     return byte
   }
 
+  readNext16bit(): number {
+    const l = this.readNextByte()
+    const h = this.readNextByte()
+    return (h << 8) + l
+  }
+
   executeNextInstruction(): void {
     const pc = this.registers.get16("PC").read()
     const code = this.readNextByte()
-    const instruction = decodeInstruction(code)
+    const prefixedCode = code === 0xCB ? this.readNextByte() : undefined
+    const instruction = decodeInstruction(code, prefixedCode)
 
     instruction.execute(this)
     this.cycleCount += instruction.cycles
