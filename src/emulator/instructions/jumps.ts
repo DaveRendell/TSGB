@@ -10,6 +10,7 @@ const CONDITIONS: Record<JumpCondition, (cpu: CPU) => boolean> = {
   "Zero": (cpu) => cpu.registers.getFlag("Zero").read() === 1,
   "Not-Carry": (cpu) => cpu.registers.getFlag("Carry").read() === 0,
   "Carry": (cpu) => cpu.registers.getFlag("Carry").read() === 1,
+  "None": () => true,
 }
 
 const CONDITION_NAMES: Record<JumpCondition, string> = {
@@ -17,6 +18,7 @@ const CONDITION_NAMES: Record<JumpCondition, string> = {
   "Zero": "Z",
   "Not-Carry": "NC",
   "Carry": "C",
+  "None": "",
 }
 
 

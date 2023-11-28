@@ -1,9 +1,9 @@
 import { valueDisplay } from "../../helpers/displayHexNumbers";
-import { AluOperation, Target8Name } from "../../types";
+import { AluOperation, Register16Name, Register8Name, Target8Name } from "../../types";
 import { decrement, increment } from "../arithmetic";
 import CPU from "../cpu";
 import { Instruction } from "../instruction";
-import { getValue } from "./instructionHelpers";
+import { getByteDestination, getByteSource } from "./instructionHelpers";
 
 const splitToNibbles = (value: number) => [(value >> 4) & 0xF, value & 0xF]
 const combineNibbles = (h: number, l: number) => (h << 4) + l
@@ -135,7 +135,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
 export function aluOperation(operation: AluOperation, sourceName: Target8Name): Instruction {
   return {
     execute: (cpu) => {
-      OPERATIONS[operation](cpu, getValue(sourceName, cpu).read())
+      OPERATIONS[operation](cpu, getByteDestination(sourceName, cpu).read())
     },
     cycles: sourceName === "M" ? 8 : 4,
     parameterBytes: 0,
@@ -158,7 +158,7 @@ export function aluOperationImmediate(operation: AluOperation): Instruction {
 export function increment8Bit(targetName: Target8Name): Instruction {
   return {
     execute: (cpu) => {
-      const target = getValue(targetName, cpu)
+      const target = getByteDestination(targetName, cpu)
       increment(target)
 
       cpu.registers.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
@@ -174,15 +174,79 @@ export function increment8Bit(targetName: Target8Name): Instruction {
 export function decrement8Bit(targetName: Target8Name): Instruction {
   return {
     execute: (cpu) => {
-      const target = getValue(targetName, cpu)
+      const target = getByteDestination(targetName, cpu)
       decrement(target)
 
       cpu.registers.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
+      cpu.registers.getFlag("Operation").write(1)
       cpu.registers.getFlag("Half-Carry").write(target.read() === 0x0F ? 1 : 0)
     },
     cycles: targetName === "M" ? 12 : 4,
     parameterBytes: 0,
     description: () => `DEC ${targetName}`
+  }
+}
+
+export function increment16Bit(targetName: Register16Name): Instruction {
+  return {
+    execute: (cpu) => {
+      increment(cpu.registers.get16(targetName))
+    },
+    cycles: 8,
+    parameterBytes: 0,
+    description: () => `INC ${targetName}`
+  }
+}
+
+export function decrement16Bit(targetName: Register16Name): Instruction {
+  return {
+    execute: (cpu) => {
+      decrement(cpu.registers.get16(targetName))
+    },
+    cycles: 8,
+    parameterBytes: 0,
+    description: () => `DEC ${targetName}`
+  }
+}
+
+export function rotateLeft(registerName: Target8Name, throughCarry: boolean, isPrefixed: boolean): Instruction {
+  const commandName = throughCarry ? "RL" : "RLC"
+  return {
+    execute: (cpu) => {
+      const register = getByteDestination(registerName, cpu)
+      const value = register.read()
+      const wrap = throughCarry ? cpu.registers.getFlag("Carry").read() : value >> 7
+      const rotated = ((value << 1) & 0xFF) + wrap
+      register.write(rotated)
+
+      cpu.registers.getFlag("Zero").write(rotated === 0 ? 1 : 0)
+      cpu.registers.getFlag("Operation").write(0)
+      cpu.registers.getFlag("Half-Carry").write(0)
+      cpu.registers.getFlag("Carry").write(value >> 7)
+    },
+    cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
+    parameterBytes: 0,
+    description: () => `${commandName} ${registerName}`
+  }
+}
+
+export function rotateRight(registerName: Target8Name, throughCarry: boolean, isPrefixed: boolean): Instruction {
+  const commandName = throughCarry ? "RR" : "RRC"
+  return {
+    execute: (cpu) => {
+      const register = getByteDestination(registerName, cpu)
+      const value = register.read()
+      const wrap = throughCarry ? cpu.registers.getFlag("Carry").read() : (value & 1)
+      const rotated = (value >> 1) + ((value & 1) << 7)
+      register.write(rotated)
+
+      cpu.registers.getFlag("Zero").write(rotated === 0 ? 1 : 0)
+      cpu.registers.getFlag("Operation").write(0)
+      cpu.registers.getFlag("Half-Carry").write(0)
+      cpu.registers.getFlag("Carry").write(value & 1)
+    },
+    cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
+    parameterBytes: 0,
+    description: () => `${commandName} ${registerName}`
   }
 }

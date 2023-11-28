@@ -1,12 +1,12 @@
 import { Target8Name } from "../../types"
 import { Instruction } from "../instruction"
-import { getValue } from "./instructionHelpers"
+import { getByteDestination } from "./instructionHelpers"
 
 export const testBit = (bit: number, sourceName: Target8Name): Instruction => {
   return {
     execute: (cpu) => {
-      const source = getValue(sourceName, cpu)
-      const result = (source.read() << bit) & 0b1
+      const source = getByteDestination(sourceName, cpu)
+      const result = (source.read() >> bit) & 0b1
 
       cpu.registers.getFlag("Zero").write(result === 0 ? 1 : 0)
       cpu.registers.getFlag("Operation").write(0)

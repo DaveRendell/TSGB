@@ -9,12 +9,14 @@ export default function GameLoader({ memory }: Props) {
   const handleBiosUpload = function(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault()
     if (e.target.files && e.target.files[0]) {
-      const a = e.target.files[0]
       memory.loadBios(e.target.files[0])
     }
   }
   const handleGameUpload = function(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault()
+    if (e.target.files && e.target.files[0]) {
+      memory.loadGame(e.target.files[0])
+    }
   }
   return (<section>
     <h2>Game Loader</h2>

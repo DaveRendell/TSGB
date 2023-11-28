@@ -1,3 +1,4 @@
+import { ReadableValue } from "../types";
 import { increment } from "./arithmetic";
 import { decodeInstruction } from "./instruction";
 import Memory from "./memory";
@@ -17,6 +18,15 @@ export default class CPU {
   constructor(memory: Memory, registers: CpuRegisters) {
     this.memory = memory
     this.registers = registers
+  }
+
+  nextByte: ReadableValue<8> = {
+    intSize: 8,
+    read: () => {
+      const byte = this.memory.at(this.registers.get16("PC").read()).read()
+      increment(this.registers.get16("PC"))
+      return byte
+    }
   }
 
   readNextByte(): number {

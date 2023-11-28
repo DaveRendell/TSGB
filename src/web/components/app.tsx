@@ -3,12 +3,15 @@ import MemoryExplorer from "./memoryExplorer"
 import CPU from "../../emulator/cpu"
 import CpuController from "./cpuController"
 import GameLoader from "./gameLoader"
+import PPU from "../../emulator/ppu"
+import { VramViewer } from "./vramViewer"
 
 interface Props {
   cpu: CPU
+  ppu: PPU
 }
 
-export default function App({ cpu }: Props) {
+export default function App({ cpu, ppu }: Props) {
   
   // Reload this component when execution of CPU is complete
   const [toggle, setToggle] = React.useState(false)
@@ -20,6 +23,7 @@ export default function App({ cpu }: Props) {
       <h1>TSGB</h1>
       <GameLoader memory={cpu.memory} />
       <CpuController cpu={cpu} />
+      <VramViewer ppu={ppu} />
       <MemoryExplorer
         memory={cpu.memory}
         programCounter={programCounter}
