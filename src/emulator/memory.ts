@@ -26,7 +26,7 @@ export default class Memory {
   async loadGame(file: File) {
     const byteArray = (await file.stream().getReader().read()).value
     if (byteArray) {
-      for (let i = 0x104; i < 0x133; i++) {
+      for (let i = 0x104; i <= 0x133; i++) {
         this.data[i] = byteArray[i]
       }
     }

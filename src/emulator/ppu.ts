@@ -56,4 +56,14 @@ export default class PPU {
 
     context.putImageData(imageData, 0, 0)
   }
+
+  printBackgroundLayer(canvas: HTMLCanvasElement, tiles: HTMLCanvasElement): void {
+    // Tilemap 1: 0x9800 - 0x9BFF, so 256 bytes
+    // once byte is one tile surely?
+    const context = canvas.getContext("2d")
+    if (!context) { throw new Error("No canvas context") }
+    canvas.width = 256
+    canvas.height = 256
+
+  }
 }
