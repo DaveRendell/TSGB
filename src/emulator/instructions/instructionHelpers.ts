@@ -48,3 +48,12 @@ export const combineBytes = (high: number, low: number) =>
 
 export const splitBytes = (input: number) =>
   [(input & 0xFF00) >> 8, input & 0x00FF]
+
+export const testBit = <IntSize extends number>(value: MutableValue<IntSize>, bit: number): number =>
+  (value.read() >> bit) & 1
+
+export const setBit = <IntSize extends number>(value: MutableValue<IntSize>, bit: number) =>
+  value.write(value.read() | (1 << bit))
+
+export const resetBit = <IntSize extends number>(value: MutableValue<IntSize>, bit: number) =>
+  value.write(value.read() & ~(1 << bit))

@@ -5,6 +5,7 @@ import CpuController from "./cpuController"
 import GameLoader from "./gameLoader"
 import PPU from "../../emulator/ppu"
 import { VramViewer } from "./vramViewer"
+import Display from "./display"
 
 interface Props {
   cpu: CPU
@@ -22,6 +23,7 @@ export default function App({ cpu, ppu }: Props) {
   return (<main>
       <h1>TSGB</h1>
       <GameLoader memory={cpu.memory} />
+      <Display cpu={cpu} />
       <CpuController cpu={cpu} />
       <VramViewer ppu={ppu} />
       <MemoryExplorer

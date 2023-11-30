@@ -66,9 +66,6 @@ export default class PPU {
           const bit2 = (byte2 >> bit) & 1
           const pixelValue = bit1 + (bit2 << 1)
           const colour = COLOURS[pixelValue]
-          if (tile === 25) {
-            console.log({x, y, bit1, bit2, pixelValue, pixelNumber, colour})
-          }
           imageData.data[4 * pixelNumber + 0] = colour[0]
           imageData.data[4 * pixelNumber + 1] = colour[1]
           imageData.data[4 * pixelNumber + 2] = colour[2]

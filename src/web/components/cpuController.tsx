@@ -21,7 +21,8 @@ export default function CpuController({ cpu }: Props) {
   return (<section>
     <h2>CPU Controller</h2>
     <button onClick={() => cpu.executeNextInstruction()}>Execute next instruction</button>
-    <button onClick={() => cpu.runUntilHalted()}>Run until halt</button>
+    <button onClick={() => cpu.run()}>Run until halt</button>
+    <button onClick={() => cpu.runFrame()}>Run frame</button>
     <h3>Registers</h3>
     <div className="flex-horizonally">
       <div>
