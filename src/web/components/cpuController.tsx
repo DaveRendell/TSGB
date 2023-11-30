@@ -18,11 +18,14 @@ const FLAGS: FlagName[] = [
 ]
 
 export default function CpuController({ cpu }: Props) {
+
   return (<section>
     <h2>CPU Controller</h2>
+    FPS: {cpu.fps.toPrecision(2)}<br/>
     <button onClick={() => cpu.executeNextInstruction()}>Execute next instruction</button>
     <button onClick={() => cpu.run()}>Run until halt</button>
-    <button onClick={() => cpu.runFrame()}>Run frame</button>
+    <button onClick={() => cpu.runFrame(Infinity)}>Run frame</button>
+    <button onClick={() => cpu.running = false}>Pause</button>
     <h3>Registers</h3>
     <div className="flex-horizonally">
       <div>

@@ -15,14 +15,18 @@ const INTERRUPT_HANDLERS: Record<Interrupt, number> = {
 const INTERRUPTS: Interrupt[] = ["VBlank"]
 
 export default class CPU {
+  running = false
+
   memory: Memory
   registers: CpuRegisters
   cycleCount: number = 0
   interruptsEnabled = false
   screen: Screen
+  lastFrameTimestamp: number
+  fps = 0
 
   isHalted = false
-  debugMode = true
+  debugMode = false
   breakpoints: Set<number> = new Set()
 
   onInstructionComplete: () => void = () => {}
@@ -121,18 +125,16 @@ export default class CPU {
     this.clockCallbacks.forEach(callback => callback.updateClock(cycles))
   }
 
-  run(): Promise<void> {
-    return new Promise((res) => {
-      let address = 0
-      while (!this.breakpoints.has(address)) {
-        this.executeNextInstruction()
-        address = this.registers.get16("PC").read()
-      }
-      res()
-    })
+  run() {
+    this.running = true
+    requestAnimationFrame(timestamp => this.runFrame(timestamp))
   }
 
-  runFrame(): void {
+  runFrame(timestamp: number): void {
+    const delta = timestamp - this.lastFrameTimestamp
+    this.lastFrameTimestamp = timestamp
+    this.fps = 1000 / delta
+    
     let address = 0
     frameLoop:
     while (!this.breakpoints.has(address)) {
@@ -148,6 +150,9 @@ export default class CPU {
         this.screen.newFrameDrawn = false
         break frameLoop
       }
+    }
+    if (this.running) {
+      requestAnimationFrame(timestamp => this.runFrame(timestamp))
     }
   }
 
