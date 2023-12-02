@@ -32,6 +32,7 @@ export default class CPU {
   breakpoints: Set<number> = new Set()
 
   onInstructionComplete: () => void = () => {}
+  onError: (error: Error) => void = () => {}
   clockCallbacks: ClockCallback[] = []
 
   interruptEnableRegister: MutableValue<8>
@@ -144,24 +145,30 @@ export default class CPU {
     this.fps = 1000 / delta
     
     let address = 0
-    frameLoop:
-    while (!this.breakpoints.has(address)) {
-      this.executeNextInstruction()
-      address = this.registers.get16("PC").read()
+    
+    try {
+      frameLoop:
+      while (!this.breakpoints.has(address)) {
+        this.executeNextInstruction()
+        address = this.registers.get16("PC").read()
 
-      const interrupt = this.getInterrupt()
-      if (interrupt) {
-        this.handleInterrupt(interrupt)
-      }
+        const interrupt = this.getInterrupt()
+        if (interrupt) {
+          this.handleInterrupt(interrupt)
+        }
 
-      if (this.screen.newFrameDrawn) {
-        this.screen.newFrameDrawn = false
-        break frameLoop
+        if (this.screen.newFrameDrawn) {
+          this.screen.newFrameDrawn = false
+          break frameLoop
+        }
       }
-    }
-    if (this.running) {
-      requestAnimationFrame(timestamp => this.runFrame(timestamp))
-    }
+      if (this.running) {
+        requestAnimationFrame(timestamp => this.runFrame(timestamp))
+      }
+    } catch (error) {
+      this.running = false
+      this.onError(error)
+    }    
   }
 
   addClockCallback(callback: ClockCallback): void {

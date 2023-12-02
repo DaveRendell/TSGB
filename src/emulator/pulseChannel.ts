@@ -110,7 +110,6 @@ export default class PulseChannel {
     if (volumeByte !== this.cache.volumeEnvelope) {
       this.cache.volumeEnvelope = volumeByte
       this.envelopeDirection = (volumeByte & 0x08) ? 1 : -1
-      console.log("Setting volume to ", volumeByte >> 4)
       this.setVolume(volumeByte >> 4)
       this.envelopePace = volumeByte & 0x07
       this.envelopeTimer = this.envelopePace
@@ -132,7 +131,6 @@ export default class PulseChannel {
         // Start playing channel
         this.playing = true
         this.gain.connect(this.apu.audioContext.destination)
-        console.log(this.volume)
         this.setVolume()
         this.oscillator.start()
         this.lengthClock = 0

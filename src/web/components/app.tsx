@@ -19,12 +19,18 @@ export default function App({ cpu, ppu, apu }: Props) {
   const [toggle, setToggle] = React.useState(false)
   cpu.onInstructionComplete = () => { setToggle(!toggle) }
 
+  const [error, setError] = React.useState<string | undefined>(undefined)
+  cpu.onError = (e) => setError(e.message)
+
   const programCounter = cpu.registers.get16("PC").read()
 
   return (<main>
       <h1>TSGB</h1>
       <GameLoader memory={cpu.memory} />
       <Display cpu={cpu} />
+      { error &&
+        <p>Error: {error}</p>
+      }
       <CpuController cpu={cpu} />
       <VramViewer ppu={ppu} />
       <MemoryExplorer

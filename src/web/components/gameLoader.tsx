@@ -11,8 +11,8 @@ export default function GameLoader({ memory }: Props) {
   const [gameFile, setGameFile] = useLocalFile("game.gb")
 
   React.useEffect(() => {
-    if (biosFile) { memory.loadBios(biosFile) }
     if (gameFile) { memory.loadGame(gameFile) }
+    if (biosFile) { memory.loadBootRom(biosFile) }
   }, [
     biosFile === null ? 0 : biosFile.size,
     gameFile === null ? 0 : gameFile.size,

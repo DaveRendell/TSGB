@@ -1,6 +1,7 @@
 import { valueDisplay } from "../helpers/displayHexNumbers";
 import { AluOperation, JumpCondition, Register16Name, Target8Name } from "../types";
 import CPU from "./cpu";
+import InstructionNotFoundError from "./instructionNotFoundError";
 import { aluOperation, aluOperationImmediate, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
 import halt from "./instructions/halt";
 import { jumpRelative } from "./instructions/jumps";
@@ -175,5 +176,5 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
     }
   }
 
-  throw new Error("Instruction not found for code " + valueDisplay(code))
+  throw new InstructionNotFoundError(code)
 }

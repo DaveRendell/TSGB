@@ -38,6 +38,8 @@ export default function MemoryExplorer({ memory, programCounter, breakpoints }: 
       type="text"
       onChange={e => setBaseAddressInput(e.target.value)}
     /> <button onClick={update}>Update</button>
+    <br/>
+    <button onClick={() => setBaseAddress(programCounter - 1)}>Jump to PC</button>
 
     <table className="memory-table">
       <thead>
