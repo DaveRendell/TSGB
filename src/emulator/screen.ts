@@ -15,11 +15,7 @@ const COLOURS = [
   [0, 0, 0],
 ]
 
-const SCANLINE_CLOCK_CYCLES = 1000 // TODO
-
 type Mode = "HBlank" | "VBlank" | "Scanline OAM" | "Scanline VRAM"
-
-
 
 export default class Screen {
   cpu: CPU

@@ -6,14 +6,15 @@ import GameLoader from "./gameLoader"
 import PPU from "../../emulator/ppu"
 import { VramViewer } from "./vramViewer"
 import Display from "./display"
+import APU from "../../emulator/apu"
 
 interface Props {
   cpu: CPU
   ppu: PPU
+  apu: APU
 }
 
-export default function App({ cpu, ppu }: Props) {
-  
+export default function App({ cpu, ppu, apu }: Props) {
   // Reload this component when execution of CPU is complete
   const [toggle, setToggle] = React.useState(false)
   cpu.onInstructionComplete = () => { setToggle(!toggle) }

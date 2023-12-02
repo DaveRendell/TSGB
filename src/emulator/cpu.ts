@@ -1,4 +1,5 @@
 import { Interrupt, MutableValue, ReadableValue } from "../types";
+import APU from "./apu";
 import { decrement, increment } from "./arithmetic";
 import { decodeInstruction } from "./instruction";
 import { splitBytes } from "./instructions/instructionHelpers";
@@ -22,6 +23,7 @@ export default class CPU {
   cycleCount: number = 0
   interruptsEnabled = false
   screen: Screen
+  apu: APU
   lastFrameTimestamp: number
   fps = 0
 
@@ -127,7 +129,13 @@ export default class CPU {
 
   run() {
     this.running = true
+    this.apu.startAudio()
     requestAnimationFrame(timestamp => this.runFrame(timestamp))
+  }
+
+  pause() {
+    this.running = false
+    this.apu.stopAudio()
   }
 
   runFrame(timestamp: number): void {

@@ -48,16 +48,11 @@ export function push(registerName: Register16Name): Instruction {
       const register = cpu.registers.get16(registerName)
 
       const [h, l] = splitBytes(register.read())
-      console.log([h, l])
 
       decrement(sp)
       cpu.memory.at(sp.read()).write(h)
-      console.log(sp.read())
-      console.log(cpu.memory.at(sp.read()).read())
       decrement(sp)
-      console.log(sp.read())
       cpu.memory.at(sp.read()).write(l)
-      console.log(cpu.memory.at(sp.read()).read())
     },
     cycles:  16,
     parameterBytes: 0,

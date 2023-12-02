@@ -7,6 +7,7 @@ import CpuRegisters from "../emulator/register"
 import CPU from "../emulator/cpu"
 import { to2sComplement } from "../emulator/instructions/instructionHelpers"
 import PPU from "../emulator/ppu"
+import APU from "../emulator/apu"
 
 const memory = new Memory([
   0x76 // HALT
@@ -61,8 +62,8 @@ const memory = new Memory([
 const registers = new CpuRegisters()
 const cpu = new CPU(memory, registers)
 const ppu = new PPU(cpu)
+const apu = new APU(cpu)
 
 var mountNode = document.getElementById("app")
 const root = createRoot(mountNode!)
-console.log(ppu)
-root.render(<App cpu={cpu} ppu={ppu} />)
+root.render(<App cpu={cpu} ppu={ppu} apu={apu}/>)

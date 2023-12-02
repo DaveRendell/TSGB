@@ -25,7 +25,7 @@ export default function CpuController({ cpu }: Props) {
     <button onClick={() => cpu.executeNextInstruction()}>Execute next instruction</button>
     <button onClick={() => cpu.run()}>Run until halt</button>
     <button onClick={() => cpu.runFrame(Infinity)}>Run frame</button>
-    <button onClick={() => cpu.running = false}>Pause</button>
+    <button onClick={() => cpu.pause()}>Pause</button>
     <h3>Registers</h3>
     <div className="flex-horizonally">
       <div>
