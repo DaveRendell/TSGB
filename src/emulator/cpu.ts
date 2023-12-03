@@ -11,6 +11,7 @@ interface ClockCallback { updateClock(cycles: number): void }
 
 const INTERRUPT_HANDLERS: Record<Interrupt, number> = {
   "VBlank": 0x0040,
+  "LCD": 0x0048,
 }
 
 const INTERRUPTS: Interrupt[] = ["VBlank"]
@@ -162,7 +163,7 @@ export default class CPU {
           break frameLoop
         }
       }
-      if (this.running) {
+      if (this.running && !this.breakpoints.has(address)) {
         requestAnimationFrame(timestamp => this.runFrame(timestamp))
       }
     } catch (error) {

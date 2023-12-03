@@ -1,9 +1,9 @@
 import { valueDisplay } from "../../helpers/displayHexNumbers";
 import { AluOperation, Register16Name, Register8Name, Target8Name } from "../../types";
-import { decrement, increment } from "../arithmetic";
+import { add, decrement, increment } from "../arithmetic";
 import CPU from "../cpu";
 import { Instruction } from "../instruction";
-import { getByteDestination, getByteSource } from "./instructionHelpers";
+import { getByteDestination, getByteSource, splitBytes } from "./instructionHelpers";
 
 const splitToNibbles = (value: number) => [(value >> 4) & 0xF, value & 0xF]
 const combineNibbles = (h: number, l: number) => (h << 4) + l
@@ -249,4 +249,68 @@ export function rotateRight(registerName: Target8Name, throughCarry: boolean, is
     parameterBytes: 0,
     description: () => `${commandName} ${registerName}`
   }
+}
+
+export const cpl: Instruction = {
+  execute: (cpu) => {
+    const a = cpu.registers.get8("A")
+    a.write(~a.read())
+    cpu.registers.getFlag("Operation").write(1)
+    cpu.registers.getFlag("Half-Carry").write(1)
+  },
+  cycles: 4,
+  parameterBytes: 0,
+  description: () => "CPL"
+}
+
+export const addToHL = (registerName: Register16Name): Instruction => {
+  return {
+    execute(cpu) {
+      const hl = cpu.registers.get16("HL")
+      const h = cpu.registers.get8("H")
+      const l = cpu.registers.get8("L")
+      const r = cpu.registers.get16(registerName)
+
+      const [rH, rL] = splitBytes(r.read())
+
+      const resultL = l.read() + rL
+      const resultH = h.read() + rH
+      const result = (resultH << 8) + resultL
+
+      hl.write(result & 0xFFFF)
+
+      cpu.registers.getFlag("Operation").write(0)
+      cpu.registers.getFlag("Half-Carry").write(resultL > 0xFF ? 1 : 0)
+      cpu.registers.getFlag("Carry").write(result > 0xFFFF ? 1 : 0)
+    },
+    cycles: 8,
+    parameterBytes: 0,
+    description: () => `ADD HL,${registerName}`
+  }
+}
+
+export const daa: Instruction = {
+  execute(cpu) {
+    const a = cpu.registers.get8("A")
+    const operation = cpu.registers.getFlag("Operation").read()
+    const halfCarry = cpu.registers.getFlag("Half-Carry")
+    const carry = cpu.registers.getFlag("Carry")
+
+    const isAddBcdHalfCarry = !operation && ((a.read() & 0x0F) > 9)
+    const isAddBcdCarry = !operation && (a.read() > 0x99)
+
+    if (halfCarry.read() || isAddBcdHalfCarry) {
+      add(a, operation ? -0x06: 0x06)
+    }
+
+    if (carry.read() || isAddBcdCarry) {
+      add(a, operation ? -0x60: 0x60)
+    }
+
+    cpu.registers.getFlag("Zero").write(a.read() === 0 ? 1 : 0)
+    halfCarry.write(0)
+  },
+  cycles: 4,
+  parameterBytes: 0,
+  description: () => "DAA"
 }

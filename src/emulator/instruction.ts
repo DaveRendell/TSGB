@@ -2,14 +2,15 @@ import { valueDisplay } from "../helpers/displayHexNumbers";
 import { AluOperation, JumpCondition, Register16Name, Target8Name } from "../types";
 import CPU from "./cpu";
 import InstructionNotFoundError from "./instructionNotFoundError";
-import { aluOperation, aluOperationImmediate, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
+import { addToHL, aluOperation, aluOperationImmediate, cpl, daa, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
+import { disableInterrupts, enableInterrupts } from "./instructions/cpuControl";
 import halt from "./instructions/halt";
-import { jumpRelative } from "./instructions/jumps";
+import { jpHl, jump, jumpRelative, rst } from "./instructions/jumps";
 
-import { load8Bit, loadImmediate16BitRegister } from "./instructions/loads";
+import { load8Bit, loadHlFromSpPlusN, loadImmediate16BitRegister } from "./instructions/loads";
 import nop from "./instructions/nop";
-import { testBit } from "./instructions/prefixInstructions";
-import { call, pop, push, ret } from "./instructions/stack";
+import { shiftRightLogical, swap, testBit } from "./instructions/prefixInstructions";
+import { call, callF, pop, push, ret, retF, reti } from "./instructions/stack";
 
 export interface Instruction {
   execute: (cpu: CPU) => void
@@ -17,6 +18,9 @@ export interface Instruction {
   parameterBytes: number
   description: (parameters: number[]) => string
 }
+
+// 0xF8 11111000
+// LD HL,SP+N
 
 const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
   0x00: nop,
@@ -30,14 +34,22 @@ const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
   0x0F: rotateRight("A", false, false),
   0x1F: rotateRight("A", true, false),
   0x18: jumpRelative("None"),
+  0x2F: cpl,
   0xF0: load8Bit("A", "(FF,N)"),
   0xE0: load8Bit("(FF,N)", "A"),
   0xF2: load8Bit("A", "(FF,C)"),
   0xE2: load8Bit("(FF,C)", "A"),
   0xCD: call,
   0xC9: ret,
+  0xD9: reti,
+  0xC3: jump("None"),
+  0xF8: loadHlFromSpPlusN,
+  0x27: daa,
   0b11101010: load8Bit("(NN)", "A"),
   0b11111010: load8Bit("A", "(NN)"),
+  0xE9: jpHl,
+  0xF3: disableInterrupts,
+  0xFB: enableInterrupts,
 }
 
 const REGISTERS_8: Target8Name[] = [
@@ -89,10 +101,14 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
   }
 
   // decoded instructions to go here...
-  // BIOS VRAM load TODO:
   if ((code & 0b11001111) === 0b00000001) { // LD RR,nn
     const register = getRegisterColumn2(code)
     return loadImmediate16BitRegister(register)
+  }
+
+  if((code & 0b11001111) === 0b00001001) { // ADD HL,RR
+    const register = getRegisterColumn2(code)
+    return addToHL(register)
   }
 
   if ((code & 0b11101111) == 0b00000010) { // LD (R),A
@@ -149,8 +165,25 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
     return pop(getRegisterColumn3(code))
   }
 
-  if ((code & 0b11001111) === 0b11000101) { // POP RR
+  if ((code & 0b11001111) === 0b11000101) { // PUSH RR
     return push(getRegisterColumn3(code))
+  }
+
+  if ((code & 0b11000111) === 0b11000111) { // RST N
+    return rst(code &0b00111000)
+  }
+
+  if ((code & 0b11100111) === 0b11000000) { // RET F
+    return retF(getCondition(code))
+  }
+
+  if ((code & 0b11100111) === 0b11000010) {
+    return(jump(getCondition(code)))
+  }
+
+  if ((code & 0b11100111) == 0b11000100) { // CALL F,NN
+    const condition = getCondition(code)
+    return callF(condition)
   }
 
   if (code === 0xCB ) { // Prefixed instructions
@@ -173,6 +206,12 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
       const bit = (prefixedCode >> 3) & 0b111
       const source = getSource(prefixedCode)
       return testBit(bit, source)
+    }
+    if ((prefixedCode & 0b11111000) === 0b00110000) { // SWAP D
+      return swap(getSource(prefixedCode))
+    }
+    if ((prefixedCode & 0b11111000) === 0b00111000) { // SRL D
+      return shiftRightLogical(getSource(prefixedCode))
     }
   }
 

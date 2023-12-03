@@ -2,7 +2,7 @@ import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers";
 import { ByteDestinationName, ByteSourceName, Register16Name, Register8Name, Target8Name } from "../../types";
 import { decrement, increment } from "../arithmetic";
 import { Instruction } from "../instruction";
-import { combineBytes, get16BitRegister, getByteSource, getByteDestination } from "./instructionHelpers";
+import { combineBytes, get16BitRegister, getByteSource, getByteDestination, splitBytes } from "./instructionHelpers";
 
 const cycleCost = (location: ByteSourceName): number => {
   if (location === "M") { return 4 }
@@ -79,4 +79,21 @@ export function loadImmediate16BitRegister(registerName: Register16Name): Instru
     parameterBytes: 2,
     description: ([l, h]) => `LD ${registerName},${addressDisplay(combineBytes(h, l))}`
   }
+}
+
+export const loadHlFromSpPlusN: Instruction = {
+  execute(cpu) {
+    const increment = cpu.nextByte.read()
+    const [spH, spL] = splitBytes(cpu.registers.get16("SP").read())
+    const result = (spH << 8) + spL + increment
+
+    cpu.registers.get16("HL").write(result && 0xFFFF)
+    cpu.registers.getFlag("Zero").write(0)
+    cpu.registers.getFlag("Operation").write(0)
+    cpu.registers.getFlag("Half-Carry").write(spL + increment > 0xFF ? 1 : 0)
+    cpu.registers.getFlag("Zero").write(result > 0xFFFF ? 1 : 0)
+  },
+  cycles: 12,
+  parameterBytes: 1,
+  description: ([value]) => `LD HL,SP+${valueDisplay(value)}`
 }

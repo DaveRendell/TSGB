@@ -63,9 +63,11 @@ export default class Screen {
             this.renderScreen()
             setBit(this.memory.at(0xFF0F), 0) // VBlank interrupt flag ON
             this.mode = "VBlank"
+            resetBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag OFF
             this.newFrameDrawn = true
           } else {
             this.mode = "Scanline OAM"
+            resetBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag OFF
           }
         }
         break
@@ -77,6 +79,7 @@ export default class Screen {
             this.scanlineNumber.write(0)
             resetBit(this.memory.at(0xFF0F), 0) // VBlank interrupt flag OFF
             this.mode = "HBlank"
+            setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
           }
         }
         break
@@ -91,6 +94,7 @@ export default class Screen {
           this.clockCount -= 172
           this.renderScanline()
           this.mode = "HBlank"
+          setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
         }
         break
     }
