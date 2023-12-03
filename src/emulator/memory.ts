@@ -20,14 +20,14 @@ export default class Memory {
         return {
           intSize: 8,
           read: () => this.bootRom[address],
-          write: (value: number) => { this.bootRom[address] = value }
+          write: () => {  }
         }
       }
       // TODO Memory Banking...
       return {
         intSize: 8,
         read: () => this.cartridge[address],
-        write: (value: number) => { this.cartridge[address] = value }
+        write: () => {  }
       }
     }
 

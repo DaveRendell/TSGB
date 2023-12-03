@@ -13,3 +13,15 @@ export const enableInterrupts: Instruction = {
   parameterBytes: 0,
   description: () => "EI"
 }
+
+export const stop: Instruction = {
+  execute: (cpu) => {
+    cpu.isStopped = true
+    // TODO what does this actually do?
+
+    cpu.memory.at(0xFF04).write(0)
+  },
+  cycles: 4,
+  parameterBytes: 0,
+  description: () => "STOP"
+}

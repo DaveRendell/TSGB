@@ -2,16 +2,18 @@ import { Interrupt, MutableValue, ReadableValue } from "../types";
 import APU from "./apu";
 import { decrement, increment } from "./arithmetic";
 import { decodeInstruction } from "./instruction";
-import { splitBytes } from "./instructions/instructionHelpers";
+import { resetBit, splitBytes } from "./instructions/instructionHelpers";
 import Memory from "./memory";
 import CpuRegisters from "./register";
 import Screen from "./screen"
+import Timer from "./timer";
 
 interface ClockCallback { updateClock(cycles: number): void }
 
 const INTERRUPT_HANDLERS: Record<Interrupt, number> = {
   "VBlank": 0x0040,
   "LCD": 0x0048,
+  "Timer": 0x0050,
 }
 
 const INTERRUPTS: Interrupt[] = ["VBlank"]
@@ -27,8 +29,10 @@ export default class CPU {
   apu: APU
   lastFrameTimestamp: number
   fps = 0
+  timer: Timer
 
   isHalted = false
+  isStopped = false
   debugMode = false
   breakpoints: Set<number> = new Set()
 
@@ -42,9 +46,14 @@ export default class CPU {
   constructor(memory: Memory, registers: CpuRegisters) {
     this.memory = memory
     this.registers = registers
+    this.timer = new Timer(memory)
+    this.addClockCallback(this.timer)
 
     this.interruptEnableRegister = memory.at(0xFFFF)
     this.interruptFlags = memory.at(0xFF0F)
+
+    // Workaround until Joypad input implemented - prevents A+B+St+Sl restarts
+    this.memory.at(0xFF00).write(0xCF)
   }
 
   nextByte: ReadableValue<8> = {
@@ -103,10 +112,13 @@ export default class CPU {
     let id = 0
     while ( ((activeInterrupts >> id) & 1) === 0) { id++ }
 
+    resetBit(this.interruptFlags, id)
+
     return INTERRUPTS[id]
   }
 
   handleInterrupt(interrupt: Interrupt): void {
+    console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
     // Push PC to stack and jump to handler address
     const handlerAddress = INTERRUPT_HANDLERS[interrupt]
     const sp = this.registers.get16("SP")
@@ -167,6 +179,7 @@ export default class CPU {
         requestAnimationFrame(timestamp => this.runFrame(timestamp))
       }
     } catch (error) {
+      console.trace()
       this.running = false
       this.onError(error)
     }    

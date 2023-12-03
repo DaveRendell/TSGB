@@ -10,7 +10,7 @@ export type Target8Name = "A" | "B" | "C" | "D" | "E" | "H" | "L" | "M"
 export type AluOperation = "ADD" | "ADC" | "SUB" | "SBC" | "AND" | "XOR" | "OR" | "CP"
 export type JumpCondition = "Not-Zero" | "Zero" | "Not-Carry" | "Carry" | "None"
 
-export type Interrupt = "VBlank" | "LCD"
+export type Interrupt = "VBlank" | "LCD" | "Timer"
 
 export interface ReadableValue<IntSize extends number> {
   intSize: IntSize

@@ -1,7 +1,7 @@
 import { MutableValue } from "../types";
 import { increment } from "./arithmetic";
 import CPU from "./cpu";
-import { resetBit, setBit } from "./instructions/instructionHelpers";
+import { resetBit, setBit, testBit } from "./instructions/instructionHelpers";
 import Memory from "./memory";
 
 const WIDTH = 160
@@ -24,11 +24,12 @@ export default class Screen {
   buffer: OffscreenCanvas
   bufferContext: OffscreenCanvasRenderingContext2D
 
-  backgroundPallette: MutableValue<8>
+  lcdControl: MutableValue<8>
+  lcdStatus: MutableValue<8>
   scrollX: MutableValue<8>
   scrollY: MutableValue<8>
-
   scanlineNumber: MutableValue<8>
+  backgroundPallette: MutableValue<8>
   clockCount = 0
 
   mode: Mode = "Scanline OAM"
@@ -42,10 +43,12 @@ export default class Screen {
     this.buffer = new OffscreenCanvas(WIDTH, HEIGHT)
     this.bufferContext = this.buffer.getContext("2d")!
 
-    this.backgroundPallette = this.memory.at(0xFF47)
+    this.lcdControl = this.memory.at(0xFF40)
+    this.lcdStatus = this.memory.at(0xFF41)
     this.scrollY = this.memory.at(0xFF42)
     this.scrollX = this.memory.at(0xFF43)
     this.scanlineNumber = this.memory.at(0xFF44)
+    this.backgroundPallette = this.memory.at(0xFF47)
 
     cpu.addClockCallback(this)
     cpu.screen = this
@@ -63,11 +66,9 @@ export default class Screen {
             this.renderScreen()
             setBit(this.memory.at(0xFF0F), 0) // VBlank interrupt flag ON
             this.mode = "VBlank"
-            resetBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag OFF
             this.newFrameDrawn = true
           } else {
             this.mode = "Scanline OAM"
-            resetBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag OFF
           }
         }
         break
@@ -77,9 +78,10 @@ export default class Screen {
           increment(this.scanlineNumber)
           if (this.scanlineNumber.read() >= SCANLINES) {
             this.scanlineNumber.write(0)
-            resetBit(this.memory.at(0xFF0F), 0) // VBlank interrupt flag OFF
             this.mode = "HBlank"
-            setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
+            if (testBit(this.lcdStatus, 3)) {
+              setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
+            }
           }
         }
         break
@@ -94,7 +96,9 @@ export default class Screen {
           this.clockCount -= 172
           this.renderScanline()
           this.mode = "HBlank"
-          setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
+          if (testBit(this.lcdStatus, 3)) {
+            setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
+          }
         }
         break
     }

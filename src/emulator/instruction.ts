@@ -3,7 +3,7 @@ import { AluOperation, JumpCondition, Register16Name, Target8Name } from "../typ
 import CPU from "./cpu";
 import InstructionNotFoundError from "./instructionNotFoundError";
 import { addToHL, aluOperation, aluOperationImmediate, cpl, daa, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
-import { disableInterrupts, enableInterrupts } from "./instructions/cpuControl";
+import { disableInterrupts, enableInterrupts, stop } from "./instructions/cpuControl";
 import halt from "./instructions/halt";
 import { jpHl, jump, jumpRelative, rst } from "./instructions/jumps";
 
@@ -19,12 +19,12 @@ export interface Instruction {
   description: (parameters: number[]) => string
 }
 
-// 0xF8 11111000
-// LD HL,SP+N
+// 0x10 00010000 STOP
 
 const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
   0x00: nop,
   0x76: halt,
+  0x10: stop,
   0b00100010: load8Bit("M", "A", "increment"),
   0b00101010: load8Bit("A", "M", "increment"),
   0b00110010: load8Bit("M", "A", "decrement"),
