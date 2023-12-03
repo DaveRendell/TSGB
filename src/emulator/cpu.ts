@@ -43,6 +43,8 @@ export default class CPU {
   interruptEnableRegister: MutableValue<8>
   interruptFlags: MutableValue<8>
 
+  gbDoctorLog = ""
+
   constructor(memory: Memory, registers: CpuRegisters) {
     this.memory = memory
     this.registers = registers
@@ -54,6 +56,19 @@ export default class CPU {
 
     // Workaround until Joypad input implemented - prevents A+B+St+Sl restarts
     this.memory.at(0xFF00).write(0xCF)
+
+    if (!this.memory.bootRomLoaded) {
+      this.registers.get8("A").write(0x01)
+      this.registers.get8("F").write(0xB0)
+      this.registers.get8("B").write(0x00)
+      this.registers.get8("C").write(0x13)
+      this.registers.get8("D").write(0x00)
+      this.registers.get8("E").write(0xD8)
+      this.registers.get8("H").write(0x01)
+      this.registers.get8("L").write(0x4D)
+      this.registers.get16("SP").write(0xFFFE)
+      this.registers.get16("PC").write(0x0100)
+    }
   }
 
   nextByte: ReadableValue<8> = {
@@ -77,6 +92,29 @@ export default class CPU {
     return (h << 8) + l
   }
 
+  createGbDoctorLog() {
+    // GB Doctor logging
+    const A = this.registers.get8("A").read().toString(16).padStart(2, "0").toUpperCase()
+    const B = this.registers.get8("B").read().toString(16).padStart(2, "0").toUpperCase()
+    const C = this.registers.get8("C").read().toString(16).padStart(2, "0").toUpperCase()
+    const D = this.registers.get8("D").read().toString(16).padStart(2, "0").toUpperCase()
+    const E = this.registers.get8("E").read().toString(16).padStart(2, "0").toUpperCase()
+    const F = this.registers.get8("F").read().toString(16).padStart(2, "0").toUpperCase()
+    const H = this.registers.get8("H").read().toString(16).padStart(2, "0").toUpperCase()
+    const L = this.registers.get8("L").read().toString(16).padStart(2, "0").toUpperCase()
+    const SP = this.registers.get16("SP").read().toString(16).padStart(4, "0").toUpperCase()
+    const PC = this.registers.get16("PC").read().toString(16).padStart(4, "0").toUpperCase()
+    const PCMEM = [
+      this.memory.at(this.registers.get16("PC").read() + 0).read(),
+      this.memory.at(this.registers.get16("PC").read() + 1).read(),
+      this.memory.at(this.registers.get16("PC").read() + 2).read(),
+      this.memory.at(this.registers.get16("PC").read() + 3).read(),
+    ].map(x => x.toString(16).padStart(2, "0").toUpperCase()).join(",")
+    this.gbDoctorLog +=
+      `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`
+
+  }
+
   executeNextInstruction(): void {
     if (this.isHalted) {
       this.incrementClock(4)
@@ -97,7 +135,8 @@ export default class CPU {
         .map((_, i) => this.memory.at(pc + 1 + i).read())
       console.log(instruction.description(parameters))
     }
-
+    
+    
     this.onInstructionComplete()
   }
 

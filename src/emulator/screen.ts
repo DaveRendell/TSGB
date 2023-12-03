@@ -32,6 +32,8 @@ export default class Screen {
   backgroundPallette: MutableValue<8>
   clockCount = 0
 
+  gbDoctorHackManualScanline = 0
+
   mode: Mode = "Scanline OAM"
 
   newFrameDrawn = false
@@ -62,7 +64,8 @@ export default class Screen {
         if (this.clockCount >= 204) {
           this.clockCount -= 204
           increment(this.scanlineNumber)
-          if (this.scanlineNumber.read() === HEIGHT) {
+          this.gbDoctorHackManualScanline++
+          if (this.gbDoctorHackManualScanline === HEIGHT) {
             this.renderScreen()
             setBit(this.memory.at(0xFF0F), 0) // VBlank interrupt flag ON
             this.mode = "VBlank"
@@ -76,8 +79,10 @@ export default class Screen {
         if (this.clockCount >= 456) {
           this.clockCount -= 456
           increment(this.scanlineNumber)
-          if (this.scanlineNumber.read() >= SCANLINES) {
+          this.gbDoctorHackManualScanline++
+          if (this.gbDoctorHackManualScanline >= SCANLINES) {
             this.scanlineNumber.write(0)
+            this.gbDoctorHackManualScanline = 0
             this.mode = "HBlank"
             if (testBit(this.lcdStatus, 3)) {
               setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
@@ -105,7 +110,7 @@ export default class Screen {
   }
 
   renderScanline(): void {
-    const scanline = this.scanlineNumber.read()
+    const scanline = this.gbDoctorHackManualScanline//this.scanlineNumber.read()
 
     const line = this.bufferContext.createImageData(WIDTH, 1)
 

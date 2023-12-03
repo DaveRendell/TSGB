@@ -2,7 +2,7 @@ import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers";
 import { ByteDestinationName, ByteSourceName, Register16Name, Register8Name, Target8Name } from "../../types";
 import { decrement, increment } from "../arithmetic";
 import { Instruction } from "../instruction";
-import { combineBytes, get16BitRegister, getByteSource, getByteDestination, splitBytes } from "./instructionHelpers";
+import { combineBytes, get16BitRegister, getByteSource, getByteDestination, splitBytes, from2sComplement } from "./instructionHelpers";
 
 const cycleCost = (location: ByteSourceName): number => {
   if (location === "M") { return 4 }
@@ -83,17 +83,45 @@ export function loadImmediate16BitRegister(registerName: Register16Name): Instru
 
 export const loadHlFromSpPlusN: Instruction = {
   execute(cpu) {
-    const increment = cpu.nextByte.read()
-    const [spH, spL] = splitBytes(cpu.registers.get16("SP").read())
-    const result = (spH << 8) + spL + increment
+    const increment = from2sComplement(cpu.nextByte.read())
+    const sp = cpu.registers.get16("SP").read()
+    const result = sp + increment
 
-    cpu.registers.get16("HL").write(result && 0xFFFF)
+    const halfCarry = (sp & 0xF) + (increment & 0xF) !== (result & 0xF)
+    const carry = (sp & 0xFF) + (increment & 0xFF) !== (result & 0xFF)
+
+    cpu.registers.get16("HL").write(result & 0xFFFF)
     cpu.registers.getFlag("Zero").write(0)
     cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(spL + increment > 0xFF ? 1 : 0)
-    cpu.registers.getFlag("Zero").write(result > 0xFFFF ? 1 : 0)
+    cpu.registers.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
+    cpu.registers.getFlag("Carry").write(carry ? 1 : 0)
   },
   cycles: 12,
   parameterBytes: 1,
   description: ([value]) => `LD HL,SP+${valueDisplay(value)}`
+}
+
+export const loadStackPointerToAddress: Instruction = {
+  execute(cpu) {
+    const [hSP, lSP] = splitBytes(cpu.registers.get16("SP").read())
+    const address = cpu.readNext16bit()
+
+    cpu.memory.at(address).write(lSP)
+    cpu.memory.at(address + 1).write(hSP)
+  },
+  cycles: 20,
+  parameterBytes: 2,
+  description: ([l, h]) => `LD (${addressDisplay(combineBytes(h, l))}),SP`
+}
+
+export const loadStackPointerFromHL: Instruction = {
+  execute(cpu) {
+    const sp = cpu.registers.get16("SP")
+    const hl = cpu.registers.get16("HL")
+
+    sp.write(hl.read())
+  },
+  cycles: 8,
+  parameterBytes: 0,
+  description: () => "LD SP,HL"
 }

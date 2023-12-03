@@ -2,14 +2,14 @@ import { valueDisplay } from "../helpers/displayHexNumbers";
 import { AluOperation, JumpCondition, Register16Name, Target8Name } from "../types";
 import CPU from "./cpu";
 import InstructionNotFoundError from "./instructionNotFoundError";
-import { addToHL, aluOperation, aluOperationImmediate, cpl, daa, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
-import { disableInterrupts, enableInterrupts, stop } from "./instructions/cpuControl";
+import { addImmediateToSP, addToHL, aluOperation, aluOperationImmediate, cpl, daa, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
+import { ccf, disableInterrupts, enableInterrupts, scf, stop } from "./instructions/cpuControl";
 import halt from "./instructions/halt";
 import { jpHl, jump, jumpRelative, rst } from "./instructions/jumps";
 
-import { load8Bit, loadHlFromSpPlusN, loadImmediate16BitRegister } from "./instructions/loads";
+import { load8Bit, loadHlFromSpPlusN, loadImmediate16BitRegister, loadStackPointerFromHL, loadStackPointerToAddress } from "./instructions/loads";
 import nop from "./instructions/nop";
-import { shiftRightLogical, swap, testBit } from "./instructions/prefixInstructions";
+import { resetBit, setBit, shiftLeftArithmetic, shiftRightArithmetic, shiftRightLogical, swap, testBit } from "./instructions/prefixInstructions";
 import { call, callF, pop, push, ret, retF, reti } from "./instructions/stack";
 
 export interface Instruction {
@@ -19,27 +19,31 @@ export interface Instruction {
   description: (parameters: number[]) => string
 }
 
-// 0x10 00010000 STOP
+// Prefixed 0x80 = 10000000
 
 const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
   0x00: nop,
+  0x08: loadStackPointerToAddress,
   0x76: halt,
   0x10: stop,
   0b00100010: load8Bit("M", "A", "increment"),
   0b00101010: load8Bit("A", "M", "increment"),
   0b00110010: load8Bit("M", "A", "decrement"),
   0b00111010: load8Bit("A", "M", "decrement"),
-  0x07: rotateLeft("A", false, false),
-  0x17: rotateLeft("A", true, false),
-  0x0F: rotateRight("A", false, false),
-  0x1F: rotateRight("A", true, false),
+  0x07: rotateLeft("A", false, false, false),
+  0x17: rotateLeft("A", true, false, false),
+  0x0F: rotateRight("A", false, false, false),
+  0x1F: rotateRight("A", true, false, false),
   0x18: jumpRelative("None"),
   0x2F: cpl,
+  0x37: scf,
+  0x3F: ccf,
   0xF0: load8Bit("A", "(FF,N)"),
   0xE0: load8Bit("(FF,N)", "A"),
   0xF2: load8Bit("A", "(FF,C)"),
   0xE2: load8Bit("(FF,C)", "A"),
   0xCD: call,
+  0xE8: addImmediateToSP,
   0xC9: ret,
   0xD9: reti,
   0xC3: jump("None"),
@@ -48,6 +52,7 @@ const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
   0b11101010: load8Bit("(NN)", "A"),
   0b11111010: load8Bit("A", "(NN)"),
   0xE9: jpHl,
+  0xF9: loadStackPointerFromHL,
   0xF3: disableInterrupts,
   0xFB: enableInterrupts,
 }
@@ -187,7 +192,7 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
   }
 
   if (code === 0xCB ) { // Prefixed instructions
-    if (!prefixedCode) {
+    if (prefixedCode === undefined) {
       throw new Error("Prefix instruction missing")
     }
     if ((prefixedCode & 0b11111000) === 0b00000000) { // RLC D
@@ -202,10 +207,26 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
     if ((prefixedCode & 0b11111000) === 0b00011000) { // RR D
       return rotateRight(getSource(prefixedCode), true, true)
     }
+    if ((prefixedCode & 0b11111000) === 0b00100000) { // SLA D
+      return shiftLeftArithmetic(getSource(prefixedCode))
+    }
+    if ((prefixedCode & 0b11111000) === 0b00101000) { // SRA D
+      return shiftRightArithmetic(getSource(prefixedCode))
+    }
     if ((prefixedCode & 0b11000000) === 0b01000000) { // BIT N,D
       const bit = (prefixedCode >> 3) & 0b111
       const source = getSource(prefixedCode)
       return testBit(bit, source)
+    }
+    if ((prefixedCode & 0b11000000) === 0b10000000) { // RES N,D
+      const bit = (prefixedCode >> 3) & 0b111
+      const source = getSource(prefixedCode)
+      return resetBit(bit, source)
+    }
+    if ((prefixedCode & 0b11000000) === 0b11000000) { // SET N,D
+      const bit = (prefixedCode >> 3) & 0b111
+      const source = getSource(prefixedCode)
+      return setBit(bit, source)
     }
     if ((prefixedCode & 0b11111000) === 0b00110000) { // SWAP D
       return swap(getSource(prefixedCode))

@@ -1,9 +1,9 @@
 import { addressDisplay } from "../../helpers/displayHexNumbers";
 import { JumpCondition } from "../../types";
-import { add } from "../arithmetic";
+import { add, decrement } from "../arithmetic";
 import CPU from "../cpu";
 import { Instruction } from "../instruction";
-import { combineBytes, from2sComplement } from "./instructionHelpers";
+import { combineBytes, from2sComplement, splitBytes } from "./instructionHelpers";
 
 export const CONDITIONS: Record<JumpCondition, (cpu: CPU) => boolean> = {
   "Not-Zero": (cpu) => cpu.registers.getFlag("Zero").read() === 0,
@@ -39,9 +39,9 @@ export function jumpRelative(condition: JumpCondition): Instruction {
 export function jump(condition: JumpCondition): Instruction {
   return {
     execute: (cpu: CPU) => {
+        const l = cpu.readNextByte()
+        const h = cpu.readNextByte()
         if (CONDITIONS[condition](cpu)) {
-          const l = cpu.readNextByte()
-          const h = cpu.readNextByte()
           cpu.registers.get16("PC").write(combineBytes(h, l))
       }
     },
@@ -60,13 +60,23 @@ export const jpHl: Instruction = {
   description: () => "JP HL"
 }
 
-export function rst(location: number): Instruction {
+export function rst(address: number): Instruction {
   return {
     execute(cpu) {
-      cpu.registers.get16("PC").write(location)
+      const sp = cpu.registers.get16("SP")
+      const pc = cpu.registers.get16("PC")
+
+      const [h, l] = splitBytes(pc.read())
+
+      decrement(sp)
+      cpu.memory.at(sp.read()).write(h)
+      decrement(sp)
+      cpu.memory.at(sp.read()).write(l)
+
+    pc.write(address)
     },
     cycles: 16,
     parameterBytes: 0,
-    description: () => `RST ${location}`
+    description: () => `RST ${address}`
   }
 }

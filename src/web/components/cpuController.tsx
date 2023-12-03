@@ -26,6 +26,15 @@ export default function CpuController({ cpu }: Props) {
     <button onClick={() => cpu.run()}>Run until halt</button>
     <button onClick={() => cpu.runFrame(Infinity)}>Run frame</button>
     <button onClick={() => cpu.pause()}>Pause</button>
+    <button onClick={() => {
+      const link = document.createElement("a")
+      const content = cpu.gbDoctorLog
+      const file = new Blob([content], { type: 'text/plain' });
+      link.href = URL.createObjectURL(file);
+      link.download = "sample.txt";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }}>Download GB Doctor Log</button>
     <h3>Registers</h3>
     <div className="flex-horizonally">
       <div>

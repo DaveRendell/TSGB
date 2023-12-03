@@ -27,7 +27,9 @@ export default class CpuRegisters {
   get8 = (name: Register8Name): MutableValue<8> => ({
     intSize: 8,
     read: () => this.values8Bit[name],
-    write: (value) => this.values8Bit[name] = value
+    write: (value) => name === "F"
+      ? this.values8Bit[name] = (value & 0xF0)
+      : this.values8Bit[name] = (value & 0xFF)
   })
 
   get16 = (name: Register16Name): MutableValue<16> =>
@@ -48,7 +50,11 @@ export default class CpuRegisters {
           const h = (value & 0xFF00) >> 8
           const l = value & 0x00FF
           this.values8Bit[name[0]] = h
-          this.values8Bit[name[1]] = l
+          if (name === "AF") {
+            this.values8Bit[name[1]] = (l & 0xF0)
+          } else {
+            this.values8Bit[name[1]] = l
+          }
         }
       }
 

@@ -3,7 +3,7 @@ import { MutableValue } from "../types"
 export default class Memory {
   private data: Uint8Array
 
-  private bootRomLoaded = false
+  bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
   private cartridge = new Uint8Array(0x8000)
 
@@ -28,6 +28,15 @@ export default class Memory {
         intSize: 8,
         read: () => this.cartridge[address],
         write: () => {  }
+      }
+    }
+
+    // TODO gamepad data
+    if (address === 0xFF00) {
+      return {
+        intSize: 8,
+        read: () => 0xCF,
+        write: () => {}
       }
     }
 
