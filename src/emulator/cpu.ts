@@ -28,7 +28,7 @@ export default class CPU {
   interruptsEnabled = false
   screen: Screen
   apu: APU
-  lastFrameTimestamp: number
+  recentFrames: number[] = []
   fps = 0
   timer: Timer
 
@@ -190,9 +190,10 @@ export default class CPU {
   }
 
   runFrame(timestamp: number): void {
-    const delta = timestamp - this.lastFrameTimestamp
-    this.lastFrameTimestamp = timestamp
-    this.fps = 1000 / delta
+    // We maintain an FPS counter by keeping track of how many frames were run
+    // over the last 1000ms
+    this.recentFrames = this.recentFrames.filter(frame => timestamp - frame < 1000)
+    this.fps = this.recentFrames.push(timestamp)
     
     let address = 0
     
