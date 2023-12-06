@@ -73,10 +73,10 @@ export function rst(address: number): Instruction {
       decrement(sp)
       cpu.memory.at(sp.read()).write(l)
 
-    pc.write(address)
+      pc.write(address)
     },
     cycles: 16,
     parameterBytes: 0,
-    description: () => `RST ${address}`
+    description: () => `RST ${addressDisplay(address)}`
   }
 }

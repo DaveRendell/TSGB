@@ -8,8 +8,13 @@ import CPU from "../emulator/cpu"
 import { to2sComplement } from "../emulator/instructions/instructionHelpers"
 import PPU from "../emulator/ppu"
 import APU from "../emulator/apu"
+import Controller from "../emulator/controller"
 
-const memory = new Memory([
+
+const controller = new Controller()
+controller.initialiseEvents()
+const memory = new Memory(
+  controller, [
   0x76 // HALT
 ])
 

@@ -71,6 +71,7 @@ export default class APU {
 
   updateClock(cycles: number) {
     this.channel1.update(cycles)
+    this.channel2.update(cycles)
   }
 
   startAudio() {

@@ -20,3 +20,10 @@ body {
 .flex-horizonally > * + * {
   margin-left: 2em;
 }
+
+.pallete-block {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+  margin-left: 0.5em;
+}

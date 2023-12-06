@@ -15,7 +15,16 @@ const COLOURS = [
   [0, 0, 0],
 ]
 
+const SPRITE_MEMORY_START = 0xFE00
+const TILESET_MEMORY_START = 0x8000
+const BACKGROUND_MEMORY_START = 0x9800
+
 type Mode = "HBlank" | "VBlank" | "Scanline OAM" | "Scanline VRAM"
+
+interface SpriteRow {
+  row: (number[] | undefined)[]
+  x: number
+}
 
 export default class Screen {
   cpu: CPU
@@ -83,6 +92,7 @@ export default class Screen {
           if (this.gbDoctorHackManualScanline >= SCANLINES) {
             this.scanlineNumber.write(0)
             this.gbDoctorHackManualScanline = 0
+            this.renderScanline()
             this.mode = "HBlank"
             if (testBit(this.lcdStatus, 3)) {
               setBit(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
@@ -114,43 +124,109 @@ export default class Screen {
 
     const line = this.bufferContext.createImageData(WIDTH, 1)
 
-    const tileSetBaseAddress = 0x8000 // TODO: different tilesets
-
     const backgroundPalletByte = this.backgroundPallette.read()
-    const pallet: number[][] = [
-      COLOURS[(backgroundPalletByte >> 0) & 2],
-      COLOURS[(backgroundPalletByte >> 2) & 2],
-      COLOURS[(backgroundPalletByte >> 4) & 2],
-      COLOURS[(backgroundPalletByte >> 6) & 2],
+    const backgroundPallet: number[][] = [
+      COLOURS[(backgroundPalletByte >> 0) & 3],
+      COLOURS[(backgroundPalletByte >> 2) & 3],
+      COLOURS[(backgroundPalletByte >> 4) & 3],
+      COLOURS[(backgroundPalletByte >> 6) & 3],
     ]
-    
-    // TODO: Optimisation!
-    // We're fetching background data from memory for each pixel, we should
-    // only fetch it once per tile
-    // probably lots of calculations we can pull out of the loop scope as well
-    for (let i = 0; i < WIDTH; i++) {
 
-      // Render background
-      const backgroundX = (this.scrollX.read() + i) & 0xFF
-      const backgroundY = (this.scrollY.read() + scanline) & 0xFF
+    const scrollX = this.scrollX.read()
+    const scrollY = this.scrollY.read()
+    const backgroundY = (scrollY + scanline) & 0xFF
 
+    // Returns the 8 long row of the background tile at pixel offset given
+    const getBackgroundTileRow = (offset: number): number[][] => {
+      const backgroundX = (scrollX + offset) & 0xFF
       const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
-      const tileId = this.memory.at(0x9800 + tileMapNumber).read()
+      const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).read()
       const row = backgroundY & 0x7
-      const rowBaseAddress = tileSetBaseAddress + 16 * tileId + 2 * row
-      
+      const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * row
       const byte1 = this.memory.at(rowBaseAddress).read()
       const byte2 = this.memory.at(rowBaseAddress + 1).read()
-      const tileCol = backgroundX & 0x7
-      const bit1 = (byte1 >> (7 - tileCol)) & 1
-      const bit2 = (byte2 >> (7 - tileCol)) & 1
-      const pixelValue = bit1 + (bit2 << 1)
-      const colour = pallet[pixelValue]
+      let pixels: number[][] = []
+      for (let i = 0; i < 8; i++) {
+        const bit1 = (byte1 >> (7 - i)) & 1
+        const bit2 = (byte2 >> (7 - i)) & 1
+        const pixelValue = bit1 + 2 * bit2
+        pixels.push(backgroundPallet[pixelValue])
+      }
+      return pixels
+    }
 
-      line.data[4 * i + 0] = colour[0]
-      line.data[4 * i + 1] = colour[1]
-      line.data[4 * i + 2] = colour[2]
+    // Find which sprites overlap, grab relevant row of tile
+    // TODO: handle sprite priority
+    // TODO: Fix... buginess?
+    const spriteSize = testBit(this.lcdControl, 2) === 0 ? 8 : 16
+    const spriteRows: SpriteRow[] = []
+    for (let i = 0; i < 40; i++) {
+      const spriteBaseAddress = SPRITE_MEMORY_START + 4 * i
+      const spriteY = this.memory.at(spriteBaseAddress + 0).read()
+      const palleteAddress = 0xFF48 + testBit(this.memory.at(spriteBaseAddress + 3), 4)
+      const palletByte = this.memory.at(palleteAddress).read()
+      const pallet: number[][] = [
+        COLOURS[(palletByte >> 0) & 3],
+        COLOURS[(palletByte >> 2) & 3],
+        COLOURS[(palletByte >> 4) & 3],
+        COLOURS[(palletByte >> 6) & 3],
+      ]
+
+      const flipX = testBit(this.memory.at(spriteBaseAddress + 3), 5)
+      const flipY = testBit(this.memory.at(spriteBaseAddress + 3), 6)
+      const spriteRow = flipY ? spriteSize - (spriteY - 9 - scanline) : spriteY - 9 - scanline
+      if (spriteRow > 0 && spriteRow <= spriteSize) {
+        let tileId = this.memory.at(spriteBaseAddress + 2).read()
+        if (spriteSize === 16) {
+          tileId = spriteRow > 8 ? tileId | 1 : tileId & 0xFE
+        }
+        const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * (spriteRow % 8)
+        const byte1 = this.memory.at(rowBaseAddress).read()
+        const byte2 = this.memory.at(rowBaseAddress + 1).read()
+        let pixels: (number[] | undefined)[] = []
+        for (let i = 0; i < 8; i++) {
+          const bit1 = (byte1 >> (flipX ? i : 7 - i)) & 1
+          const bit2 = (byte2 >> (flipX ? i : 7 - i)) & 1
+          const pixelValue = bit1 + 2 * bit2
+          pixels.push(pixelValue == 0 ? undefined : pallet[pixelValue])
+        }
+        spriteRows.push({
+          x: this.memory.at(spriteBaseAddress + 1).read(),
+          row: pixels
+        })
+      }
+    }
+
+    let backgroundTileRow = getBackgroundTileRow(0)
+    let backgroundTileCounter = scrollX & 0x7
+    
+    for (let i = 0; i < WIDTH; i++) {
+      let pixel: number[] | undefined
+
+      // Render sprites
+      const sprite = spriteRows
+        .find(({x}) => i < x && i >= x - 8)
+      if (sprite) {
+        pixel = sprite.row[8 - (sprite.x - i)]
+      }
+
+      // Render background
+      if (!pixel) {
+        pixel = backgroundTileRow[(scrollX + i) % 8]
+        
+        
+      }
+      backgroundTileCounter++
+      if (backgroundTileCounter === 8) {
+        backgroundTileCounter = 0
+        backgroundTileRow = getBackgroundTileRow(i + 1)
+      }
+
+      line.data[4 * i + 0] = pixel[0]
+      line.data[4 * i + 1] = pixel[1]
+      line.data[4 * i + 2] = pixel[2]
       line.data[4 * i + 3] = 255
+
     }
 
     // Finally, add the new line to the buffer image

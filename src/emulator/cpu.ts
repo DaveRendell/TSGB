@@ -14,6 +14,7 @@ const INTERRUPT_HANDLERS: Record<Interrupt, number> = {
   "VBlank": 0x0040,
   "LCD": 0x0048,
   "Timer": 0x0050,
+  "Joypad": 0x0060,
 }
 
 const INTERRUPTS: Interrupt[] = ["VBlank"]
@@ -54,21 +55,18 @@ export default class CPU {
     this.interruptEnableRegister = memory.at(0xFFFF)
     this.interruptFlags = memory.at(0xFF0F)
 
-    // Workaround until Joypad input implemented - prevents A+B+St+Sl restarts
-    this.memory.at(0xFF00).write(0xCF)
-
-    if (!this.memory.bootRomLoaded) {
-      this.registers.get8("A").write(0x01)
-      this.registers.get8("F").write(0xB0)
-      this.registers.get8("B").write(0x00)
-      this.registers.get8("C").write(0x13)
-      this.registers.get8("D").write(0x00)
-      this.registers.get8("E").write(0xD8)
-      this.registers.get8("H").write(0x01)
-      this.registers.get8("L").write(0x4D)
-      this.registers.get16("SP").write(0xFFFE)
-      this.registers.get16("PC").write(0x0100)
-    }
+    // if (!this.memory.bootRomLoaded) {
+    //   this.registers.get8("A").write(0x01)
+    //   this.registers.get8("F").write(0xB0)
+    //   this.registers.get8("B").write(0x00)
+    //   this.registers.get8("C").write(0x13)
+    //   this.registers.get8("D").write(0x00)
+    //   this.registers.get8("E").write(0xD8)
+    //   this.registers.get8("H").write(0x01)
+    //   this.registers.get8("L").write(0x4D)
+    //   this.registers.get16("SP").write(0xFFFE)
+    //   this.registers.get16("PC").write(0x0100)
+    // }
   }
 
   nextByte: ReadableValue<8> = {

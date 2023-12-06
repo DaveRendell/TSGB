@@ -12,6 +12,14 @@ const TILESET_BASE_ADDRESS = 0x8000
 
 type Tile = number[][]
 
+export interface Sprite {
+  id: number
+  x: number
+  y: number
+  flipX: boolean
+  flipy: boolean
+}
+
 export default class PPU {
   cpu: CPU
   memory: Memory
@@ -89,10 +97,10 @@ export default class PPU {
     const backgroundPalletByte = this.memory.at(0xFF47).read()
 
     const pallet: number[][] = [
-      COLOURS[(backgroundPalletByte >> 0) & 2],
-      COLOURS[(backgroundPalletByte >> 2) & 2],
-      COLOURS[(backgroundPalletByte >> 4) & 2],
-      COLOURS[(backgroundPalletByte >> 6) & 2],
+      COLOURS[(backgroundPalletByte >> 0) & 3],
+      COLOURS[(backgroundPalletByte >> 2) & 3],
+      COLOURS[(backgroundPalletByte >> 4) & 3],
+      COLOURS[(backgroundPalletByte >> 6) & 3],
     ]
 
     for (let j = 0; j < 32; j++) {
@@ -117,5 +125,20 @@ export default class PPU {
         context.putImageData(imageData, baseX, baseY)
       }
     }
+  }
+
+  getSpriteInfo(): Sprite[] {
+    return []
+  }
+
+  backgroundPallete(): number[][] {
+    const backgroundPalletByte = this.memory.at(0xFF47).read()
+
+    return [
+      COLOURS[(backgroundPalletByte >> 0) & 3],
+      COLOURS[(backgroundPalletByte >> 2) & 3],
+      COLOURS[(backgroundPalletByte >> 4) & 3],
+      COLOURS[(backgroundPalletByte >> 6) & 3],
+    ]
   }
 }
