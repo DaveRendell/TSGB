@@ -27,3 +27,8 @@ body {
   text-align: center;
   margin-left: 0.5em;
 }
+
+.screen {
+  display: block;
+  margin: 0 auto;
+}

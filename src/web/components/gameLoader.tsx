@@ -32,7 +32,7 @@ export default function GameLoader({ memory }: Props) {
   }
   return (<section>
     <h2>Game Loader</h2>
-    <label htmlFor="bios-load">BIOS (optional)</label>
+    <label htmlFor="bios-load">BIOS (optional): </label>
     {
       biosFile
         ? <>Loaded <button onClick={() => setBiosFile(null)}>clear?</button></>
@@ -42,9 +42,8 @@ export default function GameLoader({ memory }: Props) {
             onChange={handleBiosUpload}
           />
     }
-    
-    
-    <label htmlFor="bios-load">Game</label>
+    <br/>    
+    <label htmlFor="bios-load">Game: </label>
     {
       gameFile
         ? <>Loaded <button onClick={() => setGameFile(null)}>clear?</button></>

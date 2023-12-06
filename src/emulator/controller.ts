@@ -25,31 +25,31 @@ export default class Controller {
   }
 
   triggerInterrupt: () => void = () => {}
+  updateUi: (isPressed: Record<Button, boolean>) => void = () => {}
 
   initialiseEvents() {
     document.addEventListener("keydown", e => this.handleKeyPress(e))
-    document.addEventListener("keypress", e => this.handleKeyRelease(e))
+    document.addEventListener("keyup", e => this.handleKeyRelease(e))
   }
 
   handleKeyPress(event: KeyboardEvent) {
-    console.log("Key press:", event.code)
     const button = this.keyBindings[event.code]
     if (button) {
-      console.log("Matches button:", button)
+      event.preventDefault()
       if (!this.isPressed[button]) { this.triggerInterrupt() }
       this.isPressed[button] = true
-    } else {
-      console.log("No match found")
+      this.updateUi(this.isPressed)
     }
   }
 
   handleKeyRelease(event: KeyboardEvent) {
     const button = this.keyBindings[event.code]
     if (button) {
+      event.preventDefault()
       if (this.isPressed[button]) { this.triggerInterrupt() }
       this.isPressed[button] = false
+      this.updateUi(this.isPressed)
     }
-    
   }
 
   getButtonNibble(): number {
@@ -67,15 +67,13 @@ export default class Controller {
   }
 
   updatedRegister(originalValue: number): number {
-    const selectButtons = (originalValue & 0x20) === 0x20
-    const selectDpad = (originalValue & 0x10) === 0x10
+    const selectButtons = (originalValue >> 4) === 1
+    const selectDpad = (originalValue >> 5) === 1
 
     if (selectButtons) {
-      console.log("Reading buttons", this.getButtonNibble().toString(2).padStart(4, "0"))
       return (originalValue & 0xF0) + this.getButtonNibble()
     }
     if (selectDpad) {
-      // console.log("Reading dpad", this.getDPadNibble().toString(2).padStart(4, "0"))
       return (originalValue & 0xF0) + this.getDPadNibble()
     }
     return (originalValue & 0xF0) + 0xF

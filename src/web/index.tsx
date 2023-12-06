@@ -71,4 +71,4 @@ const apu = new APU(cpu)
 
 var mountNode = document.getElementById("app")
 const root = createRoot(mountNode!)
-root.render(<App cpu={cpu} ppu={ppu} apu={apu}/>)
+root.render(<App cpu={cpu} ppu={ppu} apu={apu} controller={controller}/>)

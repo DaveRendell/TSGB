@@ -19,12 +19,13 @@ export default function Display({ cpu }: Props) {
 
   return (
     <section>
-      <h2>Display</h2>
       <canvas
+        className="screen"
         width="160"
         height="144"
         ref={canvas}
       />
+      FPS: {cpu.fps.toPrecision(2)}<br/>
     </section>
   )
 }

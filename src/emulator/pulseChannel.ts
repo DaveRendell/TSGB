@@ -69,6 +69,7 @@ export default class PulseChannel {
     this.gain = this.apu.audioContext.createGain()
     this.gain.gain.value = 0
     this.oscillator.connect(this.gain)
+    this.oscillator.start()
   }
 
   update(cycles: number) {
@@ -80,8 +81,7 @@ export default class PulseChannel {
           this.timer--
           if (this.timer <= 0) {
             this.playing = false
-            this.gain.disconnect()
-            this.oscillator.stop()
+            this.setVolume(0)
           }
         }
       }
@@ -132,7 +132,6 @@ export default class PulseChannel {
         this.playing = true
         this.gain.connect(this.apu.audioContext.destination)
         this.setVolume()
-        this.oscillator.start()
         this.lengthClock = 0
         this.envelopeClock = 0
       }
