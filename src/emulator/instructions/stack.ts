@@ -12,8 +12,8 @@ export const call: Instruction = {
 
     const [h, l] = splitBytes(pc.value)
 
-    cpu.memory.atOldQQ(--sp.value).write(h)
-    cpu.memory.atOldQQ(--sp.value).write(l)
+    cpu.memory.at(--sp.value).value = h
+    cpu.memory.at(--sp.value).value = l
 
     pc.value = address
   },
@@ -32,8 +32,8 @@ export function callF(condition: JumpCondition): Instruction {
 
         const [h, l] = splitBytes(pc.value)
 
-        cpu.memory.atOldQQ(--sp.value).write(h)
-        cpu.memory.atOldQQ(--sp.value).write(l)
+        cpu.memory.at(--sp.value).value = h
+        cpu.memory.at(--sp.value).value = l
 
         pc.value = address
       }
@@ -49,8 +49,8 @@ export const ret: Instruction = {
     const sp = cpu.registers.SP
     const pc = cpu.registers.PC
 
-    const l = cpu.memory.atOldQQ(sp.value++).read()
-    const h = cpu.memory.atOldQQ(sp.value++).read()
+    const l = cpu.memory.at(sp.value++).value
+    const h = cpu.memory.at(sp.value++).value
 
     pc.value = combineBytes(h, l)
   },
@@ -64,8 +64,8 @@ export const reti: Instruction = {
     const sp = cpu.registers.SP
     const pc = cpu.registers.PC
 
-    const l = cpu.memory.atOldQQ(sp.value++).read()
-    const h = cpu.memory.atOldQQ(sp.value++).read()
+    const l = cpu.memory.at(sp.value++).value
+    const h = cpu.memory.at(sp.value++).value
 
     pc.value = combineBytes(h, l)
     cpu.interruptsEnabled = true
@@ -82,8 +82,8 @@ export function retF(condition: JumpCondition): Instruction {
         const sp = cpu.registers.SP
         const pc = cpu.registers.PC
 
-        const l = cpu.memory.atOldQQ(sp.value++).read()
-        const h = cpu.memory.atOldQQ(sp.value++).read()
+        const l = cpu.memory.at(sp.value++).value
+        const h = cpu.memory.at(sp.value++).value
 
         pc.value = combineBytes(h, l)
       }
@@ -102,8 +102,8 @@ export function push(registerName: WordLocation): Instruction {
 
       const [h, l] = splitBytes(register.value)
 
-      cpu.memory.atOldQQ(--sp.value).write(h)
-      cpu.memory.atOldQQ(--sp.value).write(l)
+      cpu.memory.at(--sp.value).value = h
+      cpu.memory.at(--sp.value).value = l
     },
     cycles:  16,
     parameterBytes: 0,
@@ -117,8 +117,8 @@ export function pop(registerName: WordLocation): Instruction {
       const sp = cpu.registers.SP
       const register = getWordRef(registerName, cpu)
 
-      const l = cpu.memory.atOldQQ(sp.value++).read()
-      const h = cpu.memory.atOldQQ(sp.value++).read()
+      const l = cpu.memory.at(sp.value++).value
+      const h = cpu.memory.at(sp.value++).value
 
       register.value = combineBytes(h, l)
     },

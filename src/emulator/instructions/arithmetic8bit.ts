@@ -172,7 +172,7 @@ export function decrement8Bit(targetName: ByteLocation): Instruction {
       target.value--
 
       cpu.registers.F.zero = target.value == 0
-      cpu.registers.F.operation = false
+      cpu.registers.F.operation = true
       cpu.registers.F.halfCarry = (target.value & 0xF) === 0xF
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
@@ -252,7 +252,7 @@ export function rotateRight(registerName: ByteLocation, throughCarry: boolean, i
 
 export const cpl: Instruction = {
   execute: (cpu) => {
-    ~cpu.registers.A.value
+    cpu.registers.A.value = ~cpu.registers.A.value
     
     cpu.registers.F.operation = true
     cpu.registers.F.halfCarry = true

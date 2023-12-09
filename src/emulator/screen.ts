@@ -3,6 +3,8 @@ import { increment } from "./arithmetic";
 import CPU from "./cpu";
 import { resetBit, setBit, testBit } from "./instructions/instructionHelpers";
 import Memory from "./memory";
+import { Interrupt } from "./memory/registers/interruptRegisters";
+import { ByteRef } from "./refs/byteRef";
 
 const WIDTH = 160
 const HEIGHT = 144
@@ -33,12 +35,12 @@ export default class Screen {
   buffer: OffscreenCanvas
   bufferContext: OffscreenCanvasRenderingContext2D
 
-  lcdControl: MutableValue<8>
-  lcdStatus: MutableValue<8>
-  scrollX: MutableValue<8>
-  scrollY: MutableValue<8>
-  scanlineNumber: MutableValue<8>
-  backgroundPallette: MutableValue<8>
+  lcdControl: ByteRef
+  lcdStatus: ByteRef
+  scrollX: ByteRef
+  scrollY: ByteRef
+  scanlineNumber: ByteRef
+  backgroundPallette: ByteRef
   clockCount = 0
 
   gbDoctorHackManualScanline = 0
@@ -54,12 +56,12 @@ export default class Screen {
     this.buffer = new OffscreenCanvas(WIDTH, HEIGHT)
     this.bufferContext = this.buffer.getContext("2d")!
 
-    this.lcdControl = this.memory.atOldQQ(0xFF40)
-    this.lcdStatus = this.memory.atOldQQ(0xFF41)
-    this.scrollY = this.memory.atOldQQ(0xFF42)
-    this.scrollX = this.memory.atOldQQ(0xFF43)
-    this.scanlineNumber = this.memory.atOldQQ(0xFF44)
-    this.backgroundPallette = this.memory.atOldQQ(0xFF47)
+    this.lcdControl = this.memory.at(0xFF40)
+    this.lcdStatus = this.memory.at(0xFF41)
+    this.scrollY = this.memory.at(0xFF42)
+    this.scrollX = this.memory.at(0xFF43)
+    this.scanlineNumber = this.memory.at(0xFF44)
+    this.backgroundPallette = this.memory.at(0xFF47)
 
     cpu.addClockCallback(this)
     cpu.screen = this
@@ -72,11 +74,11 @@ export default class Screen {
       case "HBlank":
         if (this.clockCount >= 204) {
           this.clockCount -= 204
-          increment(this.scanlineNumber)
+          this.scanlineNumber.value++
           this.gbDoctorHackManualScanline++
           if (this.gbDoctorHackManualScanline === HEIGHT) {
             this.renderScreen()
-            setBit(this.memory.atOldQQ(0xFF0F), 0) // VBlank interrupt flag ON
+            this.memory.registers.interrupts.setInterrupt(Interrupt.VBlank)
             this.mode = "VBlank"
             this.newFrameDrawn = true
           } else {
@@ -87,15 +89,16 @@ export default class Screen {
       case "VBlank":
         if (this.clockCount >= 456) {
           this.clockCount -= 456
-          increment(this.scanlineNumber)
+          this.scanlineNumber.value++
           this.gbDoctorHackManualScanline++
           if (this.gbDoctorHackManualScanline >= SCANLINES) {
-            this.scanlineNumber.write(0)
+            this.scanlineNumber.value = 0
             this.gbDoctorHackManualScanline = 0
             this.renderScanline()
             this.mode = "HBlank"
-            if (testBit(this.lcdStatus, 3)) {
-              setBit(this.memory.atOldQQ(0xFF0F), 1) // LCD interrupt flag ON
+            this.memory.registers.lcdStatus.mode0InterruptEnabled
+            if (this.memory.registers.lcdStatus.mode0InterruptEnabled) {
+              this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
             }
           }
         }
@@ -111,8 +114,8 @@ export default class Screen {
           this.clockCount -= 172
           this.renderScanline()
           this.mode = "HBlank"
-          if (testBit(this.lcdStatus, 3)) {
-            setBit(this.memory.atOldQQ(0xFF0F), 1) // LCD interrupt flag ON
+          if (this.memory.registers.lcdStatus.mode0InterruptEnabled) {
+            this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
           }
         }
         break
@@ -124,7 +127,7 @@ export default class Screen {
 
     const line = this.bufferContext.createImageData(WIDTH, 1)
 
-    const backgroundPalletByte = this.backgroundPallette.read()
+    const backgroundPalletByte = this.backgroundPallette.value
     const backgroundPallet: number[][] = [
       COLOURS[(backgroundPalletByte >> 0) & 3],
       COLOURS[(backgroundPalletByte >> 2) & 3],
@@ -132,19 +135,19 @@ export default class Screen {
       COLOURS[(backgroundPalletByte >> 6) & 3],
     ]
 
-    const scrollX = this.scrollX.read()
-    const scrollY = this.scrollY.read()
+    const scrollX = this.scrollX.value
+    const scrollY = this.scrollY.value
     const backgroundY = (scrollY + scanline) & 0xFF
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getBackgroundTileRow = (offset: number): number[][] => {
       const backgroundX = (scrollX + offset) & 0xFF
       const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
-      const tileId = this.memory.atOldQQ(BACKGROUND_MEMORY_START + tileMapNumber).read()
+      const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).value
       const row = backgroundY & 0x7
       const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * row
-      const byte1 = this.memory.atOldQQ(rowBaseAddress).read()
-      const byte2 = this.memory.atOldQQ(rowBaseAddress + 1).read()
+      const byte1 = this.memory.at(rowBaseAddress).value
+      const byte2 = this.memory.at(rowBaseAddress + 1).value
       let pixels: number[][] = []
       for (let i = 0; i < 8; i++) {
         const bit1 = (byte1 >> (7 - i)) & 1
@@ -158,13 +161,13 @@ export default class Screen {
     // Find which sprites overlap, grab relevant row of tile
     // TODO: handle sprite priority
     // TODO: Fix... buginess?
-    const spriteSize = testBit(this.lcdControl, 2) === 0 ? 8 : 16
+    const spriteSize = this.memory.registers.lcdControl.objectSize
     const spriteRows: SpriteRow[] = []
     for (let i = 0; i < 40; i++) {
       const spriteBaseAddress = SPRITE_MEMORY_START + 4 * i
-      const spriteY = this.memory.atOldQQ(spriteBaseAddress + 0).read()
-      const palleteAddress = 0xFF48 + testBit(this.memory.atOldQQ(spriteBaseAddress + 3), 4)
-      const palletByte = this.memory.atOldQQ(palleteAddress).read()
+      const spriteY = this.memory.at(spriteBaseAddress + 0).value
+      const palleteAddress = 0xFF48 // TODO multiple palletes
+      const palletByte = this.memory.at(palleteAddress).value
       const pallet: number[][] = [
         COLOURS[(palletByte >> 0) & 3],
         COLOURS[(palletByte >> 2) & 3],
@@ -172,26 +175,25 @@ export default class Screen {
         COLOURS[(palletByte >> 6) & 3],
       ]
 
-      const flipX = testBit(this.memory.atOldQQ(spriteBaseAddress + 3), 5)
-      const flipY = testBit(this.memory.atOldQQ(spriteBaseAddress + 3), 6)
-      const spriteRow = flipY ? spriteSize - (spriteY - 9 - scanline) : spriteY - 9 - scanline
+      // TODO flip X and Y
+      const spriteRow = spriteY - 9 - scanline
       if (spriteRow > 0 && spriteRow <= spriteSize) {
-        let tileId = this.memory.atOldQQ(spriteBaseAddress + 2).read()
+        let tileId = this.memory.at(spriteBaseAddress + 2).value
         if (spriteSize === 16) {
           tileId = spriteRow > 8 ? tileId | 1 : tileId & 0xFE
         }
         const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * (spriteRow % 8)
-        const byte1 = this.memory.atOldQQ(rowBaseAddress).read()
-        const byte2 = this.memory.atOldQQ(rowBaseAddress + 1).read()
+        const byte1 = this.memory.at(rowBaseAddress).value
+        const byte2 = this.memory.at(rowBaseAddress + 1).value
         let pixels: (number[] | undefined)[] = []
         for (let i = 0; i < 8; i++) {
-          const bit1 = (byte1 >> (flipX ? i : 7 - i)) & 1
-          const bit2 = (byte2 >> (flipX ? i : 7 - i)) & 1
+          const bit1 = (byte1 >> (7 - i)) & 1
+          const bit2 = (byte2 >> (7 - i)) & 1
           const pixelValue = bit1 + 2 * bit2
           pixels.push(pixelValue == 0 ? undefined : pallet[pixelValue])
         }
         spriteRows.push({
-          x: this.memory.atOldQQ(spriteBaseAddress + 1).read(),
+          x: this.memory.at(spriteBaseAddress + 1).value,
           row: pixels
         })
       }

@@ -2,16 +2,19 @@ import { MutableValue } from "../types";
 import { increment } from "./arithmetic";
 import { setBit, testBit } from "./instructions/instructionHelpers";
 import Memory from "./memory";
+import { Interrupt } from "./memory/registers/interruptRegisters";
+import { ByteRef } from "./refs/byteRef";
+import { WordRef } from "./refs/wordRef";
 
 const DIV_CYCLE_ROLLOVER = 256
 
 export default class Timer {
   memory: Memory
 
-  divider: MutableValue<8>
-  counter: MutableValue<8>
-  modulo: MutableValue<8>
-  control: MutableValue<8>
+  divider: ByteRef
+  counter: ByteRef
+  modulo: ByteRef
+  control: ByteRef
 
   timerCycles = 0
   divCycles = 0
@@ -19,10 +22,10 @@ export default class Timer {
   constructor(memory: Memory) {
     this.memory = memory
 
-    this.divider = this.memory.atOldQQ(0xFF04)
-    this.counter = this.memory.atOldQQ(0xFF05)
-    this.modulo = this.memory.atOldQQ(0xFF06)
-    this.control = this.memory.atOldQQ(0xFF07)
+    this.divider = this.memory.at(0xFF04)
+    this.counter = this.memory.at(0xFF05)
+    this.modulo = this.memory.at(0xFF06)
+    this.control = this.memory.at(0xFF07)
   }
 
   updateClock(cycles: number): void {
@@ -31,16 +34,16 @@ export default class Timer {
 
     if (this.divCycles > DIV_CYCLE_ROLLOVER) {
       this.divCycles -= DIV_CYCLE_ROLLOVER
-      increment(this.divider)
+      this.divider.value++
     }
 
     const timerRollover = this.getTimerRollover()
     if (this.timerCycles > timerRollover) {
       this.timerCycles -= timerRollover
-      increment(this.counter)
-      if (this.counter.read() === 0) {
-        this.counter.write(this.modulo.read())
-        setBit(this.memory.atOldQQ(0xFF0F), 2) // VBlank interrupt flag ON
+      this.counter.value++
+      if (this.counter.value === 0) {
+        this.counter.value = this.modulo.value
+        this.memory.registers.interrupts.setInterrupt(Interrupt.VBlank)
       }
     }
 
@@ -48,11 +51,11 @@ export default class Timer {
   }
 
   isEnabled(): boolean {
-    return testBit(this.control, 2) === 1
+    return this.memory.registers.timerControl.enabled
   }
 
   getTimerRollover(): number {
-    const mode = this.control.read() & 3
+    const mode = this.memory.registers.timerControl.clockSelect
     return [1024, 16, 64, 256][mode]
   }
 }

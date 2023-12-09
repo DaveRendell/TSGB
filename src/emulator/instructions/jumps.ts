@@ -67,8 +67,8 @@ export function rst(address: number): Instruction {
 
       const [h, l] = splitBytes(pc.value)
 
-      cpu.memory.atOldQQ(--sp.value).write(h)
-      cpu.memory.atOldQQ(--sp.value).write(l)
+      cpu.memory.at(--sp.value).value = h
+      cpu.memory.at(--sp.value).value = l
 
       pc.value = address
     },

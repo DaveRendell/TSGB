@@ -19,7 +19,7 @@ export const stop: Instruction = {
     cpu.isStopped = true
     // TODO what does this actually do?
 
-    cpu.memory.atOldQQ(0xFF04).write(0)
+    cpu.memory.at(0xFF04).value = 0
   },
   cycles: 4,
   parameterBytes: 0,
@@ -41,7 +41,7 @@ export const ccf: Instruction = {
   execute(cpu) {    
     cpu.registers.F.operation = false
     cpu.registers.F.halfCarry = false
-    cpu.registers.F.carry != true
+    cpu.registers.F.carry = !cpu.registers.F.carry
   },
   cycles: 4,
   parameterBytes: 0,

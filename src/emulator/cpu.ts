@@ -42,8 +42,8 @@ export default class CPU {
   onError: (error: Error) => void = () => {}
   clockCallbacks: ClockCallback[] = []
 
-  interruptEnableRegister: MutableValue<8>
-  interruptFlags: MutableValue<8>
+  interruptEnableRegister: ByteRef
+  interruptFlags: ByteRef
 
   gbDoctorLog = ""
   
@@ -56,8 +56,8 @@ export default class CPU {
     this.timer = new Timer(memory)
     this.addClockCallback(this.timer)
 
-    this.interruptEnableRegister = memory.atOldQQ(0xFFFF)
-    this.interruptFlags = memory.atOldQQ(0xFF0F)
+    this.interruptEnableRegister = memory.at(0xFFFF)
+    this.interruptFlags = memory.at(0xFF0F)
 
     const self = this
 
@@ -65,7 +65,8 @@ export default class CPU {
       get value(): number {
         return memory.at(self.registers.PC.value++).value
       },
-      set value(_: number) {}
+      set value(_: number) {
+      }
     }
 
     this.nextWord = {
@@ -90,29 +91,30 @@ export default class CPU {
   }
 
   createGbDoctorLog() {
-    // // GB Doctor logging
-    // const A = this.registersOldQQ.get8oldQQ("A").read().toString(16).padStart(2, "0").toUpperCase()
-    // const B = this.registersOldQQ.get8oldQQ("B").read().toString(16).padStart(2, "0").toUpperCase()
-    // const C = this.registersOldQQ.get8oldQQ("C").read().toString(16).padStart(2, "0").toUpperCase()
-    // const D = this.registersOldQQ.get8oldQQ("D").read().toString(16).padStart(2, "0").toUpperCase()
-    // const E = this.registersOldQQ.get8oldQQ("E").read().toString(16).padStart(2, "0").toUpperCase()
-    // const F = this.registersOldQQ.get8oldQQ("F").read().toString(16).padStart(2, "0").toUpperCase()
-    // const H = this.registersOldQQ.get8oldQQ("H").read().toString(16).padStart(2, "0").toUpperCase()
-    // const L = this.registersOldQQ.get8oldQQ("L").read().toString(16).padStart(2, "0").toUpperCase()
-    // const SP = this.registersOldQQ.oldQQ("SP").read().toString(16).padStart(4, "0").toUpperCase()
-    // const PC = this.registersOldQQ.oldQQ("PC").read().toString(16).padStart(4, "0").toUpperCase()
-    // const PCMEM = [
-    //   this.memory.atOldQQ(this.registersOldQQ.oldQQ("PC").read() + 0).read(),
-    //   this.memory.atOldQQ(this.registersOldQQ.oldQQ("PC").read() + 1).read(),
-    //   this.memory.atOldQQ(this.registersOldQQ.oldQQ("PC").read() + 2).read(),
-    //   this.memory.atOldQQ(this.registersOldQQ.oldQQ("PC").read() + 3).read(),
-    // ].map(x => x.toString(16).padStart(2, "0").toUpperCase()).join(",")
-    // this.gbDoctorLog +=
-    //   `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`
+    // GB Doctor logging
+    const A = this.registers.A.value.toString(16).padStart(2, "0").toUpperCase()
+    const B = this.registers.B.value.toString(16).padStart(2, "0").toUpperCase()
+    const C = this.registers.C.value.toString(16).padStart(2, "0").toUpperCase()
+    const D = this.registers.D.value.toString(16).padStart(2, "0").toUpperCase()
+    const E = this.registers.E.value.toString(16).padStart(2, "0").toUpperCase()
+    const F = this.registers.F.value.toString(16).padStart(2, "0").toUpperCase()
+    const H = this.registers.H.value.toString(16).padStart(2, "0").toUpperCase()
+    const L = this.registers.L.value.toString(16).padStart(2, "0").toUpperCase()
+    const SP = this.registers.SP.value.toString(16).padStart(4, "0").toUpperCase()
+    const PC = this.registers.PC.value.toString(16).padStart(4, "0").toUpperCase()
+    const PCMEM = [
+      this.memory.at(this.registers.PC.value + 0).value,
+      this.memory.at(this.registers.PC.value + 1).value,
+      this.memory.at(this.registers.PC.value + 2).value,
+      this.memory.at(this.registers.PC.value + 3).value,
+    ].map(x => x.toString(16).padStart(2, "0").toUpperCase()).join(",")
+    this.gbDoctorLog +=
+      `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`
 
   }
 
   executeNextInstruction(): void {
+    this.createGbDoctorLog()
     if (this.isHalted) {
       this.incrementClock(4)
       return
@@ -128,7 +130,7 @@ export default class CPU {
     if (this.debugMode) {
       const parameters = new Array(instruction.parameterBytes)
         .fill(0)
-        .map((_, i) => this.memory.atOldQQ(this.registers.PC.value + 1 + i).read())
+        .map((_, i) => this.memory.at(this.registers.PC.value + 1 + i).value)
       console.log(instruction.description(parameters))
     }
     
@@ -139,7 +141,7 @@ export default class CPU {
   getInterrupt(): Interrupt | null {
     if (!this.interruptsEnabled) { return null }
     const activeInterrupts =
-      this.interruptEnableRegister.read() & this.interruptFlags.read()
+      this.interruptEnableRegister.value & this.interruptFlags.value
     
     if (activeInterrupts === 0) { return null }
 
@@ -147,7 +149,7 @@ export default class CPU {
     let id = 0
     while ( ((activeInterrupts >> id) & 1) === 0) { id++ }
 
-    resetBit(this.interruptFlags, id)
+    this.interruptFlags.value = this.interruptFlags.value & ~(1 << id)
 
     return INTERRUPTS[id]
   }
@@ -161,10 +163,8 @@ export default class CPU {
 
     const [h, l] = splitBytes(pc.value)
 
-    sp.value--
-    this.memory.atOldQQ(sp.value).write(h)
-    sp.value--
-    this.memory.atOldQQ(sp.value).write(l)
+    this.memory.at(--sp.value).value = h
+    this.memory.at(--sp.value).value = l
     pc.value = handlerAddress
 
     this.incrementClock(20)

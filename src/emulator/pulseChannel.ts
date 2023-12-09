@@ -1,6 +1,7 @@
 import { MutableValue } from "../types"
 import APU from "./apu"
 import Memory from "./memory"
+import { ByteRef } from "./refs/byteRef"
 
 // Roughly equal to 4.2MHz clock speed / 256Hz 
 const LENGTH_TIMER_TICK = 0x4000
@@ -22,11 +23,11 @@ export default class PulseChannel {
   apu: APU
   memory: Memory
 
-  periodSweep?: MutableValue<8>
-  lengthTimer: MutableValue<8>
-  volumeEnvelope: MutableValue<8>
-  periodLow: MutableValue<8>
-  control: MutableValue<8>
+  periodSweep?: ByteRef
+  lengthTimer: ByteRef
+  volumeEnvelope: ByteRef
+  periodLow: ByteRef
+  control: ByteRef
 
   cache = {
     periodSweep: 0,
@@ -57,11 +58,11 @@ export default class PulseChannel {
     this.memory = props.memory
 
     this.periodSweep = props.periodSweepRegister
-      ? this.memory.atOldQQ(props.periodSweepRegister) : undefined
-    this.lengthTimer = this.memory.atOldQQ(props.lengthTimerRegister)
-    this.volumeEnvelope = this.memory.atOldQQ(props.volumeEnvelopeRegister)
-    this.periodLow = this.memory.atOldQQ(props.periodLowRegister)
-    this.control = this.memory.atOldQQ(props.controlRegister)
+      ? this.memory.at(props.periodSweepRegister) : undefined
+    this.lengthTimer = this.memory.at(props.lengthTimerRegister)
+    this.volumeEnvelope = this.memory.at(props.volumeEnvelopeRegister)
+    this.periodLow = this.memory.at(props.periodLowRegister)
+    this.control = this.memory.at(props.controlRegister)
 
     this.oscillator = this.apu.audioContext.createOscillator()
     this.oscillator.type = "square"
@@ -99,14 +100,14 @@ export default class PulseChannel {
       }
     }    
     
-    const lengthByte = this.lengthTimer.read()
+    const lengthByte = this.lengthTimer.value
     if (lengthByte !== this.cache.lengthTimer) {
       this.cache.lengthTimer = lengthByte
       // TODO Duty Cycles
       this.timer = lengthByte & 0x3F
     }
 
-    const volumeByte = this.volumeEnvelope.read()
+    const volumeByte = this.volumeEnvelope.value
     if (volumeByte !== this.cache.volumeEnvelope) {
       this.cache.volumeEnvelope = volumeByte
       this.envelopeDirection = (volumeByte & 0x08) ? 1 : -1
@@ -115,13 +116,13 @@ export default class PulseChannel {
       this.envelopeTimer = this.envelopePace
     }
 
-    const periodByte = this.periodLow.read()
+    const periodByte = this.periodLow.value
     if (periodByte !== this.cache.periodLow) {
       this.cache.periodLow = periodByte
       this.setPeriod((this.period & 0xF00) | (periodByte))
     }
 
-    const controlByte = this.control.read()
+    const controlByte = this.control.value
     if (controlByte !== this.cache.control) {
       this.cache.control = controlByte
       // Set upper 3 bits of period using the lowest 3 bits of register

@@ -58,7 +58,3 @@ export class LcdStatusRegister implements ByteRef {
     this.mode0InterruptEnabled = (value & 0x8) > 0
   }
 }
-
-export class DmaRegister implements ByteRef {
-  startAddress
-}
