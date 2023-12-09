@@ -114,7 +114,7 @@ export default class CPU {
   }
 
   executeNextInstruction(): void {
-    this.createGbDoctorLog()
+    // this.createGbDoctorLog()
     if (this.isHalted) {
       this.incrementClock(4)
       return
