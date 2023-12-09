@@ -26,7 +26,7 @@ export class IoRegisters {
   lcdStatus = new LcdStatusRegister()
   scrollY = new GenericByteRef()
   scrollX = new GenericByteRef()
-  scanline = new ConstantByteRef(0x90)//new GenericByteRef()
+  scanline = new GenericByteRef()
   scanlineCoincidence = new GenericByteRef()
   dmaTransfer = new DmaTransferRegister()
   backgroundPallete = new GenericByteRef()

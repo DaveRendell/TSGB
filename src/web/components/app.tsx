@@ -21,7 +21,7 @@ export default function App({ cpu, ppu, apu, controller }: Props) {
   const [showDebugTools, setShowDebugTools] = React.useState(false)
   // Reload this component when execution of CPU is complete
   const [toggle, setToggle] = React.useState(false)
-  cpu.onInstructionComplete = () => { setToggle(!toggle) }
+  // cpu.onInstructionComplete = () => { setToggle(!toggle) }
 
   const [error, setError] = React.useState<string | undefined>(undefined)
   cpu.onError = (e) => setError(e.message)

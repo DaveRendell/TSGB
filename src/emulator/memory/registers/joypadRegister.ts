@@ -11,8 +11,8 @@ export class JoypadRegister implements ByteRef {
   left = false
   right = false
 
-  selectButtons = false
-  selectDpad = false
+  selectButtons = true
+  selectDpad = true
 
   get value() {
     const upperNibble = (this.selectButtons ? 0x20 : 0)
@@ -31,16 +31,16 @@ export class JoypadRegister implements ByteRef {
   }
 
   private buttonNibble(): number {
-    return (this.start ? 0x80 : 0)
-          + (this.select ? 0x40 : 0)
-          + (this.b ? 0x20 : 0)
-          + (this.a ? 0x10 : 0)
+    return (this.start ? 0 : 0x8)
+          + (this.select ? 0 : 0x4)
+          + (this.b ? 0 : 0x2)
+          + (this.a ? 0 : 0x1)
   }
 
   private dpadNibble(): number {
-    return (this.down ? 0x80 : 0)
-          + (this.up ? 0x40 : 0)
-          + (this.left ? 0x20 : 0)
-          + (this.right ? 0x10 : 0)
+    return (this.down ? 0 : 0x8)
+          + (this.up ? 0 : 0x4)
+          + (this.left ? 0 : 0x2)
+          + (this.right ? 0 : 0x1)
   }
 }
