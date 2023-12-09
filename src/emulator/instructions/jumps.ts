@@ -6,10 +6,10 @@ import { Instruction } from "../instruction";
 import { combineBytes, from2sComplement, splitBytes } from "./instructionHelpers";
 
 export const CONDITIONS: Record<JumpCondition, (cpu: CPU) => boolean> = {
-  "Not-Zero": (cpu) => cpu.registers.getFlag("Zero").read() === 0,
-  "Zero": (cpu) => cpu.registers.getFlag("Zero").read() === 1,
-  "Not-Carry": (cpu) => cpu.registers.getFlag("Carry").read() === 0,
-  "Carry": (cpu) => cpu.registers.getFlag("Carry").read() === 1,
+  "Not-Zero": (cpu) => cpu.registersOldQQ.getFlag("Zero").read() === 0,
+  "Zero": (cpu) => cpu.registersOldQQ.getFlag("Zero").read() === 1,
+  "Not-Carry": (cpu) => cpu.registersOldQQ.getFlag("Carry").read() === 0,
+  "Carry": (cpu) => cpu.registersOldQQ.getFlag("Carry").read() === 1,
   "None": () => true,
 }
 
@@ -27,7 +27,7 @@ export function jumpRelative(condition: JumpCondition): Instruction {
     execute: (cpu) => {
       const jump = from2sComplement(cpu.readNextByte())
       if (CONDITIONS[condition](cpu)) {
-        add(cpu.registers.get16("PC"), jump)
+        add(cpu.registersOldQQ.get16("PC"), jump)
       }
     },
     cycles: 12,
@@ -42,7 +42,7 @@ export function jump(condition: JumpCondition): Instruction {
         const l = cpu.readNextByte()
         const h = cpu.readNextByte()
         if (CONDITIONS[condition](cpu)) {
-          cpu.registers.get16("PC").write(combineBytes(h, l))
+          cpu.registersOldQQ.get16("PC").write(combineBytes(h, l))
       }
     },
     cycles: 16,
@@ -53,7 +53,7 @@ export function jump(condition: JumpCondition): Instruction {
 
 export const jpHl: Instruction = {
   execute(cpu) {
-    cpu.registers.get16("PC").write(cpu.registers.get16("HL").read())
+    cpu.registersOldQQ.get16("PC").write(cpu.registersOldQQ.get16("HL").read())
   },
   cycles: 4,
   parameterBytes: 0,
@@ -63,15 +63,15 @@ export const jpHl: Instruction = {
 export function rst(address: number): Instruction {
   return {
     execute(cpu) {
-      const sp = cpu.registers.get16("SP")
-      const pc = cpu.registers.get16("PC")
+      const sp = cpu.registersOldQQ.get16("SP")
+      const pc = cpu.registersOldQQ.get16("PC")
 
       const [h, l] = splitBytes(pc.read())
 
       decrement(sp)
-      cpu.memory.at(sp.read()).write(h)
+      cpu.memory.atOldQQ(sp.read()).write(h)
       decrement(sp)
-      cpu.memory.at(sp.read()).write(l)
+      cpu.memory.atOldQQ(sp.read()).write(l)
 
       pc.write(address)
     },

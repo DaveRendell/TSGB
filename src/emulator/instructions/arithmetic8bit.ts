@@ -10,7 +10,7 @@ const combineNibbles = (h: number, l: number) => (h << 4) + l
 
 const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   "ADD": (cpu, value) => {
-    const a = cpu.registers.get8("A")
+    const a = cpu.registersOldQQ.get8("A")
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.read())
     
@@ -19,16 +19,16 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0)
-    cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
 
     a.write(rWrapped)
   },
   "ADC": (cpu, value) => {
-    const a = cpu.registers.get8("A")
-    const carry = cpu.registers.getFlag("Carry").read()
+    const a = cpu.registersOldQQ.get8("A")
+    const carry = cpu.registersOldQQ.getFlag("Carry").read()
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.read())
     
@@ -37,15 +37,15 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0)
-    cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
 
     a.write(rWrapped)
   },
   "SUB": (cpu, value) => {
-    const a = cpu.registers.get8("A")
+    const a = cpu.registersOldQQ.get8("A")
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.read())
     
@@ -54,16 +54,16 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(1)
-    cpu.registers.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
-    cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(1)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
 
     a.write(rWrapped)
   },
   "SBC": (cpu, value) => {
-    const a = cpu.registers.get8("A")
-    const carry = cpu.registers.getFlag("Carry").read()
+    const a = cpu.registersOldQQ.get8("A")
+    const carry = cpu.registersOldQQ.getFlag("Carry").read()
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.read())
     
@@ -72,51 +72,51 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(1)
-    cpu.registers.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
-    cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(1)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
 
     a.write(rWrapped)
   },
   "AND": (cpu, value) => {
-    const a = cpu.registers.get8("A")
+    const a = cpu.registersOldQQ.get8("A")
     
     const r = value & a.read()
 
-    cpu.registers.getFlag("Zero").write(r === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(1)
-    cpu.registers.getFlag("Carry").write(0)
+    cpu.registersOldQQ.getFlag("Zero").write(r === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(1)
+    cpu.registersOldQQ.getFlag("Carry").write(0)
 
     a.write(r)
   },
   "XOR": (cpu, value) => {
-    const a = cpu.registers.get8("A")
+    const a = cpu.registersOldQQ.get8("A")
     
     const r = value ^ a.read()
 
-    cpu.registers.getFlag("Zero").write(r === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(0)
-    cpu.registers.getFlag("Carry").write(0)
+    cpu.registersOldQQ.getFlag("Zero").write(r === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+    cpu.registersOldQQ.getFlag("Carry").write(0)
 
     a.write(r)
   },
   "OR": (cpu, value) => {
-    const a = cpu.registers.get8("A")
+    const a = cpu.registersOldQQ.get8("A")
     
     const r = value | a.read()
 
-    cpu.registers.getFlag("Zero").write(r === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(0)
-    cpu.registers.getFlag("Carry").write(0)
+    cpu.registersOldQQ.getFlag("Zero").write(r === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+    cpu.registersOldQQ.getFlag("Carry").write(0)
 
     a.write(r)
   },
   "CP": (cpu, value) => {
-    const a = cpu.registers.get8("A")
+    const a = cpu.registersOldQQ.get8("A")
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.read())
     
@@ -125,10 +125,10 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registers.getFlag("Operation").write(1)
-    cpu.registers.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
-    cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Operation").write(1)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
   },
 }
 
@@ -161,9 +161,9 @@ export function increment8Bit(targetName: Target8Name): Instruction {
       const target = getByteDestination(targetName, cpu)
       increment(target)
 
-      cpu.registers.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Half-Carry").write((target.read() & 0xF) === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write((target.read() & 0xF) === 0 ? 1 : 0)
     },
     cycles: targetName === "M" ? 12 : 4,
     parameterBytes: 0,
@@ -177,9 +177,9 @@ export function decrement8Bit(targetName: Target8Name): Instruction {
       const target = getByteDestination(targetName, cpu)
       decrement(target)
 
-      cpu.registers.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(1)
-      cpu.registers.getFlag("Half-Carry").write((target.read() & 0xF) === 0x0F ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(1)
+      cpu.registersOldQQ.getFlag("Half-Carry").write((target.read() & 0xF) === 0x0F ? 1 : 0)
     },
     cycles: targetName === "M" ? 12 : 4,
     parameterBytes: 0,
@@ -190,7 +190,7 @@ export function decrement8Bit(targetName: Target8Name): Instruction {
 export function increment16Bit(targetName: Register16Name): Instruction {
   return {
     execute: (cpu) => {
-      increment(cpu.registers.get16(targetName))
+      increment(cpu.registersOldQQ.get16(targetName))
     },
     cycles: 8,
     parameterBytes: 0,
@@ -201,7 +201,7 @@ export function increment16Bit(targetName: Register16Name): Instruction {
 export function decrement16Bit(targetName: Register16Name): Instruction {
   return {
     execute: (cpu) => {
-      decrement(cpu.registers.get16(targetName))
+      decrement(cpu.registersOldQQ.get16(targetName))
     },
     cycles: 8,
     parameterBytes: 0,
@@ -215,14 +215,14 @@ export function rotateLeft(registerName: Target8Name, throughCarry: boolean, isP
     execute: (cpu) => {
       const register = getByteDestination(registerName, cpu)
       const value = register.read()
-      const wrap = throughCarry ? cpu.registers.getFlag("Carry").read() : value >> 7
+      const wrap = throughCarry ? cpu.registersOldQQ.getFlag("Carry").read() : value >> 7
       const rotated = ((value << 1) & 0xFF) + wrap
       register.write(rotated)
 
-      cpu.registers.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Half-Carry").write(0)
-      cpu.registers.getFlag("Carry").write(value >> 7)
+      cpu.registersOldQQ.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+      cpu.registersOldQQ.getFlag("Carry").write(value >> 7)
     },
     cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
     parameterBytes: 0,
@@ -236,14 +236,14 @@ export function rotateRight(registerName: Target8Name, throughCarry: boolean, is
     execute: (cpu) => {
       const register = getByteDestination(registerName, cpu)
       const value = register.read()
-      const wrap = throughCarry ? cpu.registers.getFlag("Carry").read() : (value & 1)
+      const wrap = throughCarry ? cpu.registersOldQQ.getFlag("Carry").read() : (value & 1)
       const rotated = (value >> 1) + (wrap << 7)
       register.write(rotated)
 
-      cpu.registers.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Half-Carry").write(0)
-      cpu.registers.getFlag("Carry").write(value & 1)
+      cpu.registersOldQQ.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+      cpu.registersOldQQ.getFlag("Carry").write(value & 1)
     },
     cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
     parameterBytes: 0,
@@ -253,10 +253,10 @@ export function rotateRight(registerName: Target8Name, throughCarry: boolean, is
 
 export const cpl: Instruction = {
   execute: (cpu) => {
-    const a = cpu.registers.get8("A")
+    const a = cpu.registersOldQQ.get8("A")
     a.write(~a.read())
-    cpu.registers.getFlag("Operation").write(1)
-    cpu.registers.getFlag("Half-Carry").write(1)
+    cpu.registersOldQQ.getFlag("Operation").write(1)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(1)
   },
   cycles: 4,
   parameterBytes: 0,
@@ -266,8 +266,8 @@ export const cpl: Instruction = {
 export const addToHL = (registerName: Register16Name): Instruction => {
   return {
     execute(cpu) {
-      const hl = cpu.registers.get16("HL")
-      const r = cpu.registers.get16(registerName)
+      const hl = cpu.registersOldQQ.get16("HL")
+      const r = cpu.registersOldQQ.get16(registerName)
 
       const hlValue = hl.read()
       const rValue = r.read()
@@ -278,9 +278,9 @@ export const addToHL = (registerName: Register16Name): Instruction => {
 
       const halfCarry = ((hlValue & 0x0FFF) + (rValue & 0x0FFF)) > 0xFFF
 
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
-      cpu.registers.getFlag("Carry").write(result > 0xFFFF ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Carry").write(result > 0xFFFF ? 1 : 0)
     },
     cycles: 8,
     parameterBytes: 0,
@@ -290,7 +290,7 @@ export const addToHL = (registerName: Register16Name): Instruction => {
 
 export const addImmediateToSP: Instruction = {
   execute(cpu) {
-    const sp = cpu.registers.get16("SP")
+    const sp = cpu.registersOldQQ.get16("SP")
     const amount = from2sComplement(cpu.nextByte.read())
 
     const oldValue = sp.read()
@@ -301,10 +301,10 @@ export const addImmediateToSP: Instruction = {
 
     sp.write(newValue & 0xFFFF)
 
-    cpu.registers.getFlag("Zero").write(0)
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
-    cpu.registers.getFlag("Carry").write(carry ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Zero").write(0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Carry").write(carry ? 1 : 0)
   },
   cycles: 16,
   parameterBytes: 1,
@@ -313,10 +313,10 @@ export const addImmediateToSP: Instruction = {
 
 export const daa: Instruction = {
   execute(cpu) {
-    const a = cpu.registers.get8("A")
-    const operation = cpu.registers.getFlag("Operation").read()
-    const halfCarry = cpu.registers.getFlag("Half-Carry")
-    const carry = cpu.registers.getFlag("Carry")
+    const a = cpu.registersOldQQ.get8("A")
+    const operation = cpu.registersOldQQ.getFlag("Operation").read()
+    const halfCarry = cpu.registersOldQQ.getFlag("Half-Carry")
+    const carry = cpu.registersOldQQ.getFlag("Carry")
 
     const value = a.read()
 
@@ -337,7 +337,7 @@ export const daa: Instruction = {
 
     carry.write(setCarry ? 1 : 0)
     halfCarry.write(0)
-    cpu.registers.getFlag("Zero").write((result & 0xFF) === 0 ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Zero").write((result & 0xFF) === 0 ? 1 : 0)
   },
   cycles: 4,
   parameterBytes: 0,

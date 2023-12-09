@@ -26,7 +26,7 @@ export default function App({ cpu, ppu, apu, controller }: Props) {
   const [error, setError] = React.useState<string | undefined>(undefined)
   cpu.onError = (e) => setError(e.message)
 
-  const programCounter = cpu.registers.get16("PC").read()
+  const programCounter = cpu.registers.PC.value
 
   return (<main>
       <h1>TSGB</h1>

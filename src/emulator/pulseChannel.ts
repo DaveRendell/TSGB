@@ -57,11 +57,11 @@ export default class PulseChannel {
     this.memory = props.memory
 
     this.periodSweep = props.periodSweepRegister
-      ? this.memory.at(props.periodSweepRegister) : undefined
-    this.lengthTimer = this.memory.at(props.lengthTimerRegister)
-    this.volumeEnvelope = this.memory.at(props.volumeEnvelopeRegister)
-    this.periodLow = this.memory.at(props.periodLowRegister)
-    this.control = this.memory.at(props.controlRegister)
+      ? this.memory.atOldQQ(props.periodSweepRegister) : undefined
+    this.lengthTimer = this.memory.atOldQQ(props.lengthTimerRegister)
+    this.volumeEnvelope = this.memory.atOldQQ(props.volumeEnvelopeRegister)
+    this.periodLow = this.memory.atOldQQ(props.periodLowRegister)
+    this.control = this.memory.atOldQQ(props.controlRegister)
 
     this.oscillator = this.apu.audioContext.createOscillator()
     this.oscillator.type = "square"

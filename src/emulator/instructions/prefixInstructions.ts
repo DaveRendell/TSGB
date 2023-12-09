@@ -8,9 +8,9 @@ export const testBit = (bit: number, sourceName: Target8Name): Instruction => {
       const source = getByteDestination(sourceName, cpu)
       const result = (source.read() >> bit) & 0b1
 
-      cpu.registers.getFlag("Zero").write(result === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Half-Carry").write(1)
+      cpu.registersOldQQ.getFlag("Zero").write(result === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(1)
     },
     cycles: sourceName === "M" ? 12 : 8,
     parameterBytes: 0,
@@ -53,10 +53,10 @@ export const swap = (sourceName: ByteDestinationName): Instruction => {
       const newValue = (l << 4) + h
       byte.write(newValue)
 
-      cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Carry").write(0)
-      cpu.registers.getFlag("Half-Carry").write(0)
+      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Carry").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
 
     },
     cycles: sourceName === "M" ? 12 : 8,
@@ -74,10 +74,10 @@ export const shiftRightLogical = (sourceName: ByteDestinationName): Instruction 
 
       byte.write(newValue)
       
-      cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Carry").write(originalValue & 1)
-      cpu.registers.getFlag("Half-Carry").write(0)
+      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Carry").write(originalValue & 1)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
     },
     cycles: 8,
     parameterBytes: 0,
@@ -95,10 +95,10 @@ export function shiftLeftArithmetic(sourceName: ByteDestinationName): Instructio
 
       source.write(newValue)
 
-      cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Half-Carry").write(0)
-      cpu.registers.getFlag("Carry").write(oldValue & 0x80)
+      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+      cpu.registersOldQQ.getFlag("Carry").write(oldValue & 0x80)
     },
     cycles: sourceName === "M" ? 16 : 8,
     parameterBytes: 0,
@@ -116,10 +116,10 @@ export function shiftRightArithmetic(sourceName: ByteDestinationName): Instructi
 
       source.write(newValue)
 
-      cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registers.getFlag("Operation").write(0)
-      cpu.registers.getFlag("Half-Carry").write(0)
-      cpu.registers.getFlag("Carry").write(oldValue & 0x1)
+      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
+      cpu.registersOldQQ.getFlag("Operation").write(0)
+      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+      cpu.registersOldQQ.getFlag("Carry").write(oldValue & 0x1)
     },
     cycles: sourceName === "M" ? 16 : 8,
     parameterBytes: 0,

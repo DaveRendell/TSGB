@@ -1,10 +1,11 @@
 import { Interrupt, MutableValue, ReadableValue } from "../types";
 import APU from "./apu";
 import { decrement, increment } from "./arithmetic";
+import { CpuRegisters } from "./cpu/cpuRegisters";
 import { decodeInstruction } from "./instruction";
 import { resetBit, splitBytes } from "./instructions/instructionHelpers";
 import Memory from "./memory";
-import CpuRegisters from "./register";
+import CpuRegistersOLDQQ from "./register";
 import Screen from "./screen"
 import Timer from "./timer";
 
@@ -23,6 +24,7 @@ export default class CPU {
   running = false
 
   memory: Memory
+  registersOldQQ: CpuRegistersOLDQQ
   registers: CpuRegisters
   cycleCount: number = 0
   interruptsEnabled = false
@@ -46,14 +48,15 @@ export default class CPU {
 
   gbDoctorLog = ""
 
-  constructor(memory: Memory, registers: CpuRegisters) {
+  constructor(memory: Memory, registers: CpuRegistersOLDQQ) {
     this.memory = memory
-    this.registers = registers
+    this.registers = new CpuRegisters()
+    this.registersOldQQ = registers
     this.timer = new Timer(memory)
     this.addClockCallback(this.timer)
 
-    this.interruptEnableRegister = memory.at(0xFFFF)
-    this.interruptFlags = memory.at(0xFF0F)
+    this.interruptEnableRegister = memory.atOldQQ(0xFFFF)
+    this.interruptFlags = memory.atOldQQ(0xFF0F)
 
     // if (!this.memory.bootRomLoaded) {
     //   this.registers.get8("A").write(0x01)
@@ -72,15 +75,15 @@ export default class CPU {
   nextByte: ReadableValue<8> = {
     intSize: 8,
     read: () => {
-      const byte = this.memory.at(this.registers.get16("PC").read()).read()
-      increment(this.registers.get16("PC"))
+      const byte = this.memory.atOldQQ(this.registersOldQQ.get16("PC").read()).read()
+      increment(this.registersOldQQ.get16("PC"))
       return byte
     }
   }
 
   readNextByte(): number {
-    const byte = this.memory.at(this.registers.get16("PC").read()).read()
-    increment(this.registers.get16("PC"))
+    const byte = this.memory.atOldQQ(this.registersOldQQ.get16("PC").read()).read()
+    increment(this.registersOldQQ.get16("PC"))
     return byte
   }
 
@@ -92,21 +95,21 @@ export default class CPU {
 
   createGbDoctorLog() {
     // GB Doctor logging
-    const A = this.registers.get8("A").read().toString(16).padStart(2, "0").toUpperCase()
-    const B = this.registers.get8("B").read().toString(16).padStart(2, "0").toUpperCase()
-    const C = this.registers.get8("C").read().toString(16).padStart(2, "0").toUpperCase()
-    const D = this.registers.get8("D").read().toString(16).padStart(2, "0").toUpperCase()
-    const E = this.registers.get8("E").read().toString(16).padStart(2, "0").toUpperCase()
-    const F = this.registers.get8("F").read().toString(16).padStart(2, "0").toUpperCase()
-    const H = this.registers.get8("H").read().toString(16).padStart(2, "0").toUpperCase()
-    const L = this.registers.get8("L").read().toString(16).padStart(2, "0").toUpperCase()
-    const SP = this.registers.get16("SP").read().toString(16).padStart(4, "0").toUpperCase()
-    const PC = this.registers.get16("PC").read().toString(16).padStart(4, "0").toUpperCase()
+    const A = this.registersOldQQ.get8("A").read().toString(16).padStart(2, "0").toUpperCase()
+    const B = this.registersOldQQ.get8("B").read().toString(16).padStart(2, "0").toUpperCase()
+    const C = this.registersOldQQ.get8("C").read().toString(16).padStart(2, "0").toUpperCase()
+    const D = this.registersOldQQ.get8("D").read().toString(16).padStart(2, "0").toUpperCase()
+    const E = this.registersOldQQ.get8("E").read().toString(16).padStart(2, "0").toUpperCase()
+    const F = this.registersOldQQ.get8("F").read().toString(16).padStart(2, "0").toUpperCase()
+    const H = this.registersOldQQ.get8("H").read().toString(16).padStart(2, "0").toUpperCase()
+    const L = this.registersOldQQ.get8("L").read().toString(16).padStart(2, "0").toUpperCase()
+    const SP = this.registersOldQQ.get16("SP").read().toString(16).padStart(4, "0").toUpperCase()
+    const PC = this.registersOldQQ.get16("PC").read().toString(16).padStart(4, "0").toUpperCase()
     const PCMEM = [
-      this.memory.at(this.registers.get16("PC").read() + 0).read(),
-      this.memory.at(this.registers.get16("PC").read() + 1).read(),
-      this.memory.at(this.registers.get16("PC").read() + 2).read(),
-      this.memory.at(this.registers.get16("PC").read() + 3).read(),
+      this.memory.atOldQQ(this.registersOldQQ.get16("PC").read() + 0).read(),
+      this.memory.atOldQQ(this.registersOldQQ.get16("PC").read() + 1).read(),
+      this.memory.atOldQQ(this.registersOldQQ.get16("PC").read() + 2).read(),
+      this.memory.atOldQQ(this.registersOldQQ.get16("PC").read() + 3).read(),
     ].map(x => x.toString(16).padStart(2, "0").toUpperCase()).join(",")
     this.gbDoctorLog +=
       `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`
@@ -119,7 +122,7 @@ export default class CPU {
       return
     }
 
-    const pc = this.registers.get16("PC").read()
+    const pc = this.registersOldQQ.get16("PC").read()
     const code = this.readNextByte()
     const prefixedCode = code === 0xCB ? this.readNextByte() : undefined
     const instruction = decodeInstruction(code, prefixedCode)
@@ -130,7 +133,7 @@ export default class CPU {
     if (this.debugMode) {
       const parameters = new Array(instruction.parameterBytes)
         .fill(0)
-        .map((_, i) => this.memory.at(pc + 1 + i).read())
+        .map((_, i) => this.memory.atOldQQ(pc + 1 + i).read())
       console.log(instruction.description(parameters))
     }
     
@@ -158,15 +161,15 @@ export default class CPU {
     // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
     // Push PC to stack and jump to handler address
     const handlerAddress = INTERRUPT_HANDLERS[interrupt]
-    const sp = this.registers.get16("SP")
-    const pc = this.registers.get16("PC")
+    const sp = this.registersOldQQ.get16("SP")
+    const pc = this.registersOldQQ.get16("PC")
 
     const [h, l] = splitBytes(pc.read())
 
     decrement(sp)
-    this.memory.at(sp.read()).write(h)
+    this.memory.atOldQQ(sp.read()).write(h)
     decrement(sp)
-    this.memory.at(sp.read()).write(l)
+    this.memory.atOldQQ(sp.read()).write(l)
     pc.write(handlerAddress)
 
     this.incrementClock(20)
@@ -201,7 +204,7 @@ export default class CPU {
       frameLoop:
       while (!this.breakpoints.has(address)) {
         this.executeNextInstruction()
-        address = this.registers.get16("PC").read()
+        address = this.registersOldQQ.get16("PC").read()
 
         const interrupt = this.getInterrupt()
         if (interrupt) {

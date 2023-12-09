@@ -19,10 +19,10 @@ export default class Timer {
   constructor(memory: Memory) {
     this.memory = memory
 
-    this.divider = this.memory.at(0xFF04)
-    this.counter = this.memory.at(0xFF05)
-    this.modulo = this.memory.at(0xFF06)
-    this.control = this.memory.at(0xFF07)
+    this.divider = this.memory.atOldQQ(0xFF04)
+    this.counter = this.memory.atOldQQ(0xFF05)
+    this.modulo = this.memory.atOldQQ(0xFF06)
+    this.control = this.memory.atOldQQ(0xFF07)
   }
 
   updateClock(cycles: number): void {
@@ -40,7 +40,7 @@ export default class Timer {
       increment(this.counter)
       if (this.counter.read() === 0) {
         this.counter.write(this.modulo.read())
-        setBit(this.memory.at(0xFF0F), 2) // VBlank interrupt flag ON
+        setBit(this.memory.atOldQQ(0xFF0F), 2) // VBlank interrupt flag ON
       }
     }
 

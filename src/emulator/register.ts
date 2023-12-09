@@ -7,7 +7,7 @@ const FLAG_MASKS: Record<FlagName, number> = {
   "Carry":      0b00010000,
 }
 
-export default class CpuRegisters {
+export default class CpuRegistersOLDQQ {
   private values8Bit: Record<Register8Name, number> = {
     "A": 0,
     "B": 0,

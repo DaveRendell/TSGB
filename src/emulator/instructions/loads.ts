@@ -58,7 +58,7 @@ export function load8Bit(
 
       destination.write(source.read())
 
-      pointerAction(cpu.registers.get16("HL"))
+      pointerAction(cpu.registersOldQQ.get16("HL"))
     },
     cycles,
     parameterBytes,
@@ -84,17 +84,17 @@ export function loadImmediate16BitRegister(registerName: Register16Name): Instru
 export const loadHlFromSpPlusN: Instruction = {
   execute(cpu) {
     const increment = from2sComplement(cpu.nextByte.read())
-    const sp = cpu.registers.get16("SP").read()
+    const sp = cpu.registersOldQQ.get16("SP").read()
     const result = sp + increment
 
     const halfCarry = (sp & 0xF) + (increment & 0xF) !== (result & 0xF)
     const carry = (sp & 0xFF) + (increment & 0xFF) !== (result & 0xFF)
 
-    cpu.registers.get16("HL").write(result & 0xFFFF)
-    cpu.registers.getFlag("Zero").write(0)
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
-    cpu.registers.getFlag("Carry").write(carry ? 1 : 0)
+    cpu.registersOldQQ.get16("HL").write(result & 0xFFFF)
+    cpu.registersOldQQ.getFlag("Zero").write(0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
+    cpu.registersOldQQ.getFlag("Carry").write(carry ? 1 : 0)
   },
   cycles: 12,
   parameterBytes: 1,
@@ -103,11 +103,11 @@ export const loadHlFromSpPlusN: Instruction = {
 
 export const loadStackPointerToAddress: Instruction = {
   execute(cpu) {
-    const [hSP, lSP] = splitBytes(cpu.registers.get16("SP").read())
+    const [hSP, lSP] = splitBytes(cpu.registersOldQQ.get16("SP").read())
     const address = cpu.readNext16bit()
 
-    cpu.memory.at(address).write(lSP)
-    cpu.memory.at(address + 1).write(hSP)
+    cpu.memory.atOldQQ(address).write(lSP)
+    cpu.memory.atOldQQ(address + 1).write(hSP)
   },
   cycles: 20,
   parameterBytes: 2,
@@ -116,8 +116,8 @@ export const loadStackPointerToAddress: Instruction = {
 
 export const loadStackPointerFromHL: Instruction = {
   execute(cpu) {
-    const sp = cpu.registers.get16("SP")
-    const hl = cpu.registers.get16("HL")
+    const sp = cpu.registersOldQQ.get16("SP")
+    const hl = cpu.registersOldQQ.get16("HL")
 
     sp.write(hl.read())
   },

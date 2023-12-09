@@ -7,16 +7,16 @@ import { CONDITIONS, CONDITION_NAMES } from "./jumps";
 
 export const call: Instruction = {
   execute: (cpu) => {
-    const sp = cpu.registers.get16("SP")
-    const pc = cpu.registers.get16("PC")
+    const sp = cpu.registersOldQQ.get16("SP")
+    const pc = cpu.registersOldQQ.get16("PC")
     const address = cpu.readNext16bit()
 
     const [h, l] = splitBytes(pc.read())
 
     decrement(sp)
-    cpu.memory.at(sp.read()).write(h)
+    cpu.memory.atOldQQ(sp.read()).write(h)
     decrement(sp)
-    cpu.memory.at(sp.read()).write(l)
+    cpu.memory.atOldQQ(sp.read()).write(l)
 
     pc.write(address)
   },
@@ -30,15 +30,15 @@ export function callF(condition: JumpCondition): Instruction {
     execute(cpu) {
       const address = cpu.readNext16bit()
       if (CONDITIONS[condition](cpu)) {
-        const sp = cpu.registers.get16("SP")
-        const pc = cpu.registers.get16("PC")
+        const sp = cpu.registersOldQQ.get16("SP")
+        const pc = cpu.registersOldQQ.get16("PC")
 
         const [h, l] = splitBytes(pc.read())
 
         decrement(sp)
-        cpu.memory.at(sp.read()).write(h)
+        cpu.memory.atOldQQ(sp.read()).write(h)
         decrement(sp)
-        cpu.memory.at(sp.read()).write(l)
+        cpu.memory.atOldQQ(sp.read()).write(l)
 
         pc.write(address)
       }
@@ -51,12 +51,12 @@ export function callF(condition: JumpCondition): Instruction {
 
 export const ret: Instruction = {
   execute: (cpu) => {
-    const sp = cpu.registers.get16("SP")
-    const pc = cpu.registers.get16("PC")
+    const sp = cpu.registersOldQQ.get16("SP")
+    const pc = cpu.registersOldQQ.get16("PC")
 
-    const l = cpu.memory.at(sp.read()).read()
+    const l = cpu.memory.atOldQQ(sp.read()).read()
     increment(sp)
-    const h = cpu.memory.at(sp.read()).read()
+    const h = cpu.memory.atOldQQ(sp.read()).read()
     increment(sp)
 
     pc.write(combineBytes(h, l))
@@ -68,12 +68,12 @@ export const ret: Instruction = {
 
 export const reti: Instruction = {
   execute(cpu) {
-    const sp = cpu.registers.get16("SP")
-    const pc = cpu.registers.get16("PC")
+    const sp = cpu.registersOldQQ.get16("SP")
+    const pc = cpu.registersOldQQ.get16("PC")
 
-    const l = cpu.memory.at(sp.read()).read()
+    const l = cpu.memory.atOldQQ(sp.read()).read()
     increment(sp)
-    const h = cpu.memory.at(sp.read()).read()
+    const h = cpu.memory.atOldQQ(sp.read()).read()
     increment(sp)
 
     pc.write(combineBytes(h, l))
@@ -88,12 +88,12 @@ export function retF(condition: JumpCondition): Instruction {
   return {
     execute(cpu) {
       if (CONDITIONS[condition](cpu)) {
-        const sp = cpu.registers.get16("SP")
-        const pc = cpu.registers.get16("PC")
+        const sp = cpu.registersOldQQ.get16("SP")
+        const pc = cpu.registersOldQQ.get16("PC")
 
-        const l = cpu.memory.at(sp.read()).read()
+        const l = cpu.memory.atOldQQ(sp.read()).read()
         increment(sp)
-        const h = cpu.memory.at(sp.read()).read()
+        const h = cpu.memory.atOldQQ(sp.read()).read()
         increment(sp)
 
         pc.write(combineBytes(h, l))
@@ -108,15 +108,15 @@ export function retF(condition: JumpCondition): Instruction {
 export function push(registerName: Register16Name): Instruction {
   return {
     execute: (cpu) => {
-      const sp = cpu.registers.get16("SP")
-      const register = cpu.registers.get16(registerName)
+      const sp = cpu.registersOldQQ.get16("SP")
+      const register = cpu.registersOldQQ.get16(registerName)
 
       const [h, l] = splitBytes(register.read())
 
       decrement(sp)
-      cpu.memory.at(sp.read()).write(h)
+      cpu.memory.atOldQQ(sp.read()).write(h)
       decrement(sp)
-      cpu.memory.at(sp.read()).write(l)
+      cpu.memory.atOldQQ(sp.read()).write(l)
     },
     cycles:  16,
     parameterBytes: 0,
@@ -127,12 +127,12 @@ export function push(registerName: Register16Name): Instruction {
 export function pop(registerName: Register16Name): Instruction {
   return {
     execute: (cpu) => {
-      const sp = cpu.registers.get16("SP")
-      const register = cpu.registers.get16(registerName)
+      const sp = cpu.registersOldQQ.get16("SP")
+      const register = cpu.registersOldQQ.get16(registerName)
 
-      const l = cpu.memory.at(sp.read()).read()
+      const l = cpu.memory.atOldQQ(sp.read()).read()
       increment(sp)
-      const h = cpu.memory.at(sp.read()).read()
+      const h = cpu.memory.atOldQQ(sp.read()).read()
       increment(sp)
 
       register.write(combineBytes(h, l))

@@ -19,7 +19,7 @@ export const stop: Instruction = {
     cpu.isStopped = true
     // TODO what does this actually do?
 
-    cpu.memory.at(0xFF04).write(0)
+    cpu.memory.atOldQQ(0xFF04).write(0)
   },
   cycles: 4,
   parameterBytes: 0,
@@ -28,9 +28,9 @@ export const stop: Instruction = {
 
 export const scf: Instruction = {
   execute(cpu) {
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(0)
-    cpu.registers.getFlag("Carry").write(1)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+    cpu.registersOldQQ.getFlag("Carry").write(1)
   },
   cycles: 4,
   parameterBytes: 0,
@@ -39,10 +39,10 @@ export const scf: Instruction = {
 
 export const ccf: Instruction = {
   execute(cpu) {
-    const carry = cpu.registers.getFlag("Carry")
+    const carry = cpu.registersOldQQ.getFlag("Carry")
     
-    cpu.registers.getFlag("Operation").write(0)
-    cpu.registers.getFlag("Half-Carry").write(0)
+    cpu.registersOldQQ.getFlag("Operation").write(0)
+    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
     carry.write(carry.read() ^ 1)
   },
   cycles: 4,

@@ -3,39 +3,39 @@ import CPU from "../cpu";
 
 export const getByteDestination = (name: ByteDestinationName, cpu: CPU): MutableValue<8> => {
   if (name === "M") {
-    return cpu.memory.at(cpu.registers.get16("HL").read())
+    return cpu.memory.atOldQQ(cpu.registersOldQQ.get16("HL").read())
   }
 
   if (name === "(BC)") {
-    return cpu.memory.at(cpu.registers.get16("BC").read())
+    return cpu.memory.atOldQQ(cpu.registersOldQQ.get16("BC").read())
   }
 
   if (name === "(DE)") {
-    return cpu.memory.at(cpu.registers.get16("DE").read())
+    return cpu.memory.atOldQQ(cpu.registersOldQQ.get16("DE").read())
   }
 
   if (name === "(FF,C)") {
-    return cpu.memory.at(cpu.registers.get8("C").read() + 0xFF00)
+    return cpu.memory.atOldQQ(cpu.registersOldQQ.get8("C").read() + 0xFF00)
   }
 
   if (name === "(FF,N)") {
-    return cpu.memory.at(cpu.nextByte.read() + 0xFF00)
+    return cpu.memory.atOldQQ(cpu.nextByte.read() + 0xFF00)
   }
 
   if (name === "(NN)") {
     const l = cpu.nextByte.read()
     const h = cpu.nextByte.read()
-    return cpu.memory.at(combineBytes(h, l))
+    return cpu.memory.atOldQQ(combineBytes(h, l))
   }
 
-  return cpu.registers.get8(name)
+  return cpu.registersOldQQ.get8(name)
 }
 
 export const getByteSource = (name: ByteSourceName, cpu: CPU): ReadableValue<8> =>
   name === "N" ? cpu.nextByte : getByteDestination(name, cpu)
 
 export const get16BitRegister = (name: Register16Name, cpu: CPU): MutableValue<16> =>
-  cpu.registers.get16(name)
+  cpu.registersOldQQ.get16(name)
 
 export const to2sComplement = (input: number) =>
   input < 0x00 ? input + 0x100 : input
