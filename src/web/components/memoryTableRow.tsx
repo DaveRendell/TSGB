@@ -22,15 +22,15 @@ export default function MemoryTableRow({
 
 
   const updateDisplay = () => {
-    setValue(memoryLocation.read())
+    setValue(memoryLocation.value)
     toggle()
-    setInputValue(valueDisplay(memoryLocation.read()))
+    setInputValue(valueDisplay(memoryLocation.value))
   }
 
-  React.useEffect(updateDisplay, [memoryLocation.read(), programCounter])
+  React.useEffect(updateDisplay, [memoryLocation.value, programCounter])
 
   const update = () => {
-    memoryLocation.write(parseInt(inputValue))
+    memoryLocation.value = parseInt(inputValue)
     updateDisplay()
   }
 
@@ -45,16 +45,16 @@ export default function MemoryTableRow({
 
   const getInstructionAt = (memoryLocation: number): Instruction | undefined => {
     try {
-      const code = memory.at(memoryLocation).read()
-      return decodeInstruction(code, memory.at(memoryLocation + 1).read())
+      const code = memory.at(memoryLocation).value
+      return decodeInstruction(code, memory.at(memoryLocation + 1).value)
     } catch { return undefined }
   }
 
   try {
-    const instruction = decodeInstruction(value, memory.at(address + 1).read())
+    const instruction = decodeInstruction(value, memory.at(address + 1).value)
     const parameters = new Array(instruction.parameterBytes)
       .fill(0)
-      .map((_, i) => memory.at(address + 1 + i).read())
+      .map((_, i) => memory.at(address + 1 + i).value)
     instructionDescription = instruction.description(parameters)
     isUnknown = false
   } catch (e) {

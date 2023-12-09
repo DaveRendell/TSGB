@@ -28,9 +28,9 @@ export const stop: Instruction = {
 
 export const scf: Instruction = {
   execute(cpu) {
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-    cpu.registersOldQQ.getFlag("Carry").write(1)
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = false
+    cpu.registers.F.carry = true
   },
   cycles: 4,
   parameterBytes: 0,
@@ -38,12 +38,10 @@ export const scf: Instruction = {
 }
 
 export const ccf: Instruction = {
-  execute(cpu) {
-    const carry = cpu.registersOldQQ.getFlag("Carry")
-    
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-    carry.write(carry.read() ^ 1)
+  execute(cpu) {    
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = false
+    cpu.registers.F.carry != true
   },
   cycles: 4,
   parameterBytes: 0,

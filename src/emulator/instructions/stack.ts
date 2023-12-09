@@ -1,24 +1,21 @@
 import { addressDisplay } from "../../helpers/displayHexNumbers";
-import { JumpCondition, Register16Name } from "../../types";
-import { decrement, increment } from "../arithmetic";
+import { JumpCondition } from "../../types";
 import { Instruction } from "../instruction";
-import { combineBytes, splitBytes } from "./instructionHelpers";
+import { WordLocation, combineBytes, getWordRef, splitBytes } from "./instructionHelpers";
 import { CONDITIONS, CONDITION_NAMES } from "./jumps";
 
 export const call: Instruction = {
   execute: (cpu) => {
-    const sp = cpu.registersOldQQ.get16("SP")
-    const pc = cpu.registersOldQQ.get16("PC")
-    const address = cpu.readNext16bit()
+    const sp = cpu.registers.SP
+    const pc = cpu.registers.PC
+    const address = cpu.nextWord.value
 
-    const [h, l] = splitBytes(pc.read())
+    const [h, l] = splitBytes(pc.value)
 
-    decrement(sp)
-    cpu.memory.atOldQQ(sp.read()).write(h)
-    decrement(sp)
-    cpu.memory.atOldQQ(sp.read()).write(l)
+    cpu.memory.atOldQQ(--sp.value).write(h)
+    cpu.memory.atOldQQ(--sp.value).write(l)
 
-    pc.write(address)
+    pc.value = address
   },
   cycles: 24,
   parameterBytes: 2,
@@ -28,19 +25,17 @@ export const call: Instruction = {
 export function callF(condition: JumpCondition): Instruction {
   return {
     execute(cpu) {
-      const address = cpu.readNext16bit()
+      const address = cpu.nextWord.value
       if (CONDITIONS[condition](cpu)) {
-        const sp = cpu.registersOldQQ.get16("SP")
-        const pc = cpu.registersOldQQ.get16("PC")
+        const sp = cpu.registers.SP
+        const pc = cpu.registers.PC
 
-        const [h, l] = splitBytes(pc.read())
+        const [h, l] = splitBytes(pc.value)
 
-        decrement(sp)
-        cpu.memory.atOldQQ(sp.read()).write(h)
-        decrement(sp)
-        cpu.memory.atOldQQ(sp.read()).write(l)
+        cpu.memory.atOldQQ(--sp.value).write(h)
+        cpu.memory.atOldQQ(--sp.value).write(l)
 
-        pc.write(address)
+        pc.value = address
       }
     },
     cycles: 24,
@@ -51,15 +46,13 @@ export function callF(condition: JumpCondition): Instruction {
 
 export const ret: Instruction = {
   execute: (cpu) => {
-    const sp = cpu.registersOldQQ.get16("SP")
-    const pc = cpu.registersOldQQ.get16("PC")
+    const sp = cpu.registers.SP
+    const pc = cpu.registers.PC
 
-    const l = cpu.memory.atOldQQ(sp.read()).read()
-    increment(sp)
-    const h = cpu.memory.atOldQQ(sp.read()).read()
-    increment(sp)
+    const l = cpu.memory.atOldQQ(sp.value++).read()
+    const h = cpu.memory.atOldQQ(sp.value++).read()
 
-    pc.write(combineBytes(h, l))
+    pc.value = combineBytes(h, l)
   },
   cycles: 16,
   parameterBytes: 0,
@@ -68,15 +61,13 @@ export const ret: Instruction = {
 
 export const reti: Instruction = {
   execute(cpu) {
-    const sp = cpu.registersOldQQ.get16("SP")
-    const pc = cpu.registersOldQQ.get16("PC")
+    const sp = cpu.registers.SP
+    const pc = cpu.registers.PC
 
-    const l = cpu.memory.atOldQQ(sp.read()).read()
-    increment(sp)
-    const h = cpu.memory.atOldQQ(sp.read()).read()
-    increment(sp)
+    const l = cpu.memory.atOldQQ(sp.value++).read()
+    const h = cpu.memory.atOldQQ(sp.value++).read()
 
-    pc.write(combineBytes(h, l))
+    pc.value = combineBytes(h, l)
     cpu.interruptsEnabled = true
   },
   cycles: 16,
@@ -88,15 +79,13 @@ export function retF(condition: JumpCondition): Instruction {
   return {
     execute(cpu) {
       if (CONDITIONS[condition](cpu)) {
-        const sp = cpu.registersOldQQ.get16("SP")
-        const pc = cpu.registersOldQQ.get16("PC")
+        const sp = cpu.registers.SP
+        const pc = cpu.registers.PC
 
-        const l = cpu.memory.atOldQQ(sp.read()).read()
-        increment(sp)
-        const h = cpu.memory.atOldQQ(sp.read()).read()
-        increment(sp)
+        const l = cpu.memory.atOldQQ(sp.value++).read()
+        const h = cpu.memory.atOldQQ(sp.value++).read()
 
-        pc.write(combineBytes(h, l))
+        pc.value = combineBytes(h, l)
       }
     },
     cycles: 20,
@@ -105,18 +94,16 @@ export function retF(condition: JumpCondition): Instruction {
   }
 }
 
-export function push(registerName: Register16Name): Instruction {
+export function push(registerName: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      const sp = cpu.registersOldQQ.get16("SP")
-      const register = cpu.registersOldQQ.get16(registerName)
+      const sp = cpu.registers.SP
+      const register = getWordRef(registerName, cpu)
 
-      const [h, l] = splitBytes(register.read())
+      const [h, l] = splitBytes(register.value)
 
-      decrement(sp)
-      cpu.memory.atOldQQ(sp.read()).write(h)
-      decrement(sp)
-      cpu.memory.atOldQQ(sp.read()).write(l)
+      cpu.memory.atOldQQ(--sp.value).write(h)
+      cpu.memory.atOldQQ(--sp.value).write(l)
     },
     cycles:  16,
     parameterBytes: 0,
@@ -124,18 +111,16 @@ export function push(registerName: Register16Name): Instruction {
   }
 }
 
-export function pop(registerName: Register16Name): Instruction {
+export function pop(registerName: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      const sp = cpu.registersOldQQ.get16("SP")
-      const register = cpu.registersOldQQ.get16(registerName)
+      const sp = cpu.registers.SP
+      const register = getWordRef(registerName, cpu)
 
-      const l = cpu.memory.atOldQQ(sp.read()).read()
-      increment(sp)
-      const h = cpu.memory.atOldQQ(sp.read()).read()
-      increment(sp)
+      const l = cpu.memory.atOldQQ(sp.value++).read()
+      const h = cpu.memory.atOldQQ(sp.value++).read()
 
-      register.write(combineBytes(h, l))
+      register.value = combineBytes(h, l)
     },
     cycles:  12,
     parameterBytes: 0,

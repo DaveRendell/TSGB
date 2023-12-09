@@ -1,83 +1,81 @@
-import { ByteDestinationName, ByteSourceName, MutableValue, Target8Name } from "../../types"
 import { Instruction } from "../instruction"
-import { combineBytes, getByteDestination, getByteSource } from "./instructionHelpers"
+import { ByteLocation, getByteRef } from "./instructionHelpers"
 
-export const testBit = (bit: number, sourceName: Target8Name): Instruction => {
+export const testBit = (bit: number, sourceName: ByteLocation): Instruction => {
   return {
     execute: (cpu) => {
-      const source = getByteDestination(sourceName, cpu)
-      const result = (source.read() >> bit) & 0b1
+      const source = getByteRef(sourceName, cpu)
+      const result = (source.value >> bit) & 0b1
 
-      cpu.registersOldQQ.getFlag("Zero").write(result === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(1)
+      cpu.registers.F.zero = result == 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = true
     },
-    cycles: sourceName === "M" ? 12 : 8,
+    cycles: sourceName === ByteLocation.M ? 12 : 8,
     parameterBytes: 0,
     description: () => `BIT ${bit},${sourceName}`
   }
 }
 
-export const resetBit = (bit: number, sourceName: Target8Name): Instruction => {
+export const resetBit = (bit: number, sourceName: ByteLocation): Instruction => {
   return {
     execute: (cpu) => {
-      const source = getByteDestination(sourceName, cpu)
-      source.write(source.read() & ~(1 << bit))
+      const source = getByteRef(sourceName, cpu)
+      source.value &= ~(1 << bit)
     },
-    cycles: sourceName === "M" ? 16 : 8,
+    cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `RES ${bit},${sourceName}`
   }
 }
 
-export const setBit = (bit: number, sourceName: Target8Name): Instruction => {
+export const setBit = (bit: number, sourceName: ByteLocation): Instruction => {
   return {
     execute: (cpu) => {
-      const source = getByteDestination(sourceName, cpu)
-      source.write(source.read() | (1 << bit))
-
+      const source = getByteRef(sourceName, cpu)
+      source.value |= (1 << bit)
     },
-    cycles: sourceName === "M" ? 16 : 8,
+    cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `SET ${bit},${sourceName}`
   }
 }
 
-export const swap = (sourceName: ByteDestinationName): Instruction => {
+export const swap = (sourceName: ByteLocation): Instruction => {
   return {
     execute(cpu) {
-      const byte = getByteDestination(sourceName, cpu)
-      const originalValue = byte.read()
+      const byte = getByteRef(sourceName, cpu)
+      const originalValue = byte.value
       const h = (originalValue & 0xF0) >> 4
       const l = (originalValue & 0x0F)
       const newValue = (l << 4) + h
-      byte.write(newValue)
+      byte.value = newValue
 
-      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Carry").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+      cpu.registers.F.zero = newValue == 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = false
+      cpu.registers.F.carry = false
 
     },
-    cycles: sourceName === "M" ? 12 : 8,
+    cycles: sourceName === ByteLocation.M ? 12 : 8,
     parameterBytes: 0,
     description: () => `SWAP ${sourceName}`
   }
 }
 
-export const shiftRightLogical = (sourceName: ByteDestinationName): Instruction => {
+export const shiftRightLogical = (sourceName: ByteLocation): Instruction => {
   return {
     execute(cpu) {
-      const byte = getByteDestination(sourceName, cpu)
-      const originalValue = byte.read()
+      const byte = getByteRef(sourceName, cpu)
+      const originalValue = byte.value
       const newValue = originalValue >> 1
 
-      byte.write(newValue)
+      byte.value = newValue
       
-      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Carry").write(originalValue & 1)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
+      cpu.registers.F.zero = newValue == 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = false
+      cpu.registers.F.carry = (originalValue & 1) > 0
     },
     cycles: 8,
     parameterBytes: 0,
@@ -85,43 +83,43 @@ export const shiftRightLogical = (sourceName: ByteDestinationName): Instruction 
   }
 }
 
-export function shiftLeftArithmetic(sourceName: ByteDestinationName): Instruction {
+export function shiftLeftArithmetic(sourceName: ByteLocation): Instruction {
   return {
     execute(cpu) {
-      const source = getByteDestination(sourceName, cpu)
+      const source = getByteRef(sourceName, cpu)
 
-      const oldValue = source.read()
+      const oldValue = source.value
       const newValue = ((oldValue << 1) & 0xFF) + 0
 
-      source.write(newValue)
+      source.value = newValue
 
-      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-      cpu.registersOldQQ.getFlag("Carry").write(oldValue & 0x80)
+      cpu.registers.F.zero = newValue == 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = false
+      cpu.registers.F.carry = (oldValue & 0x80) > 0
     },
-    cycles: sourceName === "M" ? 16 : 8,
+    cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `SRA ${sourceName}`
   }
 }
 
-export function shiftRightArithmetic(sourceName: ByteDestinationName): Instruction {
+export function shiftRightArithmetic(sourceName: ByteLocation): Instruction {
   return {
     execute(cpu) {
-      const source = getByteDestination(sourceName, cpu)
+      const source = getByteRef(sourceName, cpu)
 
-      const oldValue = source.read()
+      const oldValue = source.value
       const newValue = (oldValue >> 1) + (oldValue & 0x80)
 
-      source.write(newValue)
+      source.value = newValue
 
-      cpu.registersOldQQ.getFlag("Zero").write(newValue === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-      cpu.registersOldQQ.getFlag("Carry").write(oldValue & 0x1)
+      cpu.registers.F.zero = newValue == 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = false
+      cpu.registers.F.carry = (oldValue & 1) > 0
     },
-    cycles: sourceName === "M" ? 16 : 8,
+    cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `SRA ${sourceName}`
   }

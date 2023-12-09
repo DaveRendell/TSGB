@@ -64,8 +64,7 @@ const memory = new Memory(
 //   0x76 // HALT
 // ])
 
-const registers = new CpuRegisters()
-const cpu = new CPU(memory, registers)
+const cpu = new CPU(memory)
 const ppu = new PPU(cpu)
 const apu = new APU(cpu)
 

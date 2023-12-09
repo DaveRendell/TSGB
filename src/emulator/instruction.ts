@@ -5,6 +5,7 @@ import InstructionNotFoundError from "./instructionNotFoundError";
 import { addImmediateToSP, addToHL, aluOperation, aluOperationImmediate, cpl, daa, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
 import { ccf, disableInterrupts, enableInterrupts, scf, stop } from "./instructions/cpuControl";
 import halt from "./instructions/halt";
+import { ByteLocation, WordLocation } from "./instructions/instructionHelpers";
 import { jpHl, jump, jumpRelative, rst } from "./instructions/jumps";
 
 import { load8Bit, loadHlFromSpPlusN, loadImmediate16BitRegister, loadStackPointerFromHL, loadStackPointerToAddress } from "./instructions/loads";
@@ -26,22 +27,22 @@ const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
   0x08: loadStackPointerToAddress,
   0x76: halt,
   0x10: stop,
-  0b00100010: load8Bit("M", "A", "increment"),
-  0b00101010: load8Bit("A", "M", "increment"),
-  0b00110010: load8Bit("M", "A", "decrement"),
-  0b00111010: load8Bit("A", "M", "decrement"),
-  0x07: rotateLeft("A", false, false, false),
-  0x17: rotateLeft("A", true, false, false),
-  0x0F: rotateRight("A", false, false, false),
-  0x1F: rotateRight("A", true, false, false),
+  0b00100010: load8Bit(ByteLocation.M, ByteLocation.A, "increment"),
+  0b00101010: load8Bit(ByteLocation.A, ByteLocation.M, "increment"),
+  0b00110010: load8Bit(ByteLocation.M, ByteLocation.A, "decrement"),
+  0b00111010: load8Bit(ByteLocation.A, ByteLocation.M, "decrement"),
+  0x07: rotateLeft(ByteLocation.A, false, false, false),
+  0x17: rotateLeft(ByteLocation.A, true, false, false),
+  0x0F: rotateRight(ByteLocation.A, false, false, false),
+  0x1F: rotateRight(ByteLocation.A, true, false, false),
   0x18: jumpRelative("None"),
   0x2F: cpl,
   0x37: scf,
   0x3F: ccf,
-  0xF0: load8Bit("A", "(FF,N)"),
-  0xE0: load8Bit("(FF,N)", "A"),
-  0xF2: load8Bit("A", "(FF,C)"),
-  0xE2: load8Bit("(FF,C)", "A"),
+  0xF0: load8Bit(ByteLocation.A, ByteLocation.FF_N),
+  0xE0: load8Bit(ByteLocation.FF_N, ByteLocation.A),
+  0xF2: load8Bit(ByteLocation.A, ByteLocation.FF_C),
+  0xE2: load8Bit(ByteLocation.FF_C, ByteLocation.A),
   0xCD: call,
   0xE8: addImmediateToSP,
   0xC9: ret,
@@ -49,16 +50,23 @@ const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
   0xC3: jump("None"),
   0xF8: loadHlFromSpPlusN,
   0x27: daa,
-  0b11101010: load8Bit("(NN)", "A"),
-  0b11111010: load8Bit("A", "(NN)"),
+  0b11101010: load8Bit(ByteLocation.NN, ByteLocation.A),
+  0b11111010: load8Bit(ByteLocation.A, ByteLocation.NN),
   0xE9: jpHl,
   0xF9: loadStackPointerFromHL,
   0xF3: disableInterrupts,
   0xFB: enableInterrupts,
 }
 
-const REGISTERS_8: Target8Name[] = [
-  "B", "C", "D", "E", "H", "L", "M", "A"
+const REGISTERS_8: ByteLocation[] = [
+  ByteLocation.B,
+  ByteLocation.C,
+  ByteLocation.D,
+  ByteLocation.E,
+  ByteLocation.H,
+  ByteLocation.L,
+  ByteLocation.M,
+  ByteLocation.A,
 ]
 const ALU_OPERATIONS: AluOperation[] = [
   "ADD", "ADC", "SUB", "SBC", "AND", "XOR", "OR", "CP"
@@ -66,21 +74,21 @@ const ALU_OPERATIONS: AluOperation[] = [
 const JUMP_CONDITION: JumpCondition[] = [
   "Not-Zero", "Zero", "Not-Carry", "Carry"
 ]
-const REGISTER_16_COLUMN_1: ("(BC)" | "(DE)")[] = [
-  "(BC)", "(DE)"
+const REGISTER_16_COLUMN_1: ByteLocation[] = [
+  ByteLocation.BC, ByteLocation.DE
 ]
-const REGISTER_16_COLUMN_2: Register16Name[] = [
-  "BC", "DE", "HL", "SP"
+const REGISTER_16_COLUMN_2: WordLocation[] = [
+  WordLocation.BC, WordLocation.DE, WordLocation.HL, WordLocation.SP
 ]
-const REGISTER_16_COLUMN_3: Register16Name[] = [
-  "BC", "DE", "HL", "AF"
+const REGISTER_16_COLUMN_3: WordLocation[] = [
+  WordLocation.BC, WordLocation.DE, WordLocation.HL, WordLocation.AF
 ]
 
 
-function getDestination(code: number): Target8Name {
+function getDestination(code: number): ByteLocation {
   return REGISTERS_8[(code >> 3) & 0b111]
 }
-function getSource(code: number): Target8Name {
+function getSource(code: number): ByteLocation {
   return REGISTERS_8[code & 0b111]
 }
 function getOperation(code: number): AluOperation {
@@ -89,13 +97,13 @@ function getOperation(code: number): AluOperation {
 function getCondition(code: number): JumpCondition {
   return JUMP_CONDITION[(code >> 3) & 0b11]
 }
-function getRegisterColumn1(code: number): "(BC)" | "(DE)" {
+function getRegisterColumn1(code: number): ByteLocation{
   return REGISTER_16_COLUMN_1[(code >> 4) & 0b1]
 }
-function getRegisterColumn2(code: number): Register16Name {
+function getRegisterColumn2(code: number): WordLocation {
   return REGISTER_16_COLUMN_2[(code >> 4) & 0b11]
 }
-function getRegisterColumn3(code: number): Register16Name {
+function getRegisterColumn3(code: number): WordLocation {
   return REGISTER_16_COLUMN_3[(code >> 4) & 0b11]
 }
 
@@ -117,11 +125,11 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
   }
 
   if ((code & 0b11101111) == 0b00000010) { // LD (R),A
-    return load8Bit(getRegisterColumn1(code), "A")
+    return load8Bit(getRegisterColumn1(code), ByteLocation.A)
   }
 
   if ((code & 0b11101111) == 0b00001010) { // LD A,(R)
-    return load8Bit("A", getRegisterColumn1(code))
+    return load8Bit(ByteLocation.A, getRegisterColumn1(code))
   }
 
   if ((code & 0b11001111) === 0b00000011) {
@@ -148,7 +156,7 @@ export function decodeInstruction(code: number, prefixedCode?: number): Instruct
   }
 
   if ((code & 0b11000111) === 0b00000110) { // LD R,N
-    return load8Bit(getDestination(code), "N")
+    return load8Bit(getDestination(code), ByteLocation.N)
   }
 
   if ((code & 0b11000000) === 0b01000000) { // LD R,R

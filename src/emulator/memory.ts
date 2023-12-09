@@ -85,27 +85,31 @@ export default class Memory {
       ) {
         // If Boot ROM is enabled, loaded, and we're in its address range, load
         // memory from there
+        const bootRom = this.bootRom
         return {
-          get value(): number { return this.bootRom[address] },
+          get value(): number { return bootRom[address] },
           set value(_: number) {} 
         }
       }
       // TODO Memory Banking...
+      const cartridge = this.cartridge
       return {
-        get value(): number { return this.cartridge[address] },
+        get value(): number { return cartridge[address] },
         set value(_: number) {} 
       }
     }
 
     // IO Registers
-    if (address >= 0xFF && address < 0xFF80) { 
-      return this.registers.at(address)
+    if (address >= 0xFF && address < 0xFF80) {
+      const registers = this.registers
+      return registers.at(address)
     }
 
     // TODO remove this, handle each case explicitly
+    const data = this.data
     return {
-      get value(): number { return this.data[address & 0xFFFF] },
-      set value(value: number) { this.data[address & 0xFFFF] = value }
+      get value(): number { return data[address & 0xFFFF] },
+      set value(value: number) { data[address & 0xFFFF] = value }
     }
   }
 

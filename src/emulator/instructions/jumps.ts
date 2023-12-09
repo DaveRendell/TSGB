@@ -6,10 +6,10 @@ import { Instruction } from "../instruction";
 import { combineBytes, from2sComplement, splitBytes } from "./instructionHelpers";
 
 export const CONDITIONS: Record<JumpCondition, (cpu: CPU) => boolean> = {
-  "Not-Zero": (cpu) => cpu.registersOldQQ.getFlag("Zero").read() === 0,
-  "Zero": (cpu) => cpu.registersOldQQ.getFlag("Zero").read() === 1,
-  "Not-Carry": (cpu) => cpu.registersOldQQ.getFlag("Carry").read() === 0,
-  "Carry": (cpu) => cpu.registersOldQQ.getFlag("Carry").read() === 1,
+  "Not-Zero": (cpu) => !cpu.registers.F.zero,
+  "Zero": (cpu) => cpu.registers.F.zero,
+  "Not-Carry": (cpu) => !cpu.registers.F.carry,
+  "Carry": (cpu) => cpu.registers.F.carry,
   "None": () => true,
 }
 
@@ -25,9 +25,9 @@ export const CONDITION_NAMES: Record<JumpCondition, string> = {
 export function jumpRelative(condition: JumpCondition): Instruction {
   return {
     execute: (cpu) => {
-      const jump = from2sComplement(cpu.readNextByte())
+      const jump = from2sComplement(cpu.nextByte.value)
       if (CONDITIONS[condition](cpu)) {
-        add(cpu.registersOldQQ.get16("PC"), jump)
+        cpu.registers.PC.value += jump
       }
     },
     cycles: 12,
@@ -39,10 +39,9 @@ export function jumpRelative(condition: JumpCondition): Instruction {
 export function jump(condition: JumpCondition): Instruction {
   return {
     execute: (cpu: CPU) => {
-        const l = cpu.readNextByte()
-        const h = cpu.readNextByte()
-        if (CONDITIONS[condition](cpu)) {
-          cpu.registersOldQQ.get16("PC").write(combineBytes(h, l))
+      const address = cpu.nextWord.value
+      if (CONDITIONS[condition](cpu)) {
+        cpu.registers.PC.value = address
       }
     },
     cycles: 16,
@@ -53,7 +52,7 @@ export function jump(condition: JumpCondition): Instruction {
 
 export const jpHl: Instruction = {
   execute(cpu) {
-    cpu.registersOldQQ.get16("PC").write(cpu.registersOldQQ.get16("HL").read())
+    cpu.registers.PC.value = cpu.registers.HL.value
   },
   cycles: 4,
   parameterBytes: 0,
@@ -63,17 +62,15 @@ export const jpHl: Instruction = {
 export function rst(address: number): Instruction {
   return {
     execute(cpu) {
-      const sp = cpu.registersOldQQ.get16("SP")
-      const pc = cpu.registersOldQQ.get16("PC")
+      const sp = cpu.registers.SP
+      const pc = cpu.registers.PC
 
-      const [h, l] = splitBytes(pc.read())
+      const [h, l] = splitBytes(pc.value)
 
-      decrement(sp)
-      cpu.memory.atOldQQ(sp.read()).write(h)
-      decrement(sp)
-      cpu.memory.atOldQQ(sp.read()).write(l)
+      cpu.memory.atOldQQ(--sp.value).write(h)
+      cpu.memory.atOldQQ(--sp.value).write(l)
 
-      pc.write(address)
+      pc.value = address
     },
     cycles: 16,
     parameterBytes: 0,

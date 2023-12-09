@@ -24,7 +24,7 @@ export default class CpuRegistersOLDQQ {
     "SP": 0,
   }
 
-  get8 = (name: Register8Name): MutableValue<8> => ({
+  get8oldQQ = (name: Register8Name): MutableValue<8> => ({
     intSize: 8,
     read: () => this.values8Bit[name],
     write: (value) => name === "F"
@@ -32,7 +32,7 @@ export default class CpuRegistersOLDQQ {
       : this.values8Bit[name] = (value & 0xFF)
   })
 
-  get16 = (name: Register16Name): MutableValue<16> =>
+  oldQQ = (name: Register16Name): MutableValue<16> =>
     name == "PC" || name == "SP"
       ? {
         intSize: 16,

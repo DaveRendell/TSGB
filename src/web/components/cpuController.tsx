@@ -13,8 +13,8 @@ const REGISTERS_8_BIT: Register8Name[] = [
 const REGISTERS_16_BIT: Register16Name[] = [
   "HL", "PC", "SP", "BC", "DE", "AF"
 ]
-const FLAGS: FlagName[] = [
-  "Zero", "Operation", "Half-Carry", "Carry"
+const FLAGS: string[] = [
+  "zero", "operation", "halfCarry", "carry"
 ]
 
 export default function CpuController({ cpu }: Props) {
@@ -44,7 +44,7 @@ export default function CpuController({ cpu }: Props) {
             {REGISTERS_8_BIT.map(reg =>
               <tr key={reg}>
                 <td>{reg}</td>
-                <td>{valueDisplay(cpu.registers.get8(reg).read())}</td>
+                <td>{valueDisplay(cpu.registers[reg].value)}</td>
               </tr>)}
           </tbody>
         </table>
@@ -56,7 +56,7 @@ export default function CpuController({ cpu }: Props) {
             {REGISTERS_16_BIT.map(reg =>
               <tr key={reg}>
                 <td>{reg}</td>
-                <td>{addressDisplay(cpu.registers.get16(reg).read())}</td>
+                <td>{addressDisplay(cpu.registers[reg].value)}</td>
               </tr>)}
           </tbody>
         </table>
@@ -68,7 +68,7 @@ export default function CpuController({ cpu }: Props) {
             {FLAGS.map(reg =>
               <tr key={reg}>
                 <td>{reg}</td>
-                <td>{cpu.registers.getFlag(reg).read()}</td>
+                <td>{cpu.registers.F[reg].read}</td>
               </tr>)}
           </tbody>
         </table>

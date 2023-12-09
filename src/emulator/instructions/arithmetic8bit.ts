@@ -3,141 +3,135 @@ import { AluOperation, Register16Name, Register8Name, Target8Name } from "../../
 import { add, decrement, increment } from "../arithmetic";
 import CPU from "../cpu";
 import { Instruction } from "../instruction";
-import { from2sComplement, getByteDestination, getByteSource, splitBytes, to2sComplement } from "./instructionHelpers";
+import { ByteLocation, WordLocation, from2sComplement, getByteRef, getWordRef, splitBytes, to2sComplement } from "./instructionHelpers";
 
 const splitToNibbles = (value: number) => [(value >> 4) & 0xF, value & 0xF]
 const combineNibbles = (h: number, l: number) => (h << 4) + l
 
 const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   "ADD": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
+    const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.read())
+    const [hA, lA] = splitToNibbles(a.value)
     
     const hR = h + hA
     const lR = l + lA
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    a.value = rWrapped
 
-    a.write(rWrapped)
+    cpu.registers.F.zero = rWrapped == 0
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = lR > 0xF
+    cpu.registers.F.carry = rWrapped != r
   },
   "ADC": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
-    const carry = cpu.registersOldQQ.getFlag("Carry").read()
+    const a = cpu.registers.A
+    const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.read())
+    const [hA, lA] = splitToNibbles(a.value)
     
     const hR = h + hA
     const lR = l + lA + carry
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    a.value = rWrapped
 
-    a.write(rWrapped)
+    cpu.registers.F.zero = rWrapped == 0
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = lR > 0xF
+    cpu.registers.F.carry = rWrapped != r
   },
   "SUB": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
+    const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.read())
+    const [hA, lA] = splitToNibbles(a.value)
     
     const hR = hA - h
     const lR = lA - l
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(1)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    a.value = rWrapped
 
-    a.write(rWrapped)
+    cpu.registers.F.zero = rWrapped == 0
+    cpu.registers.F.operation = true
+    cpu.registers.F.halfCarry = lR < 0
+    cpu.registers.F.carry = rWrapped != r
   },
   "SBC": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
-    const carry = cpu.registersOldQQ.getFlag("Carry").read()
+    const a = cpu.registers.A
+    const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.read())
+    const [hA, lA] = splitToNibbles(a.value)
     
     const hR = hA - h
     const lR = lA - l - carry
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(1)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    a.value = rWrapped
 
-    a.write(rWrapped)
+    cpu.registers.F.zero = rWrapped == 0
+    cpu.registers.F.operation = true
+    cpu.registers.F.halfCarry = lR < 0
+    cpu.registers.F.carry = rWrapped != r
   },
   "AND": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
-    
-    const r = value & a.read()
+    const a = cpu.registers.A
 
-    cpu.registersOldQQ.getFlag("Zero").write(r === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(1)
-    cpu.registersOldQQ.getFlag("Carry").write(0)
+    a.value &= value
 
-    a.write(r)
+    cpu.registers.F.zero = a.value === 0
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = true
+    cpu.registers.F.carry = false
   },
   "XOR": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
-    
-    const r = value ^ a.read()
+    const a = cpu.registers.A
+  
+    a.value ^= value
 
-    cpu.registersOldQQ.getFlag("Zero").write(r === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-    cpu.registersOldQQ.getFlag("Carry").write(0)
-
-    a.write(r)
+    cpu.registers.F.zero = a.value === 0
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = false
+    cpu.registers.F.carry = false
   },
   "OR": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
-    
-    const r = value | a.read()
+    const a = cpu.registers.A
 
-    cpu.registersOldQQ.getFlag("Zero").write(r === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-    cpu.registersOldQQ.getFlag("Carry").write(0)
+    a.value |= value
 
-    a.write(r)
+    cpu.registers.F.zero = a.value === 0
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = false
+    cpu.registers.F.carry = false
   },
   "CP": (cpu, value) => {
-    const a = cpu.registersOldQQ.get8("A")
+    const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.read())
+    const [hA, lA] = splitToNibbles(a.value)
     
     const hR = hA - h
     const lR = lA - l
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xFF
 
-    cpu.registersOldQQ.getFlag("Zero").write(rWrapped === 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Operation").write(1)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(lR < 0 ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Carry").write(rWrapped !== r ? 1 : 0)
+    cpu.registers.F.zero = rWrapped == 0
+    cpu.registers.F.operation = true
+    cpu.registers.F.halfCarry = lR < 0
+    cpu.registers.F.carry = rWrapped != r
   },
 }
 
-export function aluOperation(operation: AluOperation, sourceName: Target8Name): Instruction {
+export function aluOperation(operation: AluOperation, sourceName: ByteLocation): Instruction {
   return {
     execute: (cpu) => {
-      OPERATIONS[operation](cpu, getByteDestination(sourceName, cpu).read())
+      OPERATIONS[operation](cpu, getByteRef(sourceName, cpu).value)
     },
-    cycles: sourceName === "M" ? 8 : 4,
+    cycles: sourceName === ByteLocation.M ? 8 : 4,
     parameterBytes: 0,
     description: () => `${operation} A,${sourceName}`
   }
@@ -146,7 +140,7 @@ export function aluOperation(operation: AluOperation, sourceName: Target8Name): 
 export function aluOperationImmediate(operation: AluOperation): Instruction {
   return {
     execute: (cpu) => {
-      const value = cpu.readNextByte()
+      const value = cpu.nextByte.value
       OPERATIONS[operation](cpu, value)
     },
     cycles: 8,
@@ -155,97 +149,102 @@ export function aluOperationImmediate(operation: AluOperation): Instruction {
   }
 }
 
-export function increment8Bit(targetName: Target8Name): Instruction {
+export function increment8Bit(targetName: ByteLocation): Instruction {
   return {
     execute: (cpu) => {
-      const target = getByteDestination(targetName, cpu)
-      increment(target)
+      const target = getByteRef(targetName, cpu)
+      target.value++
 
-      cpu.registersOldQQ.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write((target.read() & 0xF) === 0 ? 1 : 0)
+      cpu.registers.F.zero = target.value == 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = (target.value & 0xF) === 0
     },
-    cycles: targetName === "M" ? 12 : 4,
+    cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
     description: () => `INC ${targetName}`
   }
 }
 
-export function decrement8Bit(targetName: Target8Name): Instruction {
+export function decrement8Bit(targetName: ByteLocation): Instruction {
   return {
     execute: (cpu) => {
-      const target = getByteDestination(targetName, cpu)
-      decrement(target)
+      const target = getByteRef(targetName, cpu)
+      target.value--
 
-      cpu.registersOldQQ.getFlag("Zero").write(target.read() === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(1)
-      cpu.registersOldQQ.getFlag("Half-Carry").write((target.read() & 0xF) === 0x0F ? 1 : 0)
+      cpu.registers.F.zero = target.value == 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = (target.value & 0xF) === 0xF
     },
-    cycles: targetName === "M" ? 12 : 4,
+    cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
     description: () => `DEC ${targetName}`
   }
 }
 
-export function increment16Bit(targetName: Register16Name): Instruction {
+export function increment16Bit(register: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      increment(cpu.registersOldQQ.get16(targetName))
+      getWordRef(register, cpu).value++
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `INC ${targetName}`
+    description: () => `INC ${register}`
   }
 }
 
-export function decrement16Bit(targetName: Register16Name): Instruction {
+export function decrement16Bit(register: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      decrement(cpu.registersOldQQ.get16(targetName))
+      getWordRef(register, cpu).value--
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `DEC ${targetName}`
+    description: () => `DEC ${register}`
   }
 }
 
-export function rotateLeft(registerName: Target8Name, throughCarry: boolean, isPrefixed: boolean, setZero = true): Instruction {
+export function rotateLeft(
+  registerName: ByteLocation,
+  throughCarry: boolean,
+  isPrefixed: boolean,
+  setZero = true
+): Instruction {
   const commandName = throughCarry ? "RL" : "RLC"
   return {
     execute: (cpu) => {
-      const register = getByteDestination(registerName, cpu)
-      const value = register.read()
-      const wrap = throughCarry ? cpu.registersOldQQ.getFlag("Carry").read() : value >> 7
+      const register = getByteRef(registerName, cpu)
+      const value = register.value
+      const wrap = throughCarry ? cpu.registers.F.carry ? 1 : 0 : value >> 7
       const rotated = ((value << 1) & 0xFF) + wrap
-      register.write(rotated)
+      register.value = rotated
 
-      cpu.registersOldQQ.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-      cpu.registersOldQQ.getFlag("Carry").write(value >> 7)
+      cpu.registers.F.zero = setZero && rotated === 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = false
+      cpu.registers.F.carry = value >> 7 > 0
     },
-    cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
+    cycles: isPrefixed ? registerName === ByteLocation.M ? 12 : 8 : 4,
     parameterBytes: 0,
     description: () => `${commandName} ${registerName}`
   }
 }
 
-export function rotateRight(registerName: Target8Name, throughCarry: boolean, isPrefixed: boolean, setZero = true): Instruction {
+export function rotateRight(registerName: ByteLocation, throughCarry: boolean, isPrefixed: boolean, setZero = true): Instruction {
   const commandName = throughCarry ? "RR" : "RRC"
   return {
     execute: (cpu) => {
-      const register = getByteDestination(registerName, cpu)
-      const value = register.read()
-      const wrap = throughCarry ? cpu.registersOldQQ.getFlag("Carry").read() : (value & 1)
+      const register = getByteRef(registerName, cpu)
+      const value = register.value
+      const wrap = throughCarry ? cpu.registers.F.carry ? 1 : 0 : (value & 1)
       const rotated = (value >> 1) + (wrap << 7)
-      register.write(rotated)
+      register.value = rotated
 
-      cpu.registersOldQQ.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(0)
-      cpu.registersOldQQ.getFlag("Carry").write(value & 1)
+      cpu.registers.F.zero = setZero && rotated === 0
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = false
+      cpu.registers.F.carry = (value & 1) > 0
     },
-    cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
+    cycles: isPrefixed ? registerName === ByteLocation.M ? 12 : 8 : 4,
     parameterBytes: 0,
     description: () => `${commandName} ${registerName}`
   }
@@ -253,58 +252,58 @@ export function rotateRight(registerName: Target8Name, throughCarry: boolean, is
 
 export const cpl: Instruction = {
   execute: (cpu) => {
-    const a = cpu.registersOldQQ.get8("A")
-    a.write(~a.read())
-    cpu.registersOldQQ.getFlag("Operation").write(1)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(1)
+    ~cpu.registers.A.value
+    
+    cpu.registers.F.operation = true
+    cpu.registers.F.halfCarry = true
   },
   cycles: 4,
   parameterBytes: 0,
   description: () => "CPL"
 }
 
-export const addToHL = (registerName: Register16Name): Instruction => {
+export const addToHL = (register: WordLocation): Instruction => {
   return {
     execute(cpu) {
-      const hl = cpu.registersOldQQ.get16("HL")
-      const r = cpu.registersOldQQ.get16(registerName)
+      const hl = cpu.registers.HL
+      const r = getWordRef(register, cpu)
 
-      const hlValue = hl.read()
-      const rValue = r.read()
+      const hlValue = hl.value
+      const rValue = r.value
 
       const result = hlValue + rValue
 
-      hl.write(result & 0xFFFF)
+      hl.value = result & 0xFFFF
 
       const halfCarry = ((hlValue & 0x0FFF) + (rValue & 0x0FFF)) > 0xFFF
 
-      cpu.registersOldQQ.getFlag("Operation").write(0)
-      cpu.registersOldQQ.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
-      cpu.registersOldQQ.getFlag("Carry").write(result > 0xFFFF ? 1 : 0)
+      cpu.registers.F.operation = false
+      cpu.registers.F.halfCarry = halfCarry
+      cpu.registers.F.carry = result > 0xFFFF
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `ADD HL,${registerName}`
+    description: () => `ADD HL,${register}`
   }
 }
 
 export const addImmediateToSP: Instruction = {
   execute(cpu) {
-    const sp = cpu.registersOldQQ.get16("SP")
-    const amount = from2sComplement(cpu.nextByte.read())
+    const sp = cpu.registers.SP
+    const amount = from2sComplement(cpu.nextByte.value)
 
-    const oldValue = sp.read()
+    const oldValue = sp.value
     const newValue = oldValue + amount
 
     const halfCarry = (oldValue & 0xF) + (amount & 0xF) > 0xF
     const carry = (oldValue & 0xFF) + (amount & 0xFF) > 0xFF
 
-    sp.write(newValue & 0xFFFF)
+    sp.value = newValue & 0xFFFF
 
-    cpu.registersOldQQ.getFlag("Zero").write(0)
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Carry").write(carry ? 1 : 0)
+    cpu.registers.F.zero = false
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = halfCarry
+    cpu.registers.F.carry = carry
   },
   cycles: 16,
   parameterBytes: 1,
@@ -313,31 +312,29 @@ export const addImmediateToSP: Instruction = {
 
 export const daa: Instruction = {
   execute(cpu) {
-    const a = cpu.registersOldQQ.get8("A")
-    const operation = cpu.registersOldQQ.getFlag("Operation").read()
-    const halfCarry = cpu.registersOldQQ.getFlag("Half-Carry")
-    const carry = cpu.registersOldQQ.getFlag("Carry")
+    const a = cpu.registers.A
+    const flags = cpu.registers.F
 
-    const value = a.read()
+    const value = a.value
 
     let correction = 0
 
     let setCarry = false
-    if (halfCarry.read() || (!operation && (value & 0xF) > 9)) {
+    if (flags.halfCarry || (!flags.operation && (value & 0xF) > 9)) {
       correction |= 0x6
     }
-    if (carry.read() || (!operation && value > 0x99)) {
+    if (flags.carry || (!flags.operation && value > 0x99)) {
       correction |= 0x60
       setCarry = true
     }
 
-    const result = value + (operation ? -correction : correction)
+    const result = value + (flags.operation ? -correction : correction)
 
-    a.write(result & 0xFF)
+    a.value = result & 0xFF
 
-    carry.write(setCarry ? 1 : 0)
-    halfCarry.write(0)
-    cpu.registersOldQQ.getFlag("Zero").write((result & 0xFF) === 0 ? 1 : 0)
+    flags.carry = setCarry
+    flags.halfCarry = false
+    flags.zero = (result & 0xFF) == 0
   },
   cycles: 4,
   parameterBytes: 0,

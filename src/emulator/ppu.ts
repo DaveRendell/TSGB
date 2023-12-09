@@ -34,8 +34,8 @@ export default class PPU {
     const tileBaseAddress = TILESET_BASE_ADDRESS + 16 * tileId
     for (let row = 0; row < 8; row++) {
       const rowData: number[] = []
-      const byte1 = this.memory.at(tileBaseAddress + 2 * row).read()
-      const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).read()
+      const byte1 = this.memory.at(tileBaseAddress + 2 * row).value
+      const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value
       for (let bit = 7; bit >= 0; bit--) {
         const bit1 = (byte1 >> bit) & 1
         const bit2 = (byte2 >> bit) & 1
@@ -65,8 +65,8 @@ export default class PPU {
       const baseY = 8 * (tile >> 4)
       for (let row = 0; row < 8; row++) {
         const y = baseY + row
-        const byte1 = this.memory.at(tileBaseAddress + 2 * row).read()
-        const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).read()
+        const byte1 = this.memory.at(tileBaseAddress + 2 * row).value
+        const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value
         for (let bit = 7; bit >= 0; bit--) {
           const x = baseX + 7 - bit
           const pixelNumber = y * 128 + x
@@ -94,7 +94,7 @@ export default class PPU {
     canvas.width = 256
     canvas.height = 256
 
-    const backgroundPalletByte = this.memory.at(0xFF47).read()
+    const backgroundPalletByte = this.memory.at(0xFF47).value
 
     const pallet: number[][] = [
       COLOURS[(backgroundPalletByte >> 0) & 3],
@@ -108,7 +108,7 @@ export default class PPU {
       for (let i = 0; i < 32; i++) {
         const baseX = i * 8
         const tileMapAddress = 0x9800 + i + (j * 32)
-        const tileNumber = this.memory.at(tileMapAddress).read()
+        const tileNumber = this.memory.at(tileMapAddress).value
         const tileData = this.getTile(tileNumber)
         const imageData = context.createImageData(8, 8)
         for (let x = 0; x < 8; x++) {
@@ -132,7 +132,7 @@ export default class PPU {
   }
 
   backgroundPallete(): number[][] {
-    const backgroundPalletByte = this.memory.at(0xFF47).read()
+    const backgroundPalletByte = this.memory.at(0xFF47).value
 
     return [
       COLOURS[(backgroundPalletByte >> 0) & 3],

@@ -1,4 +1,3 @@
-import { increment } from "../arithmetic";
 import { Instruction } from "../instruction";
 
 const halt: Instruction = {

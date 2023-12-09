@@ -1,32 +1,28 @@
 import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers";
-import { ByteDestinationName, ByteSourceName, Register16Name, Register8Name, Target8Name } from "../../types";
-import { decrement, increment } from "../arithmetic";
 import { Instruction } from "../instruction";
-import { combineBytes, get16BitRegister, getByteSource, getByteDestination, splitBytes, from2sComplement } from "./instructionHelpers";
+import { WordRef } from "../refs/wordRef";
+import { combineBytes, getByteRef, from2sComplement, ByteLocation, describeByteLocation, getWordRef, describeWordLocation, WordLocation } from "./instructionHelpers";
 
-const cycleCost = (location: ByteSourceName): number => {
-  if (location === "M") { return 4 }
-  if (location === "N") { return 4 }
-  if (location === "(BC)") { return 4 }
-  if (location === "(DE)") { return 4 }
-  if (location === "(FF,C)") { return 4 }
-  if (location === "(FF,N)") { return 8 }
-  if (location === "(NN)") { return 12 }
+const cycleCost = (location: ByteLocation): number => {
+  switch(location) {
+    case ByteLocation.N: return 4
+    case ByteLocation.M: return 4
+    case ByteLocation.FF_N: return 8
+    case ByteLocation.FF_C: return 4
+    case ByteLocation.BC: return 4
+    case ByteLocation.DE: return 4
+    case ByteLocation.NN: return 12
+  }
   return 0
 }
 
-const getParameterBytes = (location: ByteSourceName): number => {
-  if (location === "N") { return 1 }
-  if (location === "(FF,N)") { return 1 }
-  if (location === "(NN)") { return 2 }
+const getParameterBytes = (location: ByteLocation): number => {
+  switch(location) {
+    case ByteLocation.N: return 1
+    case ByteLocation.FF_N: return 1
+    case ByteLocation.NN: return 2
+  }
   return 0
-}
-
-const describeLocation = (location: ByteSourceName): (values: number[]) => string => {
-  if (location === "N") { return ([value]) => valueDisplay(value) }
-  if (location === "(FF,N)") { return ([value]) => addressDisplay(0xFF00 + value) }
-  if (location === "(NN)") { return ([l, h]) => addressDisplay(combineBytes(h, l))}
-  return () => location
 }
 
 const commandName = (hlRegisterAction: "none" | "increment" | "decrement") =>
@@ -36,12 +32,14 @@ const commandName = (hlRegisterAction: "none" | "increment" | "decrement") =>
 
 const getPointerAction = (hlRegisterAction: "none" | "increment" | "decrement") =>
   hlRegisterAction === "increment"
-    ? increment
-    : hlRegisterAction === "decrement" ? decrement : () => {}
+    ? (hl: WordRef) => hl.value++
+    : hlRegisterAction === "decrement"
+      ? (hl: WordRef) => hl.value--
+      : () => {}
 
 export function load8Bit(
-  destinationName: ByteDestinationName,
-  sourceName: ByteSourceName,
+  destinationName: ByteLocation,
+  sourceName: ByteLocation,
   hlRegisterAction: "none" | "increment" | "decrement" = "none"
 ): Instruction {
   const cycles = 4 + cycleCost(destinationName) + cycleCost(sourceName)
@@ -50,51 +48,48 @@ export function load8Bit(
 
   const pointerAction = getPointerAction(hlRegisterAction)
 
-
   return {
     execute: (cpu) => {
-      const destination = getByteDestination(destinationName, cpu)
-      const source = getByteSource(sourceName, cpu)
+      const destination = getByteRef(destinationName, cpu)
+      const source = getByteRef(sourceName, cpu)
 
-      destination.write(source.read())
+      destination.value = source.value
 
-      pointerAction(cpu.registersOldQQ.get16("HL"))
+      pointerAction(cpu.registers.HL)
     },
     cycles,
     parameterBytes,
     description: (values) =>
-      `${commandName(hlRegisterAction)} ${describeLocation(destinationName)(values)},${describeLocation(sourceName)(values)}`
+      `${commandName(hlRegisterAction)} ${describeByteLocation(destinationName)(values)},${describeByteLocation(sourceName)(values)}`
   }
 }
 
-export function loadImmediate16BitRegister(registerName: Register16Name): Instruction {
+export function loadImmediate16BitRegister(register: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      const l = cpu.readNextByte()
-      const h = cpu.readNextByte()
-      const target = get16BitRegister(registerName, cpu)
-      target.write(combineBytes(h, l))
+      getWordRef(register, cpu).value = cpu.nextWord.value
     },
     cycles: 12,
     parameterBytes: 2,
-    description: ([l, h]) => `LD ${registerName},${addressDisplay(combineBytes(h, l))}`
+    description: ([l, h]) => `LD ${describeWordLocation(register)([])},${addressDisplay(combineBytes(h, l))}`
   }
 }
 
 export const loadHlFromSpPlusN: Instruction = {
   execute(cpu) {
-    const increment = from2sComplement(cpu.nextByte.read())
-    const sp = cpu.registersOldQQ.get16("SP").read()
+    const increment = from2sComplement(cpu.nextByte.value)
+    const sp = cpu.registers.SP.value
     const result = sp + increment
 
     const halfCarry = (sp & 0xF) + (increment & 0xF) !== (result & 0xF)
     const carry = (sp & 0xFF) + (increment & 0xFF) !== (result & 0xFF)
 
-    cpu.registersOldQQ.get16("HL").write(result & 0xFFFF)
-    cpu.registersOldQQ.getFlag("Zero").write(0)
-    cpu.registersOldQQ.getFlag("Operation").write(0)
-    cpu.registersOldQQ.getFlag("Half-Carry").write(halfCarry ? 1 : 0)
-    cpu.registersOldQQ.getFlag("Carry").write(carry ? 1 : 0)
+    cpu.registers.HL.value = result
+
+    cpu.registers.F.zero = false
+    cpu.registers.F.operation = false
+    cpu.registers.F.halfCarry = halfCarry
+    cpu.registers.F.carry = carry
   },
   cycles: 12,
   parameterBytes: 1,
@@ -103,11 +98,8 @@ export const loadHlFromSpPlusN: Instruction = {
 
 export const loadStackPointerToAddress: Instruction = {
   execute(cpu) {
-    const [hSP, lSP] = splitBytes(cpu.registersOldQQ.get16("SP").read())
-    const address = cpu.readNext16bit()
-
-    cpu.memory.atOldQQ(address).write(lSP)
-    cpu.memory.atOldQQ(address + 1).write(hSP)
+    const address = cpu.nextWord.value
+    cpu.memory.wordAt(address).value = cpu.registers.SP.value
   },
   cycles: 20,
   parameterBytes: 2,
@@ -116,10 +108,7 @@ export const loadStackPointerToAddress: Instruction = {
 
 export const loadStackPointerFromHL: Instruction = {
   execute(cpu) {
-    const sp = cpu.registersOldQQ.get16("SP")
-    const hl = cpu.registersOldQQ.get16("HL")
-
-    sp.write(hl.read())
+    cpu.registers.SP.value = cpu.registers.HL.value
   },
   cycles: 8,
   parameterBytes: 0,
