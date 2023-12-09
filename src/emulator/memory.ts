@@ -38,13 +38,13 @@ export default class Memory {
         // memory from there
         return new GetSetByteRef(
           () => { return this.bootRom[address & 0xFFFF] },
-          (value) => {  }
+          (_) => {  }
         )
       }
       // TODO Memory Banking...
       return new GetSetByteRef(
         () => { return this.cartridge[address & 0xFFFF] },
-        (value) => {  }
+        (_) => {  }
       )
     }
 
@@ -79,10 +79,9 @@ export default class Memory {
   }
 
   // https://gbdev.io/pandocs/OAM_DMA_Transfer.html
-  dmaTransfer(registerValue: number) {
-    const startAddress = registerValue << 8
+  dmaTransfer(address: number) {
     for (let i = 0; i < 0xA0; i++) {
-      this.data[0xFE00 + i] = this.data[startAddress + i]
+      this.data[0xFE00 + i] = this.data[address + i]
     }
   }
 }
