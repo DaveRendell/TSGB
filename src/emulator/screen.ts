@@ -4,6 +4,7 @@ import CPU from "./cpu";
 import { resetBit, setBit, testBit } from "./instructions/instructionHelpers";
 import Memory from "./memory";
 import { Interrupt } from "./memory/registers/interruptRegisters";
+import { LcdControlRegister, LcdStatusRegister } from "./memory/registers/lcdRegisters";
 import { ByteRef } from "./refs/byteRef";
 
 const WIDTH = 160
@@ -35,8 +36,8 @@ export default class Screen {
   buffer: OffscreenCanvas
   bufferContext: OffscreenCanvasRenderingContext2D
 
-  lcdControl: ByteRef
-  lcdStatus: ByteRef
+  lcdControl: LcdControlRegister
+  lcdStatus: LcdStatusRegister
   scrollX: ByteRef
   scrollY: ByteRef
   scanlineNumber: ByteRef
@@ -56,12 +57,12 @@ export default class Screen {
     this.buffer = new OffscreenCanvas(WIDTH, HEIGHT)
     this.bufferContext = this.buffer.getContext("2d")!
 
-    this.lcdControl = this.memory.at(0xFF40)
-    this.lcdStatus = this.memory.at(0xFF41)
-    this.scrollY = this.memory.at(0xFF42)
-    this.scrollX = this.memory.at(0xFF43)
-    this.scanlineNumber = this.memory.at(0xFF44)
-    this.backgroundPallette = this.memory.at(0xFF47)
+    this.lcdControl = this.memory.registers.lcdControl
+    this.lcdStatus = this.memory.registers.lcdStatus
+    this.scrollY = this.memory.registers.scrollY
+    this.scrollX = this.memory.registers.scrollX
+    this.scanlineNumber = this.memory.registers.scanline
+    this.backgroundPallette = this.memory.registers.backgroundPallete
 
     cpu.addClockCallback(this)
     cpu.screen = this
@@ -96,8 +97,8 @@ export default class Screen {
             this.gbDoctorHackManualScanline = 0
             this.renderScanline()
             this.mode = "HBlank"
-            this.memory.registers.lcdStatus.mode0InterruptEnabled
-            if (this.memory.registers.lcdStatus.mode0InterruptEnabled) {
+            this.lcdStatus.mode0InterruptEnabled
+            if (this.lcdStatus.mode0InterruptEnabled) {
               this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
             }
           }
@@ -114,7 +115,7 @@ export default class Screen {
           this.clockCount -= 172
           this.renderScanline()
           this.mode = "HBlank"
-          if (this.memory.registers.lcdStatus.mode0InterruptEnabled) {
+          if (this.lcdStatus.mode0InterruptEnabled) {
             this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
           }
         }
@@ -161,7 +162,7 @@ export default class Screen {
     // Find which sprites overlap, grab relevant row of tile
     // TODO: handle sprite priority
     // TODO: Fix... buginess?
-    const spriteSize = this.memory.registers.lcdControl.objectSize
+    const spriteSize = this.lcdControl.objectSize
     const spriteRows: SpriteRow[] = []
     for (let i = 0; i < 40; i++) {
       const spriteBaseAddress = SPRITE_MEMORY_START + 4 * i
