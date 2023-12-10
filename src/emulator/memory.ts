@@ -1,5 +1,6 @@
 import Controller from "./controller"
-import { Interrupt } from "./memory/registers/interruptRegisters"
+import { Cartridge } from "./memory/cartridges/cartridge"
+import { createCartridge } from "./memory/cartridges/createCartridge"
 import { IoRegisters } from "./memory/registers/ioRegisters"
 import { ByteRef, GetSetByteRef } from "./refs/byteRef"
 import { CompositeWordRef, WordRef } from "./refs/wordRef"
@@ -12,7 +13,7 @@ export default class Memory {
 
   bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
-  private cartridge = new Uint8Array(0x8000)
+  private cartridge: Cartridge
 
   controller: Controller
 
@@ -20,6 +21,7 @@ export default class Memory {
     this.data = new Uint8Array(0x10000)
     this.registers.dmaTransfer.startTransfer =
       (address) => this.dmaTransfer(address)
+    this.cartridge = new Cartridge(new Uint8Array())
   }
 
   at(address: number): ByteRef {
@@ -37,11 +39,8 @@ export default class Memory {
           (_) => {  }
         )
       }
-      // TODO Memory Banking...
-      return new GetSetByteRef(
-        () => { return this.cartridge[address & 0xFFFF] },
-        (_) => {  }
-      )
+
+      return this.cartridge.rom(address)
     }
 
     // IO Registers
@@ -61,9 +60,7 @@ export default class Memory {
   }
   
   async loadGame(file: File) {
-    this.cartridge = (
-      await file.stream().getReader().read()
-    ).value || this.cartridge
+    this.cartridge = await createCartridge(file)
   }
 
   async loadBootRom(file: File) {
