@@ -53,12 +53,19 @@ export default class APU {
     this.channel1 = new PulseChannel({
       apu: this,
       memory: this.memory,
-      registers: this.memory.registers.channel1
+      periodSweepRegister: 0xFF10,
+      lengthTimerRegister: 0xFF11,
+      volumeEnvelopeRegister: 0xFF12,
+      periodLowRegister: 0xFF13,
+      controlRegister: 0xFF14,
     })
     this.channel2 = new PulseChannel({
       apu: this,
       memory: this.memory,
-      registers: this.memory.registers.channel2
+      lengthTimerRegister: 0xFF16,
+      volumeEnvelopeRegister: 0xFF17,
+      periodLowRegister: 0xFF18,
+      controlRegister: 0xFF19,
     })
   }
 

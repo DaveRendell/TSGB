@@ -57,10 +57,10 @@ export class IoRegisters {
     this.data[0xFF13] = this.channel1.nr3
     this.data[0xFF14] = this.channel1.nr4
     // Audio Channel 2
-    this.data[0xFF21] = this.channel2.nr1
-    this.data[0xFF22] = this.channel2.nr2
-    this.data[0xFF23] = this.channel2.nr3
-    this.data[0xFF24] = this.channel2.nr4
+    this.data[0xFF16] = this.channel2.nr1
+    this.data[0xFF17] = this.channel2.nr2
+    this.data[0xFF18] = this.channel2.nr3
+    this.data[0xFF19] = this.channel2.nr4
 
     // TODO channels 3 and 4
 

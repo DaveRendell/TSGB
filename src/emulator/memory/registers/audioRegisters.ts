@@ -34,7 +34,6 @@ interface PeriodSweepData {
 }
 
 interface VolumeEnvelopeData {
-  initialVolume: number
   direction: 1 | -1
   pace: number
 }
@@ -42,19 +41,20 @@ interface VolumeEnvelopeData {
 export class PulseChannelRegisters {
   periodSweep: PeriodSweepData = {
     pace: 0,
-    direction: 1,
+    direction: -1,
     step: 0,
   }
   waveDuty = 0
   lengthEnabled = false
   lengthTimer = 0
   volumeEnvelope: VolumeEnvelopeData = {
-    initialVolume: 0,
     direction: 1,
     pace: 0,
   }
   period = 0
-  trigger: () => void = () => {}
+  volume = 0
+  triggered = false
+  trigger: () => void = () => {  }
 
   nr0: ByteRef
   nr1: ByteRef
@@ -69,7 +69,7 @@ export class PulseChannelRegisters {
       get value(): number {
         return (self.periodSweep.pace << 4)
              + (self.periodSweep.step)
-             + (self.periodSweep.direction == -1 ? 0x8 : 0)
+             + (self.periodSweep.direction == 1 ? 0x8 : 0)
       },
       set value(value: number) {
         self.periodSweep.pace = value >> 4
@@ -90,19 +90,21 @@ export class PulseChannelRegisters {
 
     this.nr2 = {
       get value(): number {
-        return (self.volumeEnvelope.initialVolume << 4)
+        return (self.volume << 4)
           + (self.volumeEnvelope.pace)
-          + (self.volumeEnvelope.direction == -1 ? 0x8 : 0)
+          + (self.volumeEnvelope.direction == 1 ? 0x8 : 0)
       },
       set value(value: number) {
-        self.volumeEnvelope.initialVolume = value >> 4
+        self.volume = value >> 4
         self.volumeEnvelope.pace = value & 0x7
-        self.volumeEnvelope.direction = (value & 0x8) > 0 ? -1 : 1 
+        self.volumeEnvelope.direction = (value & 0x8) > 0 ? 1 : -1 
       }
     }
     
     this.nr3 = {
-      get value(): number { return 0 }, // Write only
+      get value(): number {
+        return self.period & 0xFF
+      },
       set value(value: number) {
         self.period &= 0xF00
         self.period |= value
@@ -110,15 +112,27 @@ export class PulseChannelRegisters {
     }
 
     this.nr4 = {
-      get value(): number { return self.lengthEnabled ? 0x40 : 0 },
+      get value(): number {
+        return (self.lengthEnabled ? 0x40 : 0)
+          + (self.triggered ? 0x80 : 0)
+          + (self.period >> 8)
+      },
       set value(value: number) {
-        self.period &= 0xF00
+        self.period &= 0xFF
         self.period |= (value & 0x7) << 8
-
         self.lengthEnabled = (value & 0x40) > 0
 
-        if (value & 0x80) { self.trigger() }
+        if (value & 0x80) {
+          self.trigger()
+          self.triggered = true
+        }
       }
     }
+  }
+
+  updateVolume(newVolume: number) {
+    this.volume = newVolume
+    if (this.volume < 0) { this.volume = 0 }
+    if (this.volume > 15) { this.volume = 15 }
   }
 }
