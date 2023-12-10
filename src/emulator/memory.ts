@@ -16,14 +16,10 @@ export default class Memory {
 
   controller: Controller
 
-  constructor(controller: Controller, program: number[] = []) {
+  constructor() {
     this.data = new Uint8Array(0x10000)
     this.registers.dmaTransfer.startTransfer =
       (address) => this.dmaTransfer(address)
-    this.controller = controller
-    controller.triggerInterrupt = () => {
-      this.registers.interrupts.setInterrupt(Interrupt.Joypad)
-    }
   }
 
   at(address: number): ByteRef {

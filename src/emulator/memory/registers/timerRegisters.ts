@@ -7,7 +7,7 @@ export class DividerRegister implements ByteRef {
   private _value: number = 0
 
   get value(): number { return this._value }
-  set value(_: number) { this._value = 0 }
+  set value(value: number) { this._value = value } // TODO should reset on write, seperate increment method?
 }
 
 export class TimerControlRegister implements ByteRef {

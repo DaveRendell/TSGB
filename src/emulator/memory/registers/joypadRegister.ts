@@ -2,14 +2,14 @@ import { ByteRef } from "../../refs/byteRef"
 
 // Reference: https://gbdev.io/pandocs/Joypad_Input.html#ff00--p1joyp-joypad
 export class JoypadRegister implements ByteRef {
-  a = false
-  b = false
-  start = false
-  select = false
-  up = false
-  down = false
-  left = false
-  right = false
+  A = false
+  B = false
+  Start = false
+  Select = false
+  Up = false
+  Down = false
+  Left = false
+  Right = false
 
   selectButtons = true
   selectDpad = true
@@ -26,21 +26,21 @@ export class JoypadRegister implements ByteRef {
     return (upperNibble << 4) + 0xF
 }
   set value(value: number) {
-    this.selectButtons = (value & 0x20) > 0
-    this.selectDpad    = (value & 0x10) > 0
+    this.selectButtons = (value & 0x10) > 0
+    this.selectDpad    = (value & 0x20) > 0
   }
 
   private buttonNibble(): number {
-    return (this.start ? 0 : 0x8)
-          + (this.select ? 0 : 0x4)
-          + (this.b ? 0 : 0x2)
-          + (this.a ? 0 : 0x1)
+    return (this.Start ? 0 : 0x8)
+          + (this.Select ? 0 : 0x4)
+          + (this.B ? 0 : 0x2)
+          + (this.A ? 0 : 0x1)
   }
 
   private dpadNibble(): number {
-    return (this.down ? 0 : 0x8)
-          + (this.up ? 0 : 0x4)
-          + (this.left ? 0 : 0x2)
-          + (this.right ? 0 : 0x1)
+    return (this.Down ? 0 : 0x8)
+          + (this.Up ? 0 : 0x4)
+          + (this.Left ? 0 : 0x2)
+          + (this.Right ? 0 : 0x1)
   }
 }
