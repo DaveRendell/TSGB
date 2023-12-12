@@ -1,7 +1,7 @@
 import { addressDisplay } from "../../helpers/displayHexNumbers";
 import { JumpCondition } from "../../types";
 import { Instruction } from "../instruction";
-import { WordLocation, combineBytes, getWordRef, splitBytes } from "./instructionHelpers";
+import { WordLocation, combineBytes, describeByteLocation, describeWordLocation, getWordRef, splitBytes } from "./instructionHelpers";
 import { CONDITIONS, CONDITION_NAMES } from "./jumps";
 
 export const call: Instruction = {
@@ -107,7 +107,7 @@ export function push(registerName: WordLocation): Instruction {
     },
     cycles:  16,
     parameterBytes: 0,
-    description: () => `PUSH ${registerName}`
+    description: () => `PUSH ${describeWordLocation(registerName)}`
   }
 }
 
@@ -124,6 +124,6 @@ export function pop(registerName: WordLocation): Instruction {
     },
     cycles:  12,
     parameterBytes: 0,
-    description: () => `POP ${registerName}`
+    description: () => `POP ${describeWordLocation(registerName)}`
   }
 }

@@ -1,7 +1,7 @@
 import { MutableValue } from "../types";
 import { increment } from "./arithmetic";
 import CPU from "./cpu";
-import { resetBit, setBit, testBit } from "./instructions/instructionHelpers";
+import { from2sComplement, resetBit, setBit, testBit, to2sComplement } from "./instructions/instructionHelpers";
 import Memory from "./memory";
 import { Interrupt } from "./memory/registers/interruptRegisters";
 import { LcdControlRegister, LcdStatusRegister } from "./memory/registers/lcdRegisters";
@@ -42,6 +42,7 @@ export default class Screen {
   scrollY: ByteRef
   scanlineNumber: ByteRef
   backgroundPallette: ByteRef
+  coincidence: ByteRef
   clockCount = 0
 
   gbDoctorHackManualScanline = 0
@@ -63,6 +64,7 @@ export default class Screen {
     this.scrollX = this.memory.registers.scrollX
     this.scanlineNumber = this.memory.registers.scanline
     this.backgroundPallette = this.memory.registers.backgroundPallete
+    this.coincidence = this.memory.registers.scanlineCoincidence
 
     cpu.addClockCallback(this)
     cpu.screen = this
@@ -72,55 +74,89 @@ export default class Screen {
   updateClock(cycle: number) {
     this.clockCount += cycle
     switch(this.mode) {
-      case "HBlank":
+      case "HBlank": // Mode 0
         if (this.clockCount >= 204) {
           this.clockCount -= 204
-          this.scanlineNumber.value++
+          this.setScanline(this.scanlineNumber.value + 1)
           this.gbDoctorHackManualScanline++
           if (this.gbDoctorHackManualScanline === HEIGHT) {
             this.renderScreen()
-            this.memory.registers.interrupts.setInterrupt(Interrupt.VBlank)
-            this.mode = "VBlank"
+            this.setMode("VBlank")
             this.newFrameDrawn = true
           } else {
-            this.mode = "Scanline OAM"
+            this.setMode("Scanline OAM")
           }
         }
         break
-      case "VBlank":
+      case "VBlank": // Mode 1
         if (this.clockCount >= 456) {
           this.clockCount -= 456
-          this.scanlineNumber.value++
+          this.setScanline(this.scanlineNumber.value + 1)
           this.gbDoctorHackManualScanline++
           if (this.gbDoctorHackManualScanline >= SCANLINES) {
-            this.scanlineNumber.value = 0
+            this.setScanline(0)
             this.gbDoctorHackManualScanline = 0
             this.renderScanline()
-            this.mode = "HBlank"
-            this.lcdStatus.mode0InterruptEnabled
-            if (this.lcdStatus.mode0InterruptEnabled) {
-              this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
-            }
+            this.setMode("HBlank")
           }
         }
         break
-      case "Scanline OAM":
+      case "Scanline OAM": // Mode 2
         if (this.clockCount >= 80) {
           this.clockCount -= 80
-          this.mode = "Scanline VRAM"
+          this.setMode("Scanline VRAM")
         }
         break
-      case "Scanline VRAM":
+      case "Scanline VRAM": // Mode 3
         if (this.clockCount >= 172) {
           this.clockCount -= 172
           this.renderScanline()
-          this.mode = "HBlank"
-          if (this.lcdStatus.mode0InterruptEnabled) {
-            this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
-          }
+          this.setMode("HBlank")
         }
         break
     }
+  }
+
+  setScanline(value: number) {
+    this.scanlineNumber.value = value
+
+    if (
+      this.lcdStatus.lycInterruptEnabled
+      && this.scanlineNumber.value == this.coincidence.value
+    ) {
+      this.lcdStatus.lycCoinciding = true
+      this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
+    } else {
+      this.lcdStatus.lycCoinciding = false
+    }
+  }
+
+  setMode(mode: Mode) {
+    switch(mode) {
+      case "HBlank":
+        if (this.lcdStatus.mode0InterruptEnabled) {
+          this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
+        }
+        this.lcdStatus.mode = 0
+        break
+      case "VBlank":
+        this.memory.registers.interrupts.setInterrupt(Interrupt.VBlank)
+        if (this.lcdStatus.mode1InterruptEnabled) {
+          this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
+        }
+        this.lcdStatus.mode = 1
+        break
+      case "Scanline OAM":
+        if (this.lcdStatus.mode2InterruptEnabled) {
+          this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
+        }
+        this.lcdStatus.mode = 2
+        break
+      case "Scanline VRAM":
+        this.lcdStatus.mode = 3
+        break
+    }
+    this.mode = mode
   }
 
   renderScanline(): void {
@@ -146,7 +182,10 @@ export default class Screen {
       const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
       const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).value
       const row = backgroundY & 0x7
-      const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * row
+      if (this.lcdControl.backgroundTilemap == 1) { console.log("oooo")}
+      const rowBaseAddress = (this.lcdControl.backgroundTilemap == 0)
+        ? 0x8000 + 16 * tileId + 2 * row
+        : (0x8800 + 16 * from2sComplement(tileId)) + 2 * row
       const byte1 = this.memory.at(rowBaseAddress).value
       const byte2 = this.memory.at(rowBaseAddress + 1).value
       let pixels: number[][] = []

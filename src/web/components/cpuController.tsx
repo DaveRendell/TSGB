@@ -35,6 +35,7 @@ export default function CpuController({ cpu }: Props) {
       link.click();
       URL.revokeObjectURL(link.href);
     }}>Download GB Doctor Log</button>
+    Is halted: {cpu.isHalted.toString()}
     <h3>Registers</h3>
     <div className="flex-horizonally">
       <div>

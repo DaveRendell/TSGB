@@ -155,6 +155,7 @@ export default class CPU {
   }
 
   handleInterrupt(interrupt: Interrupt): void {
+    this.isHalted = false
     // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
     // Push PC to stack and jump to handler address
     const handlerAddress = INTERRUPT_HANDLERS[interrupt]
