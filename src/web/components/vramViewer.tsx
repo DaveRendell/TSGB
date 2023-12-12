@@ -9,12 +9,20 @@ interface Props {
 
 export function VramViewer({ ppu }: Props) {
   const tileSetCanvas = React.useRef<HTMLCanvasElement>(null)
+  const tileSet0Canvas = React.useRef<HTMLCanvasElement>(null)
+  const tileSet1Canvas = React.useRef<HTMLCanvasElement>(null)
   const backgroundCanvas = React.useRef<HTMLCanvasElement>(null)
   const [sprites, setSprites] = React.useState<Sprite[]>([])
 
   const update = () => {
     if (tileSetCanvas.current) {
       ppu.printTileSet(tileSetCanvas.current)
+    }
+    if (tileSet0Canvas.current) {
+      ppu.printTileset0(tileSet0Canvas.current)
+    }
+    if (tileSet1Canvas.current) {
+      ppu.printTileset1(tileSet1Canvas.current)
     }
     if (backgroundCanvas.current) {
       ppu.printBackgroundLayer(backgroundCanvas.current)
@@ -36,6 +44,16 @@ export function VramViewer({ ppu }: Props) {
           height="192"
           ref={tileSetCanvas}
         />
+        <canvas
+          width="128"
+          height="128"
+          ref={tileSet0Canvas}
+        />
+        <canvas
+          width="128"
+          height="128"
+          ref={tileSet1Canvas}
+        />
       </div>
       <div>
         <h3>Background layer</h3>
@@ -51,7 +69,7 @@ export function VramViewer({ ppu }: Props) {
           ref={backgroundCanvas}
         />
       </div>
-      <div>
+      {/* <div>
         <h3>Sprites</h3>
         <div className="flex-horizonally">
           <div>
@@ -61,7 +79,10 @@ export function VramViewer({ ppu }: Props) {
             sprite 21-40
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
+    <pre>
+      {JSON.stringify(ppu.memory.vram.tiles)}
+    </pre>
   </section>)
 }

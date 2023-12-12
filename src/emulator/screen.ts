@@ -182,20 +182,10 @@ export default class Screen {
       const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
       const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).value
       const row = backgroundY & 0x7
-      if (this.lcdControl.backgroundTilemap == 1) { console.log("oooo")}
-      const rowBaseAddress = (this.lcdControl.backgroundTilemap == 0)
-        ? 0x8000 + 16 * tileId + 2 * row
-        : (0x8800 + 16 * from2sComplement(tileId)) + 2 * row
-      const byte1 = this.memory.at(rowBaseAddress).value
-      const byte2 = this.memory.at(rowBaseAddress + 1).value
-      let pixels: number[][] = []
-      for (let i = 0; i < 8; i++) {
-        const bit1 = (byte1 >> (7 - i)) & 1
-        const bit2 = (byte2 >> (7 - i)) & 1
-        const pixelValue = bit1 + 2 * bit2
-        pixels.push(backgroundPallet[pixelValue])
-      }
-      return pixels
+      const tileRow = this.lcdControl.backgroundTilemap == 0
+        ? this.memory.vram.tileset0(tileId, row)
+        : this.memory.vram.tileset1(tileId, row)
+      return tileRow.map(p => backgroundPallet[p])
     }
 
     // Find which sprites overlap, grab relevant row of tile

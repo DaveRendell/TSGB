@@ -2,6 +2,7 @@ import Controller from "./controller"
 import { Cartridge } from "./memory/cartridges/cartridge"
 import { createCartridge } from "./memory/cartridges/createCartridge"
 import { IoRegisters } from "./memory/registers/ioRegisters"
+import { VRAM } from "./memory/vram"
 import { ByteRef, GetSetByteRef } from "./refs/byteRef"
 import { CompositeWordRef, WordRef } from "./refs/wordRef"
 
@@ -14,6 +15,7 @@ export default class Memory {
   bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
   private cartridge: Cartridge
+  vram: VRAM = new VRAM()
 
   controller: Controller
 
@@ -41,6 +43,10 @@ export default class Memory {
       }
 
       return this.cartridge.rom(address)
+    }
+
+    if (address >= 0x8000 && address < 0xA000) {
+      return this.vram.at(address)
     }
 
     // IO Registers

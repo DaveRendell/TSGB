@@ -1,9 +1,10 @@
-import { Interrupt, MutableValue } from "../types";
+import { MutableValue } from "../types";
 import APU from "./apu";
 import { CpuRegisters } from "./cpu/cpuRegisters";
 import { decodeInstruction } from "./instruction";
 import { resetBit, splitBytes } from "./instructions/instructionHelpers";
 import Memory from "./memory";
+import { Interrupt } from "./memory/registers/interruptRegisters";
 import { ByteRef } from "./refs/byteRef";
 import { WordRef } from "./refs/wordRef";
 import Screen from "./screen"
@@ -12,13 +13,12 @@ import Timer from "./timer";
 interface ClockCallback { updateClock(cycles: number): void }
 
 const INTERRUPT_HANDLERS: Record<Interrupt, number> = {
-  "VBlank": 0x0040,
-  "LCD": 0x0048,
-  "Timer": 0x0050,
-  "Joypad": 0x0060,
+  [Interrupt.VBlank]: 0x0040,
+  [Interrupt.LCD]: 0x0048,
+  [Interrupt.Timer]: 0x0050,
+  [Interrupt.Serial]: 0x0058,
+  [Interrupt.Joypad]: 0x0060,
 }
-
-const INTERRUPTS: Interrupt[] = ["VBlank"]
 
 export default class CPU {
   running = false
@@ -151,7 +151,7 @@ export default class CPU {
 
     this.interruptFlags.value = this.interruptFlags.value & ~(1 << id)
 
-    return INTERRUPTS[id]
+    return id as Interrupt
   }
 
   handleInterrupt(interrupt: Interrupt): void {
@@ -203,7 +203,7 @@ export default class CPU {
         address = this.registers.PC.value
 
         const interrupt = this.getInterrupt()
-        if (interrupt) {
+        if (interrupt !== null) {
           this.handleInterrupt(interrupt)
         }
 

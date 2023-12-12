@@ -30,22 +30,7 @@ export default class PPU {
   }
 
   getTile(tileId: number): Tile {
-    const tileData: Tile = []
-    const tileBaseAddress = TILESET_BASE_ADDRESS + 16 * tileId
-    for (let row = 0; row < 8; row++) {
-      const rowData: number[] = []
-      const byte1 = this.memory.at(tileBaseAddress + 2 * row).value
-      const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value
-      for (let bit = 7; bit >= 0; bit--) {
-        const bit1 = (byte1 >> bit) & 1
-        const bit2 = (byte2 >> bit) & 1
-        const pixelValue = bit1 + (bit2 << 1)
-
-        rowData.push(pixelValue)
-      }
-      tileData.push(rowData)
-    }
-    return tileData
+    return this.memory.vram.tiles[tileId]
   }
 
   printTileSet(canvas: HTMLCanvasElement): void {
@@ -74,6 +59,62 @@ export default class PPU {
           const bit2 = (byte2 >> bit) & 1
           const pixelValue = bit1 + (bit2 << 1)
           const colour = COLOURS[pixelValue]
+          imageData.data[4 * pixelNumber + 0] = colour[0]
+          imageData.data[4 * pixelNumber + 1] = colour[1]
+          imageData.data[4 * pixelNumber + 2] = colour[2]
+          imageData.data[4 * pixelNumber + 3] = 255
+        }
+      }
+    }
+
+    context.putImageData(imageData, 0, 0)
+  }
+
+  printTileset0(canvas: HTMLCanvasElement): void {
+    const context = canvas.getContext("2d")
+    if (!context) { throw new Error("No canvas context") }
+    canvas.width = 128
+    canvas.height = 192
+    const imageData = context.createImageData(128, 192)
+
+    for (let i = 0; i < 0x100; i++) {
+      const baseX = (i & 0b1111) << 3
+      const baseY = (i >> 4) << 3
+      for (let row = 0; row < 8; row++) {
+        const rowData = this.memory.vram.tileset0(i, row)
+          .map(p => COLOURS[p])
+        const basePixelNumber = (128 * (baseY + row)) + baseX
+        for (let pixel = 0; pixel < 8; pixel++) {
+          const colour = rowData[pixel] 
+          const pixelNumber = basePixelNumber + pixel
+          imageData.data[4 * pixelNumber + 0] = colour[0]
+          imageData.data[4 * pixelNumber + 1] = colour[1]
+          imageData.data[4 * pixelNumber + 2] = colour[2]
+          imageData.data[4 * pixelNumber + 3] = 255
+        }
+      }
+    }
+
+    context.putImageData(imageData, 0, 0)
+  }
+
+  printTileset1(canvas: HTMLCanvasElement): void {
+    const context = canvas.getContext("2d")
+    if (!context) { throw new Error("No canvas context") }
+    canvas.width = 128
+    canvas.height = 192
+    const imageData = context.createImageData(128, 192)
+
+    for (let i = 0; i < 0x100; i++) {
+      const baseX = (i & 0b1111) << 3
+      const baseY = (i >> 4) << 3
+      for (let row = 0; row < 8; row++) {
+        const rowData = this.memory.vram.tileset1(i, row)
+          .map(p => COLOURS[p])
+        const basePixelNumber = (128 * (baseY + row)) + baseX
+        for (let pixel = 0; pixel < 8; pixel++) {
+          const colour = rowData[pixel] 
+          const pixelNumber = basePixelNumber + pixel
           imageData.data[4 * pixelNumber + 0] = colour[0]
           imageData.data[4 * pixelNumber + 1] = colour[1]
           imageData.data[4 * pixelNumber + 2] = colour[2]
