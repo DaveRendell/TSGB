@@ -125,6 +125,7 @@ export default class Screen {
       && this.scanlineNumber.value == this.coincidence.value
     ) {
       this.lcdStatus.lycCoinciding = true
+      // TODO: why does this make SML glitchy AF?
       this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
     } else {
       this.lcdStatus.lycCoinciding = false
@@ -182,7 +183,7 @@ export default class Screen {
       const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
       const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).value
       const row = backgroundY & 0x7
-      const tileRow = this.lcdControl.backgroundTilemap == 0
+      const tileRow = this.lcdControl.backgroundTilemap == 1
         ? this.memory.vram.tileset0(tileId, row)
         : this.memory.vram.tileset1(tileId, row)
       return tileRow.map(p => backgroundPallet[p])

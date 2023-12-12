@@ -1,4 +1,5 @@
 import CPU from "./cpu";
+import { from2sComplement } from "./instructions/instructionHelpers";
 import Memory from "./memory";
 
 const COLOURS = [
@@ -127,7 +128,7 @@ export default class PPU {
   }
 
   // Load BIOS to 0x0055 to test
-  printBackgroundLayer(canvas: HTMLCanvasElement): void {
+  printBackgroundLayer(canvas: HTMLCanvasElement, tileset: number): void {
     // Tilemap 1: 0x9800 - 0x9BFF, so 256 bytes
     // once byte is one tile surely?
     const context = canvas.getContext("2d")
@@ -150,7 +151,7 @@ export default class PPU {
         const baseX = i * 8
         const tileMapAddress = 0x9800 + i + (j * 32)
         const tileNumber = this.memory.at(tileMapAddress).value
-        const tileData = this.getTile(tileNumber)
+        const tileData = this.getTile(tileset == 0 ? tileNumber : 0x100 + from2sComplement(tileNumber))
         const imageData = context.createImageData(8, 8)
         for (let x = 0; x < 8; x++) {
           for (let y = 0; y < 8; y++) {

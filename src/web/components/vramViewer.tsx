@@ -1,5 +1,6 @@
 import * as React from "react"
 import PPU, { Sprite } from "../../emulator/ppu"
+import { valueDisplay } from "../../helpers/displayHexNumbers"
 
 interface Props {
   ppu: PPU
@@ -13,6 +14,8 @@ export function VramViewer({ ppu }: Props) {
   const tileSet1Canvas = React.useRef<HTMLCanvasElement>(null)
   const backgroundCanvas = React.useRef<HTMLCanvasElement>(null)
   const [sprites, setSprites] = React.useState<Sprite[]>([])
+  const [sX, setSX] = React.useState(0)
+  const [sY, setSY] = React.useState(0)
 
   const update = () => {
     if (tileSetCanvas.current) {
@@ -25,8 +28,10 @@ export function VramViewer({ ppu }: Props) {
       ppu.printTileset1(tileSet1Canvas.current)
     }
     if (backgroundCanvas.current) {
-      ppu.printBackgroundLayer(backgroundCanvas.current)
+      ppu.printBackgroundLayer(backgroundCanvas.current, 1)
     }
+    setSX(ppu.memory.registers.scrollX.value)
+    setSY(ppu.memory.registers.scrollY.value)
     setSprites(ppu.getSpriteInfo())
   }
 
@@ -63,6 +68,7 @@ export function VramViewer({ ppu }: Props) {
             className="pallete-block"
             style={{backgroundColor: toColour(colour)}}
           >{i}</span>)}</p>
+        <p>sX: {valueDisplay(sX)}, sY: {valueDisplay(sY)}</p>
         <canvas
           width="256"
           height="256"
