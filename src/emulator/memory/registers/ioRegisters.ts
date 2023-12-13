@@ -4,7 +4,7 @@ import { BootRomRegister } from "./bootRomRegister"
 import { DmaTransferRegister } from "./dmaTransferRegister"
 import { InterruptRegister } from "./interruptRegisters"
 import { JoypadRegister } from "./joypadRegister"
-import { LcdControlRegister, LcdStatusRegister } from "./lcdRegisters"
+import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./lcdRegisters"
 import { DividerRegister, TimerControlRegister } from "./timerRegisters"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
@@ -29,9 +29,9 @@ export class IoRegisters {
   scanline = new GenericByteRef()
   scanlineCoincidence = new GenericByteRef()
   dmaTransfer = new DmaTransferRegister()
-  backgroundPallete = new GenericByteRef()
-  objectPallete1 = new GenericByteRef()
-  objectPallete2 = new GenericByteRef()
+  backgroundPallete = new PalletteRegister()
+  objectPallete1 = new PalletteRegister()
+  objectPallete2 = new PalletteRegister()
   windowY = new GenericByteRef()
   windowX = new GenericByteRef()
 

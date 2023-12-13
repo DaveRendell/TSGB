@@ -59,3 +59,22 @@ export class LcdStatusRegister implements ByteRef {
     this.mode0InterruptEnabled = (value & 0x8) > 0
   }
 }
+
+export class PalletteRegister implements ByteRef {
+  map = [0, 0, 0, 0]
+  
+  get value(): number {
+    return (this.map[0] << 0)
+         + (this.map[1] << 2)
+         + (this.map[2] << 4)
+         + (this.map[3] << 6)
+  }
+  set value(value: number) {
+    this.map = [
+      (value >> 0) & 3,
+      (value >> 2) & 3,
+      (value >> 4) & 3,
+      (value >> 6) & 3,
+    ]
+  }
+}

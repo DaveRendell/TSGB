@@ -52,6 +52,7 @@ export default class CPU {
 
   constructor(memory: Memory) {
     this.memory = memory
+    memory.cpu = this
     this.registers = new CpuRegisters()
     this.timer = new Timer(memory)
     this.addClockCallback(this.timer)
@@ -198,7 +199,7 @@ export default class CPU {
     
     // try {
       frameLoop:
-      while (!this.breakpoints.has(address)) {
+      while (!this.breakpoints.has(this.registers.PC.value)) {
         this.executeNextInstruction()
         address = this.registers.PC.value
 

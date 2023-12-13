@@ -1,4 +1,5 @@
 import Controller from "./controller"
+import CPU from "./cpu"
 import { Cartridge } from "./memory/cartridges/cartridge"
 import { createCartridge } from "./memory/cartridges/createCartridge"
 import { IoRegisters } from "./memory/registers/ioRegisters"
@@ -9,6 +10,7 @@ import { CompositeWordRef, WordRef } from "./refs/wordRef"
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
   private data: Uint8Array
+  cpu: CPU
 
   registers: IoRegisters = new IoRegisters()
 
@@ -27,6 +29,9 @@ export default class Memory {
   }
 
   at(address: number): ByteRef {
+    if (this.cpu.breakpoints.has(address)) {
+      this.cpu.pause()
+    }
     // ROM
     if (address < 0x8000) { 
       if (

@@ -40,7 +40,7 @@ export default class Timer {
       this.counter.value++
       if (this.counter.value === 0) {
         this.counter.value = this.modulo.value
-        this.interrupts.setInterrupt(Interrupt.VBlank)
+        this.interrupts.setInterrupt(Interrupt.Timer)
       }
     }
   }

@@ -4,7 +4,7 @@ import CPU from "./cpu";
 import { from2sComplement, resetBit, setBit, testBit, to2sComplement } from "./instructions/instructionHelpers";
 import Memory from "./memory";
 import { Interrupt } from "./memory/registers/interruptRegisters";
-import { LcdControlRegister, LcdStatusRegister } from "./memory/registers/lcdRegisters";
+import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
 import { ByteRef } from "./refs/byteRef";
 
 const WIDTH = 160
@@ -41,7 +41,7 @@ export default class Screen {
   scrollX: ByteRef
   scrollY: ByteRef
   scanlineNumber: ByteRef
-  backgroundPallette: ByteRef
+  backgroundPallette: PalletteRegister
   coincidence: ByteRef
   clockCount = 0
 
@@ -161,6 +161,8 @@ export default class Screen {
   }
 
   renderScanline(): void {
+    if (!this.lcdControl.enabled) { return }
+
     const scanline = this.gbDoctorHackManualScanline//this.scanlineNumber.read()
 
     const line = this.bufferContext.createImageData(WIDTH, 1)
@@ -186,7 +188,7 @@ export default class Screen {
       const tileRow = this.lcdControl.backgroundTilemap == 1
         ? this.memory.vram.tileset0(tileId, row)
         : this.memory.vram.tileset1(tileId, row)
-      return tileRow.map(p => backgroundPallet[p])
+      return tileRow.map(p => COLOURS[this.backgroundPallette.map[p]])
     }
 
     // Find which sprites overlap, grab relevant row of tile
@@ -236,13 +238,15 @@ export default class Screen {
     for (let i = 0; i < WIDTH; i++) {
       let pixel: number[] | undefined
 
-      // Render sprites
-      const sprite = spriteRows
-        .find(({x}) => i < x && i >= x - 8)
-      if (sprite) {
-        pixel = sprite.row[8 - (sprite.x - i)]
+      if (this.lcdControl.objectsEnabled) {
+        // Render sprites
+        const sprite = spriteRows
+          .find(({x}) => i < x && i >= x - 8)
+        if (sprite) {
+          pixel = sprite.row[8 - (sprite.x - i)]
+        }
       }
-
+      
       // Render background
       if (!pixel) {
         pixel = backgroundTileRow[(scrollX + i) % 8]
