@@ -2,6 +2,7 @@ import Controller from "./controller"
 import CPU from "./cpu"
 import { Cartridge } from "./memory/cartridges/cartridge"
 import { createCartridge } from "./memory/cartridges/createCartridge"
+import { OAM } from "./memory/oam"
 import { IoRegisters } from "./memory/registers/ioRegisters"
 import { VRAM } from "./memory/vram"
 import { ByteRef, GetSetByteRef } from "./refs/byteRef"
@@ -17,7 +18,8 @@ export default class Memory {
   bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
   private cartridge: Cartridge
-  vram: VRAM = new VRAM()
+  vram = new VRAM()
+  oam = new OAM()
 
   controller: Controller
 
@@ -50,8 +52,14 @@ export default class Memory {
       return this.cartridge.rom(address)
     }
 
+    // VRAM
     if (address >= 0x8000 && address < 0xA000) {
       return this.vram.at(address)
+    }
+
+    // OAM
+    if (address >= 0xFE00 && address < 0xFEA0) {
+      return this.oam.at(address)
     }
 
     // IO Registers
@@ -85,7 +93,7 @@ export default class Memory {
   // https://gbdev.io/pandocs/OAM_DMA_Transfer.html
   dmaTransfer(address: number) {
     for (let i = 0; i < 0xA0; i++) {
-      this.data[0xFE00 + i] = this.data[address + i]
+      this.at(0xFE00 + i).value = this.at(address + i).value
     }
   }
 }

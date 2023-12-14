@@ -22,7 +22,7 @@ export class GetSetByteRef implements ByteRef {
   getter: () => number
   setter: (value: number) => void
   
-  constructor(getter, setter) {
+  constructor(getter: () => number, setter: (value: number) => void) {
     this.getter = getter
     this.setter = setter
   }
