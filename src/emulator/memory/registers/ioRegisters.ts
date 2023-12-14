@@ -30,8 +30,8 @@ export class IoRegisters {
   scanlineCoincidence = new GenericByteRef()
   dmaTransfer = new DmaTransferRegister()
   backgroundPallete = new PalletteRegister()
+  objectPallete0 = new PalletteRegister()
   objectPallete1 = new PalletteRegister()
-  objectPallete2 = new PalletteRegister()
   windowY = new GenericByteRef()
   windowX = new GenericByteRef()
 
@@ -78,8 +78,8 @@ export class IoRegisters {
     this.data[0xFF45] = this.scanlineCoincidence
     this.data[0xFF46] = this.dmaTransfer
     this.data[0xFF47] = this.backgroundPallete
-    this.data[0xFF48] = this.objectPallete1
-    this.data[0xFF49] = this.objectPallete2
+    this.data[0xFF48] = this.objectPallete0
+    this.data[0xFF49] = this.objectPallete1
     this.data[0xFF4A] = this.windowY
     this.data[0xFF4B] = this.windowX
 

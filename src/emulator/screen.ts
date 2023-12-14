@@ -167,101 +167,72 @@ export default class Screen {
 
     const line = this.bufferContext.createImageData(WIDTH, 1)
 
-    const backgroundPalletByte = this.backgroundPallette.value
-    const backgroundPallet: number[][] = [
-      COLOURS[(backgroundPalletByte >> 0) & 3],
-      COLOURS[(backgroundPalletByte >> 2) & 3],
-      COLOURS[(backgroundPalletByte >> 4) & 3],
-      COLOURS[(backgroundPalletByte >> 6) & 3],
-    ]
-
     const scrollX = this.scrollX.value
     const scrollY = this.scrollY.value
     const backgroundY = (scrollY + scanline) & 0xFF
 
     // Returns the 8 long row of the background tile at pixel offset given
-    const getBackgroundTileRow = (offset: number): number[][] => {
+    const getBackgroundTileRow = (offset: number): number[] => {
       const backgroundX = (scrollX + offset) & 0xFF
       const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
       const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).value
       const row = backgroundY & 0x7
-      const tileRow = this.lcdControl.backgroundTilemap == 1
+      return this.lcdControl.backgroundTilemap == 1
         ? this.memory.vram.tileset0(tileId, row)
         : this.memory.vram.tileset1(tileId, row)
-      return tileRow.map(p => COLOURS[this.backgroundPallette.map[p]])
-    }
-
-    // Find which sprites overlap, grab relevant row of tile
-    // TODO: handle sprite priority
-    // TODO: Fix... buginess?
-    const spriteSize = this.lcdControl.objectSize
-    const spriteRows: SpriteRow[] = []
-    for (let i = 0; i < 40; i++) {
-      const spriteBaseAddress = SPRITE_MEMORY_START + 4 * i
-      const spriteY = this.memory.at(spriteBaseAddress + 0).value
-      const palleteAddress = 0xFF48 // TODO multiple palletes
-      const palletByte = this.memory.at(palleteAddress).value
-      const pallet: number[][] = [
-        COLOURS[(palletByte >> 0) & 3],
-        COLOURS[(palletByte >> 2) & 3],
-        COLOURS[(palletByte >> 4) & 3],
-        COLOURS[(palletByte >> 6) & 3],
-      ]
-
-      // TODO flip X and Y
-      const spriteRow = spriteY - 9 - scanline
-      if (spriteRow > 0 && spriteRow <= spriteSize) {
-        let tileId = this.memory.at(spriteBaseAddress + 2).value
-        if (spriteSize === 16) {
-          tileId = spriteRow > 8 ? tileId | 1 : tileId & 0xFE
-        }
-        const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * (spriteRow % 8)
-        const byte1 = this.memory.at(rowBaseAddress).value
-        const byte2 = this.memory.at(rowBaseAddress + 1).value
-        let pixels: (number[] | undefined)[] = []
-        for (let i = 0; i < 8; i++) {
-          const bit1 = (byte1 >> (7 - i)) & 1
-          const bit2 = (byte2 >> (7 - i)) & 1
-          const pixelValue = bit1 + 2 * bit2
-          pixels.push(pixelValue == 0 ? undefined : pallet[pixelValue])
-        }
-        spriteRows.push({
-          x: this.memory.at(spriteBaseAddress + 1).value,
-          row: pixels
-        })
-      }
     }
 
     let backgroundTileRow = getBackgroundTileRow(0)
     let backgroundTileCounter = scrollX & 0x7
+
+    const sprites = this.memory.oam.spritesAtScanline()
+    const highPrioritySprites = sprites.filter(s => !s.priority)
+    const lowPrioritySprites = sprites.filter(s => s.priority)
     
     for (let i = 0; i < WIDTH; i++) {
-      let pixel: number[] | undefined
+      let pixel: number | undefined
 
+      // Render high priority sprites (that go above background)
       if (this.lcdControl.objectsEnabled) {
-        // Render sprites
-        const sprite = spriteRows
-          .find(({x}) => i < x && i >= x - 8)
-        if (sprite) {
-          pixel = sprite.row[8 - (sprite.x - i)]
+        pixel = highPrioritySprites
+          .filter(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8))
+          .map(sprite => sprite.pixelAt(scanline, i, this.lcdControl.objectSize))
+          .find(p => p !== undefined)
+      }
+      
+      // Render background (excluding the lowest colour in the pallete)
+      if (pixel === undefined) {
+        const backgroundPixel = backgroundTileRow[(scrollX + i) % 8]
+        if (backgroundPixel !== 0) {
+          pixel = this.backgroundPallette.map[backgroundPixel]
         }
       }
       
-      // Render background
-      if (!pixel) {
-        pixel = backgroundTileRow[(scrollX + i) % 8]
-        
-        
-      }
+      // Get next background tile if needed
       backgroundTileCounter++
       if (backgroundTileCounter === 8) {
         backgroundTileCounter = 0
         backgroundTileRow = getBackgroundTileRow(i + 1)
       }
 
-      line.data[4 * i + 0] = pixel[0]
-      line.data[4 * i + 1] = pixel[1]
-      line.data[4 * i + 2] = pixel[2]
+      // Render low priority sprites (that go below non zero background)
+      if (pixel === undefined && this.lcdControl.objectsEnabled) {
+        const sprite = lowPrioritySprites
+          .find(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8))
+        if (sprite) {
+          pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
+        }
+      }
+
+      // If nothing else has rendered, use the lowest colour in the pallete
+      if (pixel === undefined) {
+        pixel = this.backgroundPallette.map[0]
+      }
+
+      const colour = COLOURS[pixel]
+      line.data[4 * i + 0] = colour[0]
+      line.data[4 * i + 1] = colour[1]
+      line.data[4 * i + 2] = colour[2]
       line.data[4 * i + 3] = 255
 
     }

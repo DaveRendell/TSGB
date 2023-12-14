@@ -19,7 +19,7 @@ export default class Memory {
   private bootRom = new Uint8Array(0x100)
   private cartridge: Cartridge
   vram = new VRAM()
-  oam = new OAM()
+  oam: OAM
 
   controller: Controller
 
@@ -28,6 +28,7 @@ export default class Memory {
     this.registers.dmaTransfer.startTransfer =
       (address) => this.dmaTransfer(address)
     this.cartridge = new Cartridge(new Uint8Array())
+    this.oam = new OAM(this)
   }
 
   at(address: number): ByteRef {
