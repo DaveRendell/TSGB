@@ -18,9 +18,8 @@ const COLOURS = [
   [0, 0, 0],
 ]
 
-const SPRITE_MEMORY_START = 0xFE00
-const TILESET_MEMORY_START = 0x8000
 const BACKGROUND_MEMORY_START = 0x9800
+const WINDOW_MEMORY_START = 0x9C00
 
 type Mode = "HBlank" | "VBlank" | "Scanline OAM" | "Scanline VRAM"
 
@@ -170,6 +169,7 @@ export default class Screen {
     const scrollX = this.scrollX.value
     const scrollY = this.scrollY.value
     const backgroundY = (scrollY + scanline) & 0xFF
+    const windowY = scanline - this.memory.registers.windowY.value
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getBackgroundTileRow = (offset: number): number[] => {
@@ -188,17 +188,35 @@ export default class Screen {
     const sprites = this.memory.oam.spritesAtScanline()
     const highPrioritySprites = sprites.filter(s => !s.priority)
     const lowPrioritySprites = sprites.filter(s => s.priority)
+
+    const winY = scanline - this.memory.registers.windowY.value
     
     for (let i = 0; i < WIDTH; i++) {
+      if (!this.lcdControl.enabled) { return }
       let pixel: number | undefined
 
+      // Render window
+      if (this.lcdControl.windowEnabled) {
+        const winX = i - (this.memory.registers.windowX.value - 7)
+        if (winY >= 0 && winX >= 0) {
+          const tileMapNumber = (winX >> 3) + (20 * (winY >> 3))
+          const tileId = this.memory.at(WINDOW_MEMORY_START + tileMapNumber).value
+          const row = winY & 0x7
+          pixel =  this.lcdControl.backgroundTilemap == 1
+            ? this.memory.vram.tileset0(tileId, row)[winX % 8]
+            : this.memory.vram.tileset1(tileId, row)[winX % 8]
+        }
+      }
+
       // Render high priority sprites (that go above background)
-      if (this.lcdControl.objectsEnabled) {
+      if (pixel === undefined && this.lcdControl.objectsEnabled) {
         pixel = highPrioritySprites
           .filter(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8))
           .map(sprite => sprite.pixelAt(scanline, i, this.lcdControl.objectSize))
           .find(p => p !== undefined)
       }
+
+      
       
       // Render background (excluding the lowest colour in the pallete)
       if (pixel === undefined) {

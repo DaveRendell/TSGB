@@ -18,6 +18,7 @@ export class LcdControlRegister implements ByteRef {
          + (this.tileDataArea << 4)
          + (this.backgroundTilemap << 3)
          + (this.objectSize == 16 ? 0x4 : 0)
+         + (this.objectsEnabled ? 0x2 : 0)
          + (this.backgroundWindowDisplay ? 0x1 : 0)
   }
 
