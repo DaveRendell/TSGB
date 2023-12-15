@@ -9,7 +9,6 @@ interface Props {
 
 
 export function VramViewer({ ppu }: Props) {
-  const tileSetCanvas = React.useRef<HTMLCanvasElement>(null)
   const tileSet0Canvas = React.useRef<HTMLCanvasElement>(null)
   const tileSet1Canvas = React.useRef<HTMLCanvasElement>(null)
   const backgroundCanvas = React.useRef<HTMLCanvasElement>(null)
@@ -18,9 +17,6 @@ export function VramViewer({ ppu }: Props) {
   const [sY, setSY] = React.useState(0)
 
   const update = () => {
-    if (tileSetCanvas.current) {
-      ppu.printTileSet(tileSetCanvas.current)
-    }
     if (tileSet0Canvas.current) {
       ppu.printTileset0(tileSet0Canvas.current)
     }
@@ -44,21 +40,24 @@ export function VramViewer({ ppu }: Props) {
     <div className="flex-horizonally">
       <div>
         <h3>Tile data</h3>
-        <canvas
-          width="128"
-          height="192"
-          ref={tileSetCanvas}
-        />
-        <canvas
-          width="128"
-          height="128"
-          ref={tileSet0Canvas}
-        />
-        <canvas
-          width="128"
-          height="128"
-          ref={tileSet1Canvas}
-        />
+        <div className="flex-horizonally">
+          <div>
+            <h4>Tileset 0</h4>
+              <canvas
+                width="128"
+                height="128"
+                ref={tileSet0Canvas}
+              />
+          </div>
+          <div>
+            <h4>Tileset 1</h4>
+              <canvas
+                width="128"
+                height="128"
+                ref={tileSet1Canvas}
+              />
+          </div>
+        </div>
       </div>
       <div>
         <h3>Background layer</h3>
@@ -75,20 +74,24 @@ export function VramViewer({ ppu }: Props) {
           ref={backgroundCanvas}
         />
       </div>
-      {/* <div>
-        <h3>Sprites</h3>
-        <div className="flex-horizonally">
-          <div>
-            sprite 1-20
-          </div>
-          <div>
-            sprite 21-40
-          </div>
-        </div>
-      </div> */}
+      
     </div>
-    <pre>
-      {JSON.stringify(ppu.memory.vram.tiles)}
-    </pre>
+    <div>
+      <h3>Sprites</h3>
+      <div className="flex-horizonally">
+        <div>
+          sprite 1-20
+        </div>
+        <div>
+          sprite 11-20
+        </div>
+        <div>
+          sprite 21-30
+        </div>
+        <div>
+          sprite 31-40
+        </div>
+      </div>
+    </div>
   </section>)
 }

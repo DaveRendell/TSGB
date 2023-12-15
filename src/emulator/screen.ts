@@ -44,8 +44,6 @@ export default class Screen {
   coincidence: ByteRef
   clockCount = 0
 
-  gbDoctorHackManualScanline = 0
-
   mode: Mode = "Scanline OAM"
 
   newFrameDrawn = false
@@ -77,8 +75,7 @@ export default class Screen {
         if (this.clockCount >= 204) {
           this.clockCount -= 204
           this.setScanline(this.scanlineNumber.value + 1)
-          this.gbDoctorHackManualScanline++
-          if (this.gbDoctorHackManualScanline === HEIGHT) {
+          if (this.scanlineNumber.value === HEIGHT) {
             this.renderScreen()
             this.setMode("VBlank")
             this.newFrameDrawn = true
@@ -91,10 +88,8 @@ export default class Screen {
         if (this.clockCount >= 456) {
           this.clockCount -= 456
           this.setScanline(this.scanlineNumber.value + 1)
-          this.gbDoctorHackManualScanline++
-          if (this.gbDoctorHackManualScanline >= SCANLINES) {
+          if (this.scanlineNumber.value > SCANLINES) {
             this.setScanline(0)
-            this.gbDoctorHackManualScanline = 0
             this.renderScanline()
             this.setMode("HBlank")
           }
@@ -162,7 +157,7 @@ export default class Screen {
   renderScanline(): void {
     if (!this.lcdControl.enabled) { return }
 
-    const scanline = this.gbDoctorHackManualScanline//this.scanlineNumber.read()
+    const scanline = this.scanlineNumber.value
 
     const line = this.bufferContext.createImageData(WIDTH, 1)
 
@@ -175,9 +170,11 @@ export default class Screen {
     const getBackgroundTileRow = (offset: number): number[] => {
       const backgroundX = (scrollX + offset) & 0xFF
       const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
-      const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).value
+      const tileId = this.lcdControl.backgroundTilemap == 0
+        ? this.memory.vram.tilemap0(tileMapNumber)
+        : this.memory.vram.tilemap1(tileMapNumber)
       const row = backgroundY & 0x7
-      return this.lcdControl.backgroundTilemap == 1
+      return this.lcdControl.tileDataArea == 1
         ? this.memory.vram.tileset0(tileId, row)
         : this.memory.vram.tileset1(tileId, row)
     }
@@ -200,9 +197,11 @@ export default class Screen {
         const winX = i - (this.memory.registers.windowX.value - 7)
         if (winY >= 0 && winX >= 0) {
           const tileMapNumber = (winX >> 3) + (20 * (winY >> 3))
-          const tileId = this.memory.at(WINDOW_MEMORY_START + tileMapNumber).value
+          const tileId = this.lcdControl.windowTilemap == 0
+            ? this.memory.vram.tilemap0(tileMapNumber)
+            : this.memory.vram.tilemap1(tileMapNumber)
           const row = winY & 0x7
-          pixel =  this.lcdControl.backgroundTilemap == 1
+          pixel =  this.lcdControl.tileDataArea == 1
             ? this.memory.vram.tileset0(tileId, row)[winX % 8]
             : this.memory.vram.tileset1(tileId, row)[winX % 8]
         }

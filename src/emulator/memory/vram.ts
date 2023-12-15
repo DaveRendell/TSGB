@@ -44,5 +44,13 @@ export class VRAM {
     const adjustedTileNumber = 0x100 + from2sComplement(tileNumber)
     return this.tiles[adjustedTileNumber][rowNumber]
   }
+
+  tilemap0(id: number): number {
+    return this.data[0x1800 + id]
+  }
+
+  tilemap1(id: number): number {
+    return this.data[0x1C00 + id]
+  }
 }
 

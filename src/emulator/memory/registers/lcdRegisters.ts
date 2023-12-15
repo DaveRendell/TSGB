@@ -6,7 +6,7 @@ export class LcdControlRegister implements ByteRef {
   windowTilemap = 0
   windowEnabled = false
   tileDataArea = 0
-  backgroundTilemap = 0
+  backgroundTilemap = 1
   objectSize: 8 | 16 = 8
   objectsEnabled = false
   backgroundWindowDisplay = false
