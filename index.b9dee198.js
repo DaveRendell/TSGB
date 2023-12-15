@@ -2952,8 +2952,6 @@ var _appDefault = parcelHelpers.interopDefault(_app);
 var _indexCss = require("./index.css");
 var _memory = require("../emulator/memory");
 var _memoryDefault = parcelHelpers.interopDefault(_memory);
-var _register = require("../emulator/register");
-var _registerDefault = parcelHelpers.interopDefault(_register);
 var _cpu = require("../emulator/cpu");
 var _cpuDefault = parcelHelpers.interopDefault(_cpu);
 var _ppu = require("../emulator/ppu");
@@ -2962,50 +2960,10 @@ var _apu = require("../emulator/apu");
 var _apuDefault = parcelHelpers.interopDefault(_apu);
 var _controller = require("../emulator/controller");
 var _controllerDefault = parcelHelpers.interopDefault(_controller);
-const controller = new (0, _controllerDefault.default)();
+const memory = new (0, _memoryDefault.default)();
+const controller = new (0, _controllerDefault.default)(memory);
 controller.initialiseEvents();
-const memory = new (0, _memoryDefault.default)(controller, [
-    0x76 // HALT
-]);
-// const memory = new Memory([
-//   0b00100110, 0x0D, // Set H to 0x0D
-//   0b00000110, 0x02, // Set B to 2
-//   // Loop until B > 0x0F
-//     0b01101000, // Set L to B
-//     0b01111110, // Set A = (HL)
-//     0b11111110, 0, // Check if A == 0
-//     0b00100000, to2sComplement(9), // If (HL) != 0, skip next block
-//       // Add B to L, L = 2*B
-//       0b01111101, // Set A to L
-//       0b10000000, // Add B to A
-//       0b01101111, // Set L to A
-//       0b00111000, to2sComplement(4), // If L > 0xFF, skip to `INC B`
-//       0b00110110, 1, // Set (HL) to 1
-//       0b00110000, to2sComplement(-9), // Jump back until Add operation overflows
-//   0b00000100, // INC B
-//   0b00111110, 0xF, // LD A,0xF
-//   0b10111000, // CP A,0
-//   0b00100000, to2sComplement(-21), // if B is not 0xF, return to start of B loop
-//   // Sieve complete, output to memory starting 0x0F00
-//   // B will point to progress through sieve
-//   // C will point to progress through output
-//   0b00000110, 2, // LD B,2 (skip 0 and 1)
-//   // Loop until B overflows
-//     0b00100110, 0x0D, // Set H to 0x0D
-//     0b01101000, // Set L to B
-//     0b01111110, // Set A = M
-//     0b11111110, 1, // Compare A to 1
-//     0b101000, to2sComplement(5), // If A == 1, skip to INC B
-//       0b00100110, 0x0F, // Set H to 0x0F
-//       0b01101001, // Set L to C
-//       0b01110000, // Write B to M
-//       0b00001100, // INC C
-//     0b00000100, // INC B
-//   0b00100000, to2sComplement(-16), // Jump to start of loop
-//   0x76 // HALT
-// ])
-const registers = new (0, _registerDefault.default)();
-const cpu = new (0, _cpuDefault.default)(memory, registers);
+const cpu = new (0, _cpuDefault.default)(memory);
 const ppu = new (0, _ppuDefault.default)(cpu);
 const apu = new (0, _apuDefault.default)(cpu);
 var mountNode = document.getElementById("app");
@@ -3017,7 +2975,7 @@ root.render(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _appDefault.default), {
     controller: controller
 }, void 0, false, {
     fileName: "src/web/index.tsx",
-    lineNumber: 74,
+    lineNumber: 23,
     columnNumber: 13
 }, undefined));
 
@@ -3026,7 +2984,7 @@ root.render(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _appDefault.default), {
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react-dom/client":"lOjBx","react":"21dqq","./components/app":"5EgNK","./index.css":"85YVu","../emulator/memory":"cz4ku","../emulator/register":"3wOe6","../emulator/cpu":"2CR9q","../emulator/ppu":"f2x3M","../emulator/apu":"fhvC7","../emulator/controller":"cFNSD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"iTorj":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react-dom/client":"lOjBx","react":"21dqq","./components/app":"5EgNK","./index.css":"85YVu","../emulator/memory":"cz4ku","../emulator/cpu":"2CR9q","../emulator/ppu":"f2x3M","../emulator/apu":"fhvC7","../emulator/controller":"cFNSD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"iTorj":[function(require,module,exports) {
 "use strict";
 module.exports = require("ee51401569654d91");
 
@@ -27236,10 +27194,11 @@ var _display = require("./display");
 var _displayDefault = parcelHelpers.interopDefault(_display);
 var _joypad = require("./joypad");
 var _joypadDefault = parcelHelpers.interopDefault(_joypad);
+var _tabs = require("./tabs");
+var _tabsDefault = parcelHelpers.interopDefault(_tabs);
 var _s = $RefreshSig$();
 function App({ cpu, ppu, apu, controller }) {
     _s();
-    const [showDebugTools, setShowDebugTools] = _react.useState(false);
     // Reload this component when execution of CPU is complete
     const [toggle, setToggle] = _react.useState(false);
     cpu.onInstructionComplete = ()=>{
@@ -27247,7 +27206,7 @@ function App({ cpu, ppu, apu, controller }) {
     };
     const [error, setError] = _react.useState(undefined);
     cpu.onError = (e)=>setError(e.message);
-    const programCounter = cpu.registers.get16("PC").read();
+    const programCounter = cpu.registers.PC.value;
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("main", {
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h1", {
@@ -27261,12 +27220,12 @@ function App({ cpu, ppu, apu, controller }) {
                 memory: cpu.memory
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 33,
+                lineNumber: 34,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 34,
+                lineNumber: 35,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27274,7 +27233,7 @@ function App({ cpu, ppu, apu, controller }) {
                 children: "Run"
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 35,
+                lineNumber: 36,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27282,7 +27241,7 @@ function App({ cpu, ppu, apu, controller }) {
                 children: "Pause"
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 36,
+                lineNumber: 37,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27290,14 +27249,14 @@ function App({ cpu, ppu, apu, controller }) {
                 children: "Run frame"
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 37,
+                lineNumber: 38,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _displayDefault.default), {
                 cpu: cpu
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 38,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27307,51 +27266,47 @@ function App({ cpu, ppu, apu, controller }) {
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 40,
+                lineNumber: 41,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
                 controller: controller
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 42,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>setShowDebugTools(!showDebugTools),
-                children: showDebugTools ? "Hide debug tools" : "Show debug tools"
-            }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
                 lineNumber: 43,
                 columnNumber: 7
             }, this),
-            showDebugTools && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
-                children: [
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _cpuControllerDefault.default), {
-                        cpu: cpu
-                    }, void 0, false, {
-                        fileName: "src/web/components/app.tsx",
-                        lineNumber: 48,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _vramViewer.VramViewer), {
-                        ppu: ppu
-                    }, void 0, false, {
-                        fileName: "src/web/components/app.tsx",
-                        lineNumber: 49,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _memoryExplorerDefault.default), {
-                        memory: cpu.memory,
-                        programCounter: programCounter,
-                        breakpoints: cpu.breakpoints
-                    }, void 0, false, {
-                        fileName: "src/web/components/app.tsx",
-                        lineNumber: 50,
-                        columnNumber: 11
-                    }, this)
-                ]
-            }, void 0, true)
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
+                tabs: {
+                    "Info": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                            children: "Test"
+                        }, void 0, false, void 0, void 0),
+                    "Debug Graphics": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _vramViewer.VramViewer), {
+                                ppu: ppu
+                            }, void 0, false, void 0, void 0)
+                        }, void 0, false),
+                    "Debug Sound": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                            children: "To do!"
+                        }, void 0, false, void 0, void 0),
+                    "Debug Memory": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                            children: [
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _cpuControllerDefault.default), {
+                                    cpu: cpu
+                                }, void 0, false, void 0, void 0),
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _memoryExplorerDefault.default), {
+                                    memory: cpu.memory,
+                                    programCounter: programCounter,
+                                    breakpoints: cpu.breakpoints
+                                }, void 0, false, void 0, void 0)
+                            ]
+                        }, void 0, true)
+                }
+            }, void 0, false, {
+                fileName: "src/web/components/app.tsx",
+                lineNumber: 44,
+                columnNumber: 7
+            }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/app.tsx",
@@ -27359,7 +27314,7 @@ function App({ cpu, ppu, apu, controller }) {
         columnNumber: 11
     }, this);
 }
-_s(App, "h4Bvh32Uev1EpkxTxsqU6d9I6eo=");
+_s(App, "cJ9cG/4MvQOztf3I6OeF/TgG6tg=");
 _c = App;
 var _c;
 $RefreshReg$(_c, "App");
@@ -27369,7 +27324,7 @@ $RefreshReg$(_c, "App");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","./gameLoader":"3e0xT","./vramViewer":"e5JD4","./display":"jUUTo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./joypad":"fWSSh"}],"2PLGd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","./gameLoader":"3e0xT","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./tabs":"9O6KI"}],"2PLGd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ef66 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -27630,16 +27585,16 @@ function MemoryTableRow({ address, memory, programCounter, breakpoints, toggle }
     const [value, setValue] = _react.useState(0);
     const [inputValue, setInputValue] = _react.useState("");
     const updateDisplay = ()=>{
-        setValue(memoryLocation.read());
+        setValue(memoryLocation.value);
         toggle();
-        setInputValue((0, _displayHexNumbers.valueDisplay)(memoryLocation.read()));
+        setInputValue((0, _displayHexNumbers.valueDisplay)(memoryLocation.value));
     };
     _react.useEffect(updateDisplay, [
-        memoryLocation.read(),
+        memoryLocation.value,
         programCounter
     ]);
     const update = ()=>{
-        memoryLocation.write(parseInt(inputValue));
+        memoryLocation.value = parseInt(inputValue);
         updateDisplay();
     };
     const toggleBreakpoint = ()=>{
@@ -27651,15 +27606,15 @@ function MemoryTableRow({ address, memory, programCounter, breakpoints, toggle }
     let isUnknown;
     const getInstructionAt = (memoryLocation)=>{
         try {
-            const code = memory.at(memoryLocation).read();
-            return (0, _instruction.decodeInstruction)(code, memory.at(memoryLocation + 1).read());
+            const code = memory.at(memoryLocation).value;
+            return (0, _instruction.decodeInstruction)(code, memory.at(memoryLocation + 1).value);
         } catch  {
             return undefined;
         }
     };
     try {
-        const instruction = (0, _instruction.decodeInstruction)(value, memory.at(address + 1).read());
-        const parameters = new Array(instruction.parameterBytes).fill(0).map((_, i)=>memory.at(address + 1 + i).read());
+        const instruction = (0, _instruction.decodeInstruction)(value, memory.at(address + 1).value);
+        const parameters = new Array(instruction.parameterBytes).fill(0).map((_, i)=>memory.at(address + 1 + i).value);
         instructionDescription = instruction.description(parameters);
         isUnknown = false;
     } catch (e) {
@@ -27808,9 +27763,12 @@ $RefreshReg$(_c, "MemoryTableRow");
 },{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","../../emulator/instructions/instructionHelpers":"bJjsQ","../../emulator/instruction":"dshpP","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"bJjsQ":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "getByteDestination", ()=>getByteDestination);
-parcelHelpers.export(exports, "getByteSource", ()=>getByteSource);
-parcelHelpers.export(exports, "get16BitRegister", ()=>get16BitRegister);
+parcelHelpers.export(exports, "ByteLocation", ()=>ByteLocation);
+parcelHelpers.export(exports, "getByteRef", ()=>getByteRef);
+parcelHelpers.export(exports, "describeByteLocation", ()=>describeByteLocation);
+parcelHelpers.export(exports, "WordLocation", ()=>WordLocation);
+parcelHelpers.export(exports, "getWordRef", ()=>getWordRef);
+parcelHelpers.export(exports, "describeWordLocation", ()=>describeWordLocation);
 parcelHelpers.export(exports, "to2sComplement", ()=>to2sComplement);
 parcelHelpers.export(exports, "from2sComplement", ()=>from2sComplement);
 parcelHelpers.export(exports, "combineBytes", ()=>combineBytes);
@@ -27818,21 +27776,134 @@ parcelHelpers.export(exports, "splitBytes", ()=>splitBytes);
 parcelHelpers.export(exports, "testBit", ()=>testBit);
 parcelHelpers.export(exports, "setBit", ()=>setBit);
 parcelHelpers.export(exports, "resetBit", ()=>resetBit);
-const getByteDestination = (name, cpu)=>{
-    if (name === "M") return cpu.memory.at(cpu.registers.get16("HL").read());
-    if (name === "(BC)") return cpu.memory.at(cpu.registers.get16("BC").read());
-    if (name === "(DE)") return cpu.memory.at(cpu.registers.get16("DE").read());
-    if (name === "(FF,C)") return cpu.memory.at(cpu.registers.get8("C").read() + 0xFF00);
-    if (name === "(FF,N)") return cpu.memory.at(cpu.nextByte.read() + 0xFF00);
-    if (name === "(NN)") {
-        const l = cpu.nextByte.read();
-        const h = cpu.nextByte.read();
-        return cpu.memory.at(combineBytes(h, l));
+var _displayHexNumbers = require("../../helpers/displayHexNumbers");
+var ByteLocation;
+(function(ByteLocation) {
+    ByteLocation[ByteLocation["A"] = 0] = "A";
+    ByteLocation[ByteLocation["F"] = 1] = "F";
+    ByteLocation[ByteLocation["B"] = 2] = "B";
+    ByteLocation[ByteLocation["C"] = 3] = "C";
+    ByteLocation[ByteLocation["D"] = 4] = "D";
+    ByteLocation[ByteLocation["E"] = 5] = "E";
+    ByteLocation[ByteLocation["H"] = 6] = "H";
+    ByteLocation[ByteLocation["L"] = 7] = "L";
+    ByteLocation[ByteLocation["N"] = 8] = "N";
+    ByteLocation[ByteLocation["M"] = 9] = "M";
+    ByteLocation[ByteLocation["FF_N"] = 10] = "FF_N";
+    ByteLocation[ByteLocation["FF_C"] = 11] = "FF_C";
+    ByteLocation[ByteLocation["BC"] = 12] = "BC";
+    ByteLocation[ByteLocation["DE"] = 13] = "DE";
+    ByteLocation[ByteLocation["NN"] = 14] = "NN";
+})(ByteLocation || (ByteLocation = {}));
+const getByteRef = (name, cpu)=>{
+    switch(name){
+        case 0:
+            return cpu.registers.A;
+        case 1:
+            return cpu.registers.F;
+        case 2:
+            return cpu.registers.B;
+        case 3:
+            return cpu.registers.C;
+        case 4:
+            return cpu.registers.D;
+        case 5:
+            return cpu.registers.E;
+        case 6:
+            return cpu.registers.H;
+        case 7:
+            return cpu.registers.L;
+        case 8:
+            return cpu.nextByte;
+        case 9:
+            return cpu.memory.at(cpu.registers.HL.value);
+        case 12:
+            return cpu.memory.at(cpu.registers.BC.value);
+        case 13:
+            return cpu.memory.at(cpu.registers.DE.value);
+        case 11:
+            return cpu.memory.at(0xFF00 + cpu.registers.C.value);
+        case 10:
+            return cpu.memory.at(0xFF00 + cpu.nextByte.value);
+        case 14:
+            return cpu.memory.at(cpu.nextWord.value);
     }
-    return cpu.registers.get8(name);
 };
-const getByteSource = (name, cpu)=>name === "N" ? cpu.nextByte : getByteDestination(name, cpu);
-const get16BitRegister = (name, cpu)=>cpu.registers.get16(name);
+const describeByteLocation = (location)=>{
+    switch(location){
+        case 0:
+            return ()=>"A";
+        case 1:
+            return ()=>"F";
+        case 2:
+            return ()=>"B";
+        case 3:
+            return ()=>"C";
+        case 4:
+            return ()=>"D";
+        case 5:
+            return ()=>"E";
+        case 6:
+            return ()=>"H";
+        case 7:
+            return ()=>"L";
+        case 8:
+            return ([value])=>(0, _displayHexNumbers.valueDisplay)(value);
+        case 9:
+            return ()=>"M";
+        case 10:
+            return ([value])=>`(${(0, _displayHexNumbers.addressDisplay)(0xFF00 + value)})`;
+        case 11:
+            return ()=>"(FF,C)";
+        case 12:
+            return ()=>"(BC)";
+        case 13:
+            return ()=>"(DE)";
+        case 14:
+            return ([l, h])=>`(${(0, _displayHexNumbers.addressDisplay)((h << 8) + l)})`;
+    }
+};
+var WordLocation;
+(function(WordLocation) {
+    WordLocation[WordLocation["PC"] = 0] = "PC";
+    WordLocation[WordLocation["SP"] = 1] = "SP";
+    WordLocation[WordLocation["HL"] = 2] = "HL";
+    WordLocation[WordLocation["AF"] = 3] = "AF";
+    WordLocation[WordLocation["BC"] = 4] = "BC";
+    WordLocation[WordLocation["DE"] = 5] = "DE";
+})(WordLocation || (WordLocation = {}));
+const getWordRef = (name, cpu)=>{
+    switch(name){
+        case 0:
+            return cpu.registers.PC;
+        case 1:
+            return cpu.registers.SP;
+        case 2:
+            return cpu.registers.HL;
+        case 3:
+            return cpu.registers.AF;
+        case 4:
+            return cpu.registers.BC;
+        case 5:
+            return cpu.registers.DE;
+    }
+};
+const describeWordLocation = (name)=>{
+    switch(name){
+        case 0:
+            return ()=>"PC";
+        case 1:
+            return ()=>"SP";
+        case 2:
+            return ()=>"HL";
+        case 3:
+            return ()=>"AF";
+        case 4:
+            return ()=>"BC";
+        case 5:
+            return ()=>"DE";
+    }
+};
 const to2sComplement = (input)=>input < 0x00 ? input + 0x100 : input;
 const from2sComplement = (input)=>input > 0x7F ? input - 0x100 : input;
 const combineBytes = (high, low)=>(high << 8) + low;
@@ -27844,7 +27915,7 @@ const testBit = (value, bit)=>value.read() >> bit & 1;
 const setBit = (value, bit)=>value.write(value.read() | 1 << bit);
 const resetBit = (value, bit)=>value.write(value.read() & ~(1 << bit));
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dshpP":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../helpers/displayHexNumbers":"iSdOS"}],"dshpP":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "decodeInstruction", ()=>decodeInstruction);
@@ -27854,6 +27925,7 @@ var _arithmetic8Bit = require("./instructions/arithmetic8bit");
 var _cpuControl = require("./instructions/cpuControl");
 var _halt = require("./instructions/halt");
 var _haltDefault = parcelHelpers.interopDefault(_halt);
+var _instructionHelpers = require("./instructions/instructionHelpers");
 var _jumps = require("./instructions/jumps");
 var _loads = require("./instructions/loads");
 var _nop = require("./instructions/nop");
@@ -27866,22 +27938,22 @@ const STATIC_INSTRUCTIONS = {
     0x08: (0, _loads.loadStackPointerToAddress),
     0x76: (0, _haltDefault.default),
     0x10: (0, _cpuControl.stop),
-    34: (0, _loads.load8Bit)("M", "A", "increment"),
-    42: (0, _loads.load8Bit)("A", "M", "increment"),
-    50: (0, _loads.load8Bit)("M", "A", "decrement"),
-    58: (0, _loads.load8Bit)("A", "M", "decrement"),
-    0x07: (0, _arithmetic8Bit.rotateLeft)("A", false, false, false),
-    0x17: (0, _arithmetic8Bit.rotateLeft)("A", true, false, false),
-    0x0F: (0, _arithmetic8Bit.rotateRight)("A", false, false, false),
-    0x1F: (0, _arithmetic8Bit.rotateRight)("A", true, false, false),
+    34: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).M, (0, _instructionHelpers.ByteLocation).A, "increment"),
+    42: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).M, "increment"),
+    50: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).M, (0, _instructionHelpers.ByteLocation).A, "decrement"),
+    58: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).M, "decrement"),
+    0x07: (0, _arithmetic8Bit.rotateLeft)((0, _instructionHelpers.ByteLocation).A, false, false, false),
+    0x17: (0, _arithmetic8Bit.rotateLeft)((0, _instructionHelpers.ByteLocation).A, true, false, false),
+    0x0F: (0, _arithmetic8Bit.rotateRight)((0, _instructionHelpers.ByteLocation).A, false, false, false),
+    0x1F: (0, _arithmetic8Bit.rotateRight)((0, _instructionHelpers.ByteLocation).A, true, false, false),
     0x18: (0, _jumps.jumpRelative)("None"),
     0x2F: (0, _arithmetic8Bit.cpl),
     0x37: (0, _cpuControl.scf),
     0x3F: (0, _cpuControl.ccf),
-    0xF0: (0, _loads.load8Bit)("A", "(FF,N)"),
-    0xE0: (0, _loads.load8Bit)("(FF,N)", "A"),
-    0xF2: (0, _loads.load8Bit)("A", "(FF,C)"),
-    0xE2: (0, _loads.load8Bit)("(FF,C)", "A"),
+    0xF0: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).FF_N),
+    0xE0: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).FF_N, (0, _instructionHelpers.ByteLocation).A),
+    0xF2: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).FF_C),
+    0xE2: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).FF_C, (0, _instructionHelpers.ByteLocation).A),
     0xCD: (0, _stack.call),
     0xE8: (0, _arithmetic8Bit.addImmediateToSP),
     0xC9: (0, _stack.ret),
@@ -27889,22 +27961,22 @@ const STATIC_INSTRUCTIONS = {
     0xC3: (0, _jumps.jump)("None"),
     0xF8: (0, _loads.loadHlFromSpPlusN),
     0x27: (0, _arithmetic8Bit.daa),
-    234: (0, _loads.load8Bit)("(NN)", "A"),
-    250: (0, _loads.load8Bit)("A", "(NN)"),
+    234: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).NN, (0, _instructionHelpers.ByteLocation).A),
+    250: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).NN),
     0xE9: (0, _jumps.jpHl),
     0xF9: (0, _loads.loadStackPointerFromHL),
     0xF3: (0, _cpuControl.disableInterrupts),
     0xFB: (0, _cpuControl.enableInterrupts)
 };
 const REGISTERS_8 = [
-    "B",
-    "C",
-    "D",
-    "E",
-    "H",
-    "L",
-    "M",
-    "A"
+    (0, _instructionHelpers.ByteLocation).B,
+    (0, _instructionHelpers.ByteLocation).C,
+    (0, _instructionHelpers.ByteLocation).D,
+    (0, _instructionHelpers.ByteLocation).E,
+    (0, _instructionHelpers.ByteLocation).H,
+    (0, _instructionHelpers.ByteLocation).L,
+    (0, _instructionHelpers.ByteLocation).M,
+    (0, _instructionHelpers.ByteLocation).A
 ];
 const ALU_OPERATIONS = [
     "ADD",
@@ -27923,20 +27995,20 @@ const JUMP_CONDITION = [
     "Carry"
 ];
 const REGISTER_16_COLUMN_1 = [
-    "(BC)",
-    "(DE)"
+    (0, _instructionHelpers.ByteLocation).BC,
+    (0, _instructionHelpers.ByteLocation).DE
 ];
 const REGISTER_16_COLUMN_2 = [
-    "BC",
-    "DE",
-    "HL",
-    "SP"
+    (0, _instructionHelpers.WordLocation).BC,
+    (0, _instructionHelpers.WordLocation).DE,
+    (0, _instructionHelpers.WordLocation).HL,
+    (0, _instructionHelpers.WordLocation).SP
 ];
 const REGISTER_16_COLUMN_3 = [
-    "BC",
-    "DE",
-    "HL",
-    "AF"
+    (0, _instructionHelpers.WordLocation).BC,
+    (0, _instructionHelpers.WordLocation).DE,
+    (0, _instructionHelpers.WordLocation).HL,
+    (0, _instructionHelpers.WordLocation).AF
 ];
 function getDestination(code) {
     return REGISTERS_8[code >> 3 & 7];
@@ -27971,8 +28043,8 @@ function decodeInstruction(code, prefixedCode) {
         const register = getRegisterColumn2(code);
         return (0, _arithmetic8Bit.addToHL)(register);
     }
-    if ((code & 239) == 2) return (0, _loads.load8Bit)(getRegisterColumn1(code), "A");
-    if ((code & 239) == 10) return (0, _loads.load8Bit)("A", getRegisterColumn1(code));
+    if ((code & 239) == 2) return (0, _loads.load8Bit)(getRegisterColumn1(code), (0, _instructionHelpers.ByteLocation).A);
+    if ((code & 239) == 10) return (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, getRegisterColumn1(code));
     if ((code & 207) === 3) return (0, _arithmetic8Bit.increment16Bit)(getRegisterColumn2(code));
     if ((code & 207) === 11) return (0, _arithmetic8Bit.decrement16Bit)(getRegisterColumn2(code));
     if ((code & 199) === 4) {
@@ -27987,7 +28059,7 @@ function decodeInstruction(code, prefixedCode) {
         const condition = getCondition(code);
         return (0, _jumps.jumpRelative)(condition);
     }
-    if ((code & 199) === 6) return (0, _loads.load8Bit)(getDestination(code), "N");
+    if ((code & 199) === 6) return (0, _loads.load8Bit)(getDestination(code), (0, _instructionHelpers.ByteLocation).N);
     if ((code & 192) === 64) return (0, _loads.load8Bit)(getDestination(code), getSource(code));
     if ((code & 192) === 128) {
         const operation = getOperation(code);
@@ -28036,7 +28108,7 @@ function decodeInstruction(code, prefixedCode) {
     throw new (0, _instructionNotFoundErrorDefault.default)(code);
 }
 
-},{"./instructionNotFoundError":"fsATl","./instructions/arithmetic8bit":"6fSXq","./instructions/cpuControl":"bM0M4","./instructions/halt":"iH7vu","./instructions/jumps":"7RHU3","./instructions/loads":"8K2py","./instructions/nop":"jvHrF","./instructions/prefixInstructions":"ba3U1","./instructions/stack":"g6QBO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fsATl":[function(require,module,exports) {
+},{"./instructionNotFoundError":"fsATl","./instructions/arithmetic8bit":"6fSXq","./instructions/cpuControl":"bM0M4","./instructions/halt":"iH7vu","./instructions/jumps":"7RHU3","./instructions/loads":"8K2py","./instructions/nop":"jvHrF","./instructions/prefixInstructions":"ba3U1","./instructions/stack":"g6QBO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./instructions/instructionHelpers":"bJjsQ"}],"fsATl":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _displayHexNumbers = require("../helpers/displayHexNumbers");
@@ -28063,7 +28135,6 @@ parcelHelpers.export(exports, "addToHL", ()=>addToHL);
 parcelHelpers.export(exports, "addImmediateToSP", ()=>addImmediateToSP);
 parcelHelpers.export(exports, "daa", ()=>daa);
 var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _arithmetic = require("../arithmetic");
 var _instructionHelpers = require("./instructionHelpers");
 const splitToNibbles = (value)=>[
         value >> 4 & 0xF,
@@ -28072,110 +28143,107 @@ const splitToNibbles = (value)=>[
 const combineNibbles = (h, l)=>(h << 4) + l;
 const OPERATIONS = {
     "ADD": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
+        const a = cpu.registers.A;
         const [h, l] = splitToNibbles(value);
-        const [hA, lA] = splitToNibbles(a.read());
+        const [hA, lA] = splitToNibbles(a.value);
         const hR = h + hA;
         const lR = l + lA;
         const r = combineNibbles(hR, lR);
         const rWrapped = r & 0xFF;
-        cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0);
-        cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0);
-        a.write(rWrapped);
+        a.value = rWrapped;
+        cpu.registers.F.zero = rWrapped == 0;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = lR > 0xF;
+        cpu.registers.F.carry = rWrapped != r;
     },
     "ADC": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
-        const carry = cpu.registers.getFlag("Carry").read();
+        const a = cpu.registers.A;
+        const carry = cpu.registers.F.carry ? 1 : 0;
         const [h, l] = splitToNibbles(value);
-        const [hA, lA] = splitToNibbles(a.read());
+        const [hA, lA] = splitToNibbles(a.value);
         const hR = h + hA;
         const lR = l + lA + carry;
         const r = combineNibbles(hR, lR);
         const rWrapped = r & 0xFF;
-        cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(lR > 0xF ? 1 : 0);
-        cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0);
-        a.write(rWrapped);
+        a.value = rWrapped;
+        cpu.registers.F.zero = rWrapped == 0;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = lR > 0xF;
+        cpu.registers.F.carry = rWrapped != r;
     },
     "SUB": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
+        const a = cpu.registers.A;
         const [h, l] = splitToNibbles(value);
-        const [hA, lA] = splitToNibbles(a.read());
+        const [hA, lA] = splitToNibbles(a.value);
         const hR = hA - h;
         const lR = lA - l;
         const r = combineNibbles(hR, lR);
         const rWrapped = r & 0xFF;
-        cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(1);
-        cpu.registers.getFlag("Half-Carry").write(lR < 0 ? 1 : 0);
-        cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0);
-        a.write(rWrapped);
+        a.value = rWrapped;
+        cpu.registers.F.zero = rWrapped == 0;
+        cpu.registers.F.operation = true;
+        cpu.registers.F.halfCarry = lR < 0;
+        cpu.registers.F.carry = rWrapped != r;
     },
     "SBC": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
-        const carry = cpu.registers.getFlag("Carry").read();
+        const a = cpu.registers.A;
+        const carry = cpu.registers.F.carry ? 1 : 0;
         const [h, l] = splitToNibbles(value);
-        const [hA, lA] = splitToNibbles(a.read());
+        const [hA, lA] = splitToNibbles(a.value);
         const hR = hA - h;
         const lR = lA - l - carry;
         const r = combineNibbles(hR, lR);
         const rWrapped = r & 0xFF;
-        cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(1);
-        cpu.registers.getFlag("Half-Carry").write(lR < 0 ? 1 : 0);
-        cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0);
-        a.write(rWrapped);
+        a.value = rWrapped;
+        cpu.registers.F.zero = rWrapped == 0;
+        cpu.registers.F.operation = true;
+        cpu.registers.F.halfCarry = lR < 0;
+        cpu.registers.F.carry = rWrapped != r;
     },
     "AND": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
-        const r = value & a.read();
-        cpu.registers.getFlag("Zero").write(r === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(1);
-        cpu.registers.getFlag("Carry").write(0);
-        a.write(r);
+        const a = cpu.registers.A;
+        a.value &= value;
+        cpu.registers.F.zero = a.value === 0;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = true;
+        cpu.registers.F.carry = false;
     },
     "XOR": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
-        const r = value ^ a.read();
-        cpu.registers.getFlag("Zero").write(r === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(0);
-        cpu.registers.getFlag("Carry").write(0);
-        a.write(r);
+        const a = cpu.registers.A;
+        a.value ^= value;
+        cpu.registers.F.zero = a.value === 0;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = false;
+        cpu.registers.F.carry = false;
     },
     "OR": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
-        const r = value | a.read();
-        cpu.registers.getFlag("Zero").write(r === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(0);
-        cpu.registers.getFlag("Carry").write(0);
-        a.write(r);
+        const a = cpu.registers.A;
+        a.value |= value;
+        cpu.registers.F.zero = a.value === 0;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = false;
+        cpu.registers.F.carry = false;
     },
     "CP": (cpu, value)=>{
-        const a = cpu.registers.get8("A");
+        const a = cpu.registers.A;
         const [h, l] = splitToNibbles(value);
-        const [hA, lA] = splitToNibbles(a.read());
+        const [hA, lA] = splitToNibbles(a.value);
         const hR = hA - h;
         const lR = lA - l;
         const r = combineNibbles(hR, lR);
         const rWrapped = r & 0xFF;
-        cpu.registers.getFlag("Zero").write(rWrapped === 0 ? 1 : 0);
-        cpu.registers.getFlag("Operation").write(1);
-        cpu.registers.getFlag("Half-Carry").write(lR < 0 ? 1 : 0);
-        cpu.registers.getFlag("Carry").write(rWrapped !== r ? 1 : 0);
+        cpu.registers.F.zero = rWrapped == 0;
+        cpu.registers.F.operation = true;
+        cpu.registers.F.halfCarry = lR < 0;
+        cpu.registers.F.carry = rWrapped != r;
     }
 };
 function aluOperation(operation, sourceName) {
     return {
         execute: (cpu)=>{
-            OPERATIONS[operation](cpu, (0, _instructionHelpers.getByteDestination)(sourceName, cpu).read());
+            OPERATIONS[operation](cpu, (0, _instructionHelpers.getByteRef)(sourceName, cpu).value);
         },
-        cycles: sourceName === "M" ? 8 : 4,
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 8 : 4,
         parameterBytes: 0,
         description: ()=>`${operation} A,${sourceName}`
     };
@@ -28183,7 +28251,7 @@ function aluOperation(operation, sourceName) {
 function aluOperationImmediate(operation) {
     return {
         execute: (cpu)=>{
-            const value = cpu.readNextByte();
+            const value = cpu.nextByte.value;
             OPERATIONS[operation](cpu, value);
         },
         cycles: 8,
@@ -28194,13 +28262,13 @@ function aluOperationImmediate(operation) {
 function increment8Bit(targetName) {
     return {
         execute: (cpu)=>{
-            const target = (0, _instructionHelpers.getByteDestination)(targetName, cpu);
-            (0, _arithmetic.increment)(target);
-            cpu.registers.getFlag("Zero").write(target.read() === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Half-Carry").write((target.read() & 0xF) === 0 ? 1 : 0);
+            const target = (0, _instructionHelpers.getByteRef)(targetName, cpu);
+            target.value++;
+            cpu.registers.F.zero = target.value == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = (target.value & 0xF) === 0;
         },
-        cycles: targetName === "M" ? 12 : 4,
+        cycles: targetName === (0, _instructionHelpers.ByteLocation).M ? 12 : 4,
         parameterBytes: 0,
         description: ()=>`INC ${targetName}`
     };
@@ -28208,52 +28276,52 @@ function increment8Bit(targetName) {
 function decrement8Bit(targetName) {
     return {
         execute: (cpu)=>{
-            const target = (0, _instructionHelpers.getByteDestination)(targetName, cpu);
-            (0, _arithmetic.decrement)(target);
-            cpu.registers.getFlag("Zero").write(target.read() === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(1);
-            cpu.registers.getFlag("Half-Carry").write((target.read() & 0xF) === 0x0F ? 1 : 0);
+            const target = (0, _instructionHelpers.getByteRef)(targetName, cpu);
+            target.value--;
+            cpu.registers.F.zero = target.value == 0;
+            cpu.registers.F.operation = true;
+            cpu.registers.F.halfCarry = (target.value & 0xF) === 0xF;
         },
-        cycles: targetName === "M" ? 12 : 4,
+        cycles: targetName === (0, _instructionHelpers.ByteLocation).M ? 12 : 4,
         parameterBytes: 0,
         description: ()=>`DEC ${targetName}`
     };
 }
-function increment16Bit(targetName) {
+function increment16Bit(register) {
     return {
         execute: (cpu)=>{
-            (0, _arithmetic.increment)(cpu.registers.get16(targetName));
+            (0, _instructionHelpers.getWordRef)(register, cpu).value++;
         },
         cycles: 8,
         parameterBytes: 0,
-        description: ()=>`INC ${targetName}`
+        description: ()=>`INC ${register}`
     };
 }
-function decrement16Bit(targetName) {
+function decrement16Bit(register) {
     return {
         execute: (cpu)=>{
-            (0, _arithmetic.decrement)(cpu.registers.get16(targetName));
+            (0, _instructionHelpers.getWordRef)(register, cpu).value--;
         },
         cycles: 8,
         parameterBytes: 0,
-        description: ()=>`DEC ${targetName}`
+        description: ()=>`DEC ${register}`
     };
 }
 function rotateLeft(registerName, throughCarry, isPrefixed, setZero = true) {
     const commandName = throughCarry ? "RL" : "RLC";
     return {
         execute: (cpu)=>{
-            const register = (0, _instructionHelpers.getByteDestination)(registerName, cpu);
-            const value = register.read();
-            const wrap = throughCarry ? cpu.registers.getFlag("Carry").read() : value >> 7;
+            const register = (0, _instructionHelpers.getByteRef)(registerName, cpu);
+            const value = register.value;
+            const wrap = throughCarry ? cpu.registers.F.carry ? 1 : 0 : value >> 7;
             const rotated = (value << 1 & 0xFF) + wrap;
-            register.write(rotated);
-            cpu.registers.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Half-Carry").write(0);
-            cpu.registers.getFlag("Carry").write(value >> 7);
+            register.value = rotated;
+            cpu.registers.F.zero = setZero && rotated === 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = value >> 7 > 0;
         },
-        cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
+        cycles: isPrefixed ? registerName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8 : 4,
         parameterBytes: 0,
         description: ()=>`${commandName} ${registerName}`
     };
@@ -28262,64 +28330,63 @@ function rotateRight(registerName, throughCarry, isPrefixed, setZero = true) {
     const commandName = throughCarry ? "RR" : "RRC";
     return {
         execute: (cpu)=>{
-            const register = (0, _instructionHelpers.getByteDestination)(registerName, cpu);
-            const value = register.read();
-            const wrap = throughCarry ? cpu.registers.getFlag("Carry").read() : value & 1;
+            const register = (0, _instructionHelpers.getByteRef)(registerName, cpu);
+            const value = register.value;
+            const wrap = throughCarry ? cpu.registers.F.carry ? 1 : 0 : value & 1;
             const rotated = (value >> 1) + (wrap << 7);
-            register.write(rotated);
-            cpu.registers.getFlag("Zero").write(setZero && rotated === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Half-Carry").write(0);
-            cpu.registers.getFlag("Carry").write(value & 1);
+            register.value = rotated;
+            cpu.registers.F.zero = setZero && rotated === 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = (value & 1) > 0;
         },
-        cycles: isPrefixed ? registerName === "M" ? 12 : 8 : 4,
+        cycles: isPrefixed ? registerName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8 : 4,
         parameterBytes: 0,
         description: ()=>`${commandName} ${registerName}`
     };
 }
 const cpl = {
     execute: (cpu)=>{
-        const a = cpu.registers.get8("A");
-        a.write(~a.read());
-        cpu.registers.getFlag("Operation").write(1);
-        cpu.registers.getFlag("Half-Carry").write(1);
+        cpu.registers.A.value = ~cpu.registers.A.value;
+        cpu.registers.F.operation = true;
+        cpu.registers.F.halfCarry = true;
     },
     cycles: 4,
     parameterBytes: 0,
     description: ()=>"CPL"
 };
-const addToHL = (registerName)=>{
+const addToHL = (register)=>{
     return {
         execute (cpu) {
-            const hl = cpu.registers.get16("HL");
-            const r = cpu.registers.get16(registerName);
-            const hlValue = hl.read();
-            const rValue = r.read();
+            const hl = cpu.registers.HL;
+            const r = (0, _instructionHelpers.getWordRef)(register, cpu);
+            const hlValue = hl.value;
+            const rValue = r.value;
             const result = hlValue + rValue;
-            hl.write(result & 0xFFFF);
+            hl.value = result & 0xFFFF;
             const halfCarry = (hlValue & 0x0FFF) + (rValue & 0x0FFF) > 0xFFF;
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Half-Carry").write(halfCarry ? 1 : 0);
-            cpu.registers.getFlag("Carry").write(result > 0xFFFF ? 1 : 0);
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = halfCarry;
+            cpu.registers.F.carry = result > 0xFFFF;
         },
         cycles: 8,
         parameterBytes: 0,
-        description: ()=>`ADD HL,${registerName}`
+        description: ()=>`ADD HL,${register}`
     };
 };
 const addImmediateToSP = {
     execute (cpu) {
-        const sp = cpu.registers.get16("SP");
-        const amount = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.read());
-        const oldValue = sp.read();
+        const sp = cpu.registers.SP;
+        const amount = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.value);
+        const oldValue = sp.value;
         const newValue = oldValue + amount;
         const halfCarry = (oldValue & 0xF) + (amount & 0xF) > 0xF;
         const carry = (oldValue & 0xFF) + (amount & 0xFF) > 0xFF;
-        sp.write(newValue & 0xFFFF);
-        cpu.registers.getFlag("Zero").write(0);
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(halfCarry ? 1 : 0);
-        cpu.registers.getFlag("Carry").write(carry ? 1 : 0);
+        sp.value = newValue & 0xFFFF;
+        cpu.registers.F.zero = false;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = halfCarry;
+        cpu.registers.F.carry = carry;
     },
     cycles: 16,
     parameterBytes: 1,
@@ -28327,49 +28394,28 @@ const addImmediateToSP = {
 };
 const daa = {
     execute (cpu) {
-        const a = cpu.registers.get8("A");
-        const operation = cpu.registers.getFlag("Operation").read();
-        const halfCarry = cpu.registers.getFlag("Half-Carry");
-        const carry = cpu.registers.getFlag("Carry");
-        const value = a.read();
+        const a = cpu.registers.A;
+        const flags = cpu.registers.F;
+        const value = a.value;
         let correction = 0;
         let setCarry = false;
-        if (halfCarry.read() || !operation && (value & 0xF) > 9) correction |= 0x6;
-        if (carry.read() || !operation && value > 0x99) {
+        if (flags.halfCarry || !flags.operation && (value & 0xF) > 9) correction |= 0x6;
+        if (flags.carry || !flags.operation && value > 0x99) {
             correction |= 0x60;
             setCarry = true;
         }
-        const result = value + (operation ? -correction : correction);
-        a.write(result & 0xFF);
-        carry.write(setCarry ? 1 : 0);
-        halfCarry.write(0);
-        cpu.registers.getFlag("Zero").write((result & 0xFF) === 0 ? 1 : 0);
+        const result = value + (flags.operation ? -correction : correction);
+        a.value = result & 0xFF;
+        flags.carry = setCarry;
+        flags.halfCarry = false;
+        flags.zero = (result & 0xFF) == 0;
     },
     cycles: 4,
     parameterBytes: 0,
     description: ()=>"DAA"
 };
 
-},{"../../helpers/displayHexNumbers":"iSdOS","../arithmetic":"e2ePH","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"e2ePH":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "add", ()=>add);
-parcelHelpers.export(exports, "increment", ()=>increment);
-parcelHelpers.export(exports, "decrement", ()=>decrement);
-function getMask(intSize) {
-    return (1 << intSize) - 1;
-}
-function add(value, amount) {
-    value.write(value.read() + amount & getMask(value.intSize));
-}
-function increment(value) {
-    value.write(value.read() + 1 & getMask(value.intSize));
-}
-function decrement(value) {
-    value.write(value.read() - 1 & getMask(value.intSize));
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bM0M4":[function(require,module,exports) {
+},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bM0M4":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "disableInterrupts", ()=>disableInterrupts);
@@ -28397,7 +28443,7 @@ const stop = {
     execute: (cpu)=>{
         cpu.isStopped = true;
         // TODO what does this actually do?
-        cpu.memory.at(0xFF04).write(0);
+        cpu.memory.at(0xFF04).value = 0;
     },
     cycles: 4,
     parameterBytes: 0,
@@ -28405,9 +28451,9 @@ const stop = {
 };
 const scf = {
     execute (cpu) {
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(0);
-        cpu.registers.getFlag("Carry").write(1);
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = false;
+        cpu.registers.F.carry = true;
     },
     cycles: 4,
     parameterBytes: 0,
@@ -28415,10 +28461,9 @@ const scf = {
 };
 const ccf = {
     execute (cpu) {
-        const carry = cpu.registers.getFlag("Carry");
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(0);
-        carry.write(carry.read() ^ 1);
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = false;
+        cpu.registers.F.carry = !cpu.registers.F.carry;
     },
     cycles: 4,
     parameterBytes: 0,
@@ -28448,13 +28493,12 @@ parcelHelpers.export(exports, "jump", ()=>jump);
 parcelHelpers.export(exports, "jpHl", ()=>jpHl);
 parcelHelpers.export(exports, "rst", ()=>rst);
 var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _arithmetic = require("../arithmetic");
 var _instructionHelpers = require("./instructionHelpers");
 const CONDITIONS = {
-    "Not-Zero": (cpu)=>cpu.registers.getFlag("Zero").read() === 0,
-    "Zero": (cpu)=>cpu.registers.getFlag("Zero").read() === 1,
-    "Not-Carry": (cpu)=>cpu.registers.getFlag("Carry").read() === 0,
-    "Carry": (cpu)=>cpu.registers.getFlag("Carry").read() === 1,
+    "Not-Zero": (cpu)=>!cpu.registers.F.zero,
+    "Zero": (cpu)=>cpu.registers.F.zero,
+    "Not-Carry": (cpu)=>!cpu.registers.F.carry,
+    "Carry": (cpu)=>cpu.registers.F.carry,
     "None": ()=>true
 };
 const CONDITION_NAMES = {
@@ -28467,8 +28511,8 @@ const CONDITION_NAMES = {
 function jumpRelative(condition) {
     return {
         execute: (cpu)=>{
-            const jump = (0, _instructionHelpers.from2sComplement)(cpu.readNextByte());
-            if (CONDITIONS[condition](cpu)) (0, _arithmetic.add)(cpu.registers.get16("PC"), jump);
+            const jump = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.value);
+            if (CONDITIONS[condition](cpu)) cpu.registers.PC.value += jump;
         },
         cycles: 12,
         parameterBytes: 1,
@@ -28478,9 +28522,8 @@ function jumpRelative(condition) {
 function jump(condition) {
     return {
         execute: (cpu)=>{
-            const l = cpu.readNextByte();
-            const h = cpu.readNextByte();
-            if (CONDITIONS[condition](cpu)) cpu.registers.get16("PC").write((0, _instructionHelpers.combineBytes)(h, l));
+            const address = cpu.nextWord.value;
+            if (CONDITIONS[condition](cpu)) cpu.registers.PC.value = address;
         },
         cycles: 16,
         parameterBytes: 2,
@@ -28489,7 +28532,7 @@ function jump(condition) {
 }
 const jpHl = {
     execute (cpu) {
-        cpu.registers.get16("PC").write(cpu.registers.get16("HL").read());
+        cpu.registers.PC.value = cpu.registers.HL.value;
     },
     cycles: 4,
     parameterBytes: 0,
@@ -28498,14 +28541,12 @@ const jpHl = {
 function rst(address) {
     return {
         execute (cpu) {
-            const sp = cpu.registers.get16("SP");
-            const pc = cpu.registers.get16("PC");
-            const [h, l] = (0, _instructionHelpers.splitBytes)(pc.read());
-            (0, _arithmetic.decrement)(sp);
-            cpu.memory.at(sp.read()).write(h);
-            (0, _arithmetic.decrement)(sp);
-            cpu.memory.at(sp.read()).write(l);
-            pc.write(address);
+            const sp = cpu.registers.SP;
+            const pc = cpu.registers.PC;
+            const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+            cpu.memory.at(--sp.value).value = h;
+            cpu.memory.at(--sp.value).value = l;
+            pc.value = address;
         },
         cycles: 16,
         parameterBytes: 0,
@@ -28513,7 +28554,7 @@ function rst(address) {
     };
 }
 
-},{"../../helpers/displayHexNumbers":"iSdOS","../arithmetic":"e2ePH","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8K2py":[function(require,module,exports) {
+},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8K2py":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "load8Bit", ()=>load8Bit);
@@ -28522,73 +28563,77 @@ parcelHelpers.export(exports, "loadHlFromSpPlusN", ()=>loadHlFromSpPlusN);
 parcelHelpers.export(exports, "loadStackPointerToAddress", ()=>loadStackPointerToAddress);
 parcelHelpers.export(exports, "loadStackPointerFromHL", ()=>loadStackPointerFromHL);
 var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _arithmetic = require("../arithmetic");
 var _instructionHelpers = require("./instructionHelpers");
 const cycleCost = (location)=>{
-    if (location === "M") return 4;
-    if (location === "N") return 4;
-    if (location === "(BC)") return 4;
-    if (location === "(DE)") return 4;
-    if (location === "(FF,C)") return 4;
-    if (location === "(FF,N)") return 8;
-    if (location === "(NN)") return 12;
+    switch(location){
+        case (0, _instructionHelpers.ByteLocation).N:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).M:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).FF_N:
+            return 8;
+        case (0, _instructionHelpers.ByteLocation).FF_C:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).BC:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).DE:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).NN:
+            return 12;
+    }
     return 0;
 };
 const getParameterBytes = (location)=>{
-    if (location === "N") return 1;
-    if (location === "(FF,N)") return 1;
-    if (location === "(NN)") return 2;
+    switch(location){
+        case (0, _instructionHelpers.ByteLocation).N:
+            return 1;
+        case (0, _instructionHelpers.ByteLocation).FF_N:
+            return 1;
+        case (0, _instructionHelpers.ByteLocation).NN:
+            return 2;
+    }
     return 0;
 };
-const describeLocation = (location)=>{
-    if (location === "N") return ([value])=>(0, _displayHexNumbers.valueDisplay)(value);
-    if (location === "(FF,N)") return ([value])=>(0, _displayHexNumbers.addressDisplay)(0xFF00 + value);
-    if (location === "(NN)") return ([l, h])=>(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l));
-    return ()=>location;
-};
 const commandName = (hlRegisterAction)=>hlRegisterAction === "increment" ? "LDI" : hlRegisterAction === "decrement" ? "LDD" : "LD";
-const getPointerAction = (hlRegisterAction)=>hlRegisterAction === "increment" ? (0, _arithmetic.increment) : hlRegisterAction === "decrement" ? (0, _arithmetic.decrement) : ()=>{};
+const getPointerAction = (hlRegisterAction)=>hlRegisterAction === "increment" ? (hl)=>hl.value++ : hlRegisterAction === "decrement" ? (hl)=>hl.value-- : ()=>{};
 function load8Bit(destinationName, sourceName, hlRegisterAction = "none") {
     const cycles = 4 + cycleCost(destinationName) + cycleCost(sourceName);
     const parameterBytes = getParameterBytes(sourceName) + getParameterBytes(destinationName);
     const pointerAction = getPointerAction(hlRegisterAction);
     return {
         execute: (cpu)=>{
-            const destination = (0, _instructionHelpers.getByteDestination)(destinationName, cpu);
-            const source = (0, _instructionHelpers.getByteSource)(sourceName, cpu);
-            destination.write(source.read());
-            pointerAction(cpu.registers.get16("HL"));
+            const destination = (0, _instructionHelpers.getByteRef)(destinationName, cpu);
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            destination.value = source.value;
+            pointerAction(cpu.registers.HL);
         },
         cycles,
         parameterBytes,
-        description: (values)=>`${commandName(hlRegisterAction)} ${describeLocation(destinationName)(values)},${describeLocation(sourceName)(values)}`
+        description: (values)=>`${commandName(hlRegisterAction)} ${(0, _instructionHelpers.describeByteLocation)(destinationName)(values)},${(0, _instructionHelpers.describeByteLocation)(sourceName)(values)}`
     };
 }
-function loadImmediate16BitRegister(registerName) {
+function loadImmediate16BitRegister(register) {
     return {
         execute: (cpu)=>{
-            const l = cpu.readNextByte();
-            const h = cpu.readNextByte();
-            const target = (0, _instructionHelpers.get16BitRegister)(registerName, cpu);
-            target.write((0, _instructionHelpers.combineBytes)(h, l));
+            (0, _instructionHelpers.getWordRef)(register, cpu).value = cpu.nextWord.value;
         },
         cycles: 12,
         parameterBytes: 2,
-        description: ([l, h])=>`LD ${registerName},${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
+        description: ([l, h])=>`LD ${(0, _instructionHelpers.describeWordLocation)(register)([])},${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
     };
 }
 const loadHlFromSpPlusN = {
     execute (cpu) {
-        const increment = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.read());
-        const sp = cpu.registers.get16("SP").read();
+        const increment = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.value);
+        const sp = cpu.registers.SP.value;
         const result = sp + increment;
         const halfCarry = (sp & 0xF) + (increment & 0xF) !== (result & 0xF);
         const carry = (sp & 0xFF) + (increment & 0xFF) !== (result & 0xFF);
-        cpu.registers.get16("HL").write(result & 0xFFFF);
-        cpu.registers.getFlag("Zero").write(0);
-        cpu.registers.getFlag("Operation").write(0);
-        cpu.registers.getFlag("Half-Carry").write(halfCarry ? 1 : 0);
-        cpu.registers.getFlag("Carry").write(carry ? 1 : 0);
+        cpu.registers.HL.value = result;
+        cpu.registers.F.zero = false;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = halfCarry;
+        cpu.registers.F.carry = carry;
     },
     cycles: 12,
     parameterBytes: 1,
@@ -28596,10 +28641,8 @@ const loadHlFromSpPlusN = {
 };
 const loadStackPointerToAddress = {
     execute (cpu) {
-        const [hSP, lSP] = (0, _instructionHelpers.splitBytes)(cpu.registers.get16("SP").read());
-        const address = cpu.readNext16bit();
-        cpu.memory.at(address).write(lSP);
-        cpu.memory.at(address + 1).write(hSP);
+        const address = cpu.nextWord.value;
+        cpu.memory.wordAt(address).value = cpu.registers.SP.value;
     },
     cycles: 20,
     parameterBytes: 2,
@@ -28607,20 +28650,18 @@ const loadStackPointerToAddress = {
 };
 const loadStackPointerFromHL = {
     execute (cpu) {
-        const sp = cpu.registers.get16("SP");
-        const hl = cpu.registers.get16("HL");
-        sp.write(hl.read());
+        cpu.registers.SP.value = cpu.registers.HL.value;
     },
     cycles: 8,
     parameterBytes: 0,
     description: ()=>"LD SP,HL"
 };
 
-},{"../../helpers/displayHexNumbers":"iSdOS","../arithmetic":"e2ePH","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jvHrF":[function(require,module,exports) {
+},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jvHrF":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 const nop = {
-    execute: (cpu)=>{},
+    execute: (_)=>{},
     cycles: 4,
     parameterBytes: 0,
     description: ()=>"NOP"
@@ -28641,13 +28682,13 @@ var _instructionHelpers = require("./instructionHelpers");
 const testBit = (bit, sourceName)=>{
     return {
         execute: (cpu)=>{
-            const source = (0, _instructionHelpers.getByteDestination)(sourceName, cpu);
-            const result = source.read() >> bit & 1;
-            cpu.registers.getFlag("Zero").write(result === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Half-Carry").write(1);
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const result = source.value >> bit & 1;
+            cpu.registers.F.zero = result == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = true;
         },
-        cycles: sourceName === "M" ? 12 : 8,
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8,
         parameterBytes: 0,
         description: ()=>`BIT ${bit},${sourceName}`
     };
@@ -28655,10 +28696,10 @@ const testBit = (bit, sourceName)=>{
 const resetBit = (bit, sourceName)=>{
     return {
         execute: (cpu)=>{
-            const source = (0, _instructionHelpers.getByteDestination)(sourceName, cpu);
-            source.write(source.read() & ~(1 << bit));
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            source.value &= ~(1 << bit);
         },
-        cycles: sourceName === "M" ? 16 : 8,
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
         parameterBytes: 0,
         description: ()=>`RES ${bit},${sourceName}`
     };
@@ -28666,10 +28707,10 @@ const resetBit = (bit, sourceName)=>{
 const setBit = (bit, sourceName)=>{
     return {
         execute: (cpu)=>{
-            const source = (0, _instructionHelpers.getByteDestination)(sourceName, cpu);
-            source.write(source.read() | 1 << bit);
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            source.value |= 1 << bit;
         },
-        cycles: sourceName === "M" ? 16 : 8,
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
         parameterBytes: 0,
         description: ()=>`SET ${bit},${sourceName}`
     };
@@ -28677,18 +28718,18 @@ const setBit = (bit, sourceName)=>{
 const swap = (sourceName)=>{
     return {
         execute (cpu) {
-            const byte = (0, _instructionHelpers.getByteDestination)(sourceName, cpu);
-            const originalValue = byte.read();
+            const byte = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const originalValue = byte.value;
             const h = (originalValue & 0xF0) >> 4;
             const l = originalValue & 0x0F;
             const newValue = (l << 4) + h;
-            byte.write(newValue);
-            cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Carry").write(0);
-            cpu.registers.getFlag("Half-Carry").write(0);
+            byte.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = false;
         },
-        cycles: sourceName === "M" ? 12 : 8,
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8,
         parameterBytes: 0,
         description: ()=>`SWAP ${sourceName}`
     };
@@ -28696,14 +28737,14 @@ const swap = (sourceName)=>{
 const shiftRightLogical = (sourceName)=>{
     return {
         execute (cpu) {
-            const byte = (0, _instructionHelpers.getByteDestination)(sourceName, cpu);
-            const originalValue = byte.read();
+            const byte = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const originalValue = byte.value;
             const newValue = originalValue >> 1;
-            byte.write(newValue);
-            cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Carry").write(originalValue & 1);
-            cpu.registers.getFlag("Half-Carry").write(0);
+            byte.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = (originalValue & 1) > 0;
         },
         cycles: 8,
         parameterBytes: 0,
@@ -28713,16 +28754,16 @@ const shiftRightLogical = (sourceName)=>{
 function shiftLeftArithmetic(sourceName) {
     return {
         execute (cpu) {
-            const source = (0, _instructionHelpers.getByteDestination)(sourceName, cpu);
-            const oldValue = source.read();
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const oldValue = source.value;
             const newValue = (oldValue << 1 & 0xFF) + 0;
-            source.write(newValue);
-            cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Half-Carry").write(0);
-            cpu.registers.getFlag("Carry").write(oldValue & 0x80);
+            source.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = (oldValue & 0x80) > 0;
         },
-        cycles: sourceName === "M" ? 16 : 8,
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
         parameterBytes: 0,
         description: ()=>`SRA ${sourceName}`
     };
@@ -28730,16 +28771,16 @@ function shiftLeftArithmetic(sourceName) {
 function shiftRightArithmetic(sourceName) {
     return {
         execute (cpu) {
-            const source = (0, _instructionHelpers.getByteDestination)(sourceName, cpu);
-            const oldValue = source.read();
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const oldValue = source.value;
             const newValue = (oldValue >> 1) + (oldValue & 0x80);
-            source.write(newValue);
-            cpu.registers.getFlag("Zero").write(newValue === 0 ? 1 : 0);
-            cpu.registers.getFlag("Operation").write(0);
-            cpu.registers.getFlag("Half-Carry").write(0);
-            cpu.registers.getFlag("Carry").write(oldValue & 0x1);
+            source.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = (oldValue & 1) > 0;
         },
-        cycles: sourceName === "M" ? 16 : 8,
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
         parameterBytes: 0,
         description: ()=>`SRA ${sourceName}`
     };
@@ -28756,20 +28797,17 @@ parcelHelpers.export(exports, "retF", ()=>retF);
 parcelHelpers.export(exports, "push", ()=>push);
 parcelHelpers.export(exports, "pop", ()=>pop);
 var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _arithmetic = require("../arithmetic");
 var _instructionHelpers = require("./instructionHelpers");
 var _jumps = require("./jumps");
 const call = {
     execute: (cpu)=>{
-        const sp = cpu.registers.get16("SP");
-        const pc = cpu.registers.get16("PC");
-        const address = cpu.readNext16bit();
-        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.read());
-        (0, _arithmetic.decrement)(sp);
-        cpu.memory.at(sp.read()).write(h);
-        (0, _arithmetic.decrement)(sp);
-        cpu.memory.at(sp.read()).write(l);
-        pc.write(address);
+        const sp = cpu.registers.SP;
+        const pc = cpu.registers.PC;
+        const address = cpu.nextWord.value;
+        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+        cpu.memory.at(--sp.value).value = h;
+        cpu.memory.at(--sp.value).value = l;
+        pc.value = address;
     },
     cycles: 24,
     parameterBytes: 2,
@@ -28778,16 +28816,14 @@ const call = {
 function callF(condition) {
     return {
         execute (cpu) {
-            const address = cpu.readNext16bit();
+            const address = cpu.nextWord.value;
             if ((0, _jumps.CONDITIONS)[condition](cpu)) {
-                const sp = cpu.registers.get16("SP");
-                const pc = cpu.registers.get16("PC");
-                const [h, l] = (0, _instructionHelpers.splitBytes)(pc.read());
-                (0, _arithmetic.decrement)(sp);
-                cpu.memory.at(sp.read()).write(h);
-                (0, _arithmetic.decrement)(sp);
-                cpu.memory.at(sp.read()).write(l);
-                pc.write(address);
+                const sp = cpu.registers.SP;
+                const pc = cpu.registers.PC;
+                const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+                cpu.memory.at(--sp.value).value = h;
+                cpu.memory.at(--sp.value).value = l;
+                pc.value = address;
             }
         },
         cycles: 24,
@@ -28797,13 +28833,11 @@ function callF(condition) {
 }
 const ret = {
     execute: (cpu)=>{
-        const sp = cpu.registers.get16("SP");
-        const pc = cpu.registers.get16("PC");
-        const l = cpu.memory.at(sp.read()).read();
-        (0, _arithmetic.increment)(sp);
-        const h = cpu.memory.at(sp.read()).read();
-        (0, _arithmetic.increment)(sp);
-        pc.write((0, _instructionHelpers.combineBytes)(h, l));
+        const sp = cpu.registers.SP;
+        const pc = cpu.registers.PC;
+        const l = cpu.memory.at(sp.value++).value;
+        const h = cpu.memory.at(sp.value++).value;
+        pc.value = (0, _instructionHelpers.combineBytes)(h, l);
     },
     cycles: 16,
     parameterBytes: 0,
@@ -28811,13 +28845,11 @@ const ret = {
 };
 const reti = {
     execute (cpu) {
-        const sp = cpu.registers.get16("SP");
-        const pc = cpu.registers.get16("PC");
-        const l = cpu.memory.at(sp.read()).read();
-        (0, _arithmetic.increment)(sp);
-        const h = cpu.memory.at(sp.read()).read();
-        (0, _arithmetic.increment)(sp);
-        pc.write((0, _instructionHelpers.combineBytes)(h, l));
+        const sp = cpu.registers.SP;
+        const pc = cpu.registers.PC;
+        const l = cpu.memory.at(sp.value++).value;
+        const h = cpu.memory.at(sp.value++).value;
+        pc.value = (0, _instructionHelpers.combineBytes)(h, l);
         cpu.interruptsEnabled = true;
     },
     cycles: 16,
@@ -28828,13 +28860,11 @@ function retF(condition) {
     return {
         execute (cpu) {
             if ((0, _jumps.CONDITIONS)[condition](cpu)) {
-                const sp = cpu.registers.get16("SP");
-                const pc = cpu.registers.get16("PC");
-                const l = cpu.memory.at(sp.read()).read();
-                (0, _arithmetic.increment)(sp);
-                const h = cpu.memory.at(sp.read()).read();
-                (0, _arithmetic.increment)(sp);
-                pc.write((0, _instructionHelpers.combineBytes)(h, l));
+                const sp = cpu.registers.SP;
+                const pc = cpu.registers.PC;
+                const l = cpu.memory.at(sp.value++).value;
+                const h = cpu.memory.at(sp.value++).value;
+                pc.value = (0, _instructionHelpers.combineBytes)(h, l);
             }
         },
         cycles: 20,
@@ -28845,37 +28875,33 @@ function retF(condition) {
 function push(registerName) {
     return {
         execute: (cpu)=>{
-            const sp = cpu.registers.get16("SP");
-            const register = cpu.registers.get16(registerName);
-            const [h, l] = (0, _instructionHelpers.splitBytes)(register.read());
-            (0, _arithmetic.decrement)(sp);
-            cpu.memory.at(sp.read()).write(h);
-            (0, _arithmetic.decrement)(sp);
-            cpu.memory.at(sp.read()).write(l);
+            const sp = cpu.registers.SP;
+            const register = (0, _instructionHelpers.getWordRef)(registerName, cpu);
+            const [h, l] = (0, _instructionHelpers.splitBytes)(register.value);
+            cpu.memory.at(--sp.value).value = h;
+            cpu.memory.at(--sp.value).value = l;
         },
         cycles: 16,
         parameterBytes: 0,
-        description: ()=>`PUSH ${registerName}`
+        description: ()=>`PUSH ${(0, _instructionHelpers.describeWordLocation)(registerName)}`
     };
 }
 function pop(registerName) {
     return {
         execute: (cpu)=>{
-            const sp = cpu.registers.get16("SP");
-            const register = cpu.registers.get16(registerName);
-            const l = cpu.memory.at(sp.read()).read();
-            (0, _arithmetic.increment)(sp);
-            const h = cpu.memory.at(sp.read()).read();
-            (0, _arithmetic.increment)(sp);
-            register.write((0, _instructionHelpers.combineBytes)(h, l));
+            const sp = cpu.registers.SP;
+            const register = (0, _instructionHelpers.getWordRef)(registerName, cpu);
+            const l = cpu.memory.at(sp.value++).value;
+            const h = cpu.memory.at(sp.value++).value;
+            register.value = (0, _instructionHelpers.combineBytes)(h, l);
         },
         cycles: 12,
         parameterBytes: 0,
-        description: ()=>`POP ${registerName}`
+        description: ()=>`POP ${(0, _instructionHelpers.describeWordLocation)(registerName)}`
     };
 }
 
-},{"../../helpers/displayHexNumbers":"iSdOS","../arithmetic":"e2ePH","./instructionHelpers":"bJjsQ","./jumps":"7RHU3","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"km3Ru":[function(require,module,exports) {
+},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","./jumps":"7RHU3","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"km3Ru":[function(require,module,exports) {
 "use strict";
 var Refresh = require("7422ead32dcc1e6b");
 function debounce(func, delay) {
@@ -29045,10 +29071,10 @@ const REGISTERS_16_BIT = [
     "AF"
 ];
 const FLAGS = [
-    "Zero",
-    "Operation",
-    "Half-Carry",
-    "Carry"
+    "zero",
+    "operation",
+    "halfCarry",
+    "carry"
 ];
 function CpuController({ cpu }) {
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
@@ -29119,11 +29145,13 @@ function CpuController({ cpu }) {
                 lineNumber: 29,
                 columnNumber: 5
             }, this),
+            "Is halted: ",
+            cpu.isHalted.toString(),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
                 children: "Registers"
             }, void 0, false, {
                 fileName: "src/web/components/cpuController.tsx",
-                lineNumber: 38,
+                lineNumber: 39,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -29135,7 +29163,7 @@ function CpuController({ cpu }) {
                                 children: "8-bit registers"
                             }, void 0, false, {
                                 fileName: "src/web/components/cpuController.tsx",
-                                lineNumber: 41,
+                                lineNumber: 42,
                                 columnNumber: 9
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -29146,36 +29174,36 @@ function CpuController({ cpu }) {
                                                     children: reg
                                                 }, void 0, false, {
                                                     fileName: "src/web/components/cpuController.tsx",
-                                                    lineNumber: 46,
+                                                    lineNumber: 47,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
-                                                    children: (0, _displayHexNumbers.valueDisplay)(cpu.registers.get8(reg).read())
+                                                    children: (0, _displayHexNumbers.valueDisplay)(cpu.registers[reg].value)
                                                 }, void 0, false, {
                                                     fileName: "src/web/components/cpuController.tsx",
-                                                    lineNumber: 47,
+                                                    lineNumber: 48,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, reg, true, {
                                             fileName: "src/web/components/cpuController.tsx",
-                                            lineNumber: 45,
+                                            lineNumber: 46,
                                             columnNumber: 15
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "src/web/components/cpuController.tsx",
-                                    lineNumber: 43,
+                                    lineNumber: 44,
                                     columnNumber: 11
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/web/components/cpuController.tsx",
-                                lineNumber: 42,
+                                lineNumber: 43,
                                 columnNumber: 9
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/web/components/cpuController.tsx",
-                        lineNumber: 40,
+                        lineNumber: 41,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -29184,7 +29212,7 @@ function CpuController({ cpu }) {
                                 children: "16-bit registers"
                             }, void 0, false, {
                                 fileName: "src/web/components/cpuController.tsx",
-                                lineNumber: 53,
+                                lineNumber: 54,
                                 columnNumber: 9
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -29195,36 +29223,36 @@ function CpuController({ cpu }) {
                                                     children: reg
                                                 }, void 0, false, {
                                                     fileName: "src/web/components/cpuController.tsx",
-                                                    lineNumber: 58,
+                                                    lineNumber: 59,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
-                                                    children: (0, _displayHexNumbers.addressDisplay)(cpu.registers.get16(reg).read())
+                                                    children: (0, _displayHexNumbers.addressDisplay)(cpu.registers[reg].value)
                                                 }, void 0, false, {
                                                     fileName: "src/web/components/cpuController.tsx",
-                                                    lineNumber: 59,
+                                                    lineNumber: 60,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, reg, true, {
                                             fileName: "src/web/components/cpuController.tsx",
-                                            lineNumber: 57,
+                                            lineNumber: 58,
                                             columnNumber: 15
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "src/web/components/cpuController.tsx",
-                                    lineNumber: 55,
+                                    lineNumber: 56,
                                     columnNumber: 11
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/web/components/cpuController.tsx",
-                                lineNumber: 54,
+                                lineNumber: 55,
                                 columnNumber: 9
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/web/components/cpuController.tsx",
-                        lineNumber: 52,
+                        lineNumber: 53,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -29233,7 +29261,7 @@ function CpuController({ cpu }) {
                                 children: "Flags"
                             }, void 0, false, {
                                 fileName: "src/web/components/cpuController.tsx",
-                                lineNumber: 65,
+                                lineNumber: 66,
                                 columnNumber: 9
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("table", {
@@ -29244,42 +29272,42 @@ function CpuController({ cpu }) {
                                                     children: reg
                                                 }, void 0, false, {
                                                     fileName: "src/web/components/cpuController.tsx",
-                                                    lineNumber: 70,
+                                                    lineNumber: 71,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("td", {
-                                                    children: cpu.registers.getFlag(reg).read()
+                                                    children: cpu.registers.F[reg].read
                                                 }, void 0, false, {
                                                     fileName: "src/web/components/cpuController.tsx",
-                                                    lineNumber: 71,
+                                                    lineNumber: 72,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, reg, true, {
                                             fileName: "src/web/components/cpuController.tsx",
-                                            lineNumber: 69,
+                                            lineNumber: 70,
                                             columnNumber: 15
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "src/web/components/cpuController.tsx",
-                                    lineNumber: 67,
+                                    lineNumber: 68,
                                     columnNumber: 11
                                 }, this)
                             }, void 0, false, {
                                 fileName: "src/web/components/cpuController.tsx",
-                                lineNumber: 66,
+                                lineNumber: 67,
                                 columnNumber: 9
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/web/components/cpuController.tsx",
-                        lineNumber: 64,
+                        lineNumber: 65,
                         columnNumber: 7
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/cpuController.tsx",
-                lineNumber: 39,
+                lineNumber: 40,
                 columnNumber: 5
             }, this)
         ]
@@ -29504,33 +29532,63 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "VramViewer", ()=>VramViewer);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
+var _displayHexNumbers = require("../../helpers/displayHexNumbers");
 var _s = $RefreshSig$();
 function VramViewer({ ppu }) {
     _s();
-    const tileSetCanvas = _react.useRef(null);
+    const tileSet0Canvas = _react.useRef(null);
+    const tileSet1Canvas = _react.useRef(null);
     const backgroundCanvas = _react.useRef(null);
+    const windowCanvas = _react.useRef(null);
+    const spriteCanvas = _react.useRef(null);
     const [sprites, setSprites] = _react.useState([]);
+    const [sX, setSX] = _react.useState(0);
+    const [sY, setSY] = _react.useState(0);
+    const [wX, setWX] = _react.useState(0);
+    const [wY, setWY] = _react.useState(0);
     const update = ()=>{
-        if (tileSetCanvas.current) ppu.printTileSet(tileSetCanvas.current);
-        if (backgroundCanvas.current) ppu.printBackgroundLayer(backgroundCanvas.current);
+        setSX(ppu.memory.registers.scrollX.value);
+        setSY(ppu.memory.registers.scrollY.value);
+        setWX(ppu.memory.registers.windowX.value);
+        setWY(ppu.memory.registers.windowY.value);
+        if (tileSet0Canvas.current) ppu.printTileset0(tileSet0Canvas.current);
+        if (tileSet1Canvas.current) ppu.printTileset1(tileSet1Canvas.current);
+        if (backgroundCanvas.current) {
+            ppu.printBackgroundLayer(backgroundCanvas.current, "background");
+            const context = backgroundCanvas.current.getContext("2d");
+            context.beginPath();
+            context.lineWidth = 1;
+            context.strokeStyle = "red";
+            context.rect(sX, sY, 160, 144);
+            context.rect(sX - 256, sY, 160, 144);
+            context.rect(sX, sY - 256, 160, 144);
+            context.rect(sX - 256, sY - 256, 160, 144);
+            context.stroke();
+        }
+        if (windowCanvas.current) {
+            ppu.printBackgroundLayer(windowCanvas.current, "window");
+            const context = windowCanvas.current.getContext("2d");
+            context.beginPath();
+            context.lineWidth = 1;
+            context.strokeStyle = "red";
+            context.rect(-wX + 7, -wY, 160, 144);
+            context.stroke();
+        }
+        if (spriteCanvas.current) ppu.printSpriteLayer(spriteCanvas.current);
         setSprites(ppu.getSpriteInfo());
     };
+    _react.useEffect(()=>{
+        update();
+    }, []);
     const toColour = (values)=>`#${values.map((x)=>x.toString(16).padStart(2, "0")).join("")}ff`;
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
         children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
-                children: " VRAM Viewer"
-            }, void 0, false, {
-                fileName: "src/web/components/vramViewer.tsx",
-                lineNumber: 29,
-                columnNumber: 5
-            }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
                 onClick: update,
                 children: "Update"
             }, void 0, false, {
                 fileName: "src/web/components/vramViewer.tsx",
-                lineNumber: 30,
+                lineNumber: 67,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -29542,31 +29600,70 @@ function VramViewer({ ppu }) {
                                 children: "Tile data"
                             }, void 0, false, {
                                 fileName: "src/web/components/vramViewer.tsx",
-                                lineNumber: 33,
+                                lineNumber: 70,
                                 columnNumber: 9
                             }, this),
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
-                                width: "128",
-                                height: "192",
-                                ref: tileSetCanvas
-                            }, void 0, false, {
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h4", {
+                                        children: "Tileset 0"
+                                    }, void 0, false, {
+                                        fileName: "src/web/components/vramViewer.tsx",
+                                        lineNumber: 72,
+                                        columnNumber: 11
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
+                                        width: "128",
+                                        height: "128",
+                                        ref: tileSet0Canvas
+                                    }, void 0, false, {
+                                        fileName: "src/web/components/vramViewer.tsx",
+                                        lineNumber: 73,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "src/web/components/vramViewer.tsx",
-                                lineNumber: 34,
+                                lineNumber: 71,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h4", {
+                                        children: "Tileset 1"
+                                    }, void 0, false, {
+                                        fileName: "src/web/components/vramViewer.tsx",
+                                        lineNumber: 80,
+                                        columnNumber: 11
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
+                                        width: "128",
+                                        height: "128",
+                                        ref: tileSet1Canvas
+                                    }, void 0, false, {
+                                        fileName: "src/web/components/vramViewer.tsx",
+                                        lineNumber: 81,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 79,
                                 columnNumber: 9
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/web/components/vramViewer.tsx",
-                        lineNumber: 32,
+                        lineNumber: 69,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                         children: [
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                                children: "Background layer"
+                                children: "Background map"
                             }, void 0, false, {
                                 fileName: "src/web/components/vramViewer.tsx",
-                                lineNumber: 41,
+                                lineNumber: 89,
                                 columnNumber: 9
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -29580,13 +29677,25 @@ function VramViewer({ ppu }) {
                                             children: i
                                         }, void 0, false, {
                                             fileName: "src/web/components/vramViewer.tsx",
-                                            lineNumber: 44,
+                                            lineNumber: 92,
                                             columnNumber: 26
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "src/web/components/vramViewer.tsx",
-                                lineNumber: 42,
+                                lineNumber: 90,
+                                columnNumber: 9
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                children: [
+                                    "sX: ",
+                                    (0, _displayHexNumbers.valueDisplay)(sX),
+                                    ", sY: ",
+                                    (0, _displayHexNumbers.valueDisplay)(sY)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 96,
                                 columnNumber: 9
                             }, this),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
@@ -29595,67 +29704,121 @@ function VramViewer({ ppu }) {
                                 ref: backgroundCanvas
                             }, void 0, false, {
                                 fileName: "src/web/components/vramViewer.tsx",
-                                lineNumber: 48,
+                                lineNumber: 97,
                                 columnNumber: 9
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/web/components/vramViewer.tsx",
-                        lineNumber: 40,
+                        lineNumber: 88,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                         children: [
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                                children: "Sprites"
+                                children: "Window layer"
                             }, void 0, false, {
                                 fileName: "src/web/components/vramViewer.tsx",
-                                lineNumber: 55,
+                                lineNumber: 104,
                                 columnNumber: 9
                             }, this),
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                className: "flex-horizonally",
-                                children: [
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                        children: "sprite 1-20"
-                                    }, void 0, false, {
-                                        fileName: "src/web/components/vramViewer.tsx",
-                                        lineNumber: 57,
-                                        columnNumber: 11
-                                    }, this),
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                        children: "sprite 21-40"
-                                    }, void 0, false, {
-                                        fileName: "src/web/components/vramViewer.tsx",
-                                        lineNumber: 60,
-                                        columnNumber: 11
-                                    }, this)
-                                ]
-                            }, void 0, true, {
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
+                                width: "160",
+                                height: "144",
+                                ref: windowCanvas
+                            }, void 0, false, {
                                 fileName: "src/web/components/vramViewer.tsx",
-                                lineNumber: 56,
+                                lineNumber: 105,
+                                columnNumber: 9
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                                children: "Sprite layer"
+                            }, void 0, false, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 110,
+                                columnNumber: 9
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
+                                width: "160",
+                                height: "144",
+                                ref: spriteCanvas
+                            }, void 0, false, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 111,
                                 columnNumber: 9
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/web/components/vramViewer.tsx",
-                        lineNumber: 54,
+                        lineNumber: 103,
                         columnNumber: 7
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/vramViewer.tsx",
-                lineNumber: 31,
+                lineNumber: 68,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                        children: "Sprites"
+                    }, void 0, false, {
+                        fileName: "src/web/components/vramViewer.tsx",
+                        lineNumber: 120,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "flex-horizonally",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: "sprite 1-20"
+                            }, void 0, false, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 122,
+                                columnNumber: 9
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: "sprite 11-20"
+                            }, void 0, false, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 125,
+                                columnNumber: 9
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: "sprite 21-30"
+                            }, void 0, false, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 128,
+                                columnNumber: 9
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: "sprite 31-40"
+                            }, void 0, false, {
+                                fileName: "src/web/components/vramViewer.tsx",
+                                lineNumber: 131,
+                                columnNumber: 9
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/web/components/vramViewer.tsx",
+                        lineNumber: 121,
+                        columnNumber: 7
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/web/components/vramViewer.tsx",
+                lineNumber: 119,
                 columnNumber: 5
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/vramViewer.tsx",
-        lineNumber: 28,
+        lineNumber: 66,
         columnNumber: 11
     }, this);
 }
-_s(VramViewer, "o8Mm1f2GC9LNO8+vMxNJwFYlGag=");
+_s(VramViewer, "Yl9FCzmEIRaU1E9rsS4VtXhibRA=");
 _c = VramViewer;
 var _c;
 $RefreshReg$(_c, "VramViewer");
@@ -29665,7 +29828,7 @@ $RefreshReg$(_c, "VramViewer");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"jUUTo":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../../helpers/displayHexNumbers":"iSdOS"}],"jUUTo":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$309f = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -29728,8 +29891,7 @@ $RefreshReg$(_c, "Display");
 },{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/screen":"7Es7K","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"7Es7K":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _arithmetic = require("./arithmetic");
-var _instructionHelpers = require("./instructions/instructionHelpers");
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
 const WIDTH = 160;
 const HEIGHT = 144;
 const SCANLINES = 154;
@@ -29755,13 +29917,11 @@ const COLOURS = [
         0
     ]
 ];
-const SPRITE_MEMORY_START = 0xFE00;
-const TILESET_MEMORY_START = 0x8000;
 const BACKGROUND_MEMORY_START = 0x9800;
+const WINDOW_MEMORY_START = 0x9C00;
 class Screen {
     constructor(cpu, canvas){
         this.clockCount = 0;
-        this.gbDoctorHackManualScanline = 0;
         this.mode = "Scanline OAM";
         this.newFrameDrawn = false;
         this.cpu = cpu;
@@ -29769,12 +29929,13 @@ class Screen {
         this.canvas = canvas;
         this.buffer = new OffscreenCanvas(WIDTH, HEIGHT);
         this.bufferContext = this.buffer.getContext("2d");
-        this.lcdControl = this.memory.at(0xFF40);
-        this.lcdStatus = this.memory.at(0xFF41);
-        this.scrollY = this.memory.at(0xFF42);
-        this.scrollX = this.memory.at(0xFF43);
-        this.scanlineNumber = this.memory.at(0xFF44);
-        this.backgroundPallette = this.memory.at(0xFF47);
+        this.lcdControl = this.memory.registers.lcdControl;
+        this.lcdStatus = this.memory.registers.lcdStatus;
+        this.scrollY = this.memory.registers.scrollY;
+        this.scrollX = this.memory.registers.scrollX;
+        this.scanlineNumber = this.memory.registers.scanline;
+        this.backgroundPallette = this.memory.registers.backgroundPallete;
+        this.coincidence = this.memory.registers.scanlineCoincidence;
         cpu.addClockCallback(this);
         cpu.screen = this;
     }
@@ -29785,136 +29946,128 @@ class Screen {
             case "HBlank":
                 if (this.clockCount >= 204) {
                     this.clockCount -= 204;
-                    (0, _arithmetic.increment)(this.scanlineNumber);
-                    this.gbDoctorHackManualScanline++;
-                    if (this.gbDoctorHackManualScanline === HEIGHT) {
+                    this.setScanline(this.scanlineNumber.value + 1);
+                    if (this.scanlineNumber.value === HEIGHT) {
                         this.renderScreen();
-                        (0, _instructionHelpers.setBit)(this.memory.at(0xFF0F), 0) // VBlank interrupt flag ON
-                        ;
-                        this.mode = "VBlank";
+                        this.setMode("VBlank");
                         this.newFrameDrawn = true;
-                    } else this.mode = "Scanline OAM";
+                    } else this.setMode("Scanline OAM");
                 }
                 break;
             case "VBlank":
                 if (this.clockCount >= 456) {
                     this.clockCount -= 456;
-                    (0, _arithmetic.increment)(this.scanlineNumber);
-                    this.gbDoctorHackManualScanline++;
-                    if (this.gbDoctorHackManualScanline >= SCANLINES) {
-                        this.scanlineNumber.write(0);
-                        this.gbDoctorHackManualScanline = 0;
+                    this.setScanline(this.scanlineNumber.value + 1);
+                    if (this.scanlineNumber.value > SCANLINES) {
+                        this.setScanline(0);
                         this.renderScanline();
-                        this.mode = "HBlank";
-                        if ((0, _instructionHelpers.testBit)(this.lcdStatus, 3)) (0, _instructionHelpers.setBit)(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
-                        ;
+                        this.setMode("HBlank");
                     }
                 }
                 break;
             case "Scanline OAM":
                 if (this.clockCount >= 80) {
                     this.clockCount -= 80;
-                    this.mode = "Scanline VRAM";
+                    this.setMode("Scanline VRAM");
                 }
                 break;
             case "Scanline VRAM":
                 if (this.clockCount >= 172) {
                     this.clockCount -= 172;
                     this.renderScanline();
-                    this.mode = "HBlank";
-                    if ((0, _instructionHelpers.testBit)(this.lcdStatus, 3)) (0, _instructionHelpers.setBit)(this.memory.at(0xFF0F), 1) // LCD interrupt flag ON
-                    ;
+                    this.setMode("HBlank");
                 }
                 break;
         }
     }
+    setScanline(value) {
+        this.scanlineNumber.value = value;
+        if (this.lcdStatus.lycInterruptEnabled && this.scanlineNumber.value == this.coincidence.value) {
+            this.lcdStatus.lycCoinciding = true;
+            // TODO: why does this make SML glitchy AF?
+            this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+        } else this.lcdStatus.lycCoinciding = false;
+    }
+    setMode(mode) {
+        switch(mode){
+            case "HBlank":
+                if (this.lcdStatus.mode0InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                this.lcdStatus.mode = 0;
+                break;
+            case "VBlank":
+                this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).VBlank);
+                if (this.lcdStatus.mode1InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                this.lcdStatus.mode = 1;
+                break;
+            case "Scanline OAM":
+                if (this.lcdStatus.mode2InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                this.lcdStatus.mode = 2;
+                break;
+            case "Scanline VRAM":
+                this.lcdStatus.mode = 3;
+                break;
+        }
+        this.mode = mode;
+    }
     renderScanline() {
-        const scanline = this.gbDoctorHackManualScanline //this.scanlineNumber.read()
-        ;
+        if (!this.lcdControl.enabled) return;
+        const scanline = this.scanlineNumber.value;
         const line = this.bufferContext.createImageData(WIDTH, 1);
-        const backgroundPalletByte = this.backgroundPallette.read();
-        const backgroundPallet = [
-            COLOURS[backgroundPalletByte >> 0 & 3],
-            COLOURS[backgroundPalletByte >> 2 & 3],
-            COLOURS[backgroundPalletByte >> 4 & 3],
-            COLOURS[backgroundPalletByte >> 6 & 3]
-        ];
-        const scrollX = this.scrollX.read();
-        const scrollY = this.scrollY.read();
+        const scrollX = this.scrollX.value;
+        const scrollY = this.scrollY.value;
         const backgroundY = scrollY + scanline & 0xFF;
+        const windowY = scanline - this.memory.registers.windowY.value;
         // Returns the 8 long row of the background tile at pixel offset given
         const getBackgroundTileRow = (offset)=>{
             const backgroundX = scrollX + offset & 0xFF;
             const tileMapNumber = (backgroundX >> 3) + 32 * (backgroundY >> 3);
-            const tileId = this.memory.at(BACKGROUND_MEMORY_START + tileMapNumber).read();
+            const tileId = this.lcdControl.backgroundTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
             const row = backgroundY & 0x7;
-            const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * row;
-            const byte1 = this.memory.at(rowBaseAddress).read();
-            const byte2 = this.memory.at(rowBaseAddress + 1).read();
-            let pixels = [];
-            for(let i = 0; i < 8; i++){
-                const bit1 = byte1 >> 7 - i & 1;
-                const bit2 = byte2 >> 7 - i & 1;
-                const pixelValue = bit1 + 2 * bit2;
-                pixels.push(backgroundPallet[pixelValue]);
-            }
-            return pixels;
+            return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
         };
-        // Find which sprites overlap, grab relevant row of tile
-        // TODO: handle sprite priority
-        // TODO: Fix... buginess?
-        const spriteSize = (0, _instructionHelpers.testBit)(this.lcdControl, 2) === 0 ? 8 : 16;
-        const spriteRows = [];
-        for(let i = 0; i < 40; i++){
-            const spriteBaseAddress = SPRITE_MEMORY_START + 4 * i;
-            const spriteY = this.memory.at(spriteBaseAddress + 0).read();
-            const palleteAddress = 0xFF48 + (0, _instructionHelpers.testBit)(this.memory.at(spriteBaseAddress + 3), 4);
-            const palletByte = this.memory.at(palleteAddress).read();
-            const pallet = [
-                COLOURS[palletByte >> 0 & 3],
-                COLOURS[palletByte >> 2 & 3],
-                COLOURS[palletByte >> 4 & 3],
-                COLOURS[palletByte >> 6 & 3]
-            ];
-            const flipX = (0, _instructionHelpers.testBit)(this.memory.at(spriteBaseAddress + 3), 5);
-            const flipY = (0, _instructionHelpers.testBit)(this.memory.at(spriteBaseAddress + 3), 6);
-            const spriteRow = flipY ? spriteSize - (spriteY - 9 - scanline) : spriteY - 9 - scanline;
-            if (spriteRow > 0 && spriteRow <= spriteSize) {
-                let tileId = this.memory.at(spriteBaseAddress + 2).read();
-                if (spriteSize === 16) tileId = spriteRow > 8 ? tileId | 1 : tileId & 0xFE;
-                const rowBaseAddress = TILESET_MEMORY_START + 16 * tileId + 2 * (spriteRow % 8);
-                const byte1 = this.memory.at(rowBaseAddress).read();
-                const byte2 = this.memory.at(rowBaseAddress + 1).read();
-                let pixels = [];
-                for(let i = 0; i < 8; i++){
-                    const bit1 = byte1 >> (flipX ? i : 7 - i) & 1;
-                    const bit2 = byte2 >> (flipX ? i : 7 - i) & 1;
-                    const pixelValue = bit1 + 2 * bit2;
-                    pixels.push(pixelValue == 0 ? undefined : pallet[pixelValue]);
-                }
-                spriteRows.push({
-                    x: this.memory.at(spriteBaseAddress + 1).read(),
-                    row: pixels
-                });
-            }
-        }
         let backgroundTileRow = getBackgroundTileRow(0);
         let backgroundTileCounter = scrollX & 0x7;
+        const sprites = this.memory.oam.spritesAtScanline();
+        const highPrioritySprites = sprites.filter((s)=>!s.priority);
+        const lowPrioritySprites = sprites.filter((s)=>s.priority);
+        const winY = scanline - this.memory.registers.windowY.value;
         for(let i = 0; i < WIDTH; i++){
+            if (!this.lcdControl.enabled) return;
             let pixel;
-            // Render sprites
-            const sprite = spriteRows.find(({ x })=>i < x && i >= x - 8);
-            if (sprite) pixel = sprite.row[8 - (sprite.x - i)];
-            // Render background
-            if (!pixel) pixel = backgroundTileRow[(scrollX + i) % 8];
+            // Render window
+            if (this.lcdControl.windowEnabled) {
+                const winX = i - (this.memory.registers.windowX.value - 7);
+                if (winY >= 0 && winX >= 0) {
+                    const tileMapNumber = (winX >> 3) + 20 * (winY >> 3);
+                    const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
+                    const row = winY & 0x7;
+                    pixel = this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row)[winX % 8] : this.memory.vram.tileset1(tileId, row)[winX % 8];
+                }
+            }
+            // Render high priority sprites (that go above background)
+            if (pixel === undefined && this.lcdControl.objectsEnabled) pixel = highPrioritySprites.filter((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8).map((sprite)=>sprite.pixelAt(scanline, i, this.lcdControl.objectSize)).find((p)=>p !== undefined);
+            // Render background (excluding the lowest colour in the pallete)
+            if (pixel === undefined) {
+                const backgroundPixel = backgroundTileRow[(scrollX + i) % 8];
+                if (backgroundPixel !== 0) pixel = this.backgroundPallette.map[backgroundPixel];
+            }
+            // Get next background tile if needed
             backgroundTileCounter++;
             if (backgroundTileCounter === 8) {
                 backgroundTileCounter = 0;
                 backgroundTileRow = getBackgroundTileRow(i + 1);
             }
-            line.data[4 * i + 0] = pixel[0];
-            line.data[4 * i + 1] = pixel[1];
-            line.data[4 * i + 2] = pixel[2];
+            // Render low priority sprites (that go below non zero background)
+            if (pixel === undefined && this.lcdControl.objectsEnabled) {
+                const sprite = lowPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8);
+                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
+            }
+            // If nothing else has rendered, use the lowest colour in the pallete
+            if (pixel === undefined) pixel = this.backgroundPallette.map[0];
+            const colour = COLOURS[pixel];
+            line.data[4 * i + 0] = colour[0];
+            line.data[4 * i + 1] = colour[1];
+            line.data[4 * i + 2] = colour[2];
             line.data[4 * i + 3] = 255;
         }
         // Finally, add the new line to the buffer image
@@ -29927,7 +30080,74 @@ class Screen {
 }
 exports.default = Screen;
 
-},{"./arithmetic":"e2ePH","./instructions/instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fWSSh":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}],"gq7ph":[function(require,module,exports) {
+// Reference: https://gbdev.io/pandocs/Interrupts.html
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Interrupt", ()=>Interrupt);
+parcelHelpers.export(exports, "InterruptRegister", ()=>InterruptRegister);
+parcelHelpers.export(exports, "InterruptEnabledRegister", ()=>InterruptEnabledRegister);
+var Interrupt;
+(function(Interrupt) {
+    Interrupt[Interrupt["VBlank"] = 0] = "VBlank";
+    Interrupt[Interrupt["LCD"] = 1] = "LCD";
+    Interrupt[Interrupt["Timer"] = 2] = "Timer";
+    Interrupt[Interrupt["Serial"] = 3] = "Serial";
+    Interrupt[Interrupt["Joypad"] = 4] = "Joypad";
+})(Interrupt || (Interrupt = {}));
+class InterruptRegister {
+    get value() {
+        return (this.requested[4] ? 0x10 : 0) + (this.requested[3] ? 0x8 : 0) + (this.requested[2] ? 0x4 : 0) + (this.requested[1] ? 0x2 : 0) + (this.requested[0] ? 0x1 : 0);
+    }
+    set value(value) {
+        this.requested[4] = (value & 0x10) > 0;
+        this.requested[3] = (value & 0x8) > 0;
+        this.requested[2] = (value & 0x4) > 0;
+        this.requested[1] = (value & 0x2) > 0;
+        this.requested[0] = (value & 0x1) > 0;
+    }
+    setInterrupt(interrupt) {
+        this.requested[interrupt] = true;
+    }
+    resetInterrupt(interrupt) {
+        this.requested[interrupt] = false;
+    }
+    constructor(){
+        this.requested = [
+            false,
+            false,
+            false,
+            false,
+            false
+        ];
+    }
+}
+class InterruptEnabledRegister {
+    get value() {
+        return (this.enabled[4] ? 0x10 : 0) + (this.enabled[3] ? 0x8 : 0) + (this.enabled[2] ? 0x4 : 0) + (this.enabled[1] ? 0x2 : 0) + (this.enabled[0] ? 0x1 : 0);
+    }
+    set value(value) {
+        this.enabled[4] = (value & 0x10) > 0;
+        this.enabled[3] = (value & 0x8) > 0;
+        this.enabled[2] = (value & 0x4) > 0;
+        this.enabled[1] = (value & 0x2) > 0;
+        this.enabled[0] = (value & 0x1) > 0;
+    }
+    isEnabled(interrupt) {
+        return this.enabled[interrupt];
+    }
+    constructor(){
+        this.enabled = [
+            false,
+            false,
+            false,
+            false,
+            false
+        ];
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fWSSh":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$e9ab = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -29998,160 +30218,813 @@ $RefreshReg$(_c, "Joypad");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"9O6KI":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$4922 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$4922.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "default", ()=>Tabs);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _s = $RefreshSig$();
+function Tabs({ tabs }) {
+    _s();
+    const [activeTab, setActiveTab] = _react.useState(Object.keys(tabs)[0]);
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("nav", {
+            className: "tabs",
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("ul", {
+                    children: Object.keys(tabs).map((name, i)=>name == activeTab ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
+                            className: "selected",
+                            children: name
+                        }, void 0, false, {
+                            fileName: "src/web/components/tabs.tsx",
+                            lineNumber: 15,
+                            columnNumber: 15
+                        }, this) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
+                            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                onClick: ()=>setActiveTab(name),
+                                children: name
+                            }, void 0, false, {
+                                fileName: "src/web/components/tabs.tsx",
+                                lineNumber: 16,
+                                columnNumber: 27
+                            }, this)
+                        }, i, false, {
+                            fileName: "src/web/components/tabs.tsx",
+                            lineNumber: 16,
+                            columnNumber: 15
+                        }, this))
+                }, void 0, false, {
+                    fileName: "src/web/components/tabs.tsx",
+                    lineNumber: 12,
+                    columnNumber: 7
+                }, this),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                    className: "tabs-content",
+                    children: tabs[activeTab]()
+                }, void 0, false, {
+                    fileName: "src/web/components/tabs.tsx",
+                    lineNumber: 19,
+                    columnNumber: 7
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "src/web/components/tabs.tsx",
+            lineNumber: 11,
+            columnNumber: 5
+        }, this)
+    }, void 0, false, {
+        fileName: "src/web/components/tabs.tsx",
+        lineNumber: 10,
+        columnNumber: 11
+    }, this);
+}
+_s(Tabs, "MXys5OLDDGn1/qqMEdn494ufmlI=");
+_c = Tabs;
+var _c;
+$RefreshReg$(_c, "Tabs");
+
+  $parcel$ReactRefreshHelpers$4922.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
 },{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"85YVu":[function() {},{}],"cz4ku":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _instructionHelpers = require("./instructions/instructionHelpers");
+var _cartridge = require("./memory/cartridges/cartridge");
+var _createCartridge = require("./memory/cartridges/createCartridge");
+var _oam = require("./memory/oam");
+var _ioRegisters = require("./memory/registers/ioRegisters");
+var _vram = require("./memory/vram");
+var _byteRef = require("./refs/byteRef");
+var _wordRef = require("./refs/wordRef");
 class Memory {
-    constructor(controller, program = []){
+    constructor(){
+        this.registers = new (0, _ioRegisters.IoRegisters)();
         this.bootRomLoaded = false;
         this.bootRom = new Uint8Array(0x100);
-        this.cartridge = new Uint8Array(0x8000);
+        this.vram = new (0, _vram.VRAM)();
         this.data = new Uint8Array(0x10000);
-        program.forEach((value, i)=>this.at(i).write(value));
-        this.controller = controller;
-        controller.triggerInterrupt = ()=>{
-            (0, _instructionHelpers.setBit)(this.at(0xFF0F), 4) // Joypad Interrupt flag ON
-            ;
-        };
+        this.registers.dmaTransfer.startTransfer = (address)=>this.dmaTransfer(address);
+        this.cartridge = new (0, _cartridge.Cartridge)(new Uint8Array());
+        this.oam = new (0, _oam.OAM)(this);
     }
     at(address) {
+        if (this.cpu.breakpoints.has(address)) this.cpu.pause();
+        // ROM
         if (address < 0x8000) {
-            if (address < 0x100 && this.bootRomLoaded && this.data[0xFF50] === 0) // If Boot ROM is enabled, loaded, and we're in its address range, load
+            if (address < 0x100 && this.bootRomLoaded && this.registers.bootRom.enabled) // If Boot ROM is enabled, loaded, and we're in its address range, load
             // memory from there
-            return {
-                intSize: 8,
-                read: ()=>this.bootRom[address],
-                write: ()=>{}
-            };
-            // TODO Memory Banking...
-            return {
-                intSize: 8,
-                read: ()=>this.cartridge[address],
-                write: ()=>{}
-            };
+            return new (0, _byteRef.GetSetByteRef)(()=>{
+                return this.bootRom[address & 0xFFFF];
+            }, (_)=>{});
+            return this.cartridge.rom(address);
         }
-        // Gamepad data
-        if (address === 0xFF00) return {
-            intSize: 8,
-            read: ()=>this.controller.updatedRegister(this.data[address]),
-            write: (value)=>{
-                this.data[address] = (value & 0xF0) + (this.data[address] & 0xF);
-            }
-        };
-        // OAM DMA Transfer
-        if (address === 0xFF46) return {
-            intSize: 8,
-            read: ()=>this.data[address],
-            write: (value)=>{
-                this.data[address] = value;
-                this.dmaTransfer(value);
-            }
-        };
-        return {
-            intSize: 8,
-            read: ()=>this.data[address],
-            write: (value)=>{
-                this.data[address] = value;
-            }
-        };
+        // VRAM
+        if (address >= 0x8000 && address < 0xA000) return this.vram.at(address);
+        // OAM
+        if (address >= 0xFE00 && address < 0xFEA0) return this.oam.at(address);
+        // IO Registers
+        if (address >= 0xFF00 && address < 0xFF80) return this.registers.at(address);
+        // TODO remove this, handle each case explicitly
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            return this.data[address & 0xFFFF];
+        }, (value)=>{
+            this.data[address & 0xFFFF] = value;
+        });
+    }
+    wordAt(address) {
+        return new (0, _wordRef.CompositeWordRef)(this.at(address + 1), this.at(address));
     }
     async loadGame(file) {
-        this.cartridge = (await file.stream().getReader().read()).value || this.cartridge;
+        this.cartridge = await (0, _createCartridge.createCartridge)(file);
     }
     async loadBootRom(file) {
-        this.bootRom = (await file.stream().getReader().read()).value || this.bootRom;
-        this.bootRomLoaded = true;
-        this.data[0xFF50] = 1;
+    // this.bootRom = (
+    //   await file.stream().getReader().read()
+    // ).value || this.bootRom
+    // this.bootRomLoaded = true
+    // this.data[0xFF50] = 1
     }
     // https://gbdev.io/pandocs/OAM_DMA_Transfer.html
-    dmaTransfer(registerValue) {
-        const startAddress = registerValue << 8;
-        for(let i = 0; i < 0xA0; i++)this.data[0xFE00 + i] = this.data[startAddress + i];
+    dmaTransfer(address) {
+        for(let i = 0; i < 0xA0; i++)this.at(0xFE00 + i).value = this.at(address + i).value;
     }
 }
 exports.default = Memory;
 
-},{"./instructions/instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3wOe6":[function(require,module,exports) {
+},{"./memory/registers/ioRegisters":"lu92s","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./refs/byteRef":"6cdGr","./memory/cartridges/cartridge":"jBMrX","./memory/cartridges/createCartridge":"hpQ2G","./memory/vram":"iA1KW","./memory/oam":"GLSg5"}],"lu92s":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-const FLAG_MASKS = {
-    "Zero": 128,
-    "Operation": 64,
-    "Half-Carry": 32,
-    "Carry": 16
-};
-class CpuRegisters {
+// Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
+parcelHelpers.export(exports, "IoRegisters", ()=>IoRegisters);
+var _byteRef = require("../../refs/byteRef");
+var _audioRegisters = require("./audioRegisters");
+var _bootRomRegister = require("./bootRomRegister");
+var _dmaTransferRegister = require("./dmaTransferRegister");
+var _interruptRegisters = require("./interruptRegisters");
+var _joypadRegister = require("./joypadRegister");
+var _lcdRegisters = require("./lcdRegisters");
+var _timerRegisters = require("./timerRegisters");
+class IoRegisters {
     constructor(){
-        this.values8Bit = {
-            "A": 0,
-            "B": 0,
-            "C": 0,
-            "D": 0,
-            "E": 0,
-            "H": 0,
-            "L": 0,
-            "F": 0
-        };
-        this.values16Bit = {
-            "PC": 0,
-            "SP": 0
-        };
-        this.get8 = (name)=>({
-                intSize: 8,
-                read: ()=>this.values8Bit[name],
-                write: (value)=>name === "F" ? this.values8Bit[name] = value & 0xF0 : this.values8Bit[name] = value & 0xFF
-            });
-        this.get16 = (name)=>name == "PC" || name == "SP" ? {
-                intSize: 16,
-                read: ()=>this.values16Bit[name],
-                write: (value)=>this.values16Bit[name] = value
-            } : {
-                intSize: 16,
-                read: ()=>{
-                    const h = this.values8Bit[name[0]];
-                    const l = this.values8Bit[name[1]];
-                    return (h << 8) + l;
-                },
-                write: (value)=>{
-                    const h = (value & 0xFF00) >> 8;
-                    const l = value & 0x00FF;
-                    this.values8Bit[name[0]] = h;
-                    if (name === "AF") this.values8Bit[name[1]] = l & 0xF0;
-                    else this.values8Bit[name[1]] = l;
-                }
-            };
-        this.getFlag = (name)=>({
-                intSize: 1,
-                read: ()=>(this.values8Bit["F"] & FLAG_MASKS[name]) === 0 ? 0 : 1,
-                write: (value)=>this.values8Bit["F"] = value ? this.values8Bit["F"] | FLAG_MASKS[name] : this.values8Bit["F"] & ~FLAG_MASKS[name]
-            });
+        this.joypad = new (0, _joypadRegister.JoypadRegister)();
+        this.divider = new (0, _timerRegisters.DividerRegister)();
+        this.timerCounter = new (0, _byteRef.GenericByteRef)();
+        this.timerModulo = new (0, _byteRef.GenericByteRef)();
+        this.timerControl = new (0, _timerRegisters.TimerControlRegister)();
+        this.interrupts = new (0, _interruptRegisters.InterruptRegister)();
+        this.audioMasterControl = new (0, _audioRegisters.AudioMasterControlRegister)();
+        this.channel1 = new (0, _audioRegisters.PulseChannelRegisters)();
+        this.channel2 = new (0, _audioRegisters.PulseChannelRegisters)();
+        this.lcdControl = new (0, _lcdRegisters.LcdControlRegister)();
+        this.lcdStatus = new (0, _lcdRegisters.LcdStatusRegister)();
+        this.scrollY = new (0, _byteRef.GenericByteRef)();
+        this.scrollX = new (0, _byteRef.GenericByteRef)();
+        this.scanline = new (0, _byteRef.GenericByteRef)();
+        this.scanlineCoincidence = new (0, _byteRef.GenericByteRef)();
+        this.dmaTransfer = new (0, _dmaTransferRegister.DmaTransferRegister)();
+        this.backgroundPallete = new (0, _lcdRegisters.PalletteRegister)();
+        this.objectPallete0 = new (0, _lcdRegisters.PalletteRegister)();
+        this.objectPallete1 = new (0, _lcdRegisters.PalletteRegister)();
+        this.windowY = new (0, _byteRef.GenericByteRef)();
+        this.windowX = new (0, _byteRef.GenericByteRef)();
+        this.bootRom = new (0, _bootRomRegister.BootRomRegister)();
+        this.data = [];
+        this.data[0xFF00] = this.joypad;
+        // Timer
+        this.data[0xFF04] = this.divider;
+        this.data[0xFF05] = this.timerCounter;
+        this.data[0xFF06] = this.timerModulo;
+        this.data[0xFF07] = this.timerControl;
+        this.data[0xFF0F] = this.interrupts;
+        // Audio Channel 1
+        this.data[0xFF10] = this.channel1.nr0;
+        this.data[0xFF11] = this.channel1.nr1;
+        this.data[0xFF12] = this.channel1.nr2;
+        this.data[0xFF13] = this.channel1.nr3;
+        this.data[0xFF14] = this.channel1.nr4;
+        // Audio Channel 2
+        this.data[0xFF16] = this.channel2.nr1;
+        this.data[0xFF17] = this.channel2.nr2;
+        this.data[0xFF18] = this.channel2.nr3;
+        this.data[0xFF19] = this.channel2.nr4;
+        // TODO channels 3 and 4
+        // Master Audio
+        this.data[0xFF26] = this.audioMasterControl;
+        // TODO: this.data[0xFF24] panning
+        // TODO: this.data[0xFF25] more panning
+        // Graphics
+        this.data[0xFF40] = this.lcdControl;
+        this.data[0xFF41] = this.lcdStatus;
+        this.data[0xFF42] = this.scrollY;
+        this.data[0xFF43] = this.scrollX;
+        this.data[0xFF44] = this.scanline;
+        this.data[0xFF45] = this.scanlineCoincidence;
+        this.data[0xFF46] = this.dmaTransfer;
+        this.data[0xFF47] = this.backgroundPallete;
+        this.data[0xFF48] = this.objectPallete0;
+        this.data[0xFF49] = this.objectPallete1;
+        this.data[0xFF4A] = this.windowY;
+        this.data[0xFF4B] = this.windowX;
+        this.data[0xFF50] = this.bootRom;
+    }
+    at(address) {
+        return this.data[address] || new (0, _byteRef.ConstantByteRef)();
     }
 }
-exports.default = CpuRegisters;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2CR9q":[function(require,module,exports) {
+},{"../../refs/byteRef":"6cdGr","./audioRegisters":"3bLp5","./bootRomRegister":"eI0h3","./dmaTransferRegister":"68j9d","./interruptRegisters":"gq7ph","./joypadRegister":"kZxim","./lcdRegisters":"i2ZsX","./timerRegisters":"jaFaj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6cdGr":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _arithmetic = require("./arithmetic");
+parcelHelpers.export(exports, "GenericByteRef", ()=>GenericByteRef);
+parcelHelpers.export(exports, "ConstantByteRef", ()=>ConstantByteRef);
+parcelHelpers.export(exports, "GetSetByteRef", ()=>GetSetByteRef);
+class GenericByteRef {
+    constructor(value = 0){
+        this._value = value & 0xFF;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        this._value = value & 0xFF;
+    }
+}
+class ConstantByteRef {
+    constructor(value = 0){
+        this._value = value;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {}
+}
+class GetSetByteRef {
+    constructor(getter, setter){
+        this.getter = getter;
+        this.setter = setter;
+    }
+    get value() {
+        return this.getter();
+    }
+    set value(value) {
+        this.setter(value);
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3bLp5":[function(require,module,exports) {
+// Reference:
+// https://gbdev.io/pandocs/Audio_Registers.html#audio-registers
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "AudioMasterControlRegister", ()=>AudioMasterControlRegister);
+parcelHelpers.export(exports, "PulseChannelRegisters", ()=>PulseChannelRegisters);
+class AudioMasterControlRegister {
+    get value() {
+        return (this.masterSwitch ? 0x80 : 0) + (this.channel4On ? 0x8 : 0) + (this.channel3On ? 0x4 : 0) + (this.channel2On ? 0x2 : 0) + (this.channel1On ? 0x1 : 0);
+    }
+    set value(value1) {
+        this.masterSwitch = (value1 & 0x80) > 0;
+        this.channel1On = (value1 & 0x1) > 0;
+        this.channel2On = (value1 & 0x2) > 0;
+        this.channel3On = (value1 & 0x4) > 0;
+        this.channel4On = (value1 & 0x8) > 0;
+    }
+    constructor(){
+        this.masterSwitch = false;
+        this.channel1On = false;
+        this.channel2On = false;
+        this.channel3On = false;
+        this.channel4On = false;
+    }
+}
+class PulseChannelRegisters {
+    constructor(){
+        this.periodSweep = {
+            pace: 0,
+            direction: -1,
+            step: 0
+        };
+        this.waveDuty = 0;
+        this.lengthEnabled = false;
+        this.lengthTimer = 0;
+        this.volumeEnvelope = {
+            direction: 1,
+            pace: 0
+        };
+        this.period = 0;
+        this.volume = 0;
+        this.triggered = false;
+        this.trigger = ()=>{};
+        const self = this;
+        this.nr0 = {
+            get value () {
+                return (self.periodSweep.pace << 4) + self.periodSweep.step + (self.periodSweep.direction == 1 ? 0x8 : 0);
+            },
+            set value (value){
+                self.periodSweep.pace = value >> 4;
+                self.periodSweep.step = value & 0x7;
+                self.periodSweep.direction = (value & 0x8) > 0 ? -1 : 1;
+            }
+        };
+        this.nr1 = {
+            get value () {
+                return (self.waveDuty << 6) + self.lengthTimer;
+            },
+            set value (value){
+                self.waveDuty = value >> 6;
+                self.lengthTimer = value & 0x37;
+            }
+        };
+        this.nr2 = {
+            get value () {
+                return (self.volume << 4) + self.volumeEnvelope.pace + (self.volumeEnvelope.direction == 1 ? 0x8 : 0);
+            },
+            set value (value){
+                self.volume = value >> 4;
+                self.volumeEnvelope.pace = value & 0x7;
+                self.volumeEnvelope.direction = (value & 0x8) > 0 ? 1 : -1;
+            }
+        };
+        this.nr3 = {
+            get value () {
+                return self.period & 0xFF;
+            },
+            set value (value){
+                self.period &= 0xF00;
+                self.period |= value;
+            }
+        };
+        this.nr4 = {
+            get value () {
+                return (self.lengthEnabled ? 0x40 : 0) + (self.triggered ? 0x80 : 0) + (self.period >> 8);
+            },
+            set value (value){
+                self.period &= 0xFF;
+                self.period |= (value & 0x7) << 8;
+                self.lengthEnabled = (value & 0x40) > 0;
+                if (value & 0x80) {
+                    self.trigger();
+                    self.triggered = true;
+                }
+            }
+        };
+    }
+    updateVolume(newVolume) {
+        this.volume = newVolume;
+        if (this.volume < 0) this.volume = 0;
+        if (this.volume > 15) this.volume = 15;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eI0h3":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "BootRomRegister", ()=>BootRomRegister);
+class BootRomRegister {
+    get value() {
+        return this.enabled ? 1 : 0;
+    }
+    set value(value) {
+        this.enabled = value != 0;
+    }
+    constructor(){
+        this.enabled = false;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"68j9d":[function(require,module,exports) {
+// Reference: https://gbdev.io/pandocs/OAM_DMA_Transfer.html
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "DmaTransferRegister", ()=>DmaTransferRegister);
+class DmaTransferRegister {
+    get value() {
+        return this.address >> 8;
+    }
+    set value(value) {
+        this.address = value << 8;
+        this.startTransfer(this.address);
+    }
+    constructor(){
+        this.startTransfer = ()=>{};
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kZxim":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/Joypad_Input.html#ff00--p1joyp-joypad
+parcelHelpers.export(exports, "JoypadRegister", ()=>JoypadRegister);
+class JoypadRegister {
+    get value() {
+        const upperNibble = (this.selectButtons ? 0x20 : 0) + (this.selectDpad ? 0x10 : 0);
+        if (this.selectButtons) return (upperNibble << 4) + this.buttonNibble();
+        if (this.selectDpad) return (upperNibble << 4) + this.dpadNibble();
+        return (upperNibble << 4) + 0xF;
+    }
+    set value(value) {
+        this.selectButtons = (value & 0x10) > 0;
+        this.selectDpad = (value & 0x20) > 0;
+    }
+    buttonNibble() {
+        return (this.Start ? 0 : 0x8) + (this.Select ? 0 : 0x4) + (this.B ? 0 : 0x2) + (this.A ? 0 : 0x1);
+    }
+    dpadNibble() {
+        return (this.Down ? 0 : 0x8) + (this.Up ? 0 : 0x4) + (this.Left ? 0 : 0x2) + (this.Right ? 0 : 0x1);
+    }
+    constructor(){
+        this.A = false;
+        this.B = false;
+        this.Start = false;
+        this.Select = false;
+        this.Up = false;
+        this.Down = false;
+        this.Left = false;
+        this.Right = false;
+        this.selectButtons = true;
+        this.selectDpad = true;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"i2ZsX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/LCDC.html#ff40--lcdc-lcd-control
+parcelHelpers.export(exports, "LcdControlRegister", ()=>LcdControlRegister);
+// Reference: https://gbdev.io/pandocs/STAT.html#ff41--stat-lcd-status
+parcelHelpers.export(exports, "LcdStatusRegister", ()=>LcdStatusRegister);
+parcelHelpers.export(exports, "PalletteRegister", ()=>PalletteRegister);
+class LcdControlRegister {
+    get value() {
+        return (this.enabled ? 0x80 : 0) + (this.windowTilemap << 6) + (this.windowEnabled ? 0x20 : 0) + (this.tileDataArea << 4) + (this.backgroundTilemap << 3) + (this.objectSize == 16 ? 0x4 : 0) + (this.objectsEnabled ? 0x2 : 0) + (this.backgroundWindowDisplay ? 0x1 : 0);
+    }
+    set value(value) {
+        console.log("setting lcd control", value.toString(2));
+        this.enabled = (value & 0x80) > 0;
+        this.windowTilemap = (value & 0x40) >> 6;
+        this.windowEnabled = (value & 0x20) > 0;
+        this.tileDataArea = (value & 0x10) >> 4;
+        this.backgroundTilemap = (value & 0x8) >> 3;
+        this.objectSize = (value & 0x4) > 0 ? 16 : 8;
+        this.objectsEnabled = (value & 0x2) > 0;
+        this.backgroundWindowDisplay = (value & 0x1) > 0;
+    }
+    constructor(){
+        this.enabled = false;
+        this.windowTilemap = 0;
+        this.windowEnabled = false;
+        this.tileDataArea = 0;
+        this.backgroundTilemap = 1;
+        this.objectSize = 8;
+        this.objectsEnabled = false;
+        this.backgroundWindowDisplay = false;
+    }
+}
+class LcdStatusRegister {
+    get value() {
+        return (this.lycInterruptEnabled ? 0x40 : 0) + (this.mode2InterruptEnabled ? 0x20 : 0) + (this.mode1InterruptEnabled ? 0x10 : 0) + (this.mode0InterruptEnabled ? 0x8 : 0) + (this.lycCoinciding ? 0x4 : 0) + this.mode;
+    }
+    set value(value) {
+        this.lycInterruptEnabled = (value & 0x40) > 0;
+        this.mode2InterruptEnabled = (value & 0x20) > 0;
+        this.mode1InterruptEnabled = (value & 0x10) > 0;
+        this.mode0InterruptEnabled = (value & 0x8) > 0;
+    }
+    constructor(){
+        this.lycInterruptEnabled = false;
+        this.mode2InterruptEnabled = false;
+        this.mode1InterruptEnabled = false;
+        this.mode0InterruptEnabled = false;
+        this.lycCoinciding = false;
+        this.mode = 0;
+    }
+}
+class PalletteRegister {
+    get value() {
+        return (this.map[0] << 0) + (this.map[1] << 2) + (this.map[2] << 4) + (this.map[3] << 6);
+    }
+    set value(value) {
+        this.map = [
+            value >> 0 & 3,
+            value >> 2 & 3,
+            value >> 4 & 3,
+            value >> 6 & 3
+        ];
+    }
+    constructor(){
+        this.map = [
+            0,
+            0,
+            0,
+            0
+        ];
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jaFaj":[function(require,module,exports) {
+// Reference:
+// https://gbdev.io/pandocs/Timer_and_Divider_Registers.html#timer-and-divider-registers
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "DividerRegister", ()=>DividerRegister);
+parcelHelpers.export(exports, "TimerControlRegister", ()=>TimerControlRegister);
+class DividerRegister {
+    get value() {
+        return this._value;
+    }
+    set value(_) {
+        this._value = 0;
+    }
+    increment() {
+        this._value = this._value + 1 & 0xFF;
+    }
+    constructor(){
+        this._value = 0;
+    }
+}
+class TimerControlRegister {
+    get value() {
+        return this.clockSelect + (this.enabled ? 0x4 : 0);
+    }
+    set value(value) {
+        this.enabled = (value & 0x4) > 0;
+        this.clockSelect = value & 0x3;
+    }
+    constructor(){
+        this.enabled = false;
+        this.clockSelect = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lDlTE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "GenericWordRef", ()=>GenericWordRef);
+parcelHelpers.export(exports, "CompositeWordRef", ()=>CompositeWordRef);
+class GenericWordRef {
+    constructor(value = 0){
+        this._value = value & 0xFFFF;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        this._value = value & 0xFFFF;
+    }
+}
+class CompositeWordRef {
+    constructor(high, low){
+        this.high = high;
+        this.low = low;
+    }
+    get value() {
+        return (this.high.value << 8) + this.low.value;
+    }
+    set value(value) {
+        this.high.value = value >> 8;
+        this.low.value = value & 0xFF;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBMrX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
+var _byteRef = require("../../refs/byteRef");
+class Cartridge {
+    constructor(data){
+        this.romData = data;
+    }
+    async loadData(file) {
+        this.romData = (await file.stream().getReader().read()).value || this.romData;
+    }
+    rom(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            return this.romData[address & 0xFFFF];
+        }, (_)=>{});
+    }
+    ram(_) {
+        return new (0, _byteRef.ConstantByteRef)(0);
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hpQ2G":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
+parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
+var _cartridge = require("./cartridge");
+var _mbc1Cartridge = require("./mbc1Cartridge");
+async function createCartridge(file) {
+    const romData = (await file.stream().getReader().read()).value;
+    if (!romData) throw new Error("Unable to read file");
+    const cartridgeType = romData[0x147];
+    switch(cartridgeType){
+        case 0x00:
+            return new (0, _cartridge.Cartridge)(romData);
+        case 0x01:
+            return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
+    }
+    throw new Error("Unknown cartridge type: " + cartridgeType);
+}
+
+},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hsUyN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC1.html
+parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x1F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value & 0x3;
+        };
+        else write = (value)=>{
+            this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
+        };
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iA1KW":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "VRAM", ()=>VRAM);
+var _instructionHelpers = require("../instructions/instructionHelpers");
+var _byteRef = require("../refs/byteRef");
+class VRAM {
+    constructor(){
+        this.data = new Uint8Array(0x2000);
+        this.tiles = [];
+        for(let tile = 0; tile < 384; tile++){
+            this.tiles.push([]);
+            for(let row = 0; row < 8; row++){
+                this.tiles[tile].push([]);
+                this.tiles[tile][row] = new Array(8).fill(0);
+            }
+        }
+    }
+    at(address) {
+        const adjustedAddress = address - 0x8000;
+        const tileNumber = adjustedAddress >> 4;
+        const rowNumber = (adjustedAddress & 15) >> 1;
+        const read = ()=>{
+            return this.data[adjustedAddress];
+        };
+        const write = (value)=>{
+            this.data[adjustedAddress] = value;
+            if (address < 0x9800) for(let i = 0; i < 8; i++){
+                const bit = (value & 1) << adjustedAddress % 2;
+                value >>= 1;
+                this.tiles[tileNumber][rowNumber][7 - i] &= 1 << 1 - adjustedAddress % 2;
+                this.tiles[tileNumber][rowNumber][7 - i] |= bit;
+            }
+        };
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    tileset0(tileNumber, rowNumber) {
+        return this.tiles[tileNumber][rowNumber];
+    }
+    tileset1(tileNumber, rowNumber) {
+        const adjustedTileNumber = 0x100 + (0, _instructionHelpers.from2sComplement)(tileNumber);
+        return this.tiles[adjustedTileNumber][rowNumber];
+    }
+    tilemap0(id) {
+        return this.data[0x1800 + id];
+    }
+    tilemap1(id) {
+        return this.data[0x1C00 + id];
+    }
+}
+
+},{"../instructions/instructionHelpers":"bJjsQ","../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "OAM", ()=>OAM);
+var _sprite = require("./sprite");
+const BASE_ADDRESS = 0xFE00;
+class OAM {
+    constructor(memory){
+        this.sprites = [];
+        for(let i = 0; i < 40; i++){
+            this.sprites.push(new (0, _sprite.Sprite)(memory));
+            this.scanline = memory.registers.scanline;
+            this.lcdControl = memory.registers.lcdControl;
+        }
+    }
+    at(address) {
+        const adjustedAddress = address - BASE_ADDRESS;
+        const spriteNumber = adjustedAddress >> 2;
+        const byteNumber = adjustedAddress & 3;
+        return this.sprites[spriteNumber].bytes[byteNumber];
+    }
+    spritesAtScanline() {
+        const scanline = this.scanline.value;
+        const spriteSize = this.lcdControl.objectSize;
+        return this.sprites.filter((sprite)=>{
+            const intersect = sprite.scanlineIntersect(scanline);
+            return intersect >= 0 && intersect < spriteSize;
+        }).slice(0, 10).sort((a, b)=>a.x - b.x);
+    }
+}
+
+},{"./sprite":"5mBnd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5mBnd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/OAM.html#object-attribute-memory-oam
+parcelHelpers.export(exports, "Sprite", ()=>Sprite);
+var _byteRef = require("../refs/byteRef");
+class Sprite {
+    constructor(memory){
+        this.x = 0;
+        this.y = 0;
+        this.tile = 0;
+        this.priority = false;
+        this.flipY = false;
+        this.flipX = false;
+        this.pallette = 0;
+        const bytes = [];
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.y, (value)=>this.y = value));
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.x, (value)=>this.x = value));
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.tile, (value)=>this.tile = value));
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>(this.priority ? 0x80 : 0) + (this.flipY ? 0x40 : 0) + (this.flipX ? 0x20 : 0) + (this.pallette << 4), (value)=>{
+            this.priority = (value & 0x80) > 0;
+            this.flipY = (value & 0x40) > 0;
+            this.flipX = (value & 0x20) > 0;
+            this.pallette = (value & 0x10) >> 4;
+        }));
+        this.bytes = bytes;
+        this.pallette0 = memory.registers.objectPallete0;
+        this.pallette1 = memory.registers.objectPallete1;
+        this.vram = memory.vram;
+    }
+    scanlineIntersect(scanline) {
+        return scanline - (this.y - 16);
+    }
+    pixelAt(scanline, column, spriteSize) {
+        const row = this.flipY ? spriteSize - 1 - this.scanlineIntersect(scanline) : this.scanlineIntersect(scanline);
+        const tileId = spriteSize == 16 ? row > 8 ? this.tile | 1 : this.tile & 0xFE : this.tile;
+        const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8);
+        const tileValue = this.vram.tileset0(tileId, row % 8)[x];
+        if (tileValue == 0) return undefined // Transparent pixel
+        ;
+        return this.pallette == 0 ? this.pallette0.map[tileValue] : this.pallette1.map[tileValue];
+    }
+}
+
+},{"../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2CR9q":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cpuRegisters = require("./cpu/cpuRegisters");
 var _instruction = require("./instruction");
 var _instructionHelpers = require("./instructions/instructionHelpers");
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
 var _timer = require("./timer");
 var _timerDefault = parcelHelpers.interopDefault(_timer);
 const INTERRUPT_HANDLERS = {
-    "VBlank": 0x0040,
-    "LCD": 0x0048,
-    "Timer": 0x0050,
-    "Joypad": 0x0060
+    [(0, _interruptRegisters.Interrupt).VBlank]: 0x0040,
+    [(0, _interruptRegisters.Interrupt).LCD]: 0x0048,
+    [(0, _interruptRegisters.Interrupt).Timer]: 0x0050,
+    [(0, _interruptRegisters.Interrupt).Serial]: 0x0058,
+    [(0, _interruptRegisters.Interrupt).Joypad]: 0x0060
 };
-const INTERRUPTS = [
-    "VBlank"
-];
 class CPU {
-    constructor(memory, registers){
+    constructor(memory){
         this.running = false;
         this.cycleCount = 0;
         this.interruptsEnabled = false;
+        this.recentFrames = [];
         this.fps = 0;
         this.isHalted = false;
         this.isStopped = false;
@@ -30161,102 +31034,97 @@ class CPU {
         this.onError = ()=>{};
         this.clockCallbacks = [];
         this.gbDoctorLog = "";
-        this.nextByte = {
-            intSize: 8,
-            read: ()=>{
-                const byte = this.memory.at(this.registers.get16("PC").read()).read();
-                (0, _arithmetic.increment)(this.registers.get16("PC"));
-                return byte;
-            }
-        };
         this.memory = memory;
-        this.registers = registers;
+        memory.cpu = this;
+        this.registers = new (0, _cpuRegisters.CpuRegisters)();
         this.timer = new (0, _timerDefault.default)(memory);
         this.addClockCallback(this.timer);
         this.interruptEnableRegister = memory.at(0xFFFF);
         this.interruptFlags = memory.at(0xFF0F);
-    // if (!this.memory.bootRomLoaded) {
-    //   this.registers.get8("A").write(0x01)
-    //   this.registers.get8("F").write(0xB0)
-    //   this.registers.get8("B").write(0x00)
-    //   this.registers.get8("C").write(0x13)
-    //   this.registers.get8("D").write(0x00)
-    //   this.registers.get8("E").write(0xD8)
-    //   this.registers.get8("H").write(0x01)
-    //   this.registers.get8("L").write(0x4D)
-    //   this.registers.get16("SP").write(0xFFFE)
-    //   this.registers.get16("PC").write(0x0100)
-    // }
-    }
-    readNextByte() {
-        const byte = this.memory.at(this.registers.get16("PC").read()).read();
-        (0, _arithmetic.increment)(this.registers.get16("PC"));
-        return byte;
-    }
-    readNext16bit() {
-        const l = this.readNextByte();
-        const h = this.readNextByte();
-        return (h << 8) + l;
+        const self = this;
+        this.nextByte = {
+            get value () {
+                return memory.at(self.registers.PC.value++).value;
+            },
+            set value (_){}
+        };
+        this.nextWord = {
+            get value () {
+                const l = memory.at(self.registers.PC.value++).value;
+                const h = memory.at(self.registers.PC.value++).value;
+                return (h << 8) + l;
+            }
+        };
+        // SKIP BOOTROM
+        this.registers.A.value = 0x01;
+        this.registers.F.value = 0xB0;
+        this.registers.B.value = 0x00;
+        this.registers.C.value = 0x13;
+        this.registers.D.value = 0x00;
+        this.registers.E.value = 0xD8;
+        this.registers.H.value = 0x01;
+        this.registers.L.value = 0x4D;
+        this.registers.SP.value = 0xFFFE;
+        this.registers.PC.value = 0x0100;
     }
     createGbDoctorLog() {
         // GB Doctor logging
-        const A = this.registers.get8("A").read().toString(16).padStart(2, "0").toUpperCase();
-        const B = this.registers.get8("B").read().toString(16).padStart(2, "0").toUpperCase();
-        const C = this.registers.get8("C").read().toString(16).padStart(2, "0").toUpperCase();
-        const D = this.registers.get8("D").read().toString(16).padStart(2, "0").toUpperCase();
-        const E = this.registers.get8("E").read().toString(16).padStart(2, "0").toUpperCase();
-        const F = this.registers.get8("F").read().toString(16).padStart(2, "0").toUpperCase();
-        const H = this.registers.get8("H").read().toString(16).padStart(2, "0").toUpperCase();
-        const L = this.registers.get8("L").read().toString(16).padStart(2, "0").toUpperCase();
-        const SP = this.registers.get16("SP").read().toString(16).padStart(4, "0").toUpperCase();
-        const PC = this.registers.get16("PC").read().toString(16).padStart(4, "0").toUpperCase();
+        const A = this.registers.A.value.toString(16).padStart(2, "0").toUpperCase();
+        const B = this.registers.B.value.toString(16).padStart(2, "0").toUpperCase();
+        const C = this.registers.C.value.toString(16).padStart(2, "0").toUpperCase();
+        const D = this.registers.D.value.toString(16).padStart(2, "0").toUpperCase();
+        const E = this.registers.E.value.toString(16).padStart(2, "0").toUpperCase();
+        const F = this.registers.F.value.toString(16).padStart(2, "0").toUpperCase();
+        const H = this.registers.H.value.toString(16).padStart(2, "0").toUpperCase();
+        const L = this.registers.L.value.toString(16).padStart(2, "0").toUpperCase();
+        const SP = this.registers.SP.value.toString(16).padStart(4, "0").toUpperCase();
+        const PC = this.registers.PC.value.toString(16).padStart(4, "0").toUpperCase();
         const PCMEM = [
-            this.memory.at(this.registers.get16("PC").read() + 0).read(),
-            this.memory.at(this.registers.get16("PC").read() + 1).read(),
-            this.memory.at(this.registers.get16("PC").read() + 2).read(),
-            this.memory.at(this.registers.get16("PC").read() + 3).read()
+            this.memory.at(this.registers.PC.value + 0).value,
+            this.memory.at(this.registers.PC.value + 1).value,
+            this.memory.at(this.registers.PC.value + 2).value,
+            this.memory.at(this.registers.PC.value + 3).value
         ].map((x)=>x.toString(16).padStart(2, "0").toUpperCase()).join(",");
         this.gbDoctorLog += `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`;
     }
     executeNextInstruction() {
+        // this.createGbDoctorLog()
         if (this.isHalted) {
             this.incrementClock(4);
             return;
         }
-        const pc = this.registers.get16("PC").read();
-        const code = this.readNextByte();
-        const prefixedCode = code === 0xCB ? this.readNextByte() : undefined;
+        const code = this.nextByte.value;
+        const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
         const instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
         instruction.execute(this);
         this.incrementClock(instruction.cycles);
         if (this.debugMode) {
-            const parameters = new Array(instruction.parameterBytes).fill(0).map((_, i)=>this.memory.at(pc + 1 + i).read());
+            const parameters = new Array(instruction.parameterBytes).fill(0).map((_1, i)=>this.memory.at(this.registers.PC.value + 1 + i).value);
             console.log(instruction.description(parameters));
         }
         this.onInstructionComplete();
     }
     getInterrupt() {
         if (!this.interruptsEnabled) return null;
-        const activeInterrupts = this.interruptEnableRegister.read() & this.interruptFlags.read();
+        const activeInterrupts = this.interruptEnableRegister.value & this.interruptFlags.value;
         if (activeInterrupts === 0) return null;
         // Find id of highest priority interrupt
         let id = 0;
         while((activeInterrupts >> id & 1) === 0)id++;
-        (0, _instructionHelpers.resetBit)(this.interruptFlags, id);
-        return INTERRUPTS[id];
+        this.interruptFlags.value = this.interruptFlags.value & ~(1 << id);
+        return id;
     }
     handleInterrupt(interrupt) {
+        this.isHalted = false;
         // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
         // Push PC to stack and jump to handler address
         const handlerAddress = INTERRUPT_HANDLERS[interrupt];
-        const sp = this.registers.get16("SP");
-        const pc = this.registers.get16("PC");
-        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.read());
-        (0, _arithmetic.decrement)(sp);
-        this.memory.at(sp.read()).write(h);
-        (0, _arithmetic.decrement)(sp);
-        this.memory.at(sp.read()).write(l);
-        pc.write(handlerAddress);
+        const sp = this.registers.SP;
+        const pc = this.registers.PC;
+        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+        this.memory.at(--sp.value).value = h;
+        this.memory.at(--sp.value).value = l;
+        pc.value = handlerAddress;
         this.incrementClock(20);
         this.interruptsEnabled = false;
     }
@@ -30274,27 +31142,28 @@ class CPU {
         this.apu.stopAudio();
     }
     runFrame(timestamp) {
-        const delta = timestamp - this.lastFrameTimestamp;
-        this.lastFrameTimestamp = timestamp;
-        this.fps = 1000 / delta;
+        // We maintain an FPS counter by keeping track of how many frames were run
+        // over the last 1000ms
+        this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
+        this.fps = this.recentFrames.push(timestamp);
         let address = 0;
-        try {
-            frameLoop: while(!this.breakpoints.has(address)){
-                this.executeNextInstruction();
-                address = this.registers.get16("PC").read();
-                const interrupt = this.getInterrupt();
-                if (interrupt) this.handleInterrupt(interrupt);
-                if (this.screen.newFrameDrawn) {
-                    this.screen.newFrameDrawn = false;
-                    break frameLoop;
-                }
+        // try {
+        frameLoop: while(!this.breakpoints.has(this.registers.PC.value)){
+            this.executeNextInstruction();
+            address = this.registers.PC.value;
+            const interrupt = this.getInterrupt();
+            if (interrupt !== null) this.handleInterrupt(interrupt);
+            if (this.screen.newFrameDrawn) {
+                this.screen.newFrameDrawn = false;
+                break frameLoop;
             }
-            if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
-        } catch (error) {
-            console.trace();
-            this.running = false;
-            this.onError(error);
         }
+        if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
+    // } catch (error) {
+    //   console.log(error.stack)
+    //   this.running = false
+    //   this.onError(error)
+    // }    
     }
     addClockCallback(callback) {
         this.clockCallbacks.push(callback);
@@ -30302,45 +31171,88 @@ class CPU {
 }
 exports.default = CPU;
 
-},{"./arithmetic":"e2ePH","./instruction":"dshpP","./instructions/instructionHelpers":"bJjsQ","./timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsN5b":[function(require,module,exports) {
+},{"./cpu/cpuRegisters":"7SgHs","./instruction":"dshpP","./instructions/instructionHelpers":"bJjsQ","./timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}],"7SgHs":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _arithmetic = require("./arithmetic");
-var _instructionHelpers = require("./instructions/instructionHelpers");
+parcelHelpers.export(exports, "CpuRegisters", ()=>CpuRegisters);
+var _byteRef = require("../refs/byteRef");
+var _wordRef = require("../refs/wordRef");
+var _flags = require("./flags");
+class CpuRegisters {
+    constructor(){
+        this.A = new (0, _byteRef.GenericByteRef)();
+        this.F = new (0, _flags.Flags)();
+        this.B = new (0, _byteRef.GenericByteRef)();
+        this.C = new (0, _byteRef.GenericByteRef)();
+        this.D = new (0, _byteRef.GenericByteRef)();
+        this.E = new (0, _byteRef.GenericByteRef)();
+        this.H = new (0, _byteRef.GenericByteRef)();
+        this.L = new (0, _byteRef.GenericByteRef)();
+        this.PC = new (0, _wordRef.GenericWordRef)();
+        this.SP = new (0, _wordRef.GenericWordRef)();
+        this.HL = new (0, _wordRef.CompositeWordRef)(this.H, this.L);
+        this.BC = new (0, _wordRef.CompositeWordRef)(this.B, this.C);
+        this.DE = new (0, _wordRef.CompositeWordRef)(this.D, this.E);
+        this.AF = new (0, _wordRef.CompositeWordRef)(this.A, this.F);
+    }
+}
+
+},{"../refs/byteRef":"6cdGr","../refs/wordRef":"lDlTE","./flags":"dO5Cj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dO5Cj":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Flags", ()=>Flags);
+class Flags {
+    get value() {
+        return (this.zero ? 0x80 : 0) + (this.operation ? 0x40 : 0) + (this.halfCarry ? 0x20 : 0) + (this.carry ? 0x10 : 0);
+    }
+    set value(value) {
+        this.zero = (value & 0x80) > 0;
+        this.operation = (value & 0x40) > 0;
+        this.halfCarry = (value & 0x20) > 0;
+        this.carry = (value & 0x10) > 0;
+    }
+    constructor(){
+        this.zero = false;
+        this.operation = false;
+        this.halfCarry = false;
+        this.carry = false;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsN5b":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
 const DIV_CYCLE_ROLLOVER = 256;
 class Timer {
     constructor(memory){
         this.timerCycles = 0;
         this.divCycles = 0;
-        this.memory = memory;
-        this.divider = this.memory.at(0xFF04);
-        this.counter = this.memory.at(0xFF05);
-        this.modulo = this.memory.at(0xFF06);
-        this.control = this.memory.at(0xFF07);
+        this.divider = memory.registers.divider;
+        this.counter = memory.registers.timerCounter;
+        this.modulo = memory.registers.timerModulo;
+        this.control = memory.registers.timerControl;
+        this.interrupts = memory.registers.interrupts;
     }
     updateClock(cycles) {
         this.timerCycles += cycles;
         this.divCycles += cycles;
         if (this.divCycles > DIV_CYCLE_ROLLOVER) {
             this.divCycles -= DIV_CYCLE_ROLLOVER;
-            (0, _arithmetic.increment)(this.divider);
+            this.divider.increment();
         }
         const timerRollover = this.getTimerRollover();
         if (this.timerCycles > timerRollover) {
             this.timerCycles -= timerRollover;
-            (0, _arithmetic.increment)(this.counter);
-            if (this.counter.read() === 0) {
-                this.counter.write(this.modulo.read());
-                (0, _instructionHelpers.setBit)(this.memory.at(0xFF0F), 2) // VBlank interrupt flag ON
-                ;
+            this.counter.value++;
+            if (this.counter.value === 0) {
+                this.counter.value = this.modulo.value;
+                this.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).Timer);
             }
         }
     }
-    isEnabled() {
-        return (0, _instructionHelpers.testBit)(this.control, 2) === 1;
-    }
     getTimerRollover() {
-        const mode = this.control.read() & 3;
+        const mode = this.control.clockSelect;
         return [
             1024,
             16,
@@ -30351,7 +31263,7 @@ class Timer {
 }
 exports.default = Timer;
 
-},{"./arithmetic":"e2ePH","./instructions/instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"f2x3M":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}],"f2x3M":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 const COLOURS = [
@@ -30383,21 +31295,7 @@ class PPU {
         this.memory = cpu.memory;
     }
     getTile(tileId) {
-        const tileData = [];
-        const tileBaseAddress = TILESET_BASE_ADDRESS + 16 * tileId;
-        for(let row = 0; row < 8; row++){
-            const rowData = [];
-            const byte1 = this.memory.at(tileBaseAddress + 2 * row).read();
-            const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).read();
-            for(let bit = 7; bit >= 0; bit--){
-                const bit1 = byte1 >> bit & 1;
-                const bit2 = byte2 >> bit & 1;
-                const pixelValue = bit1 + (bit2 << 1);
-                rowData.push(pixelValue);
-            }
-            tileData.push(rowData);
-        }
-        return tileData;
+        return this.memory.vram.tiles[tileId];
     }
     printTileSet(canvas) {
         const context = canvas.getContext("2d");
@@ -30414,8 +31312,8 @@ class PPU {
             const baseY = 8 * (tile >> 4);
             for(let row = 0; row < 8; row++){
                 const y = baseY + row;
-                const byte1 = this.memory.at(tileBaseAddress + 2 * row).read();
-                const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).read();
+                const byte1 = this.memory.at(tileBaseAddress + 2 * row).value;
+                const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value;
                 for(let bit = 7; bit >= 0; bit--){
                     const x = baseX + 7 - bit;
                     const pixelNumber = y * 128 + x;
@@ -30432,47 +31330,127 @@ class PPU {
         }
         context.putImageData(imageData, 0, 0);
     }
-    // Load BIOS to 0x0055 to test
-    printBackgroundLayer(canvas) {
-        // Tilemap 1: 0x9800 - 0x9BFF, so 256 bytes
-        // once byte is one tile surely?
+    printTileset0(canvas) {
         const context = canvas.getContext("2d");
         if (!context) throw new Error("No canvas context");
-        canvas.width = 256;
-        canvas.height = 256;
-        const backgroundPalletByte = this.memory.at(0xFF47).read();
-        const pallet = [
-            COLOURS[backgroundPalletByte >> 0 & 3],
-            COLOURS[backgroundPalletByte >> 2 & 3],
-            COLOURS[backgroundPalletByte >> 4 & 3],
-            COLOURS[backgroundPalletByte >> 6 & 3]
-        ];
-        for(let j = 0; j < 32; j++){
-            const baseY = j * 8;
-            for(let i = 0; i < 32; i++){
-                const baseX = i * 8;
-                const tileMapAddress = 0x9800 + i + j * 32;
-                const tileNumber = this.memory.at(tileMapAddress).read();
-                const tileData = this.getTile(tileNumber);
-                const imageData = context.createImageData(8, 8);
-                for(let x = 0; x < 8; x++)for(let y = 0; y < 8; y++){
-                    const pixelNumber = y * 8 + x;
-                    const pixelValue = tileData[y][x];
-                    const colour = pallet[pixelValue];
+        canvas.width = 128;
+        canvas.height = 128;
+        const imageData = context.createImageData(128, 192);
+        for(let i = 0; i < 0x100; i++){
+            const baseX = (i & 15) << 3;
+            const baseY = i >> 4 << 3;
+            for(let row = 0; row < 8; row++){
+                const rowData = this.memory.vram.tileset0(i, row).map((p)=>COLOURS[p]);
+                const basePixelNumber = 128 * (baseY + row) + baseX;
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const colour = rowData[pixel];
+                    const pixelNumber = basePixelNumber + pixel;
                     imageData.data[4 * pixelNumber + 0] = colour[0];
                     imageData.data[4 * pixelNumber + 1] = colour[1];
                     imageData.data[4 * pixelNumber + 2] = colour[2];
                     imageData.data[4 * pixelNumber + 3] = 255;
                 }
-                context.putImageData(imageData, baseX, baseY);
             }
         }
+        context.putImageData(imageData, 0, 0);
+    }
+    printTileset1(canvas) {
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("No canvas context");
+        canvas.width = 128;
+        canvas.height = 128;
+        const imageData = context.createImageData(128, 192);
+        for(let i = 0; i < 0x100; i++){
+            const baseX = (i & 15) << 3;
+            const baseY = i >> 4 << 3;
+            for(let row = 0; row < 8; row++){
+                const rowData = this.memory.vram.tileset1(i, row).map((p)=>COLOURS[p]);
+                const basePixelNumber = 128 * (baseY + row) + baseX;
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const colour = rowData[pixel];
+                    const pixelNumber = basePixelNumber + pixel;
+                    imageData.data[4 * pixelNumber + 0] = colour[0];
+                    imageData.data[4 * pixelNumber + 1] = colour[1];
+                    imageData.data[4 * pixelNumber + 2] = colour[2];
+                    imageData.data[4 * pixelNumber + 3] = 255;
+                }
+            }
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+    printBackgroundLayer(canvas, layer) {
+        const tilemapId = layer == "background" ? this.memory.registers.lcdControl.backgroundTilemap : this.memory.registers.lcdControl.windowTilemap;
+        const tileset = this.memory.registers.lcdControl.tileDataArea;
+        const pallete = this.memory.registers.backgroundPallete.map;
+        const context = canvas.getContext("2d");
+        const tiles = new Set();
+        const tileMap = [];
+        const tilesWide = layer == "background" ? 32 : 20;
+        const tilesTall = layer == "background" ? 32 : 18;
+        for(let y = 0; y < tilesTall; y++){
+            const rowMap = [];
+            for(let x = 0; x < tilesWide; x++){
+                let tileNumber = tilesTall * y + x;
+                let tileId = tilemapId == 0 ? this.memory.vram.tilemap0(tileNumber) : this.memory.vram.tilemap1(tileNumber);
+                tiles.add(tileId);
+                rowMap.push(tileId);
+            }
+            tileMap.push(rowMap);
+        }
+        const tileImages = this.getTileData(tiles, context, tileset, pallete);
+        tileMap.forEach((row, y)=>row.forEach((tileId, x)=>{
+                const tileData = tileImages[tileId];
+                context.putImageData(tileData, x * 8, y * 8);
+            }));
+    }
+    getTileData(tileIds, context, tileset, pallete) {
+        const tileImages = [];
+        tileIds.forEach((tileId)=>{
+            const tileData = context.createImageData(8, 8);
+            for(let row = 0; row < 8; row++){
+                let rowData = tileset == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const baseIndex = (row * 8 + pixel) * 4;
+                    const colour = COLOURS[pallete[rowData[pixel]]];
+                    tileData.data[baseIndex + 0] = colour[0];
+                    tileData.data[baseIndex + 1] = colour[1];
+                    tileData.data[baseIndex + 2] = colour[2];
+                    tileData.data[baseIndex + 3] = 255;
+                }
+            }
+            tileImages[tileId] = tileData;
+        });
+        return tileImages;
+    }
+    printSpriteLayer(canvas) {
+        const sprites = this.memory.oam.sprites;
+        const pallette0 = this.memory.registers.objectPallete0.map;
+        const pallette1 = this.memory.registers.objectPallete1.map;
+        const context = canvas.getContext("2d");
+        context.clearRect(0, 0, 160, 144);
+        const tilesP0 = new Set(sprites.filter((sprite)=>sprite.pallette == 0).map((sprite)=>sprite.tile));
+        const tilesP1 = new Set(sprites.filter((sprite)=>sprite.pallette == 1).map((sprite)=>sprite.tile));
+        const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0);
+        const tileImagesP1 = this.getTileData(tilesP1, context, 1, pallette1);
+        sprites.filter((sprite)=>sprite.priority).forEach((sprite)=>{
+            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
+            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
+        });
+        sprites.filter((sprite)=>!sprite.priority).forEach((sprite)=>{
+            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
+            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
+        });
+        context.beginPath();
+        context.lineWidth = 1;
+        context.strokeStyle = "red";
+        context.rect(0, 0, 160, 144);
+        context.stroke();
     }
     getSpriteInfo() {
         return [];
     }
     backgroundPallete() {
-        const backgroundPalletByte = this.memory.at(0xFF47).read();
+        const backgroundPalletByte = this.memory.at(0xFF47).value;
         return [
             COLOURS[backgroundPalletByte >> 0 & 3],
             COLOURS[backgroundPalletByte >> 2 & 3],
@@ -30627,13 +31605,13 @@ class PulseChannel {
                 }
             }
         }
-        const lengthByte = this.lengthTimer.read();
+        const lengthByte = this.lengthTimer.value;
         if (lengthByte !== this.cache.lengthTimer) {
             this.cache.lengthTimer = lengthByte;
             // TODO Duty Cycles
             this.timer = lengthByte & 0x3F;
         }
-        const volumeByte = this.volumeEnvelope.read();
+        const volumeByte = this.volumeEnvelope.value;
         if (volumeByte !== this.cache.volumeEnvelope) {
             this.cache.volumeEnvelope = volumeByte;
             this.envelopeDirection = volumeByte & 0x08 ? 1 : -1;
@@ -30641,12 +31619,12 @@ class PulseChannel {
             this.envelopePace = volumeByte & 0x07;
             this.envelopeTimer = this.envelopePace;
         }
-        const periodByte = this.periodLow.read();
+        const periodByte = this.periodLow.value;
         if (periodByte !== this.cache.periodLow) {
             this.cache.periodLow = periodByte;
             this.setPeriod(this.period & 0xF00 | periodByte);
         }
-        const controlByte = this.control.read();
+        const controlByte = this.control.value;
         if (controlByte !== this.cache.control) {
             this.cache.control = controlByte;
             // Set upper 3 bits of period using the lowest 3 bits of register
@@ -30677,43 +31655,9 @@ exports.default = PulseChannel;
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cFNSD":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
 class Controller {
-    initialiseEvents() {
-        document.addEventListener("keydown", (e)=>this.handleKeyPress(e));
-        document.addEventListener("keyup", (e)=>this.handleKeyRelease(e));
-    }
-    handleKeyPress(event) {
-        const button = this.keyBindings[event.code];
-        if (button) {
-            event.preventDefault();
-            if (!this.isPressed[button]) this.triggerInterrupt();
-            this.isPressed[button] = true;
-            this.updateUi(this.isPressed);
-        }
-    }
-    handleKeyRelease(event) {
-        const button = this.keyBindings[event.code];
-        if (button) {
-            event.preventDefault();
-            if (this.isPressed[button]) this.triggerInterrupt();
-            this.isPressed[button] = false;
-            this.updateUi(this.isPressed);
-        }
-    }
-    getButtonNibble() {
-        return (this.isPressed["Start"] ? 0 : 0x8) + (this.isPressed["Select"] ? 0 : 0x4) + (this.isPressed["B"] ? 0 : 0x2) + (this.isPressed["A"] ? 0 : 0x1);
-    }
-    getDPadNibble() {
-        return (this.isPressed["Down"] ? 0 : 0x8) + (this.isPressed["Up"] ? 0 : 0x4) + (this.isPressed["Left"] ? 0 : 0x2) + (this.isPressed["Right"] ? 0 : 0x1);
-    }
-    updatedRegister(originalValue) {
-        const selectButtons = originalValue >> 4 === 1;
-        const selectDpad = originalValue >> 5 === 1;
-        if (selectButtons) return (originalValue & 0xF0) + this.getButtonNibble();
-        if (selectDpad) return (originalValue & 0xF0) + this.getDPadNibble();
-        return (originalValue & 0xF0) + 0xF;
-    }
-    constructor(){
+    constructor(memory){
         this.isPressed = {
             "A": false,
             "B": false,
@@ -30736,10 +31680,36 @@ class Controller {
         };
         this.triggerInterrupt = ()=>{};
         this.updateUi = ()=>{};
+        this.joypadRegister = memory.registers.joypad;
+        this.interruptRegister = memory.registers.interrupts;
+    }
+    initialiseEvents() {
+        document.addEventListener("keydown", (e)=>this.handleKeyPress(e));
+        document.addEventListener("keyup", (e)=>this.handleKeyRelease(e));
+    }
+    handleKeyPress(event) {
+        const button = this.keyBindings[event.code];
+        if (button) {
+            event.preventDefault();
+            if (!this.isPressed[button]) this.interruptRegister.setInterrupt((0, _interruptRegisters.Interrupt).Joypad);
+            this.isPressed[button] = true;
+            this.joypadRegister[button] = true;
+            this.updateUi(this.isPressed);
+        }
+    }
+    handleKeyRelease(event) {
+        const button = this.keyBindings[event.code];
+        if (button) {
+            event.preventDefault();
+            if (this.isPressed[button]) this.interruptRegister.setInterrupt((0, _interruptRegisters.Interrupt).Joypad);
+            this.isPressed[button] = false;
+            this.joypadRegister[button] = false;
+            this.updateUi(this.isPressed);
+        }
     }
 }
 exports.default = Controller;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
 
 //# sourceMappingURL=index.b9dee198.js.map
