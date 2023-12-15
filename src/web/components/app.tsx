@@ -9,6 +9,7 @@ import Display from "./display"
 import APU from "../../emulator/apu"
 import Joypad from "./joypad"
 import Controller from "../../emulator/controller"
+import Tabs from "./tabs"
 
 interface Props {
   cpu: CPU
@@ -18,7 +19,6 @@ interface Props {
 }
 
 export default function App({ cpu, ppu, apu, controller }: Props) {
-  const [showDebugTools, setShowDebugTools] = React.useState(false)
   // Reload this component when execution of CPU is complete
   const [toggle, setToggle] = React.useState(false)
   cpu.onInstructionComplete = () => { setToggle(!toggle) }
@@ -30,6 +30,7 @@ export default function App({ cpu, ppu, apu, controller }: Props) {
 
   return (<main>
       <h1>TSGB</h1>
+    
       <GameLoader memory={cpu.memory} />
       <br/>
       <button onClick={() => cpu.run()}>Run</button>
@@ -40,19 +41,22 @@ export default function App({ cpu, ppu, apu, controller }: Props) {
         <p>Error: {error}</p>
       }
       <Joypad controller={controller} />
-      <button onClick={() => setShowDebugTools(!showDebugTools)}>
-        {showDebugTools ? "Hide debug tools" : "Show debug tools"}
-      </button>
-      {
-        showDebugTools && <>
-          <CpuController cpu={cpu} />
-          <VramViewer ppu={ppu} />
-          <MemoryExplorer
-            memory={cpu.memory}
-            programCounter={programCounter}
-            breakpoints={cpu.breakpoints}
-          />
-        </>
-      }
+      <Tabs
+        tabs={{
+          "Info": () => <p>Test</p>,
+          "Debug Graphics": () => <>
+            <VramViewer ppu={ppu} />
+          </>,
+          "Debug Sound": () => <p>To do!</p>,
+          "Debug Memory": () => <>
+            <CpuController cpu={cpu} />
+            <MemoryExplorer
+              memory={cpu.memory}
+              programCounter={programCounter}
+              breakpoints={cpu.breakpoints}
+            />
+          </>
+        }}
+      />
     </main>)
 }

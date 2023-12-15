@@ -75,7 +75,7 @@ export default class PPU {
     const context = canvas.getContext("2d")
     if (!context) { throw new Error("No canvas context") }
     canvas.width = 128
-    canvas.height = 192
+    canvas.height = 128
     const imageData = context.createImageData(128, 192)
 
     for (let i = 0; i < 0x100; i++) {
@@ -103,7 +103,7 @@ export default class PPU {
     const context = canvas.getContext("2d")
     if (!context) { throw new Error("No canvas context") }
     canvas.width = 128
-    canvas.height = 192
+    canvas.height = 128
     const imageData = context.createImageData(128, 192)
 
     for (let i = 0; i < 0x100; i++) {
@@ -127,46 +127,109 @@ export default class PPU {
     context.putImageData(imageData, 0, 0)
   }
 
-  // Load BIOS to 0x0055 to test
-  printBackgroundLayer(canvas: HTMLCanvasElement, tileset: number): void {
-    // Tilemap 1: 0x9800 - 0x9BFF, so 256 bytes
-    // once byte is one tile surely?
-    const context = canvas.getContext("2d")
-    if (!context) { throw new Error("No canvas context") }
-    canvas.width = 256
-    canvas.height = 256
+  printBackgroundLayer(canvas: HTMLCanvasElement, layer: "window" | "background"): void {
+    const tilemapId = layer == "background"
+      ? this.memory.registers.lcdControl.backgroundTilemap
+      : this.memory.registers.lcdControl.windowTilemap
+    const tileset = this.memory.registers.lcdControl.tileDataArea
+    const pallete = this.memory.registers.backgroundPallete.map
 
-    const backgroundPalletByte = this.memory.at(0xFF47).value
+    const context = canvas.getContext("2d")!
 
-    const pallet: number[][] = [
-      COLOURS[(backgroundPalletByte >> 0) & 3],
-      COLOURS[(backgroundPalletByte >> 2) & 3],
-      COLOURS[(backgroundPalletByte >> 4) & 3],
-      COLOURS[(backgroundPalletByte >> 6) & 3],
-    ]
+    const tiles: Set<number> = new Set()
 
-    for (let j = 0; j < 32; j++) {
-      const baseY = j * 8
-      for (let i = 0; i < 32; i++) {
-        const baseX = i * 8
-        const tileMapAddress = 0x9800 + i + (j * 32)
-        const tileNumber = this.memory.at(tileMapAddress).value
-        const tileData = this.getTile(tileset == 0 ? tileNumber : 0x100 + from2sComplement(tileNumber))
-        const imageData = context.createImageData(8, 8)
-        for (let x = 0; x < 8; x++) {
-          for (let y = 0; y < 8; y++) {
-            const pixelNumber = (y * 8) + x
-            const pixelValue = tileData[y][x]
-            const colour = pallet[pixelValue]
-            imageData.data[4 * pixelNumber + 0] = colour[0]
-            imageData.data[4 * pixelNumber + 1] = colour[1]
-            imageData.data[4 * pixelNumber + 2] = colour[2]
-            imageData.data[4 * pixelNumber + 3] = 255
-          }
-        }
-        context.putImageData(imageData, baseX, baseY)
+    const tileMap: number[][] = []
+
+    const tilesWide = layer == "background" ? 32 : 20
+    const tilesTall = layer == "background" ? 32 : 18
+
+    for (let y = 0; y < tilesTall; y++) {
+      const rowMap: number[] = []
+      for (let x = 0; x < tilesWide; x++) {
+        let tileNumber = (tilesTall * y) + x
+        let tileId = tilemapId == 0
+          ? this.memory.vram.tilemap0(tileNumber)
+          : this.memory.vram.tilemap1(tileNumber)
+
+        tiles.add(tileId)
+        rowMap.push(tileId)
       }
+      tileMap.push(rowMap)
     }
+
+    const tileImages = this.getTileData(tiles, context, tileset, pallete)
+
+    tileMap.forEach((row, y) =>
+      row.forEach((tileId, x) => {
+        const tileData = tileImages[tileId]
+        context.putImageData(tileData, x * 8, y * 8)
+      }))
+  }
+
+  getTileData(
+    tileIds: Set<number>,
+    context: CanvasRenderingContext2D,
+    tileset: number,
+    pallete: number[]
+  ): ImageData[] {
+    const tileImages: ImageData[] = []
+    tileIds.forEach(tileId => {
+      const tileData = context.createImageData(8, 8)
+      for (let row = 0; row < 8; row++) {
+        let rowData = tileset == 1
+          ? this.memory.vram.tileset0(tileId, row)
+          : this.memory.vram.tileset1(tileId, row)
+        
+        for (let pixel = 0; pixel < 8; pixel++) {
+          const baseIndex = ((row * 8 + pixel) * 4)
+          const colour = COLOURS[pallete[rowData[pixel]]]
+          tileData.data[baseIndex + 0] = colour[0]
+          tileData.data[baseIndex + 1] = colour[1]
+          tileData.data[baseIndex + 2] = colour[2]
+          tileData.data[baseIndex + 3] = 255
+        }
+      }
+      tileImages[tileId] = tileData
+    })
+    return tileImages
+  }
+
+  printSpriteLayer(canvas: HTMLCanvasElement): void {
+    const sprites = this.memory.oam.sprites
+    const pallette0 = this.memory.registers.objectPallete0.map
+    const pallette1 = this.memory.registers.objectPallete1.map
+
+    const context = canvas.getContext("2d")!
+    context.clearRect(0, 0, 160, 144)
+
+    const tilesP0 = new Set(
+      sprites
+        .filter(sprite => sprite.pallette == 0)
+        .map(sprite => sprite.tile))
+    const tilesP1 = new Set(
+      sprites
+        .filter(sprite => sprite.pallette == 1)
+        .map(sprite => sprite.tile))
+    const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0)
+    const tileImagesP1 = this.getTileData(tilesP1, context, 1, pallette1)
+
+    sprites.filter(sprite => sprite.priority).forEach(sprite => {
+      const tileData = sprite.pallette == 0
+        ? tileImagesP0[sprite.tile]
+        : tileImagesP1[sprite.tile]
+      context.putImageData(tileData, sprite.x - 8, sprite.y - 16)
+    })
+    sprites.filter(sprite => !sprite.priority).forEach(sprite => {
+      const tileData = sprite.pallette == 0
+        ? tileImagesP0[sprite.tile]
+        : tileImagesP1[sprite.tile]
+      context.putImageData(tileData, sprite.x - 8, sprite.y - 16, )
+    })
+    context.beginPath()
+      context.lineWidth = 1
+      context.strokeStyle = "red"
+      context.rect(0, 0, 160, 144)
+      context.stroke()
   }
 
   getSpriteInfo(): Sprite[] {
