@@ -34,7 +34,7 @@ FF14 - high 3 bits of period, control
 
 import CPU from "./cpu";
 import Memory from "./memory";
-import PulseChannel from "./pulseChannel";
+import PulseChannel from "./sound/pulseChannel";
 
 export default class APU {
   cpu: CPU

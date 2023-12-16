@@ -37,7 +37,7 @@ export default function CpuController({ cpu }: Props) {
     }}>Download GB Doctor Log</button>
     Is halted: {cpu.isHalted.toString()}
     <h3>Registers</h3>
-    <div className="flex-horizonally">
+    <div className="flex-horizontally">
       <div>
         <h4>8-bit registers</h4>
         <table>

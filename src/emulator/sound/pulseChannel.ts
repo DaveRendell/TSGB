@@ -1,6 +1,7 @@
-import APU from "./apu"
-import Memory from "./memory"
-import { ByteRef } from "./refs/byteRef"
+import APU from "../apu"
+import Memory from "../memory"
+import { ByteRef } from "../refs/byteRef"
+import { Channel } from "./channel"
 
 // Roughly equal to 4.2MHz clock speed / 256Hz 
 const LENGTH_TIMER_TICK = 0x4000
@@ -18,7 +19,7 @@ interface Props {
   controlRegister: number
 }
 
-export default class PulseChannel {
+export default class PulseChannel implements Channel {
   apu: APU
   memory: Memory
 
@@ -52,6 +53,11 @@ export default class PulseChannel {
   oscillator: OscillatorNode
   gain: GainNode
 
+  analyser: AnalyserNode
+  muteNode: GainNode
+
+  waveFormChanged: () => void = () => {}
+
   constructor(props: Props) {
     this.apu = props.apu
     this.memory = props.memory
@@ -66,9 +72,20 @@ export default class PulseChannel {
     this.oscillator = this.apu.audioContext.createOscillator()
     this.oscillator.type = "square"
     this.oscillator.frequency.value = 440
+
     this.gain = this.apu.audioContext.createGain()
     this.gain.gain.value = 0
-    this.oscillator.connect(this.gain)
+
+    this.analyser = this.apu.audioContext.createAnalyser()
+
+    this.muteNode = this.apu.audioContext.createGain()
+    this.muteNode.gain.value = 1
+
+    this.oscillator.connect(this.muteNode)
+    this.muteNode.connect(this.gain)
+    this.gain.connect(this.analyser)
+    this.analyser.connect(this.apu.audioContext.destination)
+
     this.oscillator.start()
   }
 
@@ -143,11 +160,12 @@ export default class PulseChannel {
     const frequency = 131072 / (2048 - period)
     this.oscillator.frequency.setValueAtTime(
       frequency, this.apu.audioContext.currentTime)
+    this.waveFormChanged()
   }
 
   setVolume(volume: number = this.volume) {
     this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume
     this.gain.gain.setValueAtTime(this.volume / 100, this.apu.audioContext.currentTime)
+    this.waveFormChanged()
   }
-
 }

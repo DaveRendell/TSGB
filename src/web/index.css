@@ -14,13 +14,13 @@ body {
   min-width: 4em;
 }
 
-.flex-horizonally {
+.flex-horizontally {
   display: flex;
   justify-content: left;
   align-items: flex-start;
 }
 
-.flex-horizonally > * + * {
+.flex-horizontally > * + * {
   margin-left: 2em;
 }
 

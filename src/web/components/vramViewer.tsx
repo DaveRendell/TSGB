@@ -65,7 +65,7 @@ export function VramViewer({ ppu }: Props) {
 
   return (<section>
     <button onClick={update}>Update</button>
-    <div className="flex-horizonally">
+    <div className="flex-horizontally">
       <div>
         <h3>Tile data</h3>
           <div>
@@ -118,7 +118,7 @@ export function VramViewer({ ppu }: Props) {
     </div>
     <div>
       <h3>Sprites</h3>
-      <div className="flex-horizonally">
+      <div className="flex-horizontally">
         <div>
           sprite 1-20
         </div>

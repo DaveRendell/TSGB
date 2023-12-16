@@ -10,6 +10,7 @@ import APU from "../../emulator/apu"
 import Joypad from "./joypad"
 import Controller from "../../emulator/controller"
 import Tabs from "./tabs"
+import AudioDebug from "./audioDebug"
 
 interface Props {
   cpu: CPU
@@ -47,7 +48,7 @@ export default function App({ cpu, ppu, apu, controller }: Props) {
           "Debug Graphics": () => <>
             <VramViewer ppu={ppu} />
           </>,
-          "Debug Sound": () => <p>To do!</p>,
+          "Debug Sound": () => <AudioDebug apu={apu} />,
           "Debug Memory": () => <>
             <CpuController cpu={cpu} />
             <MemoryExplorer
