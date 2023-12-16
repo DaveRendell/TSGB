@@ -2,6 +2,7 @@
 // https://gbdev.io/pandocs/Audio_Registers.html#audio-registers
 
 import { ByteRef } from "../../refs/byteRef";
+import PulseChannel from "../../sound/pulseChannel";
 
 export class AudioMasterControlRegister implements ByteRef {
   masterSwitch = false
@@ -62,6 +63,8 @@ export class PulseChannelRegisters {
   nr3: ByteRef
   nr4: ByteRef
 
+  channel: PulseChannel
+
   constructor() {
     const self = this
 
@@ -74,7 +77,7 @@ export class PulseChannelRegisters {
       set value(value: number) {
         self.periodSweep.pace = value >> 4
         self.periodSweep.step = value & 0x7
-        self.periodSweep.direction = (value & 0x8) > 0 ? -1 : 1 
+        self.periodSweep.direction = (value & 0x8) > 0 ? -1 : 1
       }
     }
 
@@ -85,6 +88,9 @@ export class PulseChannelRegisters {
       set value(value: number) {
         self.waveDuty = value >> 6
         self.lengthTimer = value & 0x37
+        if (self.channel) {
+          self.channel.timer.setTimer(value & 0x37)
+        }
       }
     }
 
@@ -97,7 +103,13 @@ export class PulseChannelRegisters {
       set value(value: number) {
         self.volume = value >> 4
         self.volumeEnvelope.pace = value & 0x7
-        self.volumeEnvelope.direction = (value & 0x8) > 0 ? 1 : -1 
+        self.volumeEnvelope.direction = (value & 0x8) > 0 ? 1 : -1
+        if (self.channel) {
+          self.channel.setVolume(self.volume)
+          self.channel.envelope.setEnvelope(
+            self.volumeEnvelope.direction,
+            self.volumeEnvelope.pace)
+        }
       }
     }
     
@@ -108,6 +120,9 @@ export class PulseChannelRegisters {
       set value(value: number) {
         self.period &= 0xF00
         self.period |= value
+        if (self.channel) {
+          self.channel.setPeriod(self.period)
+        }
       }
     }
 
@@ -125,6 +140,15 @@ export class PulseChannelRegisters {
         if (value & 0x80) {
           self.trigger()
           self.triggered = true
+        }
+
+        if (self.channel) {
+          self.channel.setPeriod(self.period)
+          if (self.lengthEnabled) { self.channel.timer.enable() }
+          else { self.channel.timer.disable() }
+          if (value & 0x80) {
+            self.channel.start()
+          }
         }
       }
     }
