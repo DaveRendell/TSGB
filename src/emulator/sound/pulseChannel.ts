@@ -2,6 +2,8 @@ import APU from "../apu"
 import Memory from "../memory"
 import { ByteRef } from "../refs/byteRef"
 import { Channel } from "./channel"
+import { LengthTimer } from "./lengthTimer"
+import { VolumeEnvelope } from "./volumeEnvelope"
 
 // Roughly equal to 4.2MHz clock speed / 256Hz 
 const LENGTH_TIMER_TICK = 0x4000
@@ -39,22 +41,16 @@ export default class PulseChannel implements Channel {
 
   playing = false
   period = 0
-
-  lengthClock = 0
-  lengthEnabled = false
-  timer = 0
-
-  envelopeClock = 0
   volume = 0
-  envelopeDirection: -1 | 1 = 1
-  envelopePace = 0
-  envelopeTimer = 0
 
   oscillator: OscillatorNode
   gain: GainNode
 
   analyser: AnalyserNode
   muteNode: GainNode
+
+  timer: LengthTimer
+  envelope: VolumeEnvelope
 
   waveFormChanged: () => void = () => {}
 
@@ -87,49 +83,31 @@ export default class PulseChannel implements Channel {
     this.analyser.connect(this.apu.audioContext.destination)
 
     this.oscillator.start()
+
+    this.timer = new LengthTimer(() => this.stop())
+    this.envelope = new VolumeEnvelope((increment) => this.updateVolume(increment))
   }
 
   update(cycles: number) {
     if (this.playing) {
-      if (this.lengthEnabled) {
-        this.lengthClock += cycles
-        if (this.lengthClock > LENGTH_TIMER_TICK) {
-          this.lengthClock -= LENGTH_TIMER_TICK
-          this.timer--
-          if (this.timer <= 0) {
-            this.playing = false
-            this.setVolume(0)
-          }
-        }
-      }
-
-      if (this.envelopePace) {
-        this.envelopeClock += cycles
-        if (this.envelopeClock > ENVELOPER_TIMER_TICK) {
-          this.envelopeClock -= ENVELOPER_TIMER_TICK
-          this.envelopeTimer--
-          if (this.envelopeTimer <= 0) {
-            this.envelopeTimer = this.envelopePace
-            this.setVolume(this.volume + this.envelopeDirection)
-          }
-        }
-      }
-    }    
+      this.timer.update(cycles)
+      this.envelope.update(cycles)
+    }
     
     const lengthByte = this.lengthTimer.value
     if (lengthByte !== this.cache.lengthTimer) {
       this.cache.lengthTimer = lengthByte
       // TODO Duty Cycles
-      this.timer = lengthByte & 0x3F
+      this.timer.setTimer(lengthByte & 0x3F)
     }
 
     const volumeByte = this.volumeEnvelope.value
     if (volumeByte !== this.cache.volumeEnvelope) {
       this.cache.volumeEnvelope = volumeByte
-      this.envelopeDirection = (volumeByte & 0x08) ? 1 : -1
+      const direction = (volumeByte & 0x08) ? 1 : -1
+      const pace = volumeByte & 0x07
       this.setVolume(volumeByte >> 4)
-      this.envelopePace = volumeByte & 0x07
-      this.envelopeTimer = this.envelopePace
+      this.envelope.setEnvelope(direction, pace)
     }
 
     const periodByte = this.periodLow.value
@@ -143,16 +121,26 @@ export default class PulseChannel implements Channel {
       this.cache.control = controlByte
       // Set upper 3 bits of period using the lowest 3 bits of register
       this.setPeriod((this.period & 0x0FF) | ((controlByte & 0b111) << 8))
-      this.lengthEnabled = !!(controlByte & 0x40)
+      if ((controlByte & 0x40) > 0) { this.timer.enable() }
+      else { this.timer.disable() }
       if (!this.playing && (controlByte & 0x80)) {
         // Start playing channel
         this.playing = true
         this.gain.connect(this.apu.audioContext.destination)
         this.setVolume()
-        this.lengthClock = 0
-        this.envelopeClock = 0
+        this.timer.resetClock()
+        this.envelope.resetClock()
       }
     }
+  }
+
+  stop() {
+    this.playing = false
+    this.setVolume(0)
+  }
+
+  updateVolume(increment: number) {
+    this.setVolume(this.volume + increment)
   }
 
   setPeriod(period: number) {
