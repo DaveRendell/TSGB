@@ -196,7 +196,7 @@ export default class Screen {
       if (this.lcdControl.windowEnabled) {
         const winX = i - (this.memory.registers.windowX.value - 7)
         if (winY >= 0 && winX >= 0) {
-          const tileMapNumber = (winX >> 3) + (20 * (winY >> 3))
+          const tileMapNumber = (winX >> 3) + (32 * (winY >> 3))
           const tileId = this.lcdControl.windowTilemap == 0
             ? this.memory.vram.tilemap0(tileMapNumber)
             : this.memory.vram.tilemap1(tileMapNumber)

@@ -140,13 +140,10 @@ export default class PPU {
 
     const tileMap: number[][] = []
 
-    const tilesWide = layer == "background" ? 32 : 20
-    const tilesTall = layer == "background" ? 32 : 18
-
-    for (let y = 0; y < tilesTall; y++) {
+    for (let y = 0; y < 32; y++) {
       const rowMap: number[] = []
-      for (let x = 0; x < tilesWide; x++) {
-        let tileNumber = (tilesTall * y) + x
+      for (let x = 0; x < 32; x++) {
+        let tileNumber = (32 * y) + x
         let tileId = tilemapId == 0
           ? this.memory.vram.tilemap0(tileNumber)
           : this.memory.vram.tilemap1(tileNumber)

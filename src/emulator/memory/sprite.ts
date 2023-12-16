@@ -57,7 +57,7 @@ export class Sprite {
 
   pixelAt(
     scanline: number,
-    column: number, // col - 8
+    column: number,
     spriteSize: number
   ): number | undefined {
     const row = this.flipY
@@ -65,8 +65,8 @@ export class Sprite {
       : this.scanlineIntersect(scanline)
     
     const tileId = spriteSize == 16
-     ? (row > 8 ? this.tile | 1 : this.tile & 0xFE)
-     : this.tile
+      ? (row >= 8 ? this.tile | 1 : this.tile & 0xFE)
+      : this.tile
 
     const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8)
     const tileValue = this.vram.tileset0(tileId, row % 8)[x]
