@@ -27196,6 +27196,8 @@ var _joypad = require("./joypad");
 var _joypadDefault = parcelHelpers.interopDefault(_joypad);
 var _tabs = require("./tabs");
 var _tabsDefault = parcelHelpers.interopDefault(_tabs);
+var _audioDebug = require("./audioDebug");
+var _audioDebugDefault = parcelHelpers.interopDefault(_audioDebug);
 var _s = $RefreshSig$();
 function App({ cpu, ppu, apu, controller }) {
     _s();
@@ -27213,19 +27215,19 @@ function App({ cpu, ppu, apu, controller }) {
                 children: "TSGB"
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 32,
+                lineNumber: 33,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameLoaderDefault.default), {
                 memory: cpu.memory
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 34,
+                lineNumber: 35,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 35,
+                lineNumber: 36,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27233,7 +27235,7 @@ function App({ cpu, ppu, apu, controller }) {
                 children: "Run"
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 36,
+                lineNumber: 37,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27241,7 +27243,7 @@ function App({ cpu, ppu, apu, controller }) {
                 children: "Pause"
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 37,
+                lineNumber: 38,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27249,14 +27251,14 @@ function App({ cpu, ppu, apu, controller }) {
                 children: "Run frame"
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 38,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _displayDefault.default), {
                 cpu: cpu
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 39,
+                lineNumber: 40,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27266,28 +27268,31 @@ function App({ cpu, ppu, apu, controller }) {
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 41,
+                lineNumber: 42,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
                 controller: controller
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 43,
+                lineNumber: 44,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
                 tabs: {
                     "Info": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                            children: "Test"
-                        }, void 0, false, void 0, void 0),
+                            children: [
+                                "Title: ",
+                                cpu.memory.cartridge?.title
+                            ]
+                        }, void 0, true, void 0, void 0),
                     "Debug Graphics": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                             children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _vramViewer.VramViewer), {
                                 ppu: ppu
                             }, void 0, false, void 0, void 0)
                         }, void 0, false),
-                    "Debug Sound": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                            children: "To do!"
+                    "Debug Sound": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _audioDebugDefault.default), {
+                            apu: apu
                         }, void 0, false, void 0, void 0),
                     "Debug Memory": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                             children: [
@@ -27304,13 +27309,13 @@ function App({ cpu, ppu, apu, controller }) {
                 }
             }, void 0, false, {
                 fileName: "src/web/components/app.tsx",
-                lineNumber: 44,
+                lineNumber: 45,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/app.tsx",
-        lineNumber: 31,
+        lineNumber: 32,
         columnNumber: 11
     }, this);
 }
@@ -27324,7 +27329,7 @@ $RefreshReg$(_c, "App");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","./gameLoader":"3e0xT","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./tabs":"9O6KI"}],"2PLGd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","./gameLoader":"3e0xT","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./tabs":"9O6KI","./audioDebug":"bNTZa"}],"2PLGd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ef66 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -29155,7 +29160,7 @@ function CpuController({ cpu }) {
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "flex-horizonally",
+                className: "flex-horizontally",
                 children: [
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                         children: [
@@ -29345,12 +29350,35 @@ function GameLoader({ memory }) {
     _s();
     const [biosFile, setBiosFile] = (0, _useLocalFileDefault.default)("bios.bin");
     const [gameFile, setGameFile] = (0, _useLocalFileDefault.default)("game.gb");
+    const [gameTitle, setGameTitle] = _react.useState("EMPTY");
+    const [saveFile, setSaveFile] = (0, _useLocalFileDefault.default)(gameTitle + ".sav");
     _react.useEffect(()=>{
-        if (gameFile) memory.loadGame(gameFile);
+        if (gameFile) memory.loadGame(gameFile).then(()=>setGameTitle(memory.cartridge.title));
         if (biosFile) memory.loadBootRom(biosFile);
     }, [
         biosFile === null ? 0 : biosFile.size,
         gameFile === null ? 0 : gameFile.size
+    ]);
+    _react.useEffect(()=>{
+        if (gameTitle !== "EMPTY") memory.cartridge.storeRam = (data)=>{
+            console.log("SAVIIIING?");
+            const blob = new Blob([
+                data
+            ]);
+            const file = new File([
+                blob
+            ], gameTitle + ".sav", {
+                type: "application/octet-stream"
+            });
+            setSaveFile(file);
+        };
+    }, [
+        gameTitle
+    ]);
+    _react.useEffect(()=>{
+        if (saveFile) memory.cartridge.loadRam(saveFile);
+    }, [
+        saveFile === null ? 0 : saveFile.size
     ]);
     const handleBiosUpload = function(e) {
         e.preventDefault();
@@ -29366,7 +29394,7 @@ function GameLoader({ memory }) {
                 children: "Game Loader"
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 34,
+                lineNumber: 58,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -29374,7 +29402,7 @@ function GameLoader({ memory }) {
                 children: "BIOS (optional): "
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 35,
+                lineNumber: 59,
                 columnNumber: 5
             }, this),
             biosFile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
@@ -29385,7 +29413,7 @@ function GameLoader({ memory }) {
                         children: "clear?"
                     }, void 0, false, {
                         fileName: "src/web/components/gameLoader.tsx",
-                        lineNumber: 38,
+                        lineNumber: 62,
                         columnNumber: 20
                     }, this)
                 ]
@@ -29395,12 +29423,12 @@ function GameLoader({ memory }) {
                 onChange: handleBiosUpload
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 39,
+                lineNumber: 63,
                 columnNumber: 11
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 45,
+                lineNumber: 69,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -29408,7 +29436,7 @@ function GameLoader({ memory }) {
                 children: "Game: "
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 46,
+                lineNumber: 70,
                 columnNumber: 5
             }, this),
             gameFile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
@@ -29419,7 +29447,7 @@ function GameLoader({ memory }) {
                         children: "clear?"
                     }, void 0, false, {
                         fileName: "src/web/components/gameLoader.tsx",
-                        lineNumber: 49,
+                        lineNumber: 73,
                         columnNumber: 20
                     }, this)
                 ]
@@ -29429,18 +29457,19 @@ function GameLoader({ memory }) {
                 onChange: handleGameUpload
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 50,
+                lineNumber: 74,
                 columnNumber: 11
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/gameLoader.tsx",
-        lineNumber: 33,
+        lineNumber: 57,
         columnNumber: 11
     }, this);
 }
-_s(GameLoader, "SA1JprpjgD0TwvgTKVuEtAhhLD4=", false, function() {
+_s(GameLoader, "mL576iz/JWOG9ZQ5tER1GEyHthg=", false, function() {
     return [
+        (0, _useLocalFileDefault.default),
         (0, _useLocalFileDefault.default),
         (0, _useLocalFileDefault.default)
     ];
@@ -29592,7 +29621,7 @@ function VramViewer({ ppu }) {
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "flex-horizonally",
+                className: "flex-horizontally",
                 children: [
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                         children: [
@@ -29769,7 +29798,7 @@ function VramViewer({ ppu }) {
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "flex-horizonally",
+                        className: "flex-horizontally",
                         children: [
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                                 children: "sprite 1-20"
@@ -30038,7 +30067,7 @@ class Screen {
             if (this.lcdControl.windowEnabled) {
                 const winX = i - (this.memory.registers.windowX.value - 7);
                 if (winY >= 0 && winX >= 0) {
-                    const tileMapNumber = (winX >> 3) + 20 * (winY >> 3);
+                    const tileMapNumber = (winX >> 3) + 32 * (winY >> 3);
                     const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
                     const row = winY & 0x7;
                     pixel = this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row)[winX % 8] : this.memory.vram.tileset1(tileId, row)[winX % 8];
@@ -30295,6 +30324,232 @@ $RefreshReg$(_c, "Tabs");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"bNTZa":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$525f = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$525f.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "default", ()=>AudioDebug);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _oscilloscope = require("./oscilloscope");
+var _oscilloscopeDefault = parcelHelpers.interopDefault(_oscilloscope);
+function AudioDebug({ apu }) {
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
+        children: [
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "flex-horizontally",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
+                        name: "Pulse 1",
+                        channel: apu.channel1,
+                        id: 0
+                    }, void 0, false, {
+                        fileName: "src/web/components/audioDebug.tsx",
+                        lineNumber: 12,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
+                        name: "Pulse 2",
+                        channel: apu.channel2,
+                        id: 1
+                    }, void 0, false, {
+                        fileName: "src/web/components/audioDebug.tsx",
+                        lineNumber: 13,
+                        columnNumber: 7
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/web/components/audioDebug.tsx",
+                lineNumber: 11,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "flex-horizontally",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                                children: "Wave"
+                            }, void 0, false, {
+                                fileName: "src/web/components/audioDebug.tsx",
+                                lineNumber: 16,
+                                columnNumber: 12
+                            }, this),
+                            "TODO",
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                                fileName: "src/web/components/audioDebug.tsx",
+                                lineNumber: 16,
+                                columnNumber: 29
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
+                                width: 300
+                            }, void 0, false, {
+                                fileName: "src/web/components/audioDebug.tsx",
+                                lineNumber: 16,
+                                columnNumber: 34
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/web/components/audioDebug.tsx",
+                        lineNumber: 16,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                                children: "Noise"
+                            }, void 0, false, {
+                                fileName: "src/web/components/audioDebug.tsx",
+                                lineNumber: 17,
+                                columnNumber: 12
+                            }, this),
+                            "TODO"
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/web/components/audioDebug.tsx",
+                        lineNumber: 17,
+                        columnNumber: 7
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/web/components/audioDebug.tsx",
+                lineNumber: 15,
+                columnNumber: 5
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "src/web/components/audioDebug.tsx",
+        lineNumber: 10,
+        columnNumber: 11
+    }, this);
+}
+_c = AudioDebug;
+var _c;
+$RefreshReg$(_c, "AudioDebug");
+
+  $parcel$ReactRefreshHelpers$525f.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./oscilloscope":"fy0ah","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"fy0ah":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$aefb = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$aefb.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "default", ()=>Oscilloscope);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _s = $RefreshSig$();
+const SCOPE_WIDTH = 300;
+const SCOPE_HEIGHT = 50;
+const ZOOM_FACTOR = 3;
+function Oscilloscope({ name, channel, id }) {
+    _s();
+    const scopeCanvas = _react.useRef(null);
+    const draw = ()=>{
+        if (!scopeCanvas.current) return;
+        const context = scopeCanvas.current.getContext("2d");
+        const bufferLength = channel.analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        context.clearRect(0, 0, SCOPE_WIDTH, SCOPE_HEIGHT);
+        channel.analyser.getByteTimeDomainData(dataArray);
+        context.lineWidth = 1;
+        context.strokeStyle = "rgb(0, 0, 0)";
+        context.beginPath();
+        const sliceWidth = SCOPE_WIDTH / bufferLength;
+        let x = 0;
+        for(let i = 0; i < bufferLength; i++){
+            const v = (dataArray[i] - 128) / 128;
+            const y = SCOPE_HEIGHT / 2 * (1 + ZOOM_FACTOR * v);
+            if (i === 0) context.moveTo(x, y);
+            else context.lineTo(x, y);
+            x += sliceWidth;
+        }
+        context.lineTo(SCOPE_WIDTH, SCOPE_HEIGHT / 2);
+        context.stroke();
+    };
+    _react.useEffect(()=>{
+        channel.waveFormChanged = draw;
+        ()=>{
+            channel.waveFormChanged = ()=>{};
+        };
+    });
+    const isMuted = channel.muteNode.gain.value < 0.1;
+    const toggleMute = ()=>{
+        if (isMuted) channel.muteNode.gain.value = 1;
+        else channel.muteNode.gain.value = 0;
+    };
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        children: [
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                children: name
+            }, void 0, false, {
+                fileName: "src/web/components/oscilloscope.tsx",
+                lineNumber: 68,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                htmlFor: `mute-${id}`,
+                children: "Mute"
+            }, void 0, false, {
+                fileName: "src/web/components/oscilloscope.tsx",
+                lineNumber: 69,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                type: "checkbox",
+                id: `mute-${id}`,
+                checked: isMuted,
+                onChange: (e)=>{
+                    e.preventDefault();
+                    toggleMute();
+                }
+            }, void 0, false, {
+                fileName: "src/web/components/oscilloscope.tsx",
+                lineNumber: 70,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                fileName: "src/web/components/oscilloscope.tsx",
+                lineNumber: 76,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
+                width: SCOPE_WIDTH,
+                height: SCOPE_HEIGHT,
+                ref: scopeCanvas
+            }, void 0, false, {
+                fileName: "src/web/components/oscilloscope.tsx",
+                lineNumber: 77,
+                columnNumber: 5
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "src/web/components/oscilloscope.tsx",
+        lineNumber: 67,
+        columnNumber: 11
+    }, this);
+}
+_s(Oscilloscope, "dJPo/DTH85cWoEwAkH+jld8mCVs=");
+_c = Oscilloscope;
+var _c;
+$RefreshReg$(_c, "Oscilloscope");
+
+  $parcel$ReactRefreshHelpers$aefb.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
 },{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"85YVu":[function() {},{}],"cz4ku":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -30329,6 +30584,8 @@ class Memory {
         }
         // VRAM
         if (address >= 0x8000 && address < 0xA000) return this.vram.at(address);
+        // SRAM
+        if (address >= 0xA000 && address < 0xC000) return this.cartridge.ram(address);
         // OAM
         if (address >= 0xFE00 && address < 0xFEA0) return this.oam.at(address);
         // IO Registers
@@ -30542,6 +30799,7 @@ class PulseChannelRegisters {
             set value (value){
                 self.waveDuty = value >> 6;
                 self.lengthTimer = value & 0x37;
+                if (self.channel) self.channel.timer.setTimer(value & 0x37);
             }
         };
         this.nr2 = {
@@ -30552,6 +30810,10 @@ class PulseChannelRegisters {
                 self.volume = value >> 4;
                 self.volumeEnvelope.pace = value & 0x7;
                 self.volumeEnvelope.direction = (value & 0x8) > 0 ? 1 : -1;
+                if (self.channel) {
+                    self.channel.setVolume(self.volume);
+                    self.channel.envelope.setEnvelope(self.volumeEnvelope.direction, self.volumeEnvelope.pace);
+                }
             }
         };
         this.nr3 = {
@@ -30561,6 +30823,7 @@ class PulseChannelRegisters {
             set value (value){
                 self.period &= 0xF00;
                 self.period |= value;
+                if (self.channel) self.channel.setPeriod(self.period);
             }
         };
         this.nr4 = {
@@ -30574,6 +30837,12 @@ class PulseChannelRegisters {
                 if (value & 0x80) {
                     self.trigger();
                     self.triggered = true;
+                }
+                if (self.channel) {
+                    self.channel.setPeriod(self.period);
+                    if (self.lengthEnabled) self.channel.timer.enable();
+                    else self.channel.timer.disable();
+                    if (value & 0x80) self.channel.start();
                 }
             }
         };
@@ -30668,7 +30937,6 @@ class LcdControlRegister {
         return (this.enabled ? 0x80 : 0) + (this.windowTilemap << 6) + (this.windowEnabled ? 0x20 : 0) + (this.tileDataArea << 4) + (this.backgroundTilemap << 3) + (this.objectSize == 16 ? 0x4 : 0) + (this.objectsEnabled ? 0x2 : 0) + (this.backgroundWindowDisplay ? 0x1 : 0);
     }
     set value(value) {
-        console.log("setting lcd control", value.toString(2));
         this.enabled = (value & 0x80) > 0;
         this.windowTilemap = (value & 0x40) >> 6;
         this.windowEnabled = (value & 0x20) > 0;
@@ -30800,20 +31068,49 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
 var _byteRef = require("../../refs/byteRef");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
 class Cartridge {
-    constructor(data){
+    constructor(data, storeRam = ()=>{}){
         this.romData = data;
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][data[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+        this.title = String.fromCharCode(...data.slice(0x0134, 0x0144));
+        this.storeRam = storeRam;
     }
     async loadData(file) {
         this.romData = (await file.stream().getReader().read()).value || this.romData;
+        this.title = String.fromCharCode(...this.romData.slice(0x0134, 0x0144));
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][this.romData[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+    }
+    async loadRam(file) {
+        this.ramData = (await file.stream().getReader().read()).value || this.ramData;
     }
     rom(address) {
         return new (0, _byteRef.GetSetByteRef)(()=>{
             return this.romData[address & 0xFFFF];
         }, (_)=>{});
     }
-    ram(_) {
-        return new (0, _byteRef.ConstantByteRef)(0);
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>this.ramData[address - 0xA000], (value)=>{
+            this.ramData[address - 0xA000] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(()=>this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS);
+        });
     }
 }
 
@@ -30821,9 +31118,12 @@ class Cartridge {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 // Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
+// PKM R: 0x13 [MBC3+RAM+BATTERY]
+// LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
 parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
 var _cartridge = require("./cartridge");
 var _mbc1Cartridge = require("./mbc1Cartridge");
+var _mbc3Cartridge = require("./mbc3Cartridge");
 async function createCartridge(file) {
     const romData = (await file.stream().getReader().read()).value;
     if (!romData) throw new Error("Unable to read file");
@@ -30832,18 +31132,27 @@ async function createCartridge(file) {
         case 0x00:
             return new (0, _cartridge.Cartridge)(romData);
         case 0x01:
+        case 0x02:
+        case 0x03:
             return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
+        case 0x0F:
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x13:
+            return new (0, _mbc3Cartridge.Mbc3Cartridge)(romData);
     }
     throw new Error("Unknown cartridge type: " + cartridgeType);
 }
 
-},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hsUyN":[function(require,module,exports) {
+},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./mbc3Cartridge":"6WBLx"}],"hsUyN":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 // Reference: https://gbdev.io/pandocs/MBC1.html
 parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
 var _byteRef = require("../../refs/byteRef");
 var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
 class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
     constructor(data){
         super(data);
@@ -30874,6 +31183,69 @@ class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
             this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
         };
         return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 - bankBase];
+        }, (value)=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            this.ramData[address - 0xA000 - bankBase] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(()=>this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS);
+        });
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6WBLx":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC1.html
+parcelHelpers.export(exports, "Mbc3Cartridge", ()=>Mbc3Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc3Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramAndRtcEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x7F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value;
+        };
+        else // Latch clock - TODO
+        write = ()=>{};
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    writeToRam(address, value) {
+        const bankBase = 0x2000 * this.bankNumber2;
+        this.ramData[address - 0xA000 - bankBase] = value;
+        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+        this.ramWriteTimeout = setTimeout(()=>this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 - bankBase];
+        }, (value)=>this.writeToRam(address, value));
     }
 }
 
@@ -30994,7 +31366,7 @@ class Sprite {
     }
     pixelAt(scanline, column, spriteSize) {
         const row = this.flipY ? spriteSize - 1 - this.scanlineIntersect(scanline) : this.scanlineIntersect(scanline);
-        const tileId = spriteSize == 16 ? row > 8 ? this.tile | 1 : this.tile & 0xFE : this.tile;
+        const tileId = spriteSize == 16 ? row >= 8 ? this.tile | 1 : this.tile & 0xFE : this.tile;
         const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8);
         const tileValue = this.vram.tileset0(tileId, row % 8)[x];
         if (tileValue == 0) return undefined // Transparent pixel
@@ -31009,6 +31381,8 @@ parcelHelpers.defineInteropFlag(exports);
 var _cpuRegisters = require("./cpu/cpuRegisters");
 var _instruction = require("./instruction");
 var _instructionHelpers = require("./instructions/instructionHelpers");
+var _nop = require("./instructions/nop");
+var _nopDefault = parcelHelpers.interopDefault(_nop);
 var _interruptRegisters = require("./memory/registers/interruptRegisters");
 var _timer = require("./timer");
 var _timerDefault = parcelHelpers.interopDefault(_timer);
@@ -31095,7 +31469,13 @@ class CPU {
         }
         const code = this.nextByte.value;
         const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
-        const instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
+        let instruction;
+        try {
+            instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
+        } catch  {
+            console.warn(`Unused opcode: ${code.toString(16)} at address ${this.registers.PC.value.toString(16)}`);
+            instruction = (0, _nopDefault.default);
+        }
         instruction.execute(this);
         this.incrementClock(instruction.cycles);
         if (this.debugMode) {
@@ -31171,7 +31551,7 @@ class CPU {
 }
 exports.default = CPU;
 
-},{"./cpu/cpuRegisters":"7SgHs","./instruction":"dshpP","./instructions/instructionHelpers":"bJjsQ","./timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}],"7SgHs":[function(require,module,exports) {
+},{"./cpu/cpuRegisters":"7SgHs","./instruction":"dshpP","./instructions/instructionHelpers":"bJjsQ","./timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph","./instructions/nop":"jvHrF"}],"7SgHs":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "CpuRegisters", ()=>CpuRegisters);
@@ -31385,12 +31765,10 @@ class PPU {
         const context = canvas.getContext("2d");
         const tiles = new Set();
         const tileMap = [];
-        const tilesWide = layer == "background" ? 32 : 20;
-        const tilesTall = layer == "background" ? 32 : 18;
-        for(let y = 0; y < tilesTall; y++){
+        for(let y = 0; y < 32; y++){
             const rowMap = [];
-            for(let x = 0; x < tilesWide; x++){
-                let tileNumber = tilesTall * y + x;
+            for(let x = 0; x < 32; x++){
+                let tileNumber = 32 * y + x;
                 let tileId = tilemapId == 0 ? this.memory.vram.tilemap0(tileNumber) : this.memory.vram.tilemap1(tileNumber);
                 tiles.add(tileId);
                 rowMap.push(tileId);
@@ -31462,41 +31840,9 @@ class PPU {
 exports.default = PPU;
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fhvC7":[function(require,module,exports) {
-// BIOS sounds:
-/*
-C = 0x13
-See 0x0083 
-LD 0xFF13 <- 0x87
-
-https://gbdev.io/pandocs/Audio_Registers.html
-
-// Volume ticks at 64Hz
-
-// Volume and envelope
-Master controls for left and right channels
-each channel can be set
-channels 1, 2, 4 have an "envelope", basically a setting so they'll change
-volume automatically over time
-
-auto shut off: each channel can be auto shut off. Timer ticks at 256Hz, when
-timer value reaches 64 it shuts off. Timer can be preset.
-
-Each channel also has a frequency, it's defined in a slightly weird way
-
-Registers:
-FF26 Global control - on / off, channels on / off
-FF25 channel panning
-FF24 master volume and panning
-
-Channel 1
-FF10 - sweep
-FF11 - length timer and duty cycle
-FF12 - volume and envelop
-FF13 - low 8 bits of period
-FF14 - high 3 bits of period, control
-*/ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _pulseChannel = require("./pulseChannel");
+var _pulseChannel = require("./sound/pulseChannel");
 var _pulseChannelDefault = parcelHelpers.interopDefault(_pulseChannel);
 class APU {
     constructor(cpu){
@@ -31509,21 +31855,12 @@ class APU {
         cpu.addClockCallback(this);
         this.audioContext.suspend();
         this.channel1 = new (0, _pulseChannelDefault.default)({
-            apu: this,
-            memory: this.memory,
-            periodSweepRegister: 0xFF10,
-            lengthTimerRegister: 0xFF11,
-            volumeEnvelopeRegister: 0xFF12,
-            periodLowRegister: 0xFF13,
-            controlRegister: 0xFF14
+            audioContext: this.audioContext,
+            registers: this.memory.registers.channel1
         });
         this.channel2 = new (0, _pulseChannelDefault.default)({
-            apu: this,
-            memory: this.memory,
-            lengthTimerRegister: 0xFF16,
-            volumeEnvelopeRegister: 0xFF17,
-            periodLowRegister: 0xFF18,
-            controlRegister: 0xFF19
+            audioContext: this.audioContext,
+            registers: this.memory.registers.channel2
         });
     }
     updateClock(cycles) {
@@ -31539,118 +31876,148 @@ class APU {
 }
 exports.default = APU;
 
-},{"./pulseChannel":"cMq25","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cMq25":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./sound/pulseChannel":"iY6ME"}],"iY6ME":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-// Roughly equal to 4.2MHz clock speed / 256Hz 
-const LENGTH_TIMER_TICK = 0x4000;
-// Roughly equal to 4.2MHz clock speed / 64Hz
-const ENVELOPER_TIMER_TICK = 0x10000;
+var _lengthTimer = require("./lengthTimer");
+var _volumeEnvelope = require("./volumeEnvelope");
 class PulseChannel {
-    constructor(props){
-        this.cache = {
-            periodSweep: 0,
-            lengthTimer: 0,
-            volumeEnvelope: 0,
-            periodLow: 0,
-            control: 0
-        };
+    constructor({ audioContext, registers }){
         this.playing = false;
         this.period = 0;
-        this.lengthClock = 0;
-        this.lengthEnabled = false;
-        this.timer = 0;
-        this.envelopeClock = 0;
         this.volume = 0;
-        this.envelopeDirection = 1;
-        this.envelopePace = 0;
-        this.envelopeTimer = 0;
-        this.apu = props.apu;
-        this.memory = props.memory;
-        this.periodSweep = props.periodSweepRegister ? this.memory.at(props.periodSweepRegister) : undefined;
-        this.lengthTimer = this.memory.at(props.lengthTimerRegister);
-        this.volumeEnvelope = this.memory.at(props.volumeEnvelopeRegister);
-        this.periodLow = this.memory.at(props.periodLowRegister);
-        this.control = this.memory.at(props.controlRegister);
-        this.oscillator = this.apu.audioContext.createOscillator();
+        this.waveFormChanged = ()=>{};
+        this.audioContext = audioContext;
+        this.oscillator = audioContext.createOscillator();
         this.oscillator.type = "square";
         this.oscillator.frequency.value = 440;
-        this.gain = this.apu.audioContext.createGain();
+        this.gain = audioContext.createGain();
         this.gain.gain.value = 0;
-        this.oscillator.connect(this.gain);
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.oscillator.connect(this.muteNode);
+        this.muteNode.connect(this.gain);
+        this.gain.connect(this.analyser);
+        this.analyser.connect(audioContext.destination);
         this.oscillator.start();
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
+        registers.channel = this;
     }
     update(cycles) {
         if (this.playing) {
-            if (this.lengthEnabled) {
-                this.lengthClock += cycles;
-                if (this.lengthClock > LENGTH_TIMER_TICK) {
-                    this.lengthClock -= LENGTH_TIMER_TICK;
-                    this.timer--;
-                    if (this.timer <= 0) {
-                        this.playing = false;
-                        this.setVolume(0);
-                    }
-                }
-            }
-            if (this.envelopePace) {
-                this.envelopeClock += cycles;
-                if (this.envelopeClock > ENVELOPER_TIMER_TICK) {
-                    this.envelopeClock -= ENVELOPER_TIMER_TICK;
-                    this.envelopeTimer--;
-                    if (this.envelopeTimer <= 0) {
-                        this.envelopeTimer = this.envelopePace;
-                        this.setVolume(this.volume + this.envelopeDirection);
-                    }
-                }
-            }
+            this.timer.update(cycles);
+            this.envelope.update(cycles);
         }
-        const lengthByte = this.lengthTimer.value;
-        if (lengthByte !== this.cache.lengthTimer) {
-            this.cache.lengthTimer = lengthByte;
-            // TODO Duty Cycles
-            this.timer = lengthByte & 0x3F;
-        }
-        const volumeByte = this.volumeEnvelope.value;
-        if (volumeByte !== this.cache.volumeEnvelope) {
-            this.cache.volumeEnvelope = volumeByte;
-            this.envelopeDirection = volumeByte & 0x08 ? 1 : -1;
-            this.setVolume(volumeByte >> 4);
-            this.envelopePace = volumeByte & 0x07;
-            this.envelopeTimer = this.envelopePace;
-        }
-        const periodByte = this.periodLow.value;
-        if (periodByte !== this.cache.periodLow) {
-            this.cache.periodLow = periodByte;
-            this.setPeriod(this.period & 0xF00 | periodByte);
-        }
-        const controlByte = this.control.value;
-        if (controlByte !== this.cache.control) {
-            this.cache.control = controlByte;
-            // Set upper 3 bits of period using the lowest 3 bits of register
-            this.setPeriod(this.period & 0x0FF | (controlByte & 7) << 8);
-            this.lengthEnabled = !!(controlByte & 0x40);
-            if (!this.playing && controlByte & 0x80) {
-                // Start playing channel
-                this.playing = true;
-                this.gain.connect(this.apu.audioContext.destination);
-                this.setVolume();
-                this.lengthClock = 0;
-                this.envelopeClock = 0;
-            }
-        }
+    }
+    start() {
+        this.playing = true;
+        this.gain.connect(this.audioContext.destination);
+        this.setVolume();
+        this.timer.resetClock();
+        this.envelope.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.setVolume(0);
+    }
+    updateVolume(increment) {
+        this.setVolume(this.volume + increment);
     }
     setPeriod(period) {
         this.period = period;
         const frequency = 131072 / (2048 - period);
-        this.oscillator.frequency.setValueAtTime(frequency, this.apu.audioContext.currentTime);
+        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        this.waveFormChanged();
     }
     setVolume(volume = this.volume) {
         this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
-        this.gain.gain.setValueAtTime(this.volume / 100, this.apu.audioContext.currentTime);
+        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
+        this.waveFormChanged();
     }
 }
 exports.default = PulseChannel;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./lengthTimer":"k44nd","./volumeEnvelope":"lEByF"}],"k44nd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature that turns the channel off after a certain amount
+ * of time has passed.
+ */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
+// Roughly equal to 4.2MHz clock speed / 256Hz 
+const LENGTH_TIMER_TICK = 0x4000;
+class LengthTimer {
+    constructor(channelStop){
+        this.clock = 0;
+        this.enabled = false;
+        this.timer = 0;
+        this.channelStop = channelStop;
+    }
+    update(cycles) {
+        if (this.enabled) {
+            this.clock += cycles;
+            if (this.clock > LENGTH_TIMER_TICK) {
+                this.clock -= LENGTH_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) this.channelStop();
+            }
+        }
+    }
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    setTimer(length) {
+        this.timer = length;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature which regularly changes the volume of the channel
+ * until it reaches a maximum or minimum value.
+ */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
+// Roughly equal to 4.2MHz clock speed / 64Hz
+const ENVELOPER_TIMER_TICK = 0x10000;
+class VolumeEnvelope {
+    constructor(volumeSetter){
+        this.clock = 0;
+        this.direction = 1;
+        this.pace = 0;
+        this.timer = 0;
+        this.volumeIncrement = volumeSetter;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock > ENVELOPER_TIMER_TICK) {
+                this.clock -= ENVELOPER_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.volumeIncrement(this.direction);
+                }
+            }
+        }
+    }
+    setEnvelope(direction, pace) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cFNSD":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");

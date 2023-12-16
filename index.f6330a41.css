@@ -13,13 +13,13 @@ body {
   min-width: 4em;
 }
 
-.flex-horizonally {
+.flex-horizontally {
   justify-content: left;
   align-items: flex-start;
   display: flex;
 }
 
-.flex-horizonally > * + * {
+.flex-horizontally > * + * {
   margin-left: 2em;
 }
 
@@ -68,6 +68,12 @@ body {
 .tabs ul li + li {
   margin-left: .125em;
   display: inline-block;
+}
+
+.screen {
+  width: 320px;
+  height: 288px;
+  display: block;
 }
 
 /*# sourceMappingURL=index.f6330a41.css.map */
