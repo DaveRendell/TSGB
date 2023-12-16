@@ -15,7 +15,6 @@ export class Cartridge {
   constructor(data: Uint8Array, storeRam: StoreRam = () => {}) {
     this.romData = data
     const ramBanks = [0, 0, 1, 4, 16, 8][data[0x0149]]
-    if (ramBanks > 1) { throw new Error("TODO: Ram Banking...") }
     this.ramData = new Uint8Array(ramBanks * 0x2000)
     this.title = String.fromCharCode(...data.slice(0x0134, 0x0144))
     this.storeRam = storeRam
