@@ -23,7 +23,6 @@ export class LcdControlRegister implements ByteRef {
   }
 
   set value(value: number) {
-    console.log("setting lcd control", value.toString(2))
     this.enabled = (value & 0x80) > 0
     this.windowTilemap = (value & 0x40) >> 6
     this.windowEnabled = (value & 0x20) > 0

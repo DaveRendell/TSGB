@@ -70,3 +70,9 @@ body {
   display: inline-block;
   margin-left: 0.125em;
 }
+
+.screen {
+  display: block;
+  width: 320px;
+  height: 288px;
+}

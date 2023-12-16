@@ -214,8 +214,6 @@ export default class Screen {
           .map(sprite => sprite.pixelAt(scanline, i, this.lcdControl.objectSize))
           .find(p => p !== undefined)
       }
-
-      
       
       // Render background (excluding the lowest colour in the pallete)
       if (pixel === undefined) {

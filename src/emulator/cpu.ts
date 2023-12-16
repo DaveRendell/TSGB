@@ -1,8 +1,10 @@
 import { MutableValue } from "../types";
 import APU from "./apu";
 import { CpuRegisters } from "./cpu/cpuRegisters";
-import { decodeInstruction } from "./instruction";
+import { Instruction, decodeInstruction } from "./instruction";
+import halt from "./instructions/halt";
 import { resetBit, splitBytes } from "./instructions/instructionHelpers";
+import nop from "./instructions/nop";
 import Memory from "./memory";
 import { Interrupt } from "./memory/registers/interruptRegisters";
 import { ByteRef } from "./refs/byteRef";
@@ -123,7 +125,13 @@ export default class CPU {
 
     const code = this.nextByte.value
     const prefixedCode = code === 0xCB ? this.nextByte.value : undefined
-    const instruction = decodeInstruction(code, prefixedCode)
+    let instruction: Instruction
+    try {
+      instruction = decodeInstruction(code, prefixedCode)
+    } catch {
+      console.warn(`Unused opcode: ${code.toString(16)} at address ${this.registers.PC.value.toString(16)}`)
+      instruction = nop
+    }
 
     instruction.execute(this)
     this.incrementClock(instruction.cycles)

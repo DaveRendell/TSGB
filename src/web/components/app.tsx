@@ -44,7 +44,7 @@ export default function App({ cpu, ppu, apu, controller }: Props) {
       <Joypad controller={controller} />
       <Tabs
         tabs={{
-          "Info": () => <p>Test</p>,
+          "Info": () => <p>Title: {cpu.memory.cartridge?.title}</p>,
           "Debug Graphics": () => <>
             <VramViewer ppu={ppu} />
           </>,

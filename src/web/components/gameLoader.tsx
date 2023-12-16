@@ -9,13 +9,37 @@ interface Props {
 export default function GameLoader({ memory }: Props) {
   const [biosFile, setBiosFile] = useLocalFile("bios.bin")
   const [gameFile, setGameFile] = useLocalFile("game.gb")
+  const [gameTitle, setGameTitle] = React.useState("EMPTY")
+  const [saveFile, setSaveFile] = useLocalFile(gameTitle + ".sav")
 
   React.useEffect(() => {
-    if (gameFile) { memory.loadGame(gameFile) }
+    if (gameFile) {
+      memory.loadGame(gameFile).then(
+        () => setGameTitle(memory.cartridge.title))
+    }
     if (biosFile) { memory.loadBootRom(biosFile) }
   }, [
     biosFile === null ? 0 : biosFile.size,
     gameFile === null ? 0 : gameFile.size,
+  ])
+
+  React.useEffect(() => {
+    if (gameTitle !== "EMPTY") {
+      memory.cartridge.storeRam = (data) => {
+        console.log("SAVIIIING?")
+        const blob = new Blob([data])
+        const file = new File([blob], gameTitle + ".sav", { type: 'application/octet-stream' })
+        setSaveFile(file)
+      }      
+    }
+  }, [gameTitle])
+
+  React.useEffect(() => {
+    if (saveFile) {
+      memory.cartridge.loadRam(saveFile)
+    }
+  }, [
+    saveFile === null ? 0 : saveFile.size
   ])
 
   const handleBiosUpload = function(e: React.ChangeEvent<HTMLInputElement>) {

@@ -17,7 +17,7 @@ export default class Memory {
 
   bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
-  private cartridge: Cartridge
+  cartridge: Cartridge
   vram = new VRAM()
   oam: OAM
 
@@ -56,6 +56,11 @@ export default class Memory {
     // VRAM
     if (address >= 0x8000 && address < 0xA000) {
       return this.vram.at(address)
+    }
+
+    // SRAM
+    if (address >= 0xA000 && address < 0xC000) {
+      return this.cartridge.ram(address)
     }
 
     // OAM
