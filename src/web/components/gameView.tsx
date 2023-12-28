@@ -22,6 +22,8 @@ export default function GameView({ emulator }: Props) {
   const [toggle, setToggle] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>(undefined)
 
+  React.useEffect(() => { emulator.cpu.run() }, [])
+
   emulator.cpu.onInstructionComplete = () => { setToggle(!toggle) }
   emulator.cpu.onError = (e) => setError(e.message)
 

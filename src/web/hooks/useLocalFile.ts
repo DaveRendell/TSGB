@@ -27,7 +27,7 @@ export default function useLocalFile(key: string): [File | null, (newFile: File 
     }
     base64Encode(newFile).then(encodedFile => {
       window.localStorage.setItem(key, encodedFile)
-      setStateFile(newFile)
+      readFromStorage()
     })
     
   }

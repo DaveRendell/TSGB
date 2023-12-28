@@ -8,7 +8,7 @@ interface Props {
   setCartridge: (cartridge: Cartridge) => void
 }
 
-export default function GameLoader({ setCartridge }) {
+export default function GameLoader({ setCartridge }: Props) {
   const [gameFile, setGameFile] = useLocalFile("game.gb")
 
 
@@ -17,7 +17,9 @@ export default function GameLoader({ setCartridge }) {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       setGameFile(file)
-      
+      if (gameFile) {
+        setCartridge(await createCartridge(gameFile))
+      }   
     }
   }
 
