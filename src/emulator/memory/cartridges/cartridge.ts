@@ -12,12 +12,13 @@ export class Cartridge {
   storeRam: StoreRam
   ramWriteTimeout: NodeJS.Timeout
 
-  constructor(data: Uint8Array, storeRam: StoreRam = () => {}) {
+  constructor(data: Uint8Array, saveData: Uint8Array, storeRam: StoreRam = () => {}) {
     this.romData = data
     const ramBanks = [0, 0, 1, 4, 16, 8][data[0x0149]]
     this.ramData = new Uint8Array(ramBanks * 0x2000)
     this.title = String.fromCharCode(...data.slice(0x0134, 0x0144))
     this.storeRam = storeRam
+    this.loadLocalSave()
   }
 
   async loadData(file: File) {
@@ -33,6 +34,16 @@ export class Cartridge {
     this.ramData = (
       await file.stream().getReader().read()
     ).value || this.ramData
+  }
+
+  async loadLocalSave() {
+    const base64 = window.localStorage.getItem(this.title + ".sav")
+    if (base64 !== null) {
+      const res: Response = await fetch(base64);
+      const blob: Blob = await res.blob();
+      const saveFileReadResult = await blob.stream().getReader().read()
+      this.ramData = saveFileReadResult.value || new Uint8Array()
+    }
   }
 
   rom(address: number): ByteRef {
