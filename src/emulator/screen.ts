@@ -48,10 +48,9 @@ export default class Screen {
 
   newFrameDrawn = false
 
-  constructor(cpu: CPU, canvas: HTMLCanvasElement) {
+  constructor(cpu: CPU) {
     this.cpu = cpu
     this.memory = cpu.memory
-    this.canvas = canvas
     this.buffer = new OffscreenCanvas(WIDTH, HEIGHT)
     this.bufferContext = this.buffer.getContext("2d")!
 
@@ -257,7 +256,9 @@ export default class Screen {
   }
 
   renderScreen(): void {
-    const screenContext = this.canvas.getContext("2d")!
-    screenContext.drawImage(this.buffer, 0, 0)
+    if (this.canvas) {
+      const screenContext = this.canvas.getContext("2d")!
+      screenContext.drawImage(this.buffer, 0, 0)
+    }
   }
 }

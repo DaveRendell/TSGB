@@ -13,7 +13,8 @@ export default function Display({ cpu }: Props) {
 
   React.useEffect(() => {
     if (canvas.current) {
-      setScreen(new Screen(cpu, canvas.current))
+      cpu.screen.canvas = canvas.current
+      setScreen(cpu.screen)
     }
   }, [canvas])
 

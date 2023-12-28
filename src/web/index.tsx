@@ -9,15 +9,10 @@ import { to2sComplement } from "../emulator/instructions/instructionHelpers"
 import PPU from "../emulator/ppu"
 import APU from "../emulator/apu"
 import Controller from "../emulator/controller"
+import { Cartridge } from "../emulator/memory/cartridges/cartridge"
+import { Emulator } from "../emulator/emulator"
 
-const memory = new Memory()
-const controller = new Controller(memory)
-controller.initialiseEvents()
-
-const cpu = new CPU(memory)
-const ppu = new PPU(cpu)
-const apu = new APU(cpu)
-
+const emulator = new Emulator(new Cartridge(new Uint8Array()))
 var mountNode = document.getElementById("app")
 const root = createRoot(mountNode!)
-root.render(<App cpu={cpu} ppu={ppu} apu={apu} controller={controller}/>)
+root.render(<App emulator={emulator} />)

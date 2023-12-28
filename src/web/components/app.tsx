@@ -11,50 +11,48 @@ import Joypad from "./joypad"
 import Controller from "../../emulator/controller"
 import Tabs from "./tabs"
 import AudioDebug from "./audioDebug"
+import { Emulator } from "../../emulator/emulator"
 
 interface Props {
-  cpu: CPU
-  ppu: PPU
-  apu: APU
-  controller: Controller
+  emulator: Emulator
 }
 
-export default function App({ cpu, ppu, apu, controller }: Props) {
+export default function App({ emulator }: Props) {
   // Reload this component when execution of CPU is complete
   const [toggle, setToggle] = React.useState(false)
-  cpu.onInstructionComplete = () => { setToggle(!toggle) }
+  emulator.cpu.onInstructionComplete = () => { setToggle(!toggle) }
 
   const [error, setError] = React.useState<string | undefined>(undefined)
-  cpu.onError = (e) => setError(e.message)
+  emulator.cpu.onError = (e) => setError(e.message)
 
-  const programCounter = cpu.registers.PC.value
+  const programCounter = emulator.cpu.registers.PC.value
 
   return (<main>
       <h1>TSGB</h1>
     
-      <GameLoader memory={cpu.memory} />
+      <GameLoader memory={emulator.cpu.memory} />
       <br/>
-      <button onClick={() => cpu.run()}>Run</button>
-      <button onClick={() => cpu.pause()}>Pause</button>
-      <button onClick={() => cpu.runFrame(Infinity)}>Run frame</button>
-      <Display cpu={cpu} />
+      <button onClick={() => emulator.cpu.run()}>Run</button>
+      <button onClick={() => emulator.cpu.pause()}>Pause</button>
+      <button onClick={() => emulator.cpu.runFrame(Infinity)}>Run frame</button>
+      <Display cpu={emulator.cpu} />
       { error &&
         <p>Error: {error}</p>
       }
-      <Joypad controller={controller} />
+      <Joypad controller={emulator.controller} />
       <Tabs
         tabs={{
-          "Info": () => <p>Title: {cpu.memory.cartridge?.title}</p>,
+          "Info": () => <p>Title: {emulator.cpu.memory.cartridge?.title}</p>,
           "Debug Graphics": () => <>
-            <VramViewer ppu={ppu} />
+            <VramViewer ppu={new PPU(emulator.cpu)} />
           </>,
-          "Debug Sound": () => <AudioDebug apu={apu} />,
+          "Debug Sound": () => <AudioDebug apu={emulator.apu} />,
           "Debug Memory": () => <>
-            <CpuController cpu={cpu} />
+            <CpuController cpu={emulator.cpu} />
             <MemoryExplorer
-              memory={cpu.memory}
+              memory={emulator.cpu.memory}
               programCounter={programCounter}
-              breakpoints={cpu.breakpoints}
+              breakpoints={emulator.cpu.breakpoints}
             />
           </>
         }}

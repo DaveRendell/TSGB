@@ -23,11 +23,11 @@ export default class Memory {
 
   controller: Controller
 
-  constructor() {
+  constructor(cartridge: Cartridge) {
     this.data = new Uint8Array(0x10000)
     this.registers.dmaTransfer.startTransfer =
       (address) => this.dmaTransfer(address)
-    this.cartridge = new Cartridge(new Uint8Array())
+    this.cartridge = cartridge
     this.oam = new OAM(this)
   }
 
