@@ -14,10 +14,10 @@ export class Emulator {
 
   constructor(cartridge: Cartridge) {
     this.memory = new Memory(cartridge)
-    this.cpu = new CPU(this.memory)
+    this.controller = new Controller(this.memory)
+    this.cpu = new CPU(this.memory, this.controller)
     this.screen = new Screen(this.cpu)
     this.apu = new APU(this.cpu)
-    this.controller = new Controller(this.memory)
     this.controller.initialiseEvents()
   }
 }

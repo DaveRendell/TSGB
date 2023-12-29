@@ -1,5 +1,6 @@
 import { MutableValue } from "../types";
 import APU from "./apu";
+import Controller from "./controller";
 import { CpuRegisters } from "./cpu/cpuRegisters";
 import { Instruction, decodeInstruction } from "./instruction";
 import halt from "./instructions/halt";
@@ -27,6 +28,7 @@ export default class CPU {
 
   memory: Memory
   registers: CpuRegisters
+  controller: Controller
   cycleCount: number = 0
   interruptsEnabled = false
   screen: Screen
@@ -52,8 +54,9 @@ export default class CPU {
   nextByte: ByteRef
   nextWord: WordRef
 
-  constructor(memory: Memory) {
+  constructor(memory: Memory, controller: Controller) {
     this.memory = memory
+    this.controller = controller
     memory.cpu = this
     this.registers = new CpuRegisters()
     this.timer = new Timer(memory)
@@ -204,6 +207,8 @@ export default class CPU {
     this.fps = this.recentFrames.push(timestamp)
     
     let address = 0
+
+    this.controller.update()
     
     // try {
       frameLoop:
