@@ -4,6 +4,7 @@ import { LengthTimer } from "./lengthTimer";
 
 interface Props {
   audioContext: AudioContext
+  outputNode: AudioNode
   registers: WaveChannelRegisters
 }
 
@@ -29,7 +30,7 @@ export default class WaveChannel implements Channel {
 
   waveFormChanged: () => void = () => {}
 
-  constructor({ audioContext, registers }: Props) {
+  constructor({ audioContext, outputNode, registers }: Props) {
     this.registers = registers
     registers.channel = this
     this.audioContext = audioContext
@@ -50,7 +51,7 @@ export default class WaveChannel implements Channel {
     this.bufferSource.connect(this.gain)
     this.gain.connect(this.muteNode)
     this.muteNode.connect(this.analyser)
-    this.analyser.connect(audioContext.destination)
+    this.analyser.connect(outputNode)
 
     this.bufferSource.start()
 

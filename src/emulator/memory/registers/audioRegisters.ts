@@ -1,6 +1,7 @@
 // Reference:
 // https://gbdev.io/pandocs/Audio_Registers.html#audio-registers
 
+import APU from "../../apu";
 import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
 import PulseChannel from "../../sound/pulseChannel";
 import WaveChannel from "../../sound/waveChannel";
@@ -11,6 +12,7 @@ export class AudioMasterControlRegister implements ByteRef {
   channel2On = false
   channel3On = false
   channel4On = false
+  apu: APU
 
   get value(): number {
     return (this.masterSwitch ? 0x80 : 0)
@@ -22,10 +24,9 @@ export class AudioMasterControlRegister implements ByteRef {
 
   set value(value: number) {
     this.masterSwitch = (value & 0x80) > 0
-    this.channel1On = (value & 0x1) > 0
-    this.channel2On = (value & 0x2) > 0
-    this.channel3On = (value & 0x4) > 0
-    this.channel4On = (value & 0x8) > 0
+    if (this.apu) {
+      this.apu.masterControl.gain.setValueAtTime(this.masterSwitch ? 1 : 0, this.apu.audioContext.currentTime)
+    }
   }
 }
 
@@ -189,7 +190,9 @@ export class WaveChannelRegisters {
       },
       set value(value) {
         self.enabled = (value & 0x80) > 0
-        if (!self.enabled && this.channel) { this.channel.stop() }
+        if (!self.enabled && self.channel) {
+          self.channel.stop()
+        }
       }
     }
     this.nr1 = {

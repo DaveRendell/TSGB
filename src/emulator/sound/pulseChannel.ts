@@ -5,6 +5,7 @@ import { VolumeEnvelope } from "./volumeEnvelope"
 
 interface Props {
   audioContext: AudioContext
+  outputNode: AudioNode
   registers: PulseChannelRegisters
 }
 
@@ -31,7 +32,7 @@ export default class PulseChannel implements Channel {
 
   waveFormChanged: () => void = () => {}
 
-  constructor({ audioContext, registers }: Props) {
+  constructor({ audioContext, outputNode, registers }: Props) {
     this.audioContext = audioContext
 
     this.oscillator = audioContext.createOscillator()
@@ -48,7 +49,7 @@ export default class PulseChannel implements Channel {
     this.oscillator.connect(this.muteNode)
     this.muteNode.connect(this.gain)
     this.gain.connect(this.analyser)
-    this.analyser.connect(audioContext.destination)
+    this.analyser.connect(outputNode)
 
     this.oscillator.start()
 
@@ -67,7 +68,6 @@ export default class PulseChannel implements Channel {
 
   start() {
     this.playing = true
-    this.gain.connect(this.audioContext.destination)
     this.setVolume()
     this.timer.resetClock()
     this.envelope.resetClock()
