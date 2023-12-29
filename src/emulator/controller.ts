@@ -106,7 +106,6 @@ export default class Controller {
         || (this.gamepad && this.gamepad.buttons[this.gamepadBindings[button]].pressed)
       isPressed ? this.pressButton(button) : this.releaseButton(button)
     })
-    this.updateUi(this.isPressed)
   }
 
   pressButton(button: Button) {
@@ -114,6 +113,7 @@ export default class Controller {
       this.interruptRegister.setInterrupt(Interrupt.Joypad)
       this.isPressed[button] = true
       this.joypadRegister[button] = true
+      this.updateUi(this.isPressed)
     }
   }
 
@@ -122,6 +122,7 @@ export default class Controller {
       this.interruptRegister.setInterrupt(Interrupt.Joypad)
       this.isPressed[button] = false
       this.joypadRegister[button] = false
+      this.updateUi(this.isPressed)
     }
   }
 
