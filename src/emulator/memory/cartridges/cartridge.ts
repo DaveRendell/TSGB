@@ -1,6 +1,6 @@
 import { ByteRef, ConstantByteRef, GetSetByteRef } from "../../refs/byteRef"
 
-type StoreRam = (ram: Uint8Array) => void
+type StoreRam = () => void
 
 const RAM_WRITE_WAIT_MILLISECONDS = 500
 
@@ -12,12 +12,20 @@ export class Cartridge {
   storeRam: StoreRam
   ramWriteTimeout: NodeJS.Timeout
 
-  constructor(data: Uint8Array, saveData: Uint8Array, storeRam: StoreRam = () => {}) {
+  constructor(data: Uint8Array) {
     this.romData = data
     const ramBanks = [0, 0, 1, 4, 16, 8][data[0x0149]]
     this.ramData = new Uint8Array(ramBanks * 0x2000)
     this.title = String.fromCharCode(...data.slice(0x0134, 0x0144))
-    this.storeRam = storeRam
+    this.storeRam = () => {
+      console.log("Saving save data to " + this.title + ".sav")
+      const blob = new Blob([this.ramData])
+      const reader = new FileReader()
+      reader.onload = () => {
+        window.localStorage.setItem(this.title + ".sav", reader.result?.toString() || "")
+      }
+      reader.readAsDataURL(blob)
+    }
     this.loadLocalSave()
   }
 
@@ -59,7 +67,7 @@ export class Cartridge {
       (value) => {
         this.ramData[address - 0xA000] = value
         if (this.ramWriteTimeout) { clearTimeout(this.ramWriteTimeout) }
-        this.ramWriteTimeout = setTimeout(() => this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS)
+        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS)
       }
     )
   }
