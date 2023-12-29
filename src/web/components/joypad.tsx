@@ -24,17 +24,17 @@ export default function Joypad({controller}: Props) {
 
   return (
     <section className="joypad">
-      <JoypadButton name="Up" symbol="▲" type="dpad-button"/>
-      <JoypadButton name="Left" symbol="◄" type="dpad-button"/>
-      <JoypadButton name="Right" symbol="►" type="dpad-button"/>
-      <JoypadButton name="Down" symbol="▼" type="dpad-button"/>
+      <JoypadButton name="Up" symbol="▲" type="dpad-button" controller={controller} />
+      <JoypadButton name="Left" symbol="◄" type="dpad-button" controller={controller} />
+      <JoypadButton name="Right" symbol="►" type="dpad-button" controller={controller} />
+      <JoypadButton name="Down" symbol="▼" type="dpad-button" controller={controller} />
 
-      <JoypadButton name="B" symbol="B" type="face-button"/>
-      <JoypadButton name="A" symbol="A" type="face-button"/>
+      <JoypadButton name="B" symbol="B" type="face-button" controller={controller} />
+      <JoypadButton name="A" symbol="A" type="face-button" controller={controller} />
 
       <div className="menu-buttons">
-        <JoypadButton name="Start" symbol="START" type="menu-button"/>
-        <JoypadButton name="Select" symbol="SELECT" type="menu-button"/>
+        <JoypadButton name="Select" symbol="SELECT" type="menu-button" controller={controller} />
+        <JoypadButton name="Start" symbol="START" type="menu-button" controller={controller} />
       </div>
     </section>
   )

@@ -39,6 +39,17 @@ export default class Controller {
     "Right": false,
   }
 
+  htmlPressed: Record<Button, boolean> = {
+    "A": false,
+    "B": false,
+    "Start": false,
+    "Select": false,
+    "Up": false,
+    "Down": false,
+    "Left": false,
+    "Right": false,
+  }
+
   keyBindings: { [key: string]: Button } = {
     "KeyZ": "A",
     "KeyX": "B",
@@ -91,6 +102,7 @@ export default class Controller {
     BUTTONS.forEach(button => {
       const isPressed = 
         this.keyboardPressed[button]
+        || this.htmlPressed[button]
         || (this.gamepad && this.gamepad.buttons[this.gamepadBindings[button]].pressed)
       isPressed ? this.pressButton(button) : this.releaseButton(button)
     })
@@ -127,5 +139,13 @@ export default class Controller {
       event.preventDefault()
       this.keyboardPressed[button] = false
     }
+  }
+
+  handleHtmlButtonPress(button: Button) {
+    this.htmlPressed[button] = true
+  }
+
+  handleHtmlButtonRelease(button: Button) {
+    this.htmlPressed[button] = false
   }
 }
