@@ -3,8 +3,8 @@ import { Cartridge } from "./cartridge";
 
 const RAM_WRITE_WAIT_MILLISECONDS = 500
 
-// Reference: https://gbdev.io/pandocs/MBC3.html
-export class Mbc3Cartridge extends Cartridge {
+// Reference: https://gbdev.io/pandocs/MBC5.html
+export class Mbc5Cartridge extends Cartridge {
   ramAndRtcEnabled = false
   bankNumber1 = 1
   bankNumber2 = 0
@@ -27,14 +27,19 @@ export class Mbc3Cartridge extends Cartridge {
       write = (value: number) => {
         this.ramAndRtcEnabled = (value & 0xF) == 0xA
       }
+    } else if (address < 0x3000) {
+      write = (value: number) => {
+        this.bankNumber1 &= 0x100
+        this.bankNumber1 |= value
+      }
     } else if (address < 0x4000) {
       write = (value: number) => {
-        this.bankNumber1 = value & 0x7F
-        if (this.bankNumber1 == 0) { this.bankNumber1 = 1 }
+        this.bankNumber1 &= 0xFF
+        this.bankNumber1 |= (value & 0x1) << 8
       }
     } else if (address < 0x6000) {
       write = (value: number) => {
-        this.bankNumber2 = value
+        this.bankNumber2 = value & 0xF
       }
     } else {
       // Latch clock - TODO

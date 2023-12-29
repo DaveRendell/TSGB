@@ -1,6 +1,7 @@
 import { Cartridge } from "./cartridge"
 import { Mbc1Cartridge } from "./mbc1Cartridge"
 import { Mbc3Cartridge } from "./mbc3Cartridge"
+import { Mbc5Cartridge } from "./mbc5Cartridge"
 
 // Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
 
@@ -28,6 +29,13 @@ export async function createCartridge(file: File): Promise<Cartridge> {
     case 0x12:
     case 0x13:
       return new Mbc3Cartridge(romData)
+    case 0x19:
+    case 0x1A:
+    case 0x1B:
+    case 0x1C:
+    case 0x1D:
+    case 0x1E:
+      return new Mbc5Cartridge(romData)
   }
 
   throw new Error("Unknown cartridge type: " + cartridgeType)
