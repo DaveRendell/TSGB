@@ -2947,35 +2947,14 @@ var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _client = require("react-dom/client");
 var _react = require("react");
 var _reactDefault = parcelHelpers.interopDefault(_react);
+var _indexCss = require("./index.css");
 var _app = require("./components/app");
 var _appDefault = parcelHelpers.interopDefault(_app);
-var _indexCss = require("./index.css");
-var _memory = require("../emulator/memory");
-var _memoryDefault = parcelHelpers.interopDefault(_memory);
-var _cpu = require("../emulator/cpu");
-var _cpuDefault = parcelHelpers.interopDefault(_cpu);
-var _ppu = require("../emulator/ppu");
-var _ppuDefault = parcelHelpers.interopDefault(_ppu);
-var _apu = require("../emulator/apu");
-var _apuDefault = parcelHelpers.interopDefault(_apu);
-var _controller = require("../emulator/controller");
-var _controllerDefault = parcelHelpers.interopDefault(_controller);
-const memory = new (0, _memoryDefault.default)();
-const controller = new (0, _controllerDefault.default)(memory);
-controller.initialiseEvents();
-const cpu = new (0, _cpuDefault.default)(memory);
-const ppu = new (0, _ppuDefault.default)(cpu);
-const apu = new (0, _apuDefault.default)(cpu);
 var mountNode = document.getElementById("app");
 const root = (0, _client.createRoot)(mountNode);
-root.render(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _appDefault.default), {
-    cpu: cpu,
-    ppu: ppu,
-    apu: apu,
-    controller: controller
-}, void 0, false, {
+root.render(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _appDefault.default), {}, void 0, false, {
     fileName: "src/web/index.tsx",
-    lineNumber: 23,
+    lineNumber: 11,
     columnNumber: 13
 }, undefined));
 
@@ -2984,7 +2963,7 @@ root.render(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _appDefault.default), {
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react-dom/client":"lOjBx","react":"21dqq","./components/app":"5EgNK","./index.css":"85YVu","../emulator/memory":"cz4ku","../emulator/cpu":"2CR9q","../emulator/ppu":"f2x3M","../emulator/apu":"fhvC7","../emulator/controller":"cFNSD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"iTorj":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react-dom/client":"lOjBx","react":"21dqq","./index.css":"85YVu","./components/app":"5EgNK","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"iTorj":[function(require,module,exports) {
 "use strict";
 module.exports = require("ee51401569654d91");
 
@@ -27171,7 +27150,7 @@ module.exports = require("ef03b89c8fe2794e");
     /* global __REACT_DEVTOOLS_GLOBAL_HOOK__ */ if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 })();
 
-},{}],"5EgNK":[function(require,module,exports) {
+},{}],"85YVu":[function() {},{}],"5EgNK":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$2535 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -27183,12 +27162,58 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "default", ()=>App);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
+var _gameView = require("./gameView");
+var _gameViewDefault = parcelHelpers.interopDefault(_gameView);
+var _emulator = require("../../emulator/emulator");
+var _gameLoader = require("./gameLoader");
+var _gameLoaderDefault = parcelHelpers.interopDefault(_gameLoader);
+var _s = $RefreshSig$();
+function App() {
+    _s();
+    const [cartridge, setCartridge] = _react.useState(null);
+    if (cartridge) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameViewDefault.default), {
+        emulator: new (0, _emulator.Emulator)(cartridge)
+    }, void 0, false, {
+        fileName: "src/web/components/app.tsx",
+        lineNumber: 11,
+        columnNumber: 12
+    }, this);
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameLoaderDefault.default), {
+        setCartridge: setCartridge
+    }, void 0, false, {
+        fileName: "src/web/components/app.tsx",
+        lineNumber: 14,
+        columnNumber: 10
+    }, this);
+}
+_s(App, "W4/xXkIGnuIbUqJovJ/N7n9+YA0=");
+_c = App;
+var _c;
+$RefreshReg$(_c, "App");
+
+  $parcel$ReactRefreshHelpers$2535.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./gameView":"fgBpm","../../emulator/emulator":"6YHbn","./gameLoader":"3e0xT","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"fgBpm":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$7a7e = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$7a7e.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "default", ()=>GameView);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
 var _memoryExplorer = require("./memoryExplorer");
 var _memoryExplorerDefault = parcelHelpers.interopDefault(_memoryExplorer);
 var _cpuController = require("./cpuController");
 var _cpuControllerDefault = parcelHelpers.interopDefault(_cpuController);
-var _gameLoader = require("./gameLoader");
-var _gameLoaderDefault = parcelHelpers.interopDefault(_gameLoader);
+var _ppu = require("../../emulator/ppu");
+var _ppuDefault = parcelHelpers.interopDefault(_ppu);
 var _vramViewer = require("./vramViewer");
 var _display = require("./display");
 var _displayDefault = parcelHelpers.interopDefault(_display);
@@ -27199,66 +27224,80 @@ var _tabsDefault = parcelHelpers.interopDefault(_tabs);
 var _audioDebug = require("./audioDebug");
 var _audioDebugDefault = parcelHelpers.interopDefault(_audioDebug);
 var _s = $RefreshSig$();
-function App({ cpu, ppu, apu, controller }) {
+function GameView({ emulator }) {
     _s();
     // Reload this component when execution of CPU is complete
     const [toggle, setToggle] = _react.useState(false);
-    cpu.onInstructionComplete = ()=>{
+    const [error, setError] = _react.useState(undefined);
+    _react.useEffect(()=>{
+        emulator.cpu.run();
+    }, []);
+    emulator.cpu.onInstructionComplete = ()=>{
         setToggle(!toggle);
     };
-    const [error, setError] = _react.useState(undefined);
-    cpu.onError = (e)=>setError(e.message);
-    const programCounter = cpu.registers.PC.value;
+    emulator.cpu.onError = (e)=>setError(e.message);
+    const programCounter = emulator.cpu.registers.PC.value;
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("main", {
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h1", {
                 children: "TSGB"
             }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
+                fileName: "src/web/components/gameView.tsx",
                 lineNumber: 33,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameLoaderDefault.default), {
-                memory: cpu.memory
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                onClick: ()=>emulator.cpu.run(),
+                children: "Run"
             }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
+                fileName: "src/web/components/gameView.tsx",
+                lineNumber: 34,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                onClick: ()=>emulator.cpu.pause(),
+                children: "Pause"
+            }, void 0, false, {
+                fileName: "src/web/components/gameView.tsx",
                 lineNumber: 35,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
-                fileName: "src/web/components/app.tsx",
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                onClick: ()=>emulator.cpu.runFrame(Infinity),
+                children: "Run frame"
+            }, void 0, false, {
+                fileName: "src/web/components/gameView.tsx",
                 lineNumber: 36,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>cpu.run(),
-                children: "Run"
-            }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "console",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "bevel",
+                        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _displayDefault.default), {
+                            cpu: emulator.cpu
+                        }, void 0, false, {
+                            fileName: "src/web/components/gameView.tsx",
+                            lineNumber: 39,
+                            columnNumber: 11
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameView.tsx",
+                        lineNumber: 38,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
+                        controller: emulator.controller
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameView.tsx",
+                        lineNumber: 41,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/web/components/gameView.tsx",
                 lineNumber: 37,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>cpu.pause(),
-                children: "Pause"
-            }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
-                lineNumber: 38,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>cpu.runFrame(Infinity),
-                children: "Run frame"
-            }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
-                lineNumber: 39,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _displayDefault.default), {
-                cpu: cpu
-            }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
-                lineNumber: 40,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27267,69 +27306,65 @@ function App({ cpu, ppu, apu, controller }) {
                     error
                 ]
             }, void 0, true, {
-                fileName: "src/web/components/app.tsx",
-                lineNumber: 42,
+                fileName: "src/web/components/gameView.tsx",
+                lineNumber: 45,
                 columnNumber: 9
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
-                controller: controller
-            }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
-                lineNumber: 44,
-                columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
                 tabs: {
                     "Info": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                             children: [
                                 "Title: ",
-                                cpu.memory.cartridge?.title
+                                emulator.cpu.memory.cartridge?.title,
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, void 0, void 0),
+                                "FPS: ",
+                                emulator.cpu.fps.toPrecision(2)
                             ]
                         }, void 0, true, void 0, void 0),
                     "Debug Graphics": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                             children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _vramViewer.VramViewer), {
-                                ppu: ppu
+                                ppu: new (0, _ppuDefault.default)(emulator.cpu)
                             }, void 0, false, void 0, void 0)
                         }, void 0, false),
                     "Debug Sound": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _audioDebugDefault.default), {
-                            apu: apu
+                            apu: emulator.apu
                         }, void 0, false, void 0, void 0),
                     "Debug Memory": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                             children: [
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _cpuControllerDefault.default), {
-                                    cpu: cpu
+                                    cpu: emulator.cpu
                                 }, void 0, false, void 0, void 0),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _memoryExplorerDefault.default), {
-                                    memory: cpu.memory,
+                                    memory: emulator.cpu.memory,
                                     programCounter: programCounter,
-                                    breakpoints: cpu.breakpoints
+                                    breakpoints: emulator.cpu.breakpoints
                                 }, void 0, false, void 0, void 0)
                             ]
                         }, void 0, true)
                 }
             }, void 0, false, {
-                fileName: "src/web/components/app.tsx",
-                lineNumber: 45,
+                fileName: "src/web/components/gameView.tsx",
+                lineNumber: 47,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
-        fileName: "src/web/components/app.tsx",
+        fileName: "src/web/components/gameView.tsx",
         lineNumber: 32,
         columnNumber: 11
     }, this);
 }
-_s(App, "cJ9cG/4MvQOztf3I6OeF/TgG6tg=");
-_c = App;
+_s(GameView, "X37pdlfV9zNRv/5PWPJ2Wgc4Ifk=");
+_c = GameView;
 var _c;
-$RefreshReg$(_c, "App");
+$RefreshReg$(_c, "GameView");
 
-  $parcel$ReactRefreshHelpers$2535.postlude(module);
+  $parcel$ReactRefreshHelpers$7a7e.postlude(module);
 } finally {
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","./gameLoader":"3e0xT","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./tabs":"9O6KI","./audioDebug":"bNTZa"}],"2PLGd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"2PLGd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ef66 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -27920,7 +27955,7 @@ const testBit = (value, bit)=>value.read() >> bit & 1;
 const setBit = (value, bit)=>value.write(value.read() | 1 << bit);
 const resetBit = (value, bit)=>value.write(value.read() & ~(1 << bit));
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../helpers/displayHexNumbers":"iSdOS"}],"dshpP":[function(require,module,exports) {
+},{"../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dshpP":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "decodeInstruction", ()=>decodeInstruction);
@@ -28113,7 +28148,7 @@ function decodeInstruction(code, prefixedCode) {
     throw new (0, _instructionNotFoundErrorDefault.default)(code);
 }
 
-},{"./instructionNotFoundError":"fsATl","./instructions/arithmetic8bit":"6fSXq","./instructions/cpuControl":"bM0M4","./instructions/halt":"iH7vu","./instructions/jumps":"7RHU3","./instructions/loads":"8K2py","./instructions/nop":"jvHrF","./instructions/prefixInstructions":"ba3U1","./instructions/stack":"g6QBO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./instructions/instructionHelpers":"bJjsQ"}],"fsATl":[function(require,module,exports) {
+},{"./instructionNotFoundError":"fsATl","./instructions/arithmetic8bit":"6fSXq","./instructions/cpuControl":"bM0M4","./instructions/halt":"iH7vu","./instructions/instructionHelpers":"bJjsQ","./instructions/jumps":"7RHU3","./instructions/loads":"8K2py","./instructions/nop":"jvHrF","./instructions/prefixInstructions":"ba3U1","./instructions/stack":"g6QBO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fsATl":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _displayHexNumbers = require("../helpers/displayHexNumbers");
@@ -29331,225 +29366,203 @@ $RefreshReg$(_c, "CpuController");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"3e0xT":[function(require,module,exports) {
-var $parcel$ReactRefreshHelpers$119f = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
-var prevRefreshReg = window.$RefreshReg$;
-var prevRefreshSig = window.$RefreshSig$;
-$parcel$ReactRefreshHelpers$119f.prelude(module);
-
-try {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"f2x3M":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "default", ()=>GameLoader);
-var _jsxDevRuntime = require("react/jsx-dev-runtime");
-var _react = require("react");
-var _useLocalFile = require("../hooks/useLocalFile");
-var _useLocalFileDefault = parcelHelpers.interopDefault(_useLocalFile);
-var _s = $RefreshSig$();
-function GameLoader({ memory }) {
-    _s();
-    const [biosFile, setBiosFile] = (0, _useLocalFileDefault.default)("bios.bin");
-    const [gameFile, setGameFile] = (0, _useLocalFileDefault.default)("game.gb");
-    const [gameTitle, setGameTitle] = _react.useState("EMPTY");
-    const [saveFile, setSaveFile] = (0, _useLocalFileDefault.default)(gameTitle + ".sav");
-    _react.useEffect(()=>{
-        if (gameFile) memory.loadGame(gameFile).then(()=>setGameTitle(memory.cartridge.title));
-        if (biosFile) memory.loadBootRom(biosFile);
-    }, [
-        biosFile === null ? 0 : biosFile.size,
-        gameFile === null ? 0 : gameFile.size
-    ]);
-    _react.useEffect(()=>{
-        if (gameTitle !== "EMPTY") memory.cartridge.storeRam = (data)=>{
-            console.log("SAVIIIING?");
-            const blob = new Blob([
-                data
-            ]);
-            const file = new File([
-                blob
-            ], gameTitle + ".sav", {
-                type: "application/octet-stream"
-            });
-            setSaveFile(file);
-        };
-    }, [
-        gameTitle
-    ]);
-    _react.useEffect(()=>{
-        if (saveFile) memory.cartridge.loadRam(saveFile);
-    }, [
-        saveFile === null ? 0 : saveFile.size
-    ]);
-    const handleBiosUpload = function(e) {
-        e.preventDefault();
-        if (e.target.files && e.target.files[0]) setBiosFile(e.target.files[0]);
-    };
-    const handleGameUpload = function(e) {
-        e.preventDefault();
-        if (e.target.files && e.target.files[0]) setGameFile(e.target.files[0]);
-    };
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
-        children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
-                children: "Game Loader"
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 58,
-                columnNumber: 5
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
-                htmlFor: "bios-load",
-                children: "BIOS (optional): "
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 59,
-                columnNumber: 5
-            }, this),
-            biosFile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
-                children: [
-                    "Loaded ",
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        onClick: ()=>setBiosFile(null),
-                        children: "clear?"
-                    }, void 0, false, {
-                        fileName: "src/web/components/gameLoader.tsx",
-                        lineNumber: 62,
-                        columnNumber: 20
-                    }, this)
-                ]
-            }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
-                id: "bios-load",
-                type: "file",
-                onChange: handleBiosUpload
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 63,
-                columnNumber: 11
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 69,
-                columnNumber: 5
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
-                htmlFor: "bios-load",
-                children: "Game: "
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 70,
-                columnNumber: 5
-            }, this),
-            gameFile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
-                children: [
-                    "Loaded ",
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        onClick: ()=>setGameFile(null),
-                        children: "clear?"
-                    }, void 0, false, {
-                        fileName: "src/web/components/gameLoader.tsx",
-                        lineNumber: 73,
-                        columnNumber: 20
-                    }, this)
-                ]
-            }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
-                id: "game-load",
-                type: "file",
-                onChange: handleGameUpload
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 74,
-                columnNumber: 11
-            }, this)
-        ]
-    }, void 0, true, {
-        fileName: "src/web/components/gameLoader.tsx",
-        lineNumber: 57,
-        columnNumber: 11
-    }, this);
-}
-_s(GameLoader, "mL576iz/JWOG9ZQ5tER1GEyHthg=", false, function() {
-    return [
-        (0, _useLocalFileDefault.default),
-        (0, _useLocalFileDefault.default),
-        (0, _useLocalFileDefault.default)
-    ];
-});
-_c = GameLoader;
-var _c;
-$RefreshReg$(_c, "GameLoader");
-
-  $parcel$ReactRefreshHelpers$119f.postlude(module);
-} finally {
-  window.$RefreshReg$ = prevRefreshReg;
-  window.$RefreshSig$ = prevRefreshSig;
-}
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../hooks/useLocalFile":"6Payo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"6Payo":[function(require,module,exports) {
-var $parcel$ReactRefreshHelpers$9d81 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
-var prevRefreshReg = window.$RefreshReg$;
-var prevRefreshSig = window.$RefreshSig$;
-$parcel$ReactRefreshHelpers$9d81.prelude(module);
-
-try {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "default", ()=>useLocalFile);
-var _react = require("react");
-function useLocalFile(key) {
-    const [stateFile, setStateFile] = _react.useState(null);
-    const readFromStorage = ()=>{
-        const base64EncodedFile = window.localStorage.getItem(key);
-        if (base64EncodedFile) base64Decode(base64EncodedFile).then(setStateFile);
-    };
-    _react.useEffect(()=>{
-        readFromStorage();
-        addEventListener("storage", (event)=>{
-            if (event.key === key) readFromStorage();
-        });
-    }, [
-        key
-    ]);
-    const setValue = (newFile)=>{
-        if (newFile === null) {
-            setStateFile(null);
-            window.localStorage.removeItem(key);
-            return;
+const COLOURS = [
+    [
+        255,
+        255,
+        255
+    ],
+    [
+        192,
+        192,
+        192
+    ],
+    [
+        96,
+        96,
+        96
+    ],
+    [
+        0,
+        0,
+        0
+    ]
+];
+const TILESET_BASE_ADDRESS = 0x8000;
+class PPU {
+    constructor(cpu){
+        this.cpu = cpu;
+        this.memory = cpu.memory;
+    }
+    getTile(tileId) {
+        return this.memory.vram.tiles[tileId];
+    }
+    printTileSet(canvas) {
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("No canvas context");
+        canvas.width = 128;
+        canvas.height = 192;
+        const imageData = context.createImageData(128, 192);
+        const baseAddress = 0x8000;
+        // 16 x 24 tiles
+        // 1 row = 2 bytes. One tile = 16 bytes?
+        for(let tile = 0; tile < 384; tile++){
+            const tileBaseAddress = baseAddress + 16 * tile;
+            const baseX = 8 * (tile % 16);
+            const baseY = 8 * (tile >> 4);
+            for(let row = 0; row < 8; row++){
+                const y = baseY + row;
+                const byte1 = this.memory.at(tileBaseAddress + 2 * row).value;
+                const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value;
+                for(let bit = 7; bit >= 0; bit--){
+                    const x = baseX + 7 - bit;
+                    const pixelNumber = y * 128 + x;
+                    const bit1 = byte1 >> bit & 1;
+                    const bit2 = byte2 >> bit & 1;
+                    const pixelValue = bit1 + (bit2 << 1);
+                    const colour = COLOURS[pixelValue];
+                    imageData.data[4 * pixelNumber + 0] = colour[0];
+                    imageData.data[4 * pixelNumber + 1] = colour[1];
+                    imageData.data[4 * pixelNumber + 2] = colour[2];
+                    imageData.data[4 * pixelNumber + 3] = 255;
+                }
+            }
         }
-        base64Encode(newFile).then((encodedFile)=>{
-            window.localStorage.setItem(key, encodedFile);
-            setStateFile(newFile);
+        context.putImageData(imageData, 0, 0);
+    }
+    printTileset0(canvas) {
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("No canvas context");
+        canvas.width = 128;
+        canvas.height = 128;
+        const imageData = context.createImageData(128, 192);
+        for(let i = 0; i < 0x100; i++){
+            const baseX = (i & 15) << 3;
+            const baseY = i >> 4 << 3;
+            for(let row = 0; row < 8; row++){
+                const rowData = this.memory.vram.tileset0(i, row).map((p)=>COLOURS[p]);
+                const basePixelNumber = 128 * (baseY + row) + baseX;
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const colour = rowData[pixel];
+                    const pixelNumber = basePixelNumber + pixel;
+                    imageData.data[4 * pixelNumber + 0] = colour[0];
+                    imageData.data[4 * pixelNumber + 1] = colour[1];
+                    imageData.data[4 * pixelNumber + 2] = colour[2];
+                    imageData.data[4 * pixelNumber + 3] = 255;
+                }
+            }
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+    printTileset1(canvas) {
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("No canvas context");
+        canvas.width = 128;
+        canvas.height = 128;
+        const imageData = context.createImageData(128, 192);
+        for(let i = 0; i < 0x100; i++){
+            const baseX = (i & 15) << 3;
+            const baseY = i >> 4 << 3;
+            for(let row = 0; row < 8; row++){
+                const rowData = this.memory.vram.tileset1(i, row).map((p)=>COLOURS[p]);
+                const basePixelNumber = 128 * (baseY + row) + baseX;
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const colour = rowData[pixel];
+                    const pixelNumber = basePixelNumber + pixel;
+                    imageData.data[4 * pixelNumber + 0] = colour[0];
+                    imageData.data[4 * pixelNumber + 1] = colour[1];
+                    imageData.data[4 * pixelNumber + 2] = colour[2];
+                    imageData.data[4 * pixelNumber + 3] = 255;
+                }
+            }
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+    printBackgroundLayer(canvas, layer) {
+        const tilemapId = layer == "background" ? this.memory.registers.lcdControl.backgroundTilemap : this.memory.registers.lcdControl.windowTilemap;
+        const tileset = this.memory.registers.lcdControl.tileDataArea;
+        const pallete = this.memory.registers.backgroundPallete.map;
+        const context = canvas.getContext("2d");
+        const tiles = new Set();
+        const tileMap = [];
+        for(let y = 0; y < 32; y++){
+            const rowMap = [];
+            for(let x = 0; x < 32; x++){
+                let tileNumber = 32 * y + x;
+                let tileId = tilemapId == 0 ? this.memory.vram.tilemap0(tileNumber) : this.memory.vram.tilemap1(tileNumber);
+                tiles.add(tileId);
+                rowMap.push(tileId);
+            }
+            tileMap.push(rowMap);
+        }
+        const tileImages = this.getTileData(tiles, context, tileset, pallete);
+        tileMap.forEach((row, y)=>row.forEach((tileId, x)=>{
+                const tileData = tileImages[tileId];
+                context.putImageData(tileData, x * 8, y * 8);
+            }));
+    }
+    getTileData(tileIds, context, tileset, pallete) {
+        const tileImages = [];
+        tileIds.forEach((tileId)=>{
+            const tileData = context.createImageData(8, 8);
+            for(let row = 0; row < 8; row++){
+                let rowData = tileset == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const baseIndex = (row * 8 + pixel) * 4;
+                    const colour = COLOURS[pallete[rowData[pixel]]];
+                    tileData.data[baseIndex + 0] = colour[0];
+                    tileData.data[baseIndex + 1] = colour[1];
+                    tileData.data[baseIndex + 2] = colour[2];
+                    tileData.data[baseIndex + 3] = 255;
+                }
+            }
+            tileImages[tileId] = tileData;
         });
-    };
-    return [
-        stateFile,
-        setValue
-    ];
+        return tileImages;
+    }
+    printSpriteLayer(canvas) {
+        const sprites = this.memory.oam.sprites;
+        const pallette0 = this.memory.registers.objectPallete0.map;
+        const pallette1 = this.memory.registers.objectPallete1.map;
+        const context = canvas.getContext("2d");
+        context.clearRect(0, 0, 160, 144);
+        const tilesP0 = new Set(sprites.filter((sprite)=>sprite.pallette == 0).map((sprite)=>sprite.tile));
+        const tilesP1 = new Set(sprites.filter((sprite)=>sprite.pallette == 1).map((sprite)=>sprite.tile));
+        const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0);
+        const tileImagesP1 = this.getTileData(tilesP1, context, 1, pallette1);
+        sprites.filter((sprite)=>sprite.priority).forEach((sprite)=>{
+            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
+            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
+        });
+        sprites.filter((sprite)=>!sprite.priority).forEach((sprite)=>{
+            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
+            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
+        });
+        context.beginPath();
+        context.lineWidth = 1;
+        context.strokeStyle = "red";
+        context.rect(0, 0, 160, 144);
+        context.stroke();
+    }
+    getSpriteInfo() {
+        return [];
+    }
+    backgroundPallete() {
+        const backgroundPalletByte = this.memory.at(0xFF47).value;
+        return [
+            COLOURS[backgroundPalletByte >> 0 & 3],
+            COLOURS[backgroundPalletByte >> 2 & 3],
+            COLOURS[backgroundPalletByte >> 4 & 3],
+            COLOURS[backgroundPalletByte >> 6 & 3]
+        ];
+    }
 }
-function base64Encode(file) {
-    return new Promise((resolve, reject)=>{
-        const reader = new FileReader();
-        reader.onload = ()=>{
-            resolve(reader.result?.toString() || "");
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-async function base64Decode(base64) {
-    const res = await fetch(base64);
-    const blob = await res.blob();
-    return new File([
-        blob
-    ], "image.png", {
-        type: "image/png"
-    });
-}
+exports.default = PPU;
 
-  $parcel$ReactRefreshHelpers$9d81.postlude(module);
-} finally {
-  window.$RefreshReg$ = prevRefreshReg;
-  window.$RefreshSig$ = prevRefreshSig;
-}
-},{"react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"e5JD4":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"e5JD4":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ed9e = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -29857,7 +29870,7 @@ $RefreshReg$(_c, "VramViewer");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../../helpers/displayHexNumbers":"iSdOS"}],"jUUTo":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"jUUTo":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$309f = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -29869,41 +29882,33 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "default", ()=>Display);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
-var _screen = require("../../emulator/screen");
-var _screenDefault = parcelHelpers.interopDefault(_screen);
 var _s = $RefreshSig$();
 function Display({ cpu }) {
     _s();
     const canvas = _react.useRef(null);
     const [_, setScreen] = _react.useState(null);
     _react.useEffect(()=>{
-        if (canvas.current) setScreen(new (0, _screenDefault.default)(cpu, canvas.current));
+        if (canvas.current) {
+            cpu.screen.canvas = canvas.current;
+            setScreen(cpu.screen);
+        }
     }, [
         canvas
     ]);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
-        children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
-                className: "screen",
-                width: "160",
-                height: "144",
-                ref: canvas
-            }, void 0, false, {
-                fileName: "src/web/components/display.tsx",
-                lineNumber: 22,
-                columnNumber: 7
-            }, this),
-            "FPS: ",
-            cpu.fps.toPrecision(2),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
-                fileName: "src/web/components/display.tsx",
-                lineNumber: 28,
-                columnNumber: 36
-            }, this)
-        ]
-    }, void 0, true, {
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
+            className: "screen",
+            width: "160",
+            height: "144",
+            ref: canvas
+        }, void 0, false, {
+            fileName: "src/web/components/display.tsx",
+            lineNumber: 23,
+            columnNumber: 7
+        }, this)
+    }, void 0, false, {
         fileName: "src/web/components/display.tsx",
-        lineNumber: 21,
+        lineNumber: 22,
         columnNumber: 5
     }, this);
 }
@@ -29917,266 +29922,7 @@ $RefreshReg$(_c, "Display");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/screen":"7Es7K","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"7Es7K":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _interruptRegisters = require("./memory/registers/interruptRegisters");
-const WIDTH = 160;
-const HEIGHT = 144;
-const SCANLINES = 154;
-const COLOURS = [
-    [
-        255,
-        255,
-        255
-    ],
-    [
-        192,
-        192,
-        192
-    ],
-    [
-        96,
-        96,
-        96
-    ],
-    [
-        0,
-        0,
-        0
-    ]
-];
-const BACKGROUND_MEMORY_START = 0x9800;
-const WINDOW_MEMORY_START = 0x9C00;
-class Screen {
-    constructor(cpu, canvas){
-        this.clockCount = 0;
-        this.mode = "Scanline OAM";
-        this.newFrameDrawn = false;
-        this.cpu = cpu;
-        this.memory = cpu.memory;
-        this.canvas = canvas;
-        this.buffer = new OffscreenCanvas(WIDTH, HEIGHT);
-        this.bufferContext = this.buffer.getContext("2d");
-        this.lcdControl = this.memory.registers.lcdControl;
-        this.lcdStatus = this.memory.registers.lcdStatus;
-        this.scrollY = this.memory.registers.scrollY;
-        this.scrollX = this.memory.registers.scrollX;
-        this.scanlineNumber = this.memory.registers.scanline;
-        this.backgroundPallette = this.memory.registers.backgroundPallete;
-        this.coincidence = this.memory.registers.scanlineCoincidence;
-        cpu.addClockCallback(this);
-        cpu.screen = this;
-    }
-    // Returns true if new frame is rendered
-    updateClock(cycle) {
-        this.clockCount += cycle;
-        switch(this.mode){
-            case "HBlank":
-                if (this.clockCount >= 204) {
-                    this.clockCount -= 204;
-                    this.setScanline(this.scanlineNumber.value + 1);
-                    if (this.scanlineNumber.value === HEIGHT) {
-                        this.renderScreen();
-                        this.setMode("VBlank");
-                        this.newFrameDrawn = true;
-                    } else this.setMode("Scanline OAM");
-                }
-                break;
-            case "VBlank":
-                if (this.clockCount >= 456) {
-                    this.clockCount -= 456;
-                    this.setScanline(this.scanlineNumber.value + 1);
-                    if (this.scanlineNumber.value > SCANLINES) {
-                        this.setScanline(0);
-                        this.renderScanline();
-                        this.setMode("HBlank");
-                    }
-                }
-                break;
-            case "Scanline OAM":
-                if (this.clockCount >= 80) {
-                    this.clockCount -= 80;
-                    this.setMode("Scanline VRAM");
-                }
-                break;
-            case "Scanline VRAM":
-                if (this.clockCount >= 172) {
-                    this.clockCount -= 172;
-                    this.renderScanline();
-                    this.setMode("HBlank");
-                }
-                break;
-        }
-    }
-    setScanline(value) {
-        this.scanlineNumber.value = value;
-        if (this.lcdStatus.lycInterruptEnabled && this.scanlineNumber.value == this.coincidence.value) {
-            this.lcdStatus.lycCoinciding = true;
-            // TODO: why does this make SML glitchy AF?
-            this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-        } else this.lcdStatus.lycCoinciding = false;
-    }
-    setMode(mode) {
-        switch(mode){
-            case "HBlank":
-                if (this.lcdStatus.mode0InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-                this.lcdStatus.mode = 0;
-                break;
-            case "VBlank":
-                this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).VBlank);
-                if (this.lcdStatus.mode1InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-                this.lcdStatus.mode = 1;
-                break;
-            case "Scanline OAM":
-                if (this.lcdStatus.mode2InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-                this.lcdStatus.mode = 2;
-                break;
-            case "Scanline VRAM":
-                this.lcdStatus.mode = 3;
-                break;
-        }
-        this.mode = mode;
-    }
-    renderScanline() {
-        if (!this.lcdControl.enabled) return;
-        const scanline = this.scanlineNumber.value;
-        const line = this.bufferContext.createImageData(WIDTH, 1);
-        const scrollX = this.scrollX.value;
-        const scrollY = this.scrollY.value;
-        const backgroundY = scrollY + scanline & 0xFF;
-        const windowY = scanline - this.memory.registers.windowY.value;
-        // Returns the 8 long row of the background tile at pixel offset given
-        const getBackgroundTileRow = (offset)=>{
-            const backgroundX = scrollX + offset & 0xFF;
-            const tileMapNumber = (backgroundX >> 3) + 32 * (backgroundY >> 3);
-            const tileId = this.lcdControl.backgroundTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
-            const row = backgroundY & 0x7;
-            return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
-        };
-        let backgroundTileRow = getBackgroundTileRow(0);
-        let backgroundTileCounter = scrollX & 0x7;
-        const sprites = this.memory.oam.spritesAtScanline();
-        const highPrioritySprites = sprites.filter((s)=>!s.priority);
-        const lowPrioritySprites = sprites.filter((s)=>s.priority);
-        const winY = scanline - this.memory.registers.windowY.value;
-        for(let i = 0; i < WIDTH; i++){
-            if (!this.lcdControl.enabled) return;
-            let pixel;
-            // Render window
-            if (this.lcdControl.windowEnabled) {
-                const winX = i - (this.memory.registers.windowX.value - 7);
-                if (winY >= 0 && winX >= 0) {
-                    const tileMapNumber = (winX >> 3) + 32 * (winY >> 3);
-                    const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
-                    const row = winY & 0x7;
-                    pixel = this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row)[winX % 8] : this.memory.vram.tileset1(tileId, row)[winX % 8];
-                }
-            }
-            // Render high priority sprites (that go above background)
-            if (pixel === undefined && this.lcdControl.objectsEnabled) pixel = highPrioritySprites.filter((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8).map((sprite)=>sprite.pixelAt(scanline, i, this.lcdControl.objectSize)).find((p)=>p !== undefined);
-            // Render background (excluding the lowest colour in the pallete)
-            if (pixel === undefined) {
-                const backgroundPixel = backgroundTileRow[(scrollX + i) % 8];
-                if (backgroundPixel !== 0) pixel = this.backgroundPallette.map[backgroundPixel];
-            }
-            // Get next background tile if needed
-            backgroundTileCounter++;
-            if (backgroundTileCounter === 8) {
-                backgroundTileCounter = 0;
-                backgroundTileRow = getBackgroundTileRow(i + 1);
-            }
-            // Render low priority sprites (that go below non zero background)
-            if (pixel === undefined && this.lcdControl.objectsEnabled) {
-                const sprite = lowPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8);
-                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
-            }
-            // If nothing else has rendered, use the lowest colour in the pallete
-            if (pixel === undefined) pixel = this.backgroundPallette.map[0];
-            const colour = COLOURS[pixel];
-            line.data[4 * i + 0] = colour[0];
-            line.data[4 * i + 1] = colour[1];
-            line.data[4 * i + 2] = colour[2];
-            line.data[4 * i + 3] = 255;
-        }
-        // Finally, add the new line to the buffer image
-        this.bufferContext.putImageData(line, 0, scanline);
-    }
-    renderScreen() {
-        const screenContext = this.canvas.getContext("2d");
-        screenContext.drawImage(this.buffer, 0, 0);
-    }
-}
-exports.default = Screen;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}],"gq7ph":[function(require,module,exports) {
-// Reference: https://gbdev.io/pandocs/Interrupts.html
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Interrupt", ()=>Interrupt);
-parcelHelpers.export(exports, "InterruptRegister", ()=>InterruptRegister);
-parcelHelpers.export(exports, "InterruptEnabledRegister", ()=>InterruptEnabledRegister);
-var Interrupt;
-(function(Interrupt) {
-    Interrupt[Interrupt["VBlank"] = 0] = "VBlank";
-    Interrupt[Interrupt["LCD"] = 1] = "LCD";
-    Interrupt[Interrupt["Timer"] = 2] = "Timer";
-    Interrupt[Interrupt["Serial"] = 3] = "Serial";
-    Interrupt[Interrupt["Joypad"] = 4] = "Joypad";
-})(Interrupt || (Interrupt = {}));
-class InterruptRegister {
-    get value() {
-        return (this.requested[4] ? 0x10 : 0) + (this.requested[3] ? 0x8 : 0) + (this.requested[2] ? 0x4 : 0) + (this.requested[1] ? 0x2 : 0) + (this.requested[0] ? 0x1 : 0);
-    }
-    set value(value) {
-        this.requested[4] = (value & 0x10) > 0;
-        this.requested[3] = (value & 0x8) > 0;
-        this.requested[2] = (value & 0x4) > 0;
-        this.requested[1] = (value & 0x2) > 0;
-        this.requested[0] = (value & 0x1) > 0;
-    }
-    setInterrupt(interrupt) {
-        this.requested[interrupt] = true;
-    }
-    resetInterrupt(interrupt) {
-        this.requested[interrupt] = false;
-    }
-    constructor(){
-        this.requested = [
-            false,
-            false,
-            false,
-            false,
-            false
-        ];
-    }
-}
-class InterruptEnabledRegister {
-    get value() {
-        return (this.enabled[4] ? 0x10 : 0) + (this.enabled[3] ? 0x8 : 0) + (this.enabled[2] ? 0x4 : 0) + (this.enabled[1] ? 0x2 : 0) + (this.enabled[0] ? 0x1 : 0);
-    }
-    set value(value) {
-        this.enabled[4] = (value & 0x10) > 0;
-        this.enabled[3] = (value & 0x8) > 0;
-        this.enabled[2] = (value & 0x4) > 0;
-        this.enabled[1] = (value & 0x2) > 0;
-        this.enabled[0] = (value & 0x1) > 0;
-    }
-    isEnabled(interrupt) {
-        return this.enabled[interrupt];
-    }
-    constructor(){
-        this.enabled = [
-            false,
-            false,
-            false,
-            false,
-            false
-        ];
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fWSSh":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"fWSSh":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$e9ab = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30188,6 +29934,8 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "default", ()=>Joypad);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
+var _joypadButton = require("./joypadButton");
+var _joypadButtonDefault = parcelHelpers.interopDefault(_joypadButton);
 var _s = $RefreshSig$();
 function Joypad({ controller }) {
     _s();
@@ -30205,35 +29953,109 @@ function Joypad({ controller }) {
         setButtons(isPressed);
     };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
+        className: "joypad",
         children: [
-            "A: ",
-            buttons["A"] ? "On" : "Off",
-            " ",
-            "B: ",
-            buttons["B"] ? "On" : "Off",
-            " ",
-            "Start: ",
-            buttons["Start"] ? "On" : "Off",
-            " ",
-            "Select: ",
-            buttons["Select"] ? "On" : "Off",
-            " ",
-            "Up: ",
-            buttons["Up"] ? "On" : "Off",
-            " ",
-            "Down: ",
-            buttons["Down"] ? "On" : "Off",
-            " ",
-            "Left: ",
-            buttons["Left"] ? "On" : "Off",
-            " ",
-            "Right: ",
-            buttons["Right"] ? "On" : "Off",
-            " "
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                name: "Up",
+                symbol: "\u25B2",
+                type: "dpad-button",
+                controller: controller,
+                isActive: buttons["Up"]
+            }, void 0, false, {
+                fileName: "src/web/components/joypad.tsx",
+                lineNumber: 27,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                name: "Left",
+                symbol: "\u25C4",
+                type: "dpad-button",
+                controller: controller,
+                isActive: buttons["Left"]
+            }, void 0, false, {
+                fileName: "src/web/components/joypad.tsx",
+                lineNumber: 28,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                name: "Right",
+                symbol: "\u25BA",
+                type: "dpad-button",
+                controller: controller,
+                isActive: buttons["Right"]
+            }, void 0, false, {
+                fileName: "src/web/components/joypad.tsx",
+                lineNumber: 29,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                name: "Down",
+                symbol: "\u25BC",
+                type: "dpad-button",
+                controller: controller,
+                isActive: buttons["Down"]
+            }, void 0, false, {
+                fileName: "src/web/components/joypad.tsx",
+                lineNumber: 30,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                name: "B",
+                symbol: "B",
+                type: "face-button",
+                controller: controller,
+                isActive: buttons["B"]
+            }, void 0, false, {
+                fileName: "src/web/components/joypad.tsx",
+                lineNumber: 32,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                name: "A",
+                symbol: "A",
+                type: "face-button",
+                controller: controller,
+                isActive: buttons["A"]
+            }, void 0, false, {
+                fileName: "src/web/components/joypad.tsx",
+                lineNumber: 33,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "menu-buttons",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                        name: "Select",
+                        symbol: "SELECT",
+                        type: "menu-button",
+                        controller: controller,
+                        isActive: buttons["Select"]
+                    }, void 0, false, {
+                        fileName: "src/web/components/joypad.tsx",
+                        lineNumber: 36,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadButtonDefault.default), {
+                        name: "Start",
+                        symbol: "START",
+                        type: "menu-button",
+                        controller: controller,
+                        isActive: buttons["Start"]
+                    }, void 0, false, {
+                        fileName: "src/web/components/joypad.tsx",
+                        lineNumber: 37,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/web/components/joypad.tsx",
+                lineNumber: 35,
+                columnNumber: 7
+            }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/joypad.tsx",
-        lineNumber: 25,
+        lineNumber: 26,
         columnNumber: 5
     }, this);
 }
@@ -30247,7 +30069,57 @@ $RefreshReg$(_c, "Joypad");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"9O6KI":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./joypadButton":"gTFA6"}],"gTFA6":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$ba18 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$ba18.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "default", ()=>JoypadButton);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _joypadButtonCss = require("../joypadButton.css");
+function JoypadButton({ name, type, symbol, controller, isActive }) {
+    const press = ()=>{
+        controller.handleHtmlButtonPress(name);
+    };
+    const release = ()=>{
+        controller.handleHtmlButtonRelease(name);
+    };
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        className: "button-container",
+        id: `container-${name}`,
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+            className: `joypad-button ${type} ${isActive ? "active" : ""}`,
+            onMouseDown: ()=>press(),
+            onMouseUp: ()=>release(),
+            onTouchStart: ()=>press(),
+            onTouchEnd: ()=>release(),
+            children: symbol
+        }, void 0, false, {
+            fileName: "src/web/components/joypadButton.tsx",
+            lineNumber: 17,
+            columnNumber: 5
+        }, this)
+    }, void 0, false, {
+        fileName: "src/web/components/joypadButton.tsx",
+        lineNumber: 16,
+        columnNumber: 11
+    }, this);
+}
+_c = JoypadButton;
+var _c;
+$RefreshReg$(_c, "JoypadButton");
+
+  $parcel$ReactRefreshHelpers$ba18.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../joypadButton.css":"T6QOS"}],"T6QOS":[function() {},{}],"9O6KI":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$4922 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30371,30 +30243,11 @@ function AudioDebug({ apu }) {
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 className: "flex-horizontally",
                 children: [
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        children: [
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                                children: "Wave"
-                            }, void 0, false, {
-                                fileName: "src/web/components/audioDebug.tsx",
-                                lineNumber: 16,
-                                columnNumber: 12
-                            }, this),
-                            "TODO",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
-                                fileName: "src/web/components/audioDebug.tsx",
-                                lineNumber: 16,
-                                columnNumber: 29
-                            }, this),
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("canvas", {
-                                width: 300
-                            }, void 0, false, {
-                                fileName: "src/web/components/audioDebug.tsx",
-                                lineNumber: 16,
-                                columnNumber: 34
-                            }, this)
-                        ]
-                    }, void 0, true, {
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
+                        name: "Wave",
+                        channel: apu.channel3,
+                        id: 2
+                    }, void 0, false, {
                         fileName: "src/web/components/audioDebug.tsx",
                         lineNumber: 16,
                         columnNumber: 7
@@ -30550,10 +30403,826 @@ $RefreshReg$(_c, "Oscilloscope");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"85YVu":[function() {},{}],"cz4ku":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"6YHbn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _cartridge = require("./memory/cartridges/cartridge");
+parcelHelpers.export(exports, "Emulator", ()=>Emulator);
+var _apu = require("./apu");
+var _apuDefault = parcelHelpers.interopDefault(_apu);
+var _controller = require("./controller");
+var _controllerDefault = parcelHelpers.interopDefault(_controller);
+var _cpu = require("./cpu");
+var _cpuDefault = parcelHelpers.interopDefault(_cpu);
+var _memory = require("./memory");
+var _memoryDefault = parcelHelpers.interopDefault(_memory);
+var _screen = require("./screen");
+var _screenDefault = parcelHelpers.interopDefault(_screen);
+class Emulator {
+    constructor(cartridge){
+        this.memory = new (0, _memoryDefault.default)(cartridge);
+        this.controller = new (0, _controllerDefault.default)(this.memory);
+        this.cpu = new (0, _cpuDefault.default)(this.memory, this.controller);
+        this.screen = new (0, _screenDefault.default)(this.cpu);
+        this.apu = new (0, _apuDefault.default)(this.cpu);
+        this.controller.initialiseEvents();
+    }
+}
+
+},{"./apu":"fhvC7","./controller":"cFNSD","./cpu":"2CR9q","./memory":"cz4ku","./screen":"7Es7K","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fhvC7":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _pulseChannel = require("./sound/pulseChannel");
+var _pulseChannelDefault = parcelHelpers.interopDefault(_pulseChannel);
+var _waveChannel = require("./sound/waveChannel");
+var _waveChannelDefault = parcelHelpers.interopDefault(_waveChannel);
+class APU {
+    constructor(cpu){
+        this.audioContext = new AudioContext({
+            sampleRate: 44100
+        });
+        this.cpu = cpu;
+        this.memory = cpu.memory;
+        this.memory.registers.audioMasterControl.apu = this;
+        cpu.apu = this;
+        cpu.addClockCallback(this);
+        this.audioContext.suspend();
+        this.masterControl = this.audioContext.createGain();
+        this.channel1 = new (0, _pulseChannelDefault.default)({
+            audioContext: this.audioContext,
+            outputNode: this.masterControl,
+            registers: this.memory.registers.channel1
+        });
+        this.channel2 = new (0, _pulseChannelDefault.default)({
+            audioContext: this.audioContext,
+            outputNode: this.masterControl,
+            registers: this.memory.registers.channel2
+        });
+        this.channel3 = new (0, _waveChannelDefault.default)({
+            audioContext: this.audioContext,
+            outputNode: this.masterControl,
+            registers: this.memory.registers.channel3
+        });
+        this.masterControl.connect(this.audioContext.destination);
+    }
+    updateClock(cycles) {
+        this.channel1.update(cycles);
+        this.channel2.update(cycles);
+        this.channel3.update(cycles);
+    }
+    startAudio() {
+        this.audioContext.resume();
+    }
+    stopAudio() {
+        this.audioContext.suspend();
+    }
+}
+exports.default = APU;
+
+},{"./sound/pulseChannel":"iY6ME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./sound/waveChannel":"gIwWw"}],"iY6ME":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lengthTimer = require("./lengthTimer");
+var _volumeEnvelope = require("./volumeEnvelope");
+class PulseChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.period = 0;
+        this.volume = 0;
+        this.waveFormChanged = ()=>{};
+        this.audioContext = audioContext;
+        this.oscillator = audioContext.createOscillator();
+        this.oscillator.type = "square";
+        this.oscillator.frequency.value = 440;
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.oscillator.connect(this.muteNode);
+        this.muteNode.connect(this.gain);
+        this.gain.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.oscillator.start();
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
+        registers.channel = this;
+    }
+    update(cycles) {
+        if (this.playing) {
+            this.timer.update(cycles);
+            this.envelope.update(cycles);
+        }
+    }
+    start() {
+        this.playing = true;
+        this.setVolume();
+        this.timer.resetClock();
+        this.envelope.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.setVolume(0);
+    }
+    updateVolume(increment) {
+        this.setVolume(this.volume + increment);
+    }
+    setPeriod(period) {
+        this.period = period;
+        const frequency = 131072 / (2048 - period);
+        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+    setVolume(volume = this.volume) {
+        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
+        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+exports.default = PulseChannel;
+
+},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature that turns the channel off after a certain amount
+ * of time has passed.
+ */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
+// Roughly equal to 4.2MHz clock speed / 256Hz 
+const LENGTH_TIMER_TICK = 0x4000;
+class LengthTimer {
+    constructor(channelStop){
+        this.clock = 0;
+        this.enabled = false;
+        this.timer = 0;
+        this.channelStop = channelStop;
+    }
+    update(cycles) {
+        if (this.enabled) {
+            this.clock += cycles;
+            if (this.clock > LENGTH_TIMER_TICK) {
+                this.clock -= LENGTH_TIMER_TICK;
+                this.timer++;
+                if (this.timer >= 64) this.channelStop();
+            }
+        }
+    }
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    setTimer(length) {
+        this.timer = length;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature which regularly changes the volume of the channel
+ * until it reaches a maximum or minimum value.
+ */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
+// Roughly equal to 4.2MHz clock speed / 64Hz
+const ENVELOPER_TIMER_TICK = 0x10000;
+class VolumeEnvelope {
+    constructor(volumeSetter){
+        this.clock = 0;
+        this.direction = 1;
+        this.pace = 0;
+        this.timer = 0;
+        this.volumeIncrement = volumeSetter;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock > ENVELOPER_TIMER_TICK) {
+                this.clock -= ENVELOPER_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.volumeIncrement(this.direction);
+                }
+            }
+        }
+    }
+    setEnvelope(direction, pace) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gIwWw":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lengthTimer = require("./lengthTimer");
+const SAMPLE_RATE = 65536;
+class WaveChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.period = 0;
+        this.waveFormChanged = ()=>{};
+        this.registers = registers;
+        registers.channel = this;
+        this.audioContext = audioContext;
+        this.buffer = audioContext.createBuffer(1, 32, 65536);
+        this.bufferSource = audioContext.createBufferSource();
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.bufferSource.buffer = this.buffer;
+        this.bufferSource.loop = true;
+        this.bufferSource.connect(this.gain);
+        this.gain.connect(this.muteNode);
+        this.muteNode.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.bufferSource.start();
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+    }
+    update(cycles) {
+        if (this.playing) this.timer.update(cycles);
+    }
+    start() {
+        this.bufferSource.stop();
+        this.playing = true;
+        const sampleRate = 2097152 / (2048 - this.registers.period);
+        const buffer = this.audioContext.createBuffer(1, 32, this.audioContext.sampleRate);
+        buffer.copyToChannel(this.registers.samples, 0, 0);
+        const bufferSource = this.audioContext.createBufferSource();
+        bufferSource.buffer = buffer;
+        bufferSource.loop = true;
+        bufferSource.playbackRate.value = sampleRate / this.audioContext.sampleRate;
+        bufferSource.connect(this.gain);
+        bufferSource.start();
+        this.bufferSource = bufferSource;
+        this.setVolume(this.registers.volumeSetting);
+        this.timer.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.setVolume(0);
+        this.bufferSource.stop();
+        this.waveFormChanged();
+    }
+    setVolume(volumeSetting) {
+        this.gain.gain.setValueAtTime([
+            0,
+            1,
+            0.5,
+            0.25
+        ][volumeSetting] * 0.15, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+exports.default = WaveChannel;
+
+},{"./lengthTimer":"k44nd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cFNSD":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
+const BUTTONS = [
+    "A",
+    "B",
+    "Start",
+    "Select",
+    "Up",
+    "Down",
+    "Left",
+    "Right"
+];
+class Controller {
+    constructor(memory){
+        this.isPressed = {
+            "A": false,
+            "B": false,
+            "Start": false,
+            "Select": false,
+            "Up": false,
+            "Down": false,
+            "Left": false,
+            "Right": false
+        };
+        this.keyboardPressed = {
+            "A": false,
+            "B": false,
+            "Start": false,
+            "Select": false,
+            "Up": false,
+            "Down": false,
+            "Left": false,
+            "Right": false
+        };
+        this.htmlPressed = {
+            "A": false,
+            "B": false,
+            "Start": false,
+            "Select": false,
+            "Up": false,
+            "Down": false,
+            "Left": false,
+            "Right": false
+        };
+        this.keyBindings = {
+            "KeyZ": "A",
+            "KeyX": "B",
+            "Enter": "Start",
+            "Backspace": "Select",
+            "ArrowUp": "Up",
+            "ArrowDown": "Down",
+            "ArrowLeft": "Left",
+            "ArrowRight": "Right"
+        };
+        this.gamepadBindings = {
+            "A": 1,
+            "B": 0,
+            "Start": 9,
+            "Select": 8,
+            "Up": 12,
+            "Down": 13,
+            "Left": 14,
+            "Right": 15
+        };
+        this.triggerInterrupt = ()=>{};
+        this.updateUi = ()=>{};
+        this.joypadRegister = memory.registers.joypad;
+        this.interruptRegister = memory.registers.interrupts;
+    }
+    initialiseEvents() {
+        document.addEventListener("keydown", (e)=>this.handleKeyPress(e));
+        document.addEventListener("keyup", (e)=>this.handleKeyRelease(e));
+        window.addEventListener("gamepaddisconnected", (e)=>{
+            console.log("Gamepad disconnected from index %d: %s", e.gamepad.index, e.gamepad.id);
+            if (this.gamepad?.id == e.gamepad.id) this.gamepad = undefined;
+        });
+        window.addEventListener("gamepadconnected", (e)=>{
+            console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", e.gamepad.index, e.gamepad.id, e.gamepad.buttons.length, e.gamepad.axes.length);
+            this.gamepad = e.gamepad;
+        });
+    }
+    update() {
+        BUTTONS.forEach((button)=>{
+            const isPressed = this.keyboardPressed[button] || this.htmlPressed[button] || this.gamepad && this.gamepad.buttons[this.gamepadBindings[button]].pressed;
+            isPressed ? this.pressButton(button) : this.releaseButton(button);
+        });
+    }
+    pressButton(button) {
+        if (!this.isPressed[button]) {
+            this.interruptRegister.setInterrupt((0, _interruptRegisters.Interrupt).Joypad);
+            this.isPressed[button] = true;
+            this.joypadRegister[button] = true;
+            this.updateUi(this.isPressed);
+        }
+    }
+    releaseButton(button) {
+        if (this.isPressed[button]) {
+            this.interruptRegister.setInterrupt((0, _interruptRegisters.Interrupt).Joypad);
+            this.isPressed[button] = false;
+            this.joypadRegister[button] = false;
+            this.updateUi(this.isPressed);
+        }
+    }
+    handleKeyPress(event) {
+        const button = this.keyBindings[event.code];
+        if (button) {
+            event.preventDefault();
+            this.keyboardPressed[button] = true;
+        }
+    }
+    handleKeyRelease(event) {
+        const button = this.keyBindings[event.code];
+        if (button) {
+            event.preventDefault();
+            this.keyboardPressed[button] = false;
+        }
+    }
+    handleHtmlButtonPress(button) {
+        this.htmlPressed[button] = true;
+    }
+    handleHtmlButtonRelease(button) {
+        this.htmlPressed[button] = false;
+    }
+}
+exports.default = Controller;
+
+},{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gq7ph":[function(require,module,exports) {
+// Reference: https://gbdev.io/pandocs/Interrupts.html
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Interrupt", ()=>Interrupt);
+parcelHelpers.export(exports, "InterruptRegister", ()=>InterruptRegister);
+parcelHelpers.export(exports, "InterruptEnabledRegister", ()=>InterruptEnabledRegister);
+var Interrupt;
+(function(Interrupt) {
+    Interrupt[Interrupt["VBlank"] = 0] = "VBlank";
+    Interrupt[Interrupt["LCD"] = 1] = "LCD";
+    Interrupt[Interrupt["Timer"] = 2] = "Timer";
+    Interrupt[Interrupt["Serial"] = 3] = "Serial";
+    Interrupt[Interrupt["Joypad"] = 4] = "Joypad";
+})(Interrupt || (Interrupt = {}));
+class InterruptRegister {
+    get value() {
+        return (this.requested[4] ? 0x10 : 0) + (this.requested[3] ? 0x8 : 0) + (this.requested[2] ? 0x4 : 0) + (this.requested[1] ? 0x2 : 0) + (this.requested[0] ? 0x1 : 0);
+    }
+    set value(value) {
+        this.requested[4] = (value & 0x10) > 0;
+        this.requested[3] = (value & 0x8) > 0;
+        this.requested[2] = (value & 0x4) > 0;
+        this.requested[1] = (value & 0x2) > 0;
+        this.requested[0] = (value & 0x1) > 0;
+    }
+    setInterrupt(interrupt) {
+        this.requested[interrupt] = true;
+    }
+    resetInterrupt(interrupt) {
+        this.requested[interrupt] = false;
+    }
+    constructor(){
+        this.requested = [
+            false,
+            false,
+            false,
+            false,
+            false
+        ];
+    }
+}
+class InterruptEnabledRegister {
+    get value() {
+        return (this.enabled[4] ? 0x10 : 0) + (this.enabled[3] ? 0x8 : 0) + (this.enabled[2] ? 0x4 : 0) + (this.enabled[1] ? 0x2 : 0) + (this.enabled[0] ? 0x1 : 0);
+    }
+    set value(value) {
+        this.enabled[4] = (value & 0x10) > 0;
+        this.enabled[3] = (value & 0x8) > 0;
+        this.enabled[2] = (value & 0x4) > 0;
+        this.enabled[1] = (value & 0x2) > 0;
+        this.enabled[0] = (value & 0x1) > 0;
+    }
+    isEnabled(interrupt) {
+        return this.enabled[interrupt];
+    }
+    constructor(){
+        this.enabled = [
+            false,
+            false,
+            false,
+            false,
+            false
+        ];
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2CR9q":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cpuRegisters = require("./cpu/cpuRegisters");
+var _instruction = require("./instruction");
+var _instructionHelpers = require("./instructions/instructionHelpers");
+var _nop = require("./instructions/nop");
+var _nopDefault = parcelHelpers.interopDefault(_nop);
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
+var _timer = require("./timer");
+var _timerDefault = parcelHelpers.interopDefault(_timer);
+const INTERRUPT_HANDLERS = {
+    [(0, _interruptRegisters.Interrupt).VBlank]: 0x0040,
+    [(0, _interruptRegisters.Interrupt).LCD]: 0x0048,
+    [(0, _interruptRegisters.Interrupt).Timer]: 0x0050,
+    [(0, _interruptRegisters.Interrupt).Serial]: 0x0058,
+    [(0, _interruptRegisters.Interrupt).Joypad]: 0x0060
+};
+class CPU {
+    constructor(memory, controller){
+        this.running = false;
+        this.cycleCount = 0;
+        this.interruptsEnabled = false;
+        this.recentFrames = [];
+        this.fps = 0;
+        this.isHalted = false;
+        this.isStopped = false;
+        this.debugMode = false;
+        this.breakpoints = new Set();
+        this.onInstructionComplete = ()=>{};
+        this.onError = ()=>{};
+        this.clockCallbacks = [];
+        this.gbDoctorLog = "";
+        this.memory = memory;
+        this.controller = controller;
+        memory.cpu = this;
+        this.registers = new (0, _cpuRegisters.CpuRegisters)();
+        this.timer = new (0, _timerDefault.default)(memory);
+        this.addClockCallback(this.timer);
+        this.interruptEnableRegister = memory.at(0xFFFF);
+        this.interruptFlags = memory.at(0xFF0F);
+        const self = this;
+        this.nextByte = {
+            get value () {
+                return memory.at(self.registers.PC.value++).value;
+            },
+            set value (_){}
+        };
+        this.nextWord = {
+            get value () {
+                const l = memory.at(self.registers.PC.value++).value;
+                const h = memory.at(self.registers.PC.value++).value;
+                return (h << 8) + l;
+            }
+        };
+        // SKIP BOOTROM
+        this.registers.A.value = 0x01;
+        this.registers.F.value = 0xB0;
+        this.registers.B.value = 0x00;
+        this.registers.C.value = 0x13;
+        this.registers.D.value = 0x00;
+        this.registers.E.value = 0xD8;
+        this.registers.H.value = 0x01;
+        this.registers.L.value = 0x4D;
+        this.registers.SP.value = 0xFFFE;
+        this.registers.PC.value = 0x0100;
+    }
+    createGbDoctorLog() {
+        // GB Doctor logging
+        const A = this.registers.A.value.toString(16).padStart(2, "0").toUpperCase();
+        const B = this.registers.B.value.toString(16).padStart(2, "0").toUpperCase();
+        const C = this.registers.C.value.toString(16).padStart(2, "0").toUpperCase();
+        const D = this.registers.D.value.toString(16).padStart(2, "0").toUpperCase();
+        const E = this.registers.E.value.toString(16).padStart(2, "0").toUpperCase();
+        const F = this.registers.F.value.toString(16).padStart(2, "0").toUpperCase();
+        const H = this.registers.H.value.toString(16).padStart(2, "0").toUpperCase();
+        const L = this.registers.L.value.toString(16).padStart(2, "0").toUpperCase();
+        const SP = this.registers.SP.value.toString(16).padStart(4, "0").toUpperCase();
+        const PC = this.registers.PC.value.toString(16).padStart(4, "0").toUpperCase();
+        const PCMEM = [
+            this.memory.at(this.registers.PC.value + 0).value,
+            this.memory.at(this.registers.PC.value + 1).value,
+            this.memory.at(this.registers.PC.value + 2).value,
+            this.memory.at(this.registers.PC.value + 3).value
+        ].map((x)=>x.toString(16).padStart(2, "0").toUpperCase()).join(",");
+        this.gbDoctorLog += `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`;
+    }
+    executeNextInstruction() {
+        // this.createGbDoctorLog()
+        if (this.isHalted) {
+            this.incrementClock(4);
+            return;
+        }
+        const code = this.nextByte.value;
+        const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
+        let instruction;
+        try {
+            instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
+        } catch  {
+            console.warn(`Unused opcode: ${code.toString(16)} at address ${this.registers.PC.value.toString(16)}`);
+            instruction = (0, _nopDefault.default);
+        }
+        instruction.execute(this);
+        this.incrementClock(instruction.cycles);
+        if (this.debugMode) {
+            const parameters = new Array(instruction.parameterBytes).fill(0).map((_1, i)=>this.memory.at(this.registers.PC.value + 1 + i).value);
+            console.log(instruction.description(parameters));
+        }
+        this.onInstructionComplete();
+    }
+    getInterrupt() {
+        if (!this.interruptsEnabled) return null;
+        const activeInterrupts = this.interruptEnableRegister.value & this.interruptFlags.value;
+        if (activeInterrupts === 0) return null;
+        // Find id of highest priority interrupt
+        let id = 0;
+        while((activeInterrupts >> id & 1) === 0)id++;
+        this.interruptFlags.value = this.interruptFlags.value & ~(1 << id);
+        return id;
+    }
+    handleInterrupt(interrupt) {
+        this.isHalted = false;
+        // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
+        // Push PC to stack and jump to handler address
+        const handlerAddress = INTERRUPT_HANDLERS[interrupt];
+        const sp = this.registers.SP;
+        const pc = this.registers.PC;
+        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+        this.memory.at(--sp.value).value = h;
+        this.memory.at(--sp.value).value = l;
+        pc.value = handlerAddress;
+        this.incrementClock(20);
+        this.interruptsEnabled = false;
+    }
+    incrementClock(cycles) {
+        this.cycleCount += cycles;
+        this.clockCallbacks.forEach((callback)=>callback.updateClock(cycles));
+    }
+    run() {
+        this.running = true;
+        this.apu.startAudio();
+        requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
+    }
+    pause() {
+        this.running = false;
+        this.apu.stopAudio();
+    }
+    runFrame(timestamp) {
+        // We maintain an FPS counter by keeping track of how many frames were run
+        // over the last 1000ms
+        this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
+        this.fps = this.recentFrames.push(timestamp);
+        let address = 0;
+        this.controller.update();
+        // try {
+        frameLoop: while(!this.breakpoints.has(this.registers.PC.value)){
+            this.executeNextInstruction();
+            address = this.registers.PC.value;
+            const interrupt = this.getInterrupt();
+            if (interrupt !== null) this.handleInterrupt(interrupt);
+            if (this.screen.newFrameDrawn) {
+                this.screen.newFrameDrawn = false;
+                break frameLoop;
+            }
+        }
+        if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
+    // } catch (error) {
+    //   console.log(error.stack)
+    //   this.running = false
+    //   this.onError(error)
+    // }    
+    }
+    addClockCallback(callback) {
+        this.clockCallbacks.push(callback);
+    }
+}
+exports.default = CPU;
+
+},{"./cpu/cpuRegisters":"7SgHs","./instruction":"dshpP","./instructions/instructionHelpers":"bJjsQ","./instructions/nop":"jvHrF","./memory/registers/interruptRegisters":"gq7ph","./timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7SgHs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CpuRegisters", ()=>CpuRegisters);
+var _byteRef = require("../refs/byteRef");
+var _wordRef = require("../refs/wordRef");
+var _flags = require("./flags");
+class CpuRegisters {
+    constructor(){
+        this.A = new (0, _byteRef.GenericByteRef)();
+        this.F = new (0, _flags.Flags)();
+        this.B = new (0, _byteRef.GenericByteRef)();
+        this.C = new (0, _byteRef.GenericByteRef)();
+        this.D = new (0, _byteRef.GenericByteRef)();
+        this.E = new (0, _byteRef.GenericByteRef)();
+        this.H = new (0, _byteRef.GenericByteRef)();
+        this.L = new (0, _byteRef.GenericByteRef)();
+        this.PC = new (0, _wordRef.GenericWordRef)();
+        this.SP = new (0, _wordRef.GenericWordRef)();
+        this.HL = new (0, _wordRef.CompositeWordRef)(this.H, this.L);
+        this.BC = new (0, _wordRef.CompositeWordRef)(this.B, this.C);
+        this.DE = new (0, _wordRef.CompositeWordRef)(this.D, this.E);
+        this.AF = new (0, _wordRef.CompositeWordRef)(this.A, this.F);
+    }
+}
+
+},{"../refs/byteRef":"6cdGr","../refs/wordRef":"lDlTE","./flags":"dO5Cj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6cdGr":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "GenericByteRef", ()=>GenericByteRef);
+parcelHelpers.export(exports, "ConstantByteRef", ()=>ConstantByteRef);
+parcelHelpers.export(exports, "GetSetByteRef", ()=>GetSetByteRef);
+class GenericByteRef {
+    constructor(value = 0){
+        this._value = value & 0xFF;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        this._value = value & 0xFF;
+    }
+}
+class ConstantByteRef {
+    constructor(value = 0){
+        this._value = value;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {}
+}
+class GetSetByteRef {
+    constructor(getter, setter){
+        this.getter = getter;
+        this.setter = setter;
+    }
+    get value() {
+        return this.getter();
+    }
+    set value(value) {
+        this.setter(value);
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lDlTE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "GenericWordRef", ()=>GenericWordRef);
+parcelHelpers.export(exports, "CompositeWordRef", ()=>CompositeWordRef);
+class GenericWordRef {
+    constructor(value = 0){
+        this._value = value & 0xFFFF;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        this._value = value & 0xFFFF;
+    }
+}
+class CompositeWordRef {
+    constructor(high, low){
+        this.high = high;
+        this.low = low;
+    }
+    get value() {
+        return (this.high.value << 8) + this.low.value;
+    }
+    set value(value) {
+        this.high.value = value >> 8;
+        this.low.value = value & 0xFF;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dO5Cj":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Flags", ()=>Flags);
+class Flags {
+    get value() {
+        return (this.zero ? 0x80 : 0) + (this.operation ? 0x40 : 0) + (this.halfCarry ? 0x20 : 0) + (this.carry ? 0x10 : 0);
+    }
+    set value(value) {
+        this.zero = (value & 0x80) > 0;
+        this.operation = (value & 0x40) > 0;
+        this.halfCarry = (value & 0x20) > 0;
+        this.carry = (value & 0x10) > 0;
+    }
+    constructor(){
+        this.zero = false;
+        this.operation = false;
+        this.halfCarry = false;
+        this.carry = false;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsN5b":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
+const DIV_CYCLE_ROLLOVER = 256;
+class Timer {
+    constructor(memory){
+        this.timerCycles = 0;
+        this.divCycles = 0;
+        this.divider = memory.registers.divider;
+        this.counter = memory.registers.timerCounter;
+        this.modulo = memory.registers.timerModulo;
+        this.control = memory.registers.timerControl;
+        this.interrupts = memory.registers.interrupts;
+    }
+    updateClock(cycles) {
+        this.timerCycles += cycles;
+        this.divCycles += cycles;
+        if (this.divCycles > DIV_CYCLE_ROLLOVER) {
+            this.divCycles -= DIV_CYCLE_ROLLOVER;
+            this.divider.increment();
+        }
+        const timerRollover = this.getTimerRollover();
+        if (this.timerCycles > timerRollover) {
+            this.timerCycles -= timerRollover;
+            this.counter.value++;
+            if (this.counter.value === 0) {
+                this.counter.value = this.modulo.value;
+                this.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).Timer);
+            }
+        }
+    }
+    getTimerRollover() {
+        const mode = this.control.clockSelect;
+        return [
+            1024,
+            16,
+            64,
+            256
+        ][mode];
+    }
+}
+exports.default = Timer;
+
+},{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cz4ku":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
 var _createCartridge = require("./memory/cartridges/createCartridge");
 var _oam = require("./memory/oam");
 var _ioRegisters = require("./memory/registers/ioRegisters");
@@ -30561,14 +31230,14 @@ var _vram = require("./memory/vram");
 var _byteRef = require("./refs/byteRef");
 var _wordRef = require("./refs/wordRef");
 class Memory {
-    constructor(){
+    constructor(cartridge){
         this.registers = new (0, _ioRegisters.IoRegisters)();
         this.bootRomLoaded = false;
         this.bootRom = new Uint8Array(0x100);
         this.vram = new (0, _vram.VRAM)();
         this.data = new Uint8Array(0x10000);
         this.registers.dmaTransfer.startTransfer = (address)=>this.dmaTransfer(address);
-        this.cartridge = new (0, _cartridge.Cartridge)(new Uint8Array());
+        this.cartridge = cartridge;
         this.oam = new (0, _oam.OAM)(this);
     }
     at(address) {
@@ -30617,7 +31286,352 @@ class Memory {
 }
 exports.default = Memory;
 
-},{"./memory/registers/ioRegisters":"lu92s","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./refs/byteRef":"6cdGr","./memory/cartridges/cartridge":"jBMrX","./memory/cartridges/createCartridge":"hpQ2G","./memory/vram":"iA1KW","./memory/oam":"GLSg5"}],"lu92s":[function(require,module,exports) {
+},{"./memory/cartridges/createCartridge":"hpQ2G","./memory/oam":"GLSg5","./memory/registers/ioRegisters":"lu92s","./memory/vram":"iA1KW","./refs/byteRef":"6cdGr","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hpQ2G":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
+// PKM R: 0x13 [MBC3+RAM+BATTERY]
+// LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
+parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
+var _cartridge = require("./cartridge");
+var _mbc1Cartridge = require("./mbc1Cartridge");
+var _mbc3Cartridge = require("./mbc3Cartridge");
+var _mbc5Cartridge = require("./mbc5Cartridge");
+async function createCartridge(file) {
+    const romData = (await file.stream().getReader().read()).value;
+    if (!romData) throw new Error("Unable to read file");
+    const cartridgeType = romData[0x147];
+    switch(cartridgeType){
+        case 0x00:
+            return new (0, _cartridge.Cartridge)(romData);
+        case 0x01:
+        case 0x02:
+        case 0x03:
+            return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
+        case 0x0F:
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x13:
+            return new (0, _mbc3Cartridge.Mbc3Cartridge)(romData);
+        case 0x19:
+        case 0x1A:
+        case 0x1B:
+        case 0x1C:
+        case 0x1D:
+        case 0x1E:
+            return new (0, _mbc5Cartridge.Mbc5Cartridge)(romData);
+    }
+    throw new Error("Unknown cartridge type: " + cartridgeType);
+}
+
+},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./mbc5Cartridge":"6zYKi"}],"jBMrX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
+var _byteRef = require("../../refs/byteRef");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Cartridge {
+    constructor(data){
+        this.romData = data;
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][data[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+        this.title = String.fromCharCode(...data.slice(0x0134, 0x0144));
+        this.storeRam = ()=>{
+            console.log("Saving save data to " + this.title + ".sav");
+            const blob = new Blob([
+                this.ramData
+            ]);
+            const reader = new FileReader();
+            reader.onload = ()=>{
+                window.localStorage.setItem(this.title + ".sav", reader.result?.toString() || "");
+            };
+            reader.readAsDataURL(blob);
+        };
+        this.loadLocalSave();
+    }
+    async loadData(file) {
+        this.romData = (await file.stream().getReader().read()).value || this.romData;
+        this.title = String.fromCharCode(...this.romData.slice(0x0134, 0x0144));
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][this.romData[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+    }
+    async loadRam(file) {
+        this.ramData = (await file.stream().getReader().read()).value || this.ramData;
+    }
+    async loadLocalSave() {
+        const base64 = window.localStorage.getItem(this.title + ".sav");
+        if (base64 !== null) {
+            const res = await fetch(base64);
+            const blob = await res.blob();
+            const saveFileReadResult = await blob.stream().getReader().read();
+            this.ramData = saveFileReadResult.value || new Uint8Array();
+        }
+    }
+    rom(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            return this.romData[address & 0xFFFF];
+        }, (_)=>{});
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>this.ramData[address - 0xA000], (value)=>{
+            this.ramData[address - 0xA000] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+        });
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hsUyN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC1.html
+parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x1F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value & 0x3;
+        };
+        else write = (value)=>{
+            this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
+        };
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 - bankBase];
+        }, (value)=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            this.ramData[address - 0xA000 + bankBase] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+        });
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6WBLx":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC3.html
+parcelHelpers.export(exports, "Mbc3Cartridge", ()=>Mbc3Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc3Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramAndRtcEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x7F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value;
+        };
+        else // Latch clock - TODO
+        write = ()=>{};
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    writeToRam(address, value) {
+        const bankBase = 0x2000 * this.bankNumber2;
+        this.ramData[address - 0xA000 + bankBase] = value;
+        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 + bankBase];
+        }, (value)=>this.writeToRam(address, value));
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6zYKi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC5.html
+parcelHelpers.export(exports, "Mbc5Cartridge", ()=>Mbc5Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc5Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramAndRtcEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x3000) write = (value)=>{
+            this.bankNumber1 &= 0x100;
+            this.bankNumber1 |= value;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 &= 0xFF;
+            this.bankNumber1 |= (value & 0x1) << 8;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value & 0xF;
+        };
+        else // Latch clock - TODO
+        write = ()=>{};
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    writeToRam(address, value) {
+        const bankBase = 0x2000 * this.bankNumber2;
+        this.ramData[address - 0xA000 + bankBase] = value;
+        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 + bankBase];
+        }, (value)=>this.writeToRam(address, value));
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "OAM", ()=>OAM);
+var _sprite = require("./sprite");
+const BASE_ADDRESS = 0xFE00;
+class OAM {
+    constructor(memory){
+        this.sprites = [];
+        for(let i = 0; i < 40; i++){
+            this.sprites.push(new (0, _sprite.Sprite)(memory));
+            this.scanline = memory.registers.scanline;
+            this.lcdControl = memory.registers.lcdControl;
+        }
+    }
+    at(address) {
+        const adjustedAddress = address - BASE_ADDRESS;
+        const spriteNumber = adjustedAddress >> 2;
+        const byteNumber = adjustedAddress & 3;
+        return this.sprites[spriteNumber].bytes[byteNumber];
+    }
+    spritesAtScanline() {
+        const scanline = this.scanline.value;
+        const spriteSize = this.lcdControl.objectSize;
+        return this.sprites.filter((sprite)=>{
+            const intersect = sprite.scanlineIntersect(scanline);
+            return intersect >= 0 && intersect < spriteSize;
+        }).slice(0, 10).sort((a, b)=>a.x - b.x);
+    }
+}
+
+},{"./sprite":"5mBnd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5mBnd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/OAM.html#object-attribute-memory-oam
+parcelHelpers.export(exports, "Sprite", ()=>Sprite);
+var _byteRef = require("../refs/byteRef");
+class Sprite {
+    constructor(memory){
+        this.x = 0;
+        this.y = 0;
+        this.tile = 0;
+        this.priority = false;
+        this.flipY = false;
+        this.flipX = false;
+        this.pallette = 0;
+        const bytes = [];
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.y, (value)=>this.y = value));
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.x, (value)=>this.x = value));
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.tile, (value)=>this.tile = value));
+        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>(this.priority ? 0x80 : 0) + (this.flipY ? 0x40 : 0) + (this.flipX ? 0x20 : 0) + (this.pallette << 4), (value)=>{
+            this.priority = (value & 0x80) > 0;
+            this.flipY = (value & 0x40) > 0;
+            this.flipX = (value & 0x20) > 0;
+            this.pallette = (value & 0x10) >> 4;
+        }));
+        this.bytes = bytes;
+        this.pallette0 = memory.registers.objectPallete0;
+        this.pallette1 = memory.registers.objectPallete1;
+        this.vram = memory.vram;
+    }
+    scanlineIntersect(scanline) {
+        return scanline - (this.y - 16);
+    }
+    pixelAt(scanline, column, spriteSize) {
+        const row = this.flipY ? spriteSize - 1 - this.scanlineIntersect(scanline) : this.scanlineIntersect(scanline);
+        const tileId = spriteSize == 16 ? row >= 8 ? this.tile | 1 : this.tile & 0xFE : this.tile;
+        const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8);
+        const tileValue = this.vram.tileset0(tileId, row % 8)[x];
+        if (tileValue == 0) return undefined // Transparent pixel
+        ;
+        return this.pallette == 0 ? this.pallette0.map[tileValue] : this.pallette1.map[tileValue];
+    }
+}
+
+},{"../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lu92s":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
@@ -30641,6 +31655,7 @@ class IoRegisters {
         this.audioMasterControl = new (0, _audioRegisters.AudioMasterControlRegister)();
         this.channel1 = new (0, _audioRegisters.PulseChannelRegisters)();
         this.channel2 = new (0, _audioRegisters.PulseChannelRegisters)();
+        this.channel3 = new (0, _audioRegisters.WaveChannelRegisters)();
         this.lcdControl = new (0, _lcdRegisters.LcdControlRegister)();
         this.lcdStatus = new (0, _lcdRegisters.LcdStatusRegister)();
         this.scrollY = new (0, _byteRef.GenericByteRef)();
@@ -30662,18 +31677,25 @@ class IoRegisters {
         this.data[0xFF06] = this.timerModulo;
         this.data[0xFF07] = this.timerControl;
         this.data[0xFF0F] = this.interrupts;
-        // Audio Channel 1
+        // Audio Channel 1 (Pulse 1)
         this.data[0xFF10] = this.channel1.nr0;
         this.data[0xFF11] = this.channel1.nr1;
         this.data[0xFF12] = this.channel1.nr2;
         this.data[0xFF13] = this.channel1.nr3;
         this.data[0xFF14] = this.channel1.nr4;
-        // Audio Channel 2
+        // Audio Channel 2 (Pulse 2)
         this.data[0xFF16] = this.channel2.nr1;
         this.data[0xFF17] = this.channel2.nr2;
         this.data[0xFF18] = this.channel2.nr3;
         this.data[0xFF19] = this.channel2.nr4;
-        // TODO channels 3 and 4
+        // Audio Channel 3 (Wave)
+        this.data[0xFF1A] = this.channel3.nr0;
+        this.data[0xFF1B] = this.channel3.nr1;
+        this.data[0xFF1C] = this.channel3.nr2;
+        this.data[0xFF1D] = this.channel3.nr3;
+        this.data[0xFF1E] = this.channel3.nr4;
+        for(let i = 0; i <= 16; i++)this.data[0xFF30 + i] = this.channel3.sampleByte(i);
+        // TODO channel 4
         // Master Audio
         this.data[0xFF26] = this.audioMasterControl;
         // TODO: this.data[0xFF24] panning
@@ -30698,62 +31720,22 @@ class IoRegisters {
     }
 }
 
-},{"../../refs/byteRef":"6cdGr","./audioRegisters":"3bLp5","./bootRomRegister":"eI0h3","./dmaTransferRegister":"68j9d","./interruptRegisters":"gq7ph","./joypadRegister":"kZxim","./lcdRegisters":"i2ZsX","./timerRegisters":"jaFaj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6cdGr":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "GenericByteRef", ()=>GenericByteRef);
-parcelHelpers.export(exports, "ConstantByteRef", ()=>ConstantByteRef);
-parcelHelpers.export(exports, "GetSetByteRef", ()=>GetSetByteRef);
-class GenericByteRef {
-    constructor(value = 0){
-        this._value = value & 0xFF;
-    }
-    get value() {
-        return this._value;
-    }
-    set value(value) {
-        this._value = value & 0xFF;
-    }
-}
-class ConstantByteRef {
-    constructor(value = 0){
-        this._value = value;
-    }
-    get value() {
-        return this._value;
-    }
-    set value(value) {}
-}
-class GetSetByteRef {
-    constructor(getter, setter){
-        this.getter = getter;
-        this.setter = setter;
-    }
-    get value() {
-        return this.getter();
-    }
-    set value(value) {
-        this.setter(value);
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3bLp5":[function(require,module,exports) {
+},{"../../refs/byteRef":"6cdGr","./audioRegisters":"3bLp5","./bootRomRegister":"eI0h3","./dmaTransferRegister":"68j9d","./interruptRegisters":"gq7ph","./joypadRegister":"kZxim","./lcdRegisters":"i2ZsX","./timerRegisters":"jaFaj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3bLp5":[function(require,module,exports) {
 // Reference:
 // https://gbdev.io/pandocs/Audio_Registers.html#audio-registers
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "AudioMasterControlRegister", ()=>AudioMasterControlRegister);
 parcelHelpers.export(exports, "PulseChannelRegisters", ()=>PulseChannelRegisters);
+parcelHelpers.export(exports, "WaveChannelRegisters", ()=>WaveChannelRegisters);
+var _byteRef = require("../../refs/byteRef");
 class AudioMasterControlRegister {
     get value() {
         return (this.masterSwitch ? 0x80 : 0) + (this.channel4On ? 0x8 : 0) + (this.channel3On ? 0x4 : 0) + (this.channel2On ? 0x2 : 0) + (this.channel1On ? 0x1 : 0);
     }
     set value(value1) {
         this.masterSwitch = (value1 & 0x80) > 0;
-        this.channel1On = (value1 & 0x1) > 0;
-        this.channel2On = (value1 & 0x2) > 0;
-        this.channel3On = (value1 & 0x4) > 0;
-        this.channel4On = (value1 & 0x8) > 0;
+        if (this.apu) this.apu.masterControl.gain.setValueAtTime(this.masterSwitch ? 1 : 0, this.apu.audioContext.currentTime);
     }
     constructor(){
         this.masterSwitch = false;
@@ -30853,8 +31835,85 @@ class PulseChannelRegisters {
         if (this.volume > 15) this.volume = 15;
     }
 }
+class WaveChannelRegisters {
+    constructor(){
+        this.enabled = false;
+        this.lengthTimer = 0;
+        this.lengthEnabled = false;
+        this.volumeSetting = 0;
+        this.period = 0;
+        this.triggered = false;
+        this.trigger = ()=>{};
+        this.samples = Float32Array.from(new Array(32).fill(0));
+        const self = this;
+        this.nr0 = {
+            get value () {
+                return self.enabled ? 0x80 : 0;
+            },
+            set value (value){
+                self.enabled = (value & 0x80) > 0;
+                if (!self.enabled && self.channel) self.channel.stop();
+            }
+        };
+        this.nr1 = {
+            get value () {
+                return self.lengthTimer;
+            },
+            set value (value){
+                self.lengthTimer = value;
+                if (self.channel) self.channel.timer.setTimer(value);
+            }
+        };
+        this.nr2 = {
+            get value () {
+                return self.volumeSetting << 5;
+            },
+            set value (value){
+                self.volumeSetting = value >> 5 & 0x3;
+                self.channel.setVolume(self.volumeSetting);
+            }
+        }, this.nr3 = {
+            get value () {
+                return self.period & 0xFF;
+            },
+            set value (value){
+                self.period &= 0xF00;
+                self.period |= value;
+            }
+        };
+        this.nr4 = {
+            get value () {
+                return (self.lengthEnabled ? 0x40 : 0) + (self.triggered ? 0x80 : 0) + (self.period >> 8);
+            },
+            set value (value){
+                self.period &= 0xFF;
+                self.period |= (value & 0x7) << 8;
+                self.lengthEnabled = (value & 0x40) > 0;
+                if (value & 0x80) {
+                    self.trigger();
+                    self.triggered = true;
+                }
+                if (self.channel) {
+                    if (self.lengthEnabled) self.channel.timer.enable();
+                    else self.channel.timer.disable();
+                    if (value & 0x80) self.channel.start();
+                }
+            }
+        };
+    }
+    sampleByte(id) {
+        const lowIndex = 2 * id;
+        const highIndex = 2 * id + 1;
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            return 0;
+        }, (value1)=>{
+            this.samples[lowIndex] = (value1 >> 4) / 8 - 1;
+            this.samples[highIndex] = (value1 & 0x0F) / 8 - 1;
+        });
+    }
+}
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eI0h3":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../refs/byteRef":"6cdGr"}],"eI0h3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "BootRomRegister", ()=>BootRomRegister);
@@ -31033,223 +32092,7 @@ class TimerControlRegister {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lDlTE":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "GenericWordRef", ()=>GenericWordRef);
-parcelHelpers.export(exports, "CompositeWordRef", ()=>CompositeWordRef);
-class GenericWordRef {
-    constructor(value = 0){
-        this._value = value & 0xFFFF;
-    }
-    get value() {
-        return this._value;
-    }
-    set value(value) {
-        this._value = value & 0xFFFF;
-    }
-}
-class CompositeWordRef {
-    constructor(high, low){
-        this.high = high;
-        this.low = low;
-    }
-    get value() {
-        return (this.high.value << 8) + this.low.value;
-    }
-    set value(value) {
-        this.high.value = value >> 8;
-        this.low.value = value & 0xFF;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBMrX":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
-var _byteRef = require("../../refs/byteRef");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Cartridge {
-    constructor(data, storeRam = ()=>{}){
-        this.romData = data;
-        const ramBanks = [
-            0,
-            0,
-            1,
-            4,
-            16,
-            8
-        ][data[0x0149]];
-        this.ramData = new Uint8Array(ramBanks * 0x2000);
-        this.title = String.fromCharCode(...data.slice(0x0134, 0x0144));
-        this.storeRam = storeRam;
-    }
-    async loadData(file) {
-        this.romData = (await file.stream().getReader().read()).value || this.romData;
-        this.title = String.fromCharCode(...this.romData.slice(0x0134, 0x0144));
-        const ramBanks = [
-            0,
-            0,
-            1,
-            4,
-            16,
-            8
-        ][this.romData[0x0149]];
-        this.ramData = new Uint8Array(ramBanks * 0x2000);
-    }
-    async loadRam(file) {
-        this.ramData = (await file.stream().getReader().read()).value || this.ramData;
-    }
-    rom(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            return this.romData[address & 0xFFFF];
-        }, (_)=>{});
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>this.ramData[address - 0xA000], (value)=>{
-            this.ramData[address - 0xA000] = value;
-            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-            this.ramWriteTimeout = setTimeout(()=>this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS);
-        });
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hpQ2G":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
-// PKM R: 0x13 [MBC3+RAM+BATTERY]
-// LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
-parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
-var _cartridge = require("./cartridge");
-var _mbc1Cartridge = require("./mbc1Cartridge");
-var _mbc3Cartridge = require("./mbc3Cartridge");
-async function createCartridge(file) {
-    const romData = (await file.stream().getReader().read()).value;
-    if (!romData) throw new Error("Unable to read file");
-    const cartridgeType = romData[0x147];
-    switch(cartridgeType){
-        case 0x00:
-            return new (0, _cartridge.Cartridge)(romData);
-        case 0x01:
-        case 0x02:
-        case 0x03:
-            return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
-        case 0x0F:
-        case 0x10:
-        case 0x11:
-        case 0x12:
-        case 0x13:
-            return new (0, _mbc3Cartridge.Mbc3Cartridge)(romData);
-    }
-    throw new Error("Unknown cartridge type: " + cartridgeType);
-}
-
-},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./mbc3Cartridge":"6WBLx"}],"hsUyN":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC1.html
-parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 = value & 0x1F;
-            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value & 0x3;
-        };
-        else write = (value)=>{
-            this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
-        };
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 - bankBase];
-        }, (value)=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            this.ramData[address - 0xA000 - bankBase] = value;
-            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-            this.ramWriteTimeout = setTimeout(()=>this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS);
-        });
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6WBLx":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC1.html
-parcelHelpers.export(exports, "Mbc3Cartridge", ()=>Mbc3Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc3Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramAndRtcEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 = value & 0x7F;
-            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value;
-        };
-        else // Latch clock - TODO
-        write = ()=>{};
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    writeToRam(address, value) {
-        const bankBase = 0x2000 * this.bankNumber2;
-        this.ramData[address - 0xA000 - bankBase] = value;
-        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-        this.ramWriteTimeout = setTimeout(()=>this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 - bankBase];
-        }, (value)=>this.writeToRam(address, value));
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iA1KW":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iA1KW":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "VRAM", ()=>VRAM);
@@ -31300,352 +32143,13 @@ class VRAM {
     }
 }
 
-},{"../instructions/instructionHelpers":"bJjsQ","../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "OAM", ()=>OAM);
-var _sprite = require("./sprite");
-const BASE_ADDRESS = 0xFE00;
-class OAM {
-    constructor(memory){
-        this.sprites = [];
-        for(let i = 0; i < 40; i++){
-            this.sprites.push(new (0, _sprite.Sprite)(memory));
-            this.scanline = memory.registers.scanline;
-            this.lcdControl = memory.registers.lcdControl;
-        }
-    }
-    at(address) {
-        const adjustedAddress = address - BASE_ADDRESS;
-        const spriteNumber = adjustedAddress >> 2;
-        const byteNumber = adjustedAddress & 3;
-        return this.sprites[spriteNumber].bytes[byteNumber];
-    }
-    spritesAtScanline() {
-        const scanline = this.scanline.value;
-        const spriteSize = this.lcdControl.objectSize;
-        return this.sprites.filter((sprite)=>{
-            const intersect = sprite.scanlineIntersect(scanline);
-            return intersect >= 0 && intersect < spriteSize;
-        }).slice(0, 10).sort((a, b)=>a.x - b.x);
-    }
-}
-
-},{"./sprite":"5mBnd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5mBnd":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/OAM.html#object-attribute-memory-oam
-parcelHelpers.export(exports, "Sprite", ()=>Sprite);
-var _byteRef = require("../refs/byteRef");
-class Sprite {
-    constructor(memory){
-        this.x = 0;
-        this.y = 0;
-        this.tile = 0;
-        this.priority = false;
-        this.flipY = false;
-        this.flipX = false;
-        this.pallette = 0;
-        const bytes = [];
-        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.y, (value)=>this.y = value));
-        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.x, (value)=>this.x = value));
-        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>this.tile, (value)=>this.tile = value));
-        bytes.push(new (0, _byteRef.GetSetByteRef)(()=>(this.priority ? 0x80 : 0) + (this.flipY ? 0x40 : 0) + (this.flipX ? 0x20 : 0) + (this.pallette << 4), (value)=>{
-            this.priority = (value & 0x80) > 0;
-            this.flipY = (value & 0x40) > 0;
-            this.flipX = (value & 0x20) > 0;
-            this.pallette = (value & 0x10) >> 4;
-        }));
-        this.bytes = bytes;
-        this.pallette0 = memory.registers.objectPallete0;
-        this.pallette1 = memory.registers.objectPallete1;
-        this.vram = memory.vram;
-    }
-    scanlineIntersect(scanline) {
-        return scanline - (this.y - 16);
-    }
-    pixelAt(scanline, column, spriteSize) {
-        const row = this.flipY ? spriteSize - 1 - this.scanlineIntersect(scanline) : this.scanlineIntersect(scanline);
-        const tileId = spriteSize == 16 ? row >= 8 ? this.tile | 1 : this.tile & 0xFE : this.tile;
-        const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8);
-        const tileValue = this.vram.tileset0(tileId, row % 8)[x];
-        if (tileValue == 0) return undefined // Transparent pixel
-        ;
-        return this.pallette == 0 ? this.pallette0.map[tileValue] : this.pallette1.map[tileValue];
-    }
-}
-
-},{"../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2CR9q":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _cpuRegisters = require("./cpu/cpuRegisters");
-var _instruction = require("./instruction");
-var _instructionHelpers = require("./instructions/instructionHelpers");
-var _nop = require("./instructions/nop");
-var _nopDefault = parcelHelpers.interopDefault(_nop);
-var _interruptRegisters = require("./memory/registers/interruptRegisters");
-var _timer = require("./timer");
-var _timerDefault = parcelHelpers.interopDefault(_timer);
-const INTERRUPT_HANDLERS = {
-    [(0, _interruptRegisters.Interrupt).VBlank]: 0x0040,
-    [(0, _interruptRegisters.Interrupt).LCD]: 0x0048,
-    [(0, _interruptRegisters.Interrupt).Timer]: 0x0050,
-    [(0, _interruptRegisters.Interrupt).Serial]: 0x0058,
-    [(0, _interruptRegisters.Interrupt).Joypad]: 0x0060
-};
-class CPU {
-    constructor(memory){
-        this.running = false;
-        this.cycleCount = 0;
-        this.interruptsEnabled = false;
-        this.recentFrames = [];
-        this.fps = 0;
-        this.isHalted = false;
-        this.isStopped = false;
-        this.debugMode = false;
-        this.breakpoints = new Set();
-        this.onInstructionComplete = ()=>{};
-        this.onError = ()=>{};
-        this.clockCallbacks = [];
-        this.gbDoctorLog = "";
-        this.memory = memory;
-        memory.cpu = this;
-        this.registers = new (0, _cpuRegisters.CpuRegisters)();
-        this.timer = new (0, _timerDefault.default)(memory);
-        this.addClockCallback(this.timer);
-        this.interruptEnableRegister = memory.at(0xFFFF);
-        this.interruptFlags = memory.at(0xFF0F);
-        const self = this;
-        this.nextByte = {
-            get value () {
-                return memory.at(self.registers.PC.value++).value;
-            },
-            set value (_){}
-        };
-        this.nextWord = {
-            get value () {
-                const l = memory.at(self.registers.PC.value++).value;
-                const h = memory.at(self.registers.PC.value++).value;
-                return (h << 8) + l;
-            }
-        };
-        // SKIP BOOTROM
-        this.registers.A.value = 0x01;
-        this.registers.F.value = 0xB0;
-        this.registers.B.value = 0x00;
-        this.registers.C.value = 0x13;
-        this.registers.D.value = 0x00;
-        this.registers.E.value = 0xD8;
-        this.registers.H.value = 0x01;
-        this.registers.L.value = 0x4D;
-        this.registers.SP.value = 0xFFFE;
-        this.registers.PC.value = 0x0100;
-    }
-    createGbDoctorLog() {
-        // GB Doctor logging
-        const A = this.registers.A.value.toString(16).padStart(2, "0").toUpperCase();
-        const B = this.registers.B.value.toString(16).padStart(2, "0").toUpperCase();
-        const C = this.registers.C.value.toString(16).padStart(2, "0").toUpperCase();
-        const D = this.registers.D.value.toString(16).padStart(2, "0").toUpperCase();
-        const E = this.registers.E.value.toString(16).padStart(2, "0").toUpperCase();
-        const F = this.registers.F.value.toString(16).padStart(2, "0").toUpperCase();
-        const H = this.registers.H.value.toString(16).padStart(2, "0").toUpperCase();
-        const L = this.registers.L.value.toString(16).padStart(2, "0").toUpperCase();
-        const SP = this.registers.SP.value.toString(16).padStart(4, "0").toUpperCase();
-        const PC = this.registers.PC.value.toString(16).padStart(4, "0").toUpperCase();
-        const PCMEM = [
-            this.memory.at(this.registers.PC.value + 0).value,
-            this.memory.at(this.registers.PC.value + 1).value,
-            this.memory.at(this.registers.PC.value + 2).value,
-            this.memory.at(this.registers.PC.value + 3).value
-        ].map((x)=>x.toString(16).padStart(2, "0").toUpperCase()).join(",");
-        this.gbDoctorLog += `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`;
-    }
-    executeNextInstruction() {
-        // this.createGbDoctorLog()
-        if (this.isHalted) {
-            this.incrementClock(4);
-            return;
-        }
-        const code = this.nextByte.value;
-        const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
-        let instruction;
-        try {
-            instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
-        } catch  {
-            console.warn(`Unused opcode: ${code.toString(16)} at address ${this.registers.PC.value.toString(16)}`);
-            instruction = (0, _nopDefault.default);
-        }
-        instruction.execute(this);
-        this.incrementClock(instruction.cycles);
-        if (this.debugMode) {
-            const parameters = new Array(instruction.parameterBytes).fill(0).map((_1, i)=>this.memory.at(this.registers.PC.value + 1 + i).value);
-            console.log(instruction.description(parameters));
-        }
-        this.onInstructionComplete();
-    }
-    getInterrupt() {
-        if (!this.interruptsEnabled) return null;
-        const activeInterrupts = this.interruptEnableRegister.value & this.interruptFlags.value;
-        if (activeInterrupts === 0) return null;
-        // Find id of highest priority interrupt
-        let id = 0;
-        while((activeInterrupts >> id & 1) === 0)id++;
-        this.interruptFlags.value = this.interruptFlags.value & ~(1 << id);
-        return id;
-    }
-    handleInterrupt(interrupt) {
-        this.isHalted = false;
-        // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
-        // Push PC to stack and jump to handler address
-        const handlerAddress = INTERRUPT_HANDLERS[interrupt];
-        const sp = this.registers.SP;
-        const pc = this.registers.PC;
-        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
-        this.memory.at(--sp.value).value = h;
-        this.memory.at(--sp.value).value = l;
-        pc.value = handlerAddress;
-        this.incrementClock(20);
-        this.interruptsEnabled = false;
-    }
-    incrementClock(cycles) {
-        this.cycleCount += cycles;
-        this.clockCallbacks.forEach((callback)=>callback.updateClock(cycles));
-    }
-    run() {
-        this.running = true;
-        this.apu.startAudio();
-        requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
-    }
-    pause() {
-        this.running = false;
-        this.apu.stopAudio();
-    }
-    runFrame(timestamp) {
-        // We maintain an FPS counter by keeping track of how many frames were run
-        // over the last 1000ms
-        this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
-        this.fps = this.recentFrames.push(timestamp);
-        let address = 0;
-        // try {
-        frameLoop: while(!this.breakpoints.has(this.registers.PC.value)){
-            this.executeNextInstruction();
-            address = this.registers.PC.value;
-            const interrupt = this.getInterrupt();
-            if (interrupt !== null) this.handleInterrupt(interrupt);
-            if (this.screen.newFrameDrawn) {
-                this.screen.newFrameDrawn = false;
-                break frameLoop;
-            }
-        }
-        if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
-    // } catch (error) {
-    //   console.log(error.stack)
-    //   this.running = false
-    //   this.onError(error)
-    // }    
-    }
-    addClockCallback(callback) {
-        this.clockCallbacks.push(callback);
-    }
-}
-exports.default = CPU;
-
-},{"./cpu/cpuRegisters":"7SgHs","./instruction":"dshpP","./instructions/instructionHelpers":"bJjsQ","./timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph","./instructions/nop":"jvHrF"}],"7SgHs":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "CpuRegisters", ()=>CpuRegisters);
-var _byteRef = require("../refs/byteRef");
-var _wordRef = require("../refs/wordRef");
-var _flags = require("./flags");
-class CpuRegisters {
-    constructor(){
-        this.A = new (0, _byteRef.GenericByteRef)();
-        this.F = new (0, _flags.Flags)();
-        this.B = new (0, _byteRef.GenericByteRef)();
-        this.C = new (0, _byteRef.GenericByteRef)();
-        this.D = new (0, _byteRef.GenericByteRef)();
-        this.E = new (0, _byteRef.GenericByteRef)();
-        this.H = new (0, _byteRef.GenericByteRef)();
-        this.L = new (0, _byteRef.GenericByteRef)();
-        this.PC = new (0, _wordRef.GenericWordRef)();
-        this.SP = new (0, _wordRef.GenericWordRef)();
-        this.HL = new (0, _wordRef.CompositeWordRef)(this.H, this.L);
-        this.BC = new (0, _wordRef.CompositeWordRef)(this.B, this.C);
-        this.DE = new (0, _wordRef.CompositeWordRef)(this.D, this.E);
-        this.AF = new (0, _wordRef.CompositeWordRef)(this.A, this.F);
-    }
-}
-
-},{"../refs/byteRef":"6cdGr","../refs/wordRef":"lDlTE","./flags":"dO5Cj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dO5Cj":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Flags", ()=>Flags);
-class Flags {
-    get value() {
-        return (this.zero ? 0x80 : 0) + (this.operation ? 0x40 : 0) + (this.halfCarry ? 0x20 : 0) + (this.carry ? 0x10 : 0);
-    }
-    set value(value) {
-        this.zero = (value & 0x80) > 0;
-        this.operation = (value & 0x40) > 0;
-        this.halfCarry = (value & 0x20) > 0;
-        this.carry = (value & 0x10) > 0;
-    }
-    constructor(){
-        this.zero = false;
-        this.operation = false;
-        this.halfCarry = false;
-        this.carry = false;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsN5b":[function(require,module,exports) {
+},{"../instructions/instructionHelpers":"bJjsQ","../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7Es7K":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _interruptRegisters = require("./memory/registers/interruptRegisters");
-const DIV_CYCLE_ROLLOVER = 256;
-class Timer {
-    constructor(memory){
-        this.timerCycles = 0;
-        this.divCycles = 0;
-        this.divider = memory.registers.divider;
-        this.counter = memory.registers.timerCounter;
-        this.modulo = memory.registers.timerModulo;
-        this.control = memory.registers.timerControl;
-        this.interrupts = memory.registers.interrupts;
-    }
-    updateClock(cycles) {
-        this.timerCycles += cycles;
-        this.divCycles += cycles;
-        if (this.divCycles > DIV_CYCLE_ROLLOVER) {
-            this.divCycles -= DIV_CYCLE_ROLLOVER;
-            this.divider.increment();
-        }
-        const timerRollover = this.getTimerRollover();
-        if (this.timerCycles > timerRollover) {
-            this.timerCycles -= timerRollover;
-            this.counter.value++;
-            if (this.counter.value === 0) {
-                this.counter.value = this.modulo.value;
-                this.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).Timer);
-            }
-        }
-    }
-    getTimerRollover() {
-        const mode = this.control.clockSelect;
-        return [
-            1024,
-            16,
-            64,
-            256
-        ][mode];
-    }
-}
-exports.default = Timer;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}],"f2x3M":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
+const WIDTH = 160;
+const HEIGHT = 144;
+const SCANLINES = 154;
 const COLOURS = [
     [
         255,
@@ -31668,415 +32172,339 @@ const COLOURS = [
         0
     ]
 ];
-const TILESET_BASE_ADDRESS = 0x8000;
-class PPU {
+const BACKGROUND_MEMORY_START = 0x9800;
+const WINDOW_MEMORY_START = 0x9C00;
+class Screen {
     constructor(cpu){
+        this.clockCount = 0;
+        this.mode = "Scanline OAM";
+        this.newFrameDrawn = false;
         this.cpu = cpu;
         this.memory = cpu.memory;
-    }
-    getTile(tileId) {
-        return this.memory.vram.tiles[tileId];
-    }
-    printTileSet(canvas) {
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("No canvas context");
-        canvas.width = 128;
-        canvas.height = 192;
-        const imageData = context.createImageData(128, 192);
-        const baseAddress = 0x8000;
-        // 16 x 24 tiles
-        // 1 row = 2 bytes. One tile = 16 bytes?
-        for(let tile = 0; tile < 384; tile++){
-            const tileBaseAddress = baseAddress + 16 * tile;
-            const baseX = 8 * (tile % 16);
-            const baseY = 8 * (tile >> 4);
-            for(let row = 0; row < 8; row++){
-                const y = baseY + row;
-                const byte1 = this.memory.at(tileBaseAddress + 2 * row).value;
-                const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value;
-                for(let bit = 7; bit >= 0; bit--){
-                    const x = baseX + 7 - bit;
-                    const pixelNumber = y * 128 + x;
-                    const bit1 = byte1 >> bit & 1;
-                    const bit2 = byte2 >> bit & 1;
-                    const pixelValue = bit1 + (bit2 << 1);
-                    const colour = COLOURS[pixelValue];
-                    imageData.data[4 * pixelNumber + 0] = colour[0];
-                    imageData.data[4 * pixelNumber + 1] = colour[1];
-                    imageData.data[4 * pixelNumber + 2] = colour[2];
-                    imageData.data[4 * pixelNumber + 3] = 255;
-                }
-            }
-        }
-        context.putImageData(imageData, 0, 0);
-    }
-    printTileset0(canvas) {
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("No canvas context");
-        canvas.width = 128;
-        canvas.height = 128;
-        const imageData = context.createImageData(128, 192);
-        for(let i = 0; i < 0x100; i++){
-            const baseX = (i & 15) << 3;
-            const baseY = i >> 4 << 3;
-            for(let row = 0; row < 8; row++){
-                const rowData = this.memory.vram.tileset0(i, row).map((p)=>COLOURS[p]);
-                const basePixelNumber = 128 * (baseY + row) + baseX;
-                for(let pixel = 0; pixel < 8; pixel++){
-                    const colour = rowData[pixel];
-                    const pixelNumber = basePixelNumber + pixel;
-                    imageData.data[4 * pixelNumber + 0] = colour[0];
-                    imageData.data[4 * pixelNumber + 1] = colour[1];
-                    imageData.data[4 * pixelNumber + 2] = colour[2];
-                    imageData.data[4 * pixelNumber + 3] = 255;
-                }
-            }
-        }
-        context.putImageData(imageData, 0, 0);
-    }
-    printTileset1(canvas) {
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("No canvas context");
-        canvas.width = 128;
-        canvas.height = 128;
-        const imageData = context.createImageData(128, 192);
-        for(let i = 0; i < 0x100; i++){
-            const baseX = (i & 15) << 3;
-            const baseY = i >> 4 << 3;
-            for(let row = 0; row < 8; row++){
-                const rowData = this.memory.vram.tileset1(i, row).map((p)=>COLOURS[p]);
-                const basePixelNumber = 128 * (baseY + row) + baseX;
-                for(let pixel = 0; pixel < 8; pixel++){
-                    const colour = rowData[pixel];
-                    const pixelNumber = basePixelNumber + pixel;
-                    imageData.data[4 * pixelNumber + 0] = colour[0];
-                    imageData.data[4 * pixelNumber + 1] = colour[1];
-                    imageData.data[4 * pixelNumber + 2] = colour[2];
-                    imageData.data[4 * pixelNumber + 3] = 255;
-                }
-            }
-        }
-        context.putImageData(imageData, 0, 0);
-    }
-    printBackgroundLayer(canvas, layer) {
-        const tilemapId = layer == "background" ? this.memory.registers.lcdControl.backgroundTilemap : this.memory.registers.lcdControl.windowTilemap;
-        const tileset = this.memory.registers.lcdControl.tileDataArea;
-        const pallete = this.memory.registers.backgroundPallete.map;
-        const context = canvas.getContext("2d");
-        const tiles = new Set();
-        const tileMap = [];
-        for(let y = 0; y < 32; y++){
-            const rowMap = [];
-            for(let x = 0; x < 32; x++){
-                let tileNumber = 32 * y + x;
-                let tileId = tilemapId == 0 ? this.memory.vram.tilemap0(tileNumber) : this.memory.vram.tilemap1(tileNumber);
-                tiles.add(tileId);
-                rowMap.push(tileId);
-            }
-            tileMap.push(rowMap);
-        }
-        const tileImages = this.getTileData(tiles, context, tileset, pallete);
-        tileMap.forEach((row, y)=>row.forEach((tileId, x)=>{
-                const tileData = tileImages[tileId];
-                context.putImageData(tileData, x * 8, y * 8);
-            }));
-    }
-    getTileData(tileIds, context, tileset, pallete) {
-        const tileImages = [];
-        tileIds.forEach((tileId)=>{
-            const tileData = context.createImageData(8, 8);
-            for(let row = 0; row < 8; row++){
-                let rowData = tileset == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
-                for(let pixel = 0; pixel < 8; pixel++){
-                    const baseIndex = (row * 8 + pixel) * 4;
-                    const colour = COLOURS[pallete[rowData[pixel]]];
-                    tileData.data[baseIndex + 0] = colour[0];
-                    tileData.data[baseIndex + 1] = colour[1];
-                    tileData.data[baseIndex + 2] = colour[2];
-                    tileData.data[baseIndex + 3] = 255;
-                }
-            }
-            tileImages[tileId] = tileData;
-        });
-        return tileImages;
-    }
-    printSpriteLayer(canvas) {
-        const sprites = this.memory.oam.sprites;
-        const pallette0 = this.memory.registers.objectPallete0.map;
-        const pallette1 = this.memory.registers.objectPallete1.map;
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, 160, 144);
-        const tilesP0 = new Set(sprites.filter((sprite)=>sprite.pallette == 0).map((sprite)=>sprite.tile));
-        const tilesP1 = new Set(sprites.filter((sprite)=>sprite.pallette == 1).map((sprite)=>sprite.tile));
-        const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0);
-        const tileImagesP1 = this.getTileData(tilesP1, context, 1, pallette1);
-        sprites.filter((sprite)=>sprite.priority).forEach((sprite)=>{
-            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
-            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
-        });
-        sprites.filter((sprite)=>!sprite.priority).forEach((sprite)=>{
-            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
-            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
-        });
-        context.beginPath();
-        context.lineWidth = 1;
-        context.strokeStyle = "red";
-        context.rect(0, 0, 160, 144);
-        context.stroke();
-    }
-    getSpriteInfo() {
-        return [];
-    }
-    backgroundPallete() {
-        const backgroundPalletByte = this.memory.at(0xFF47).value;
-        return [
-            COLOURS[backgroundPalletByte >> 0 & 3],
-            COLOURS[backgroundPalletByte >> 2 & 3],
-            COLOURS[backgroundPalletByte >> 4 & 3],
-            COLOURS[backgroundPalletByte >> 6 & 3]
-        ];
-    }
-}
-exports.default = PPU;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fhvC7":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _pulseChannel = require("./sound/pulseChannel");
-var _pulseChannelDefault = parcelHelpers.interopDefault(_pulseChannel);
-class APU {
-    constructor(cpu){
-        this.audioContext = new AudioContext({
-            sampleRate: 44100
-        });
-        this.cpu = cpu;
-        this.memory = cpu.memory;
-        cpu.apu = this;
+        this.buffer = new OffscreenCanvas(WIDTH, HEIGHT);
+        this.bufferContext = this.buffer.getContext("2d");
+        this.lcdControl = this.memory.registers.lcdControl;
+        this.lcdStatus = this.memory.registers.lcdStatus;
+        this.scrollY = this.memory.registers.scrollY;
+        this.scrollX = this.memory.registers.scrollX;
+        this.scanlineNumber = this.memory.registers.scanline;
+        this.backgroundPallette = this.memory.registers.backgroundPallete;
+        this.coincidence = this.memory.registers.scanlineCoincidence;
         cpu.addClockCallback(this);
-        this.audioContext.suspend();
-        this.channel1 = new (0, _pulseChannelDefault.default)({
-            audioContext: this.audioContext,
-            registers: this.memory.registers.channel1
-        });
-        this.channel2 = new (0, _pulseChannelDefault.default)({
-            audioContext: this.audioContext,
-            registers: this.memory.registers.channel2
-        });
+        cpu.screen = this;
     }
-    updateClock(cycles) {
-        this.channel1.update(cycles);
-        this.channel2.update(cycles);
-    }
-    startAudio() {
-        this.audioContext.resume();
-    }
-    stopAudio() {
-        this.audioContext.suspend();
-    }
-}
-exports.default = APU;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./sound/pulseChannel":"iY6ME"}],"iY6ME":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _lengthTimer = require("./lengthTimer");
-var _volumeEnvelope = require("./volumeEnvelope");
-class PulseChannel {
-    constructor({ audioContext, registers }){
-        this.playing = false;
-        this.period = 0;
-        this.volume = 0;
-        this.waveFormChanged = ()=>{};
-        this.audioContext = audioContext;
-        this.oscillator = audioContext.createOscillator();
-        this.oscillator.type = "square";
-        this.oscillator.frequency.value = 440;
-        this.gain = audioContext.createGain();
-        this.gain.gain.value = 0;
-        this.analyser = audioContext.createAnalyser();
-        this.muteNode = audioContext.createGain();
-        this.muteNode.gain.value = 1;
-        this.oscillator.connect(this.muteNode);
-        this.muteNode.connect(this.gain);
-        this.gain.connect(this.analyser);
-        this.analyser.connect(audioContext.destination);
-        this.oscillator.start();
-        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
-        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
-        registers.channel = this;
-    }
-    update(cycles) {
-        if (this.playing) {
-            this.timer.update(cycles);
-            this.envelope.update(cycles);
+    // Returns true if new frame is rendered
+    updateClock(cycle) {
+        this.clockCount += cycle;
+        switch(this.mode){
+            case "HBlank":
+                if (this.clockCount >= 204) {
+                    this.clockCount -= 204;
+                    this.setScanline(this.scanlineNumber.value + 1);
+                    if (this.scanlineNumber.value === HEIGHT) {
+                        this.renderScreen();
+                        this.setMode("VBlank");
+                        this.newFrameDrawn = true;
+                    } else this.setMode("Scanline OAM");
+                }
+                break;
+            case "VBlank":
+                if (this.clockCount >= 456) {
+                    this.clockCount -= 456;
+                    this.setScanline(this.scanlineNumber.value + 1);
+                    if (this.scanlineNumber.value > SCANLINES) {
+                        this.setScanline(0);
+                        this.renderScanline();
+                        this.setMode("HBlank");
+                    }
+                }
+                break;
+            case "Scanline OAM":
+                if (this.clockCount >= 80) {
+                    this.clockCount -= 80;
+                    this.setMode("Scanline VRAM");
+                }
+                break;
+            case "Scanline VRAM":
+                if (this.clockCount >= 172) {
+                    this.clockCount -= 172;
+                    this.renderScanline();
+                    this.setMode("HBlank");
+                }
+                break;
         }
     }
-    start() {
-        this.playing = true;
-        this.gain.connect(this.audioContext.destination);
-        this.setVolume();
-        this.timer.resetClock();
-        this.envelope.resetClock();
+    setScanline(value) {
+        this.scanlineNumber.value = value;
+        if (this.lcdControl.enabled && this.lcdStatus.lycInterruptEnabled && this.scanlineNumber.value == this.coincidence.value) {
+            this.lcdStatus.lycCoinciding = true;
+            this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+        } else this.lcdStatus.lycCoinciding = false;
     }
-    stop() {
-        this.playing = false;
-        this.setVolume(0);
-    }
-    updateVolume(increment) {
-        this.setVolume(this.volume + increment);
-    }
-    setPeriod(period) {
-        this.period = period;
-        const frequency = 131072 / (2048 - period);
-        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-    setVolume(volume = this.volume) {
-        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
-        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-}
-exports.default = PulseChannel;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./lengthTimer":"k44nd","./volumeEnvelope":"lEByF"}],"k44nd":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature that turns the channel off after a certain amount
- * of time has passed.
- */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
-// Roughly equal to 4.2MHz clock speed / 256Hz 
-const LENGTH_TIMER_TICK = 0x4000;
-class LengthTimer {
-    constructor(channelStop){
-        this.clock = 0;
-        this.enabled = false;
-        this.timer = 0;
-        this.channelStop = channelStop;
-    }
-    update(cycles) {
-        if (this.enabled) {
-            this.clock += cycles;
-            if (this.clock > LENGTH_TIMER_TICK) {
-                this.clock -= LENGTH_TIMER_TICK;
-                this.timer--;
-                if (this.timer <= 0) this.channelStop();
-            }
+    setMode(mode) {
+        switch(mode){
+            case "HBlank":
+                if (this.lcdControl.enabled && this.lcdStatus.mode0InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                this.lcdStatus.mode = 0;
+                break;
+            case "VBlank":
+                if (this.lcdControl.enabled) {
+                    this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).VBlank);
+                    if (this.lcdStatus.mode1InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                }
+                this.lcdStatus.mode = 1;
+                break;
+            case "Scanline OAM":
+                if (this.lcdControl.enabled && this.lcdStatus.mode2InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                this.lcdStatus.mode = 2;
+                break;
+            case "Scanline VRAM":
+                this.lcdStatus.mode = 3;
+                break;
         }
+        this.mode = mode;
     }
-    enable() {
-        this.enabled = true;
-    }
-    disable() {
-        this.enabled = false;
-    }
-    setTimer(length) {
-        this.timer = length;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature which regularly changes the volume of the channel
- * until it reaches a maximum or minimum value.
- */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
-// Roughly equal to 4.2MHz clock speed / 64Hz
-const ENVELOPER_TIMER_TICK = 0x10000;
-class VolumeEnvelope {
-    constructor(volumeSetter){
-        this.clock = 0;
-        this.direction = 1;
-        this.pace = 0;
-        this.timer = 0;
-        this.volumeIncrement = volumeSetter;
-    }
-    update(cycles) {
-        if (this.pace) {
-            this.clock += cycles;
-            if (this.clock > ENVELOPER_TIMER_TICK) {
-                this.clock -= ENVELOPER_TIMER_TICK;
-                this.timer--;
-                if (this.timer <= 0) {
-                    this.timer = this.pace;
-                    this.volumeIncrement(this.direction);
+    renderScanline() {
+        if (!this.lcdControl.enabled) return;
+        const scanline = this.scanlineNumber.value;
+        const line = this.bufferContext.createImageData(WIDTH, 1);
+        const scrollX = this.scrollX.value;
+        const scrollY = this.scrollY.value;
+        const backgroundY = scrollY + scanline & 0xFF;
+        const windowY = scanline - this.memory.registers.windowY.value;
+        // Returns the 8 long row of the background tile at pixel offset given
+        const getBackgroundTileRow = (offset)=>{
+            const backgroundX = scrollX + offset & 0xFF;
+            const tileMapNumber = (backgroundX >> 3) + 32 * (backgroundY >> 3);
+            const tileId = this.lcdControl.backgroundTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
+            const row = backgroundY & 0x7;
+            return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
+        };
+        let backgroundTileRow = getBackgroundTileRow(0);
+        let backgroundTileCounter = scrollX & 0x7;
+        const sprites = this.memory.oam.spritesAtScanline();
+        const highPrioritySprites = sprites.filter((s)=>!s.priority);
+        const lowPrioritySprites = sprites.filter((s)=>s.priority);
+        const winY = scanline - this.memory.registers.windowY.value;
+        for(let i = 0; i < WIDTH; i++){
+            if (!this.lcdControl.enabled) return;
+            let pixel;
+            // Render high priority sprites (that go above background)
+            if (pixel === undefined && this.lcdControl.objectsEnabled) pixel = highPrioritySprites.filter((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8).map((sprite)=>sprite.pixelAt(scanline, i, this.lcdControl.objectSize)).find((p)=>p !== undefined);
+            // Render window
+            if (pixel === undefined && this.lcdControl.windowEnabled) {
+                const winX = i - (this.memory.registers.windowX.value - 7);
+                if (winY >= 0 && winX >= 0) {
+                    const tileMapNumber = (winX >> 3) + 32 * (winY >> 3);
+                    const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
+                    const row = winY & 0x7;
+                    pixel = this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row)[winX % 8] : this.memory.vram.tileset1(tileId, row)[winX % 8];
                 }
             }
+            // Render background (excluding the lowest colour in the pallete)
+            if (pixel === undefined) {
+                const backgroundPixel = backgroundTileRow[(scrollX + i) % 8];
+                if (backgroundPixel !== 0) pixel = this.backgroundPallette.map[backgroundPixel];
+            }
+            // Get next background tile if needed
+            backgroundTileCounter++;
+            if (backgroundTileCounter === 8) {
+                backgroundTileCounter = 0;
+                backgroundTileRow = getBackgroundTileRow(i + 1);
+            }
+            // Render low priority sprites (that go below non zero background)
+            if (pixel === undefined && this.lcdControl.objectsEnabled) {
+                const sprite = lowPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8);
+                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
+            }
+            // If nothing else has rendered, use the lowest colour in the pallete
+            if (pixel === undefined) pixel = this.backgroundPallette.map[0];
+            const colour = COLOURS[pixel];
+            line.data[4 * i + 0] = colour[0];
+            line.data[4 * i + 1] = colour[1];
+            line.data[4 * i + 2] = colour[2];
+            line.data[4 * i + 3] = 255;
+        }
+        // Finally, add the new line to the buffer image
+        this.bufferContext.putImageData(line, 0, scanline);
+    }
+    renderScreen() {
+        if (this.canvas) {
+            const screenContext = this.canvas.getContext("2d");
+            screenContext.drawImage(this.buffer, 0, 0);
         }
     }
-    setEnvelope(direction, pace) {
-        this.direction = direction;
-        this.pace = pace;
-        this.timer = pace;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
 }
+exports.default = Screen;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cFNSD":[function(require,module,exports) {
+},{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3e0xT":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$119f = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$119f.prelude(module);
+
+try {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _interruptRegisters = require("./memory/registers/interruptRegisters");
-class Controller {
-    constructor(memory){
-        this.isPressed = {
-            "A": false,
-            "B": false,
-            "Start": false,
-            "Select": false,
-            "Up": false,
-            "Down": false,
-            "Left": false,
-            "Right": false
-        };
-        this.keyBindings = {
-            "KeyZ": "A",
-            "KeyX": "B",
-            "Enter": "Start",
-            "Backspace": "Select",
-            "ArrowUp": "Up",
-            "ArrowDown": "Down",
-            "ArrowLeft": "Left",
-            "ArrowRight": "Right"
-        };
-        this.triggerInterrupt = ()=>{};
-        this.updateUi = ()=>{};
-        this.joypadRegister = memory.registers.joypad;
-        this.interruptRegister = memory.registers.interrupts;
-    }
-    initialiseEvents() {
-        document.addEventListener("keydown", (e)=>this.handleKeyPress(e));
-        document.addEventListener("keyup", (e)=>this.handleKeyRelease(e));
-    }
-    handleKeyPress(event) {
-        const button = this.keyBindings[event.code];
-        if (button) {
-            event.preventDefault();
-            if (!this.isPressed[button]) this.interruptRegister.setInterrupt((0, _interruptRegisters.Interrupt).Joypad);
-            this.isPressed[button] = true;
-            this.joypadRegister[button] = true;
-            this.updateUi(this.isPressed);
+parcelHelpers.export(exports, "default", ()=>GameLoader);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _useLocalFile = require("../hooks/useLocalFile");
+var _useLocalFileDefault = parcelHelpers.interopDefault(_useLocalFile);
+var _createCartridge = require("../../emulator/memory/cartridges/createCartridge");
+var _s = $RefreshSig$();
+function GameLoader({ setCartridge }) {
+    _s();
+    const [gameFile, setGameFile] = (0, _useLocalFileDefault.default)("game.gb");
+    const handleGameUpload = async function(e) {
+        e.preventDefault();
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setGameFile(file);
+            if (gameFile) setCartridge(await (0, _createCartridge.createCartridge)(gameFile));
         }
-    }
-    handleKeyRelease(event) {
-        const button = this.keyBindings[event.code];
-        if (button) {
-            event.preventDefault();
-            if (this.isPressed[button]) this.interruptRegister.setInterrupt((0, _interruptRegisters.Interrupt).Joypad);
-            this.isPressed[button] = false;
-            this.joypadRegister[button] = false;
-            this.updateUi(this.isPressed);
-        }
-    }
+    };
+    const loadGame = async ()=>{
+        if (gameFile) setCartridge(await (0, _createCartridge.createCartridge)(gameFile));
+    };
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
+        children: [
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
+                children: "Game Loader"
+            }, void 0, false, {
+                fileName: "src/web/components/gameLoader.tsx",
+                lineNumber: 33,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                htmlFor: "bios-load",
+                children: "Game: "
+            }, void 0, false, {
+                fileName: "src/web/components/gameLoader.tsx",
+                lineNumber: 34,
+                columnNumber: 5
+            }, this),
+            gameFile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                children: [
+                    "Loaded ",
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: ()=>setGameFile(null),
+                        children: "clear?"
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameLoader.tsx",
+                        lineNumber: 37,
+                        columnNumber: 20
+                    }, this)
+                ]
+            }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                id: "game-load",
+                type: "file",
+                onChange: handleGameUpload
+            }, void 0, false, {
+                fileName: "src/web/components/gameLoader.tsx",
+                lineNumber: 38,
+                columnNumber: 11
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                fileName: "src/web/components/gameLoader.tsx",
+                lineNumber: 44,
+                columnNumber: 5
+            }, this),
+            gameFile && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                onClick: ()=>loadGame(),
+                children: "Run"
+            }, void 0, false, {
+                fileName: "src/web/components/gameLoader.tsx",
+                lineNumber: 45,
+                columnNumber: 19
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "src/web/components/gameLoader.tsx",
+        lineNumber: 32,
+        columnNumber: 11
+    }, this);
 }
-exports.default = Controller;
+_s(GameLoader, "ZtWL+lYE+m7nR9zTGNQ4X08AJzo=", false, function() {
+    return [
+        (0, _useLocalFileDefault.default)
+    ];
+});
+_c = GameLoader;
+var _c;
+$RefreshReg$(_c, "GameLoader");
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./memory/registers/interruptRegisters":"gq7ph"}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
+  $parcel$ReactRefreshHelpers$119f.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../hooks/useLocalFile":"6Payo","../../emulator/memory/cartridges/createCartridge":"hpQ2G","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"6Payo":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$9d81 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$9d81.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "default", ()=>useLocalFile);
+var _react = require("react");
+function useLocalFile(key) {
+    const [stateFile, setStateFile] = _react.useState(null);
+    const readFromStorage = ()=>{
+        const base64EncodedFile = window.localStorage.getItem(key);
+        if (base64EncodedFile) base64Decode(base64EncodedFile).then(setStateFile);
+    };
+    _react.useEffect(()=>{
+        readFromStorage();
+        addEventListener("storage", (event)=>{
+            if (event.key === key) readFromStorage();
+        });
+    }, [
+        key
+    ]);
+    const setValue = (newFile)=>{
+        if (newFile === null) {
+            setStateFile(null);
+            window.localStorage.removeItem(key);
+            return;
+        }
+        base64Encode(newFile).then((encodedFile)=>{
+            window.localStorage.setItem(key, encodedFile);
+            readFromStorage();
+        });
+    };
+    return [
+        stateFile,
+        setValue
+    ];
+}
+function base64Encode(file) {
+    return new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.onload = ()=>{
+            resolve(reader.result?.toString() || "");
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+async function base64Decode(base64) {
+    const res = await fetch(base64);
+    const blob = await res.blob();
+    return new File([
+        blob
+    ], "image.png", {
+        type: "image/png"
+    });
+}
+
+  $parcel$ReactRefreshHelpers$9d81.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+},{"react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
 
 //# sourceMappingURL=index.b9dee198.js.map
