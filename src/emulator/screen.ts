@@ -191,8 +191,16 @@ export default class Screen {
       if (!this.lcdControl.enabled) { return }
       let pixel: number | undefined
 
+      // Render high priority sprites (that go above background)
+      if (pixel === undefined && this.lcdControl.objectsEnabled) {
+        pixel = highPrioritySprites
+          .filter(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8))
+          .map(sprite => sprite.pixelAt(scanline, i, this.lcdControl.objectSize))
+          .find(p => p !== undefined)
+      }
+
       // Render window
-      if (this.lcdControl.windowEnabled) {
+      if (pixel === undefined && this.lcdControl.windowEnabled) {
         const winX = i - (this.memory.registers.windowX.value - 7)
         if (winY >= 0 && winX >= 0) {
           const tileMapNumber = (winX >> 3) + (32 * (winY >> 3))
@@ -204,15 +212,7 @@ export default class Screen {
             ? this.memory.vram.tileset0(tileId, row)[winX % 8]
             : this.memory.vram.tileset1(tileId, row)[winX % 8]
         }
-      }
-
-      // Render high priority sprites (that go above background)
-      if (pixel === undefined && this.lcdControl.objectsEnabled) {
-        pixel = highPrioritySprites
-          .filter(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8))
-          .map(sprite => sprite.pixelAt(scanline, i, this.lcdControl.objectSize))
-          .find(p => p !== undefined)
-      }
+      }      
       
       // Render background (excluding the lowest colour in the pallete)
       if (pixel === undefined) {
