@@ -3,6 +3,7 @@
 
 import APU from "../../apu";
 import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
+import { NoiseChannel } from "../../sound/noiseChannel";
 import PulseChannel from "../../sound/pulseChannel";
 import WaveChannel from "../../sound/waveChannel";
 
@@ -263,5 +264,86 @@ export class WaveChannelRegisters {
         this.samples[highIndex] = (value & 0x0F) / 8 - 1
       }
     )
+  }
+}
+
+export class NoiseChannelRegisters {
+  lengthTimer = 0
+  lengthEnabled = false
+  volumeEnvelope: VolumeEnvelopeData = {
+    direction: 1,
+    pace: 0,
+  }
+  volume = 0
+  clockShift = 0
+  lfsrMode = 0
+  clockDivider = 0
+
+  channel: NoiseChannel
+  
+  nr1: ByteRef
+  nr2: ByteRef
+  nr3: ByteRef
+  nr4: ByteRef
+
+  constructor() {
+    const self = this
+    this.nr1 = {
+      get value() { return self.lengthTimer },
+      set value(value) {
+        self.lengthTimer = value & 0x3F
+      }
+    }
+    this.nr2 = {
+      get value(): number {
+        return (self.volume << 4)
+          + (self.volumeEnvelope.pace)
+          + (self.volumeEnvelope.direction == 1 ? 0x8 : 0)
+      },
+      set value(value: number) {
+        self.volume = value >> 4
+        self.volumeEnvelope.pace = value & 0x7
+        self.volumeEnvelope.direction = (value & 0x8) > 0 ? 1 : -1
+        if (self.channel) {
+          self.channel.setVolume(self.volume)
+          self.channel.envelope.setEnvelope(
+            self.volumeEnvelope.direction,
+            self.volumeEnvelope.pace)
+        }
+      }
+    }
+    this.nr3 = {
+      get value() {
+        return (self.clockShift << 4)
+          + (self.lfsrMode << 3)
+          + (self.clockDivider)
+      },
+      set value(value) {
+        self.clockShift = (value >> 4) & 0xF
+        self.lfsrMode = (value >> 3) & 1
+        self.clockDivider = value & 0x7
+        if (self.clockDivider == 0) { self.clockDivider = 0.5 }
+        if (self.channel) {
+          self.channel.setMode(self.lfsrMode)
+          self.channel.setSampleRate(self.clockDivider, self.clockShift)
+        }
+      }
+    }
+    this.nr4 = {
+      get value(): number {
+        return (self.lengthEnabled ? 0x40 : 0)
+      },
+      set value(value: number) {
+        self.lengthEnabled = (value & 0x40) > 0
+
+        if (self.channel) {
+          if (self.lengthEnabled) { self.channel.timer.enable() }
+          else { self.channel.timer.disable() }
+          if (value & 0x80) {
+            self.channel.start()
+          }
+        }
+      }
+    }
   }
 }

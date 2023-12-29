@@ -1,5 +1,5 @@
 import { ByteRef, ConstantByteRef, GenericByteRef } from "../../refs/byteRef"
-import { AudioMasterControlRegister, PulseChannelRegisters, WaveChannelRegisters } from "./audioRegisters"
+import { AudioMasterControlRegister, NoiseChannelRegisters, PulseChannelRegisters, WaveChannelRegisters } from "./audioRegisters"
 import { BootRomRegister } from "./bootRomRegister"
 import { DmaTransferRegister } from "./dmaTransferRegister"
 import { InterruptRegister } from "./interruptRegisters"
@@ -22,6 +22,7 @@ export class IoRegisters {
   channel1 = new PulseChannelRegisters()
   channel2 = new PulseChannelRegisters()
   channel3 = new WaveChannelRegisters()
+  channel4 = new NoiseChannelRegisters()
 
   lcdControl = new LcdControlRegister()
   lcdStatus = new LcdStatusRegister()
@@ -71,8 +72,11 @@ export class IoRegisters {
     for (let i = 0; i <= 16; i++) {
       this.data[0xFF30 + i] = this.channel3.sampleByte(i)
     }
-
-    // TODO channel 4
+    // Audio Channel 4 (Noise)
+    this.data[0xFF20] = this.channel4.nr1
+    this.data[0xFF21] = this.channel4.nr2
+    this.data[0xFF22] = this.channel4.nr3
+    this.data[0xFF23] = this.channel4.nr4
 
     // Master Audio
     this.data[0xFF26] = this.audioMasterControl

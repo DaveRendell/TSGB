@@ -1,5 +1,6 @@
 import CPU from "./cpu";
 import Memory from "./memory";
+import { NoiseChannel } from "./sound/noiseChannel";
 import PulseChannel from "./sound/pulseChannel";
 import WaveChannel from "./sound/waveChannel";
 
@@ -14,6 +15,7 @@ export default class APU {
   channel1: PulseChannel
   channel2: PulseChannel
   channel3: WaveChannel
+  channel4: NoiseChannel
 
   constructor(cpu: CPU) {
     this.cpu = cpu
@@ -39,6 +41,11 @@ export default class APU {
       audioContext: this.audioContext,
       outputNode: this.masterControl,
       registers: this.memory.registers.channel3
+    })
+    this.channel4 = new NoiseChannel({
+      audioContext: this.audioContext,
+      outputNode: this.masterControl,
+      registers: this.memory.registers.channel4
     })
     this.masterControl.connect(this.audioContext.destination)
   }
