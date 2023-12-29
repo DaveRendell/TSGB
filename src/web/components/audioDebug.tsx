@@ -13,7 +13,7 @@ export default function AudioDebug({ apu }: Props) {
       <Oscilloscope name="Pulse 2" channel={apu.channel2} id={1} />
     </div>
     <div className="flex-horizontally">
-      <div><h3>Wave</h3>TODO<br/><canvas width={300}/></div>
+      <Oscilloscope name="Wave" channel={apu.channel3} id={2} />
       <div><h3>Noise</h3>TODO</div>
     </div>   
   </section>)

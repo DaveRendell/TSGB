@@ -82,12 +82,12 @@ body {
   max-width: 400px;
   margin: 0 auto;
   padding: 1em 1em 3em 1em;
-  border-radius: 1em 1em 3em 1em;
+  border-radius: 0.5em 0.5em 3em 0.5em;
 }
 
 .bevel {
   background-color: darkslategray;
   padding: 1em 1em 2em 1em;
-  border-radius: 1em 1em 3em 1em;
+  border-radius: 0.5em 0.5em 3em 0.5em;
   margin-bottom: 1em;
 }

@@ -23,8 +23,8 @@ export class LengthTimer {
       this.clock += cycles
       if (this.clock > LENGTH_TIMER_TICK) {
         this.clock -= LENGTH_TIMER_TICK
-        this.timer--
-        if (this.timer <= 0) {
+        this.timer++
+        if (this.timer >= 64) {
           this.channelStop()
         }
       }

@@ -1,8 +1,9 @@
 // Reference:
 // https://gbdev.io/pandocs/Audio_Registers.html#audio-registers
 
-import { ByteRef } from "../../refs/byteRef";
+import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
 import PulseChannel from "../../sound/pulseChannel";
+import WaveChannel from "../../sound/waveChannel";
 
 export class AudioMasterControlRegister implements ByteRef {
   masterSwitch = false
@@ -158,5 +159,106 @@ export class PulseChannelRegisters {
     this.volume = newVolume
     if (this.volume < 0) { this.volume = 0 }
     if (this.volume > 15) { this.volume = 15 }
+  }
+}
+
+export class WaveChannelRegisters {
+  enabled = false
+  lengthTimer = 0
+  lengthEnabled = false
+  volumeSetting = 0
+  period = 0
+  triggered = false
+  trigger: () => void = () => {  }
+  samples: Float32Array = Float32Array.from(new Array(32).fill(0))
+
+  nr0: ByteRef
+  nr1: ByteRef
+  nr2: ByteRef
+  nr3: ByteRef
+  nr4: ByteRef
+
+  channel: WaveChannel
+
+  constructor() {
+    const self = this
+
+    this.nr0 = {
+      get value() {
+        return self.enabled ? 0x80 : 0
+      },
+      set value(value) {
+        self.enabled = (value & 0x80) > 0
+        if (!self.enabled && this.channel) { this.channel.stop() }
+      }
+    }
+    this.nr1 = {
+      get value() {
+        return self.lengthTimer
+      },
+      set value(value) {
+        self.lengthTimer = value
+        if (self.channel) {
+          self.channel.timer.setTimer(value)
+        }
+      }
+    }
+    this.nr2 = {
+      get value() {
+        return self.volumeSetting << 5
+      },
+      set value(value) {
+        self.volumeSetting = (value >> 5) & 0x3
+        self.channel.setVolume(self.volumeSetting)
+      }
+    },
+    this.nr3 = {
+      get value(): number {
+        return self.period & 0xFF
+      },
+      set value(value: number) {
+        self.period &= 0xF00
+        self.period |= value
+      }
+    }
+    this.nr4 = {
+      get value(): number {
+        return (self.lengthEnabled ? 0x40 : 0)
+          + (self.triggered ? 0x80 : 0)
+          + (self.period >> 8)
+      },
+      set value(value: number) {
+        self.period &= 0xFF
+        self.period |= (value & 0x7) << 8
+        self.lengthEnabled = (value & 0x40) > 0
+
+        if (value & 0x80) {
+          self.trigger()
+          self.triggered = true
+        }
+
+        if (self.channel) {
+          if (self.lengthEnabled) { self.channel.timer.enable() }
+          else { self.channel.timer.disable() }
+          if (value & 0x80) {
+            self.channel.start()
+          }
+        }
+      }
+    }
+  }
+
+  sampleByte(id: number): ByteRef {
+    const lowIndex = 2 * id
+    const highIndex = 2 * id + 1
+    return new GetSetByteRef(
+      () => {
+        return 0
+      },
+      (value) => {
+        this.samples[lowIndex] = (value >> 4) / 8 - 1
+        this.samples[highIndex] = (value & 0x0F) / 8 - 1
+      }
+    )
   }
 }

@@ -1,6 +1,7 @@
 import CPU from "./cpu";
 import Memory from "./memory";
 import PulseChannel from "./sound/pulseChannel";
+import WaveChannel from "./sound/waveChannel";
 
 // Reference: https://gbdev.io/pandocs/Audio_Registers.html
 export default class APU {
@@ -10,6 +11,7 @@ export default class APU {
 
   channel1: PulseChannel
   channel2: PulseChannel
+  channel3: WaveChannel
 
   constructor(cpu: CPU) {
     this.cpu = cpu
@@ -25,11 +27,16 @@ export default class APU {
       audioContext: this.audioContext,
       registers: this.memory.registers.channel2,
     })
+    this.channel3 = new WaveChannel({
+      audioContext: this.audioContext,
+      registers: this.memory.registers.channel3
+    })
   }
 
   updateClock(cycles: number) {
     this.channel1.update(cycles)
     this.channel2.update(cycles)
+    this.channel3.update(cycles)
   }
 
   startAudio() {
