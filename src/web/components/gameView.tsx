@@ -34,14 +34,19 @@ export default function GameView({ emulator }: Props) {
       <button onClick={() => emulator.cpu.run()}>Run</button>
       <button onClick={() => emulator.cpu.pause()}>Pause</button>
       <button onClick={() => emulator.cpu.runFrame(Infinity)}>Run frame</button>
-      <Display cpu={emulator.cpu} />
+      <div className="console">
+        <div className="bevel">
+          <Display cpu={emulator.cpu} />
+        </div>
+        <Joypad controller={emulator.controller} />
+      </div>
+      
       { error &&
         <p>Error: {error}</p>
       }
-      <Joypad controller={emulator.controller} />
       <Tabs
         tabs={{
-          "Info": () => <p>Title: {emulator.cpu.memory.cartridge?.title}</p>,
+          "Info": () => <p>Title: {emulator.cpu.memory.cartridge?.title}<br/>FPS: {emulator.cpu.fps.toPrecision(2)}</p>,
           "Debug Graphics": () => <>
             <VramViewer ppu={new PPU(emulator.cpu)} />
           </>,

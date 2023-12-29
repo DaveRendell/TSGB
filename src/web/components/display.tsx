@@ -26,7 +26,6 @@ export default function Display({ cpu }: Props) {
         height="144"
         ref={canvas}
       />
-      FPS: {cpu.fps.toPrecision(2)}<br/>
     </section>
   )
 }

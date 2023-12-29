@@ -76,3 +76,18 @@ body {
   width: 320px;
   height: 288px;
 }
+
+.console {
+  background-color: slategray;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2em 1em 3em 1em;
+  border-radius: 1em 1em 3em 1em;
+}
+
+.bevel {
+  background-color: darkslategray;
+  padding: 1em 1em 2em 1em;
+  border-radius: 1em 1em 3em 1em;
+  margin-bottom: 1em;
+}
