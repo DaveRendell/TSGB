@@ -114,11 +114,11 @@ export default class Screen {
     this.scanlineNumber.value = value
 
     if (
-      this.lcdStatus.lycInterruptEnabled
+      this.lcdControl.enabled
+      && this.lcdStatus.lycInterruptEnabled
       && this.scanlineNumber.value == this.coincidence.value
     ) {
       this.lcdStatus.lycCoinciding = true
-      // TODO: why does this make SML glitchy AF?
       this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
     } else {
       this.lcdStatus.lycCoinciding = false
@@ -128,20 +128,22 @@ export default class Screen {
   setMode(mode: Mode) {
     switch(mode) {
       case "HBlank":
-        if (this.lcdStatus.mode0InterruptEnabled) {
+        if (this.lcdControl.enabled && this.lcdStatus.mode0InterruptEnabled) {
           this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
         }
         this.lcdStatus.mode = 0
         break
       case "VBlank":
-        this.memory.registers.interrupts.setInterrupt(Interrupt.VBlank)
-        if (this.lcdStatus.mode1InterruptEnabled) {
-          this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
-        }
+        if (this.lcdControl.enabled) {
+          this.memory.registers.interrupts.setInterrupt(Interrupt.VBlank)
+          if (this.lcdStatus.mode1InterruptEnabled) {
+            this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
+          }
+        }        
         this.lcdStatus.mode = 1
         break
       case "Scanline OAM":
-        if (this.lcdStatus.mode2InterruptEnabled) {
+        if (this.lcdControl.enabled && this.lcdStatus.mode2InterruptEnabled) {
           this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
         }
         this.lcdStatus.mode = 2
