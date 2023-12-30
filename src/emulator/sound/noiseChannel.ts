@@ -13,18 +13,20 @@ interface Props {
   registers: NoiseChannelRegisters
 }
 
-const BUFFER_LENGTH = 2048
+const SAMPLE_LENGTH = 2 << 16
+const SAMPLE_DEPTH = 64
 
 export class NoiseChannel implements Channel {
   audioContext: AudioContext
 
   playing = false
   volume = 0
+  mode = 0
+  playRate = 0
 
   longBuffer: AudioBuffer
   shortBuffer: AudioBuffer
-  longBufferSource: AudioBufferSourceNode
-  shortBufferSource: AudioBufferSourceNode
+  bufferSource: AudioBufferSourceNode
   gain: GainNode
 
   analyser: AnalyserNode;
@@ -40,15 +42,11 @@ export class NoiseChannel implements Channel {
 
     this.audioContext = audioContext
 
-    this.longBuffer = audioContext.createBuffer(1, BUFFER_LENGTH, audioContext.sampleRate)
-    this.shortBuffer = audioContext.createBuffer(1, BUFFER_LENGTH, audioContext.sampleRate)
-    this.longBufferSource = audioContext.createBufferSource()
-    this.shortBufferSource = audioContext.createBufferSource()
+    this.longBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate)
+    this.shortBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate)
 
-    this.longBuffer.copyToChannel(generateBuffer(15, BUFFER_LENGTH), 0)
-    this.shortBuffer.copyToChannel(generateBuffer(7, BUFFER_LENGTH), 0)
-    this.longBufferSource.buffer = this.longBuffer
-    this.shortBufferSource.buffer = this.shortBuffer
+    this.longBuffer.copyToChannel(createBuffer15(), 0)
+    this.shortBuffer.copyToChannel(createBuffer7(), 0)
 
     this.gain = audioContext.createGain()
     this.gain.gain.value = 0
@@ -60,6 +58,9 @@ export class NoiseChannel implements Channel {
     this.gain.connect(this.muteNode)
     this.muteNode.connect(this.analyser)
     this.analyser.connect(outputNode)
+
+    this.createBufferSource()
+    this.setSampleRate(0.5, 0)
 
     this.waveFormChanged = () => {}
 
@@ -76,7 +77,9 @@ export class NoiseChannel implements Channel {
   }
 
   start() {
+    this.createBufferSource()
     this.playing = true
+    this.bufferSource.start()
     this.setVolume()
     this.timer.resetClock()
     this.envelope.resetClock()
@@ -89,42 +92,73 @@ export class NoiseChannel implements Channel {
 
   updateVolume(increment: number) {
     this.setVolume(this.volume + increment)
+    console.log(`Noise volume envelope changing volume by ${increment} to ${this.volume}`)
   }
 
   setMode(mode: number) {
-    if (mode == 0) {
-      this.shortBufferSource.disconnect()
-      this.longBufferSource.connect(this.gain)
-    } else {
-      this.longBufferSource.disconnect()
-      this.shortBufferSource.connect(this.gain)
-    }
+    this.mode = mode
   }
 
   setSampleRate(divider: number, shift: number) {
-    const playRate = BUFFER_LENGTH * 262144 / (divider * (1 << shift))
-    this.longBufferSource.playbackRate.setValueAtTime(playRate, this.audioContext.currentTime)
-    this.shortBufferSource.playbackRate.setValueAtTime(playRate, this.audioContext.currentTime)
+    const bitFreq = 262144 / (divider * (1 << shift))
+    this.playRate = SAMPLE_DEPTH * bitFreq / this.audioContext.sampleRate
+    console.log("Setting sample rate", { divider, shift, playRate: this.playRate })
+    this.bufferSource.playbackRate.setValueAtTime(this.playRate, this.audioContext.currentTime)
+  }
+
+  createBufferSource() {
+    if (this.playing) {
+      this.bufferSource.stop()
+    }
+    this.bufferSource = this.audioContext.createBufferSource()
+    this.bufferSource.playbackRate.value = this.playRate
+    if (this.mode == 0) { this.bufferSource.buffer = this.longBuffer }
+    else { this.bufferSource.buffer = this.shortBuffer }
+    this.bufferSource.connect(this.gain)
+    this.bufferSource.loop = true
   }
 
   setVolume(volume: number = this.volume) {
     this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume
-    this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime)
+    this.gain.gain.setValueAtTime(this.volume / 200, this.audioContext.currentTime)
     this.waveFormChanged()
   }
 }
 
-function generateBuffer(width: number, length: number): Float32Array {
-  const output = new Float32Array()
-  let shift = 0
-  for (let i = 0; i < length; i++) {
-    const bit0 = shift & 1
-    shift >>= 1
-    const bit1 = shift & 1
-    const newBit = bit0 === bit1 ? 1 : 0
-    output[i] = bit1
-    shift &= ~(1 << width)
-    shift |= (newBit << width)
+function createBuffer7(): Float32Array {
+  const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH)
+  let lsfr = 0
+  for (let i = 0; i < SAMPLE_LENGTH; i++) {
+    let shift = lsfr >> 1
+    const b0 = lsfr & 1
+    const b1 = shift & 1
+    const carry = 1 - (b0 ^ b1)
+    shift &= 0b01111111
+    shift |= (carry << 7)
+    lsfr = shift
+    const value = carry ? 1 : -1
+    for (let j = 0; j < SAMPLE_DEPTH; j++) {
+      values[i * SAMPLE_DEPTH + j] = value
+    }
   }
-  return output
+  return values
+}
+
+function createBuffer15(): Float32Array {
+  const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH)
+  let lsfr = 0
+  for (let i = 0; i < SAMPLE_LENGTH; i++) {
+    let shift = lsfr >> 1
+    const b0 = lsfr & 1
+    const b1 = shift & 1
+    const carry = 1 - (b0 ^ b1)
+    shift &= 0b0111111111111111
+    shift |= (carry << 15)
+    lsfr = shift
+    const value = carry ? 1 : -1
+    for (let j = 0; j < SAMPLE_DEPTH; j++) {
+      values[i * SAMPLE_DEPTH + j] = value
+    }
+  }
+  return values
 }

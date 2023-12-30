@@ -319,6 +319,7 @@ export class NoiseChannelRegisters {
           + (self.clockDivider)
       },
       set value(value) {
+        console.log("Setting clock value", value.toString(2))
         self.clockShift = (value >> 4) & 0xF
         self.lfsrMode = (value >> 3) & 1
         self.clockDivider = value & 0x7
