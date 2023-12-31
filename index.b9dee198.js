@@ -27172,7 +27172,8 @@ function App() {
     _s();
     const [cartridge, setCartridge] = _react.useState(null);
     if (cartridge) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameViewDefault.default), {
-        emulator: new (0, _emulator.Emulator)(cartridge)
+        emulator: new (0, _emulator.Emulator)(cartridge),
+        unload: ()=>setCartridge(null)
     }, void 0, false, {
         fileName: "src/web/components/app.tsx",
         lineNumber: 11,
@@ -27224,7 +27225,7 @@ var _tabsDefault = parcelHelpers.interopDefault(_tabs);
 var _audioDebug = require("./audioDebug");
 var _audioDebugDefault = parcelHelpers.interopDefault(_audioDebug);
 var _s = $RefreshSig$();
-function GameView({ emulator }) {
+function GameView({ emulator, unload }) {
     _s();
     // Reload this component when execution of CPU is complete
     const [toggle, setToggle] = _react.useState(false);
@@ -27243,7 +27244,7 @@ function GameView({ emulator }) {
                 children: "TSGB"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 33,
+                lineNumber: 34,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27251,7 +27252,7 @@ function GameView({ emulator }) {
                 children: "Run"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 34,
+                lineNumber: 35,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27259,7 +27260,7 @@ function GameView({ emulator }) {
                 children: "Pause"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 35,
+                lineNumber: 36,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27267,7 +27268,18 @@ function GameView({ emulator }) {
                 children: "Run frame"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 36,
+                lineNumber: 37,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                onClick: ()=>{
+                    emulator.cpu.pause();
+                    unload();
+                },
+                children: "Unload"
+            }, void 0, false, {
+                fileName: "src/web/components/gameView.tsx",
+                lineNumber: 38,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27279,25 +27291,25 @@ function GameView({ emulator }) {
                             cpu: emulator.cpu
                         }, void 0, false, {
                             fileName: "src/web/components/gameView.tsx",
-                            lineNumber: 39,
+                            lineNumber: 41,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 38,
+                        lineNumber: 40,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
                         controller: emulator.controller
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 41,
+                        lineNumber: 43,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 37,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27307,7 +27319,7 @@ function GameView({ emulator }) {
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 45,
+                lineNumber: 47,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
@@ -27344,13 +27356,13 @@ function GameView({ emulator }) {
                 }
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 47,
+                lineNumber: 49,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/gameView.tsx",
-        lineNumber: 32,
+        lineNumber: 33,
         columnNumber: 11
     }, this);
 }
@@ -30625,10 +30637,7 @@ class LengthTimer {
             if (this.clock > LENGTH_TIMER_TICK) {
                 this.clock -= LENGTH_TIMER_TICK;
                 this.timer++;
-                if (this.timer >= 64) {
-                    console.log("Timer kicking in");
-                    this.channelStop();
-                }
+                if (this.timer >= 64) this.channelStop();
             }
         }
     }
@@ -31020,7 +31029,6 @@ var _nopDefault = parcelHelpers.interopDefault(_nop);
 var _interruptRegisters = require("./memory/registers/interruptRegisters");
 var _timer = require("./timer");
 var _timerDefault = parcelHelpers.interopDefault(_timer);
-const CLOCK_HZ = 4194304;
 const INTERRUPT_HANDLERS = {
     [(0, _interruptRegisters.Interrupt).VBlank]: 0x0040,
     [(0, _interruptRegisters.Interrupt).LCD]: 0x0048,
@@ -31101,7 +31109,7 @@ class CPU {
         // this.createGbDoctorLog()
         if (this.isHalted) {
             this.incrementClock(4);
-            return 4;
+            return;
         }
         const code = this.nextByte.value;
         const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
@@ -31119,7 +31127,6 @@ class CPU {
             console.log(instruction.description(parameters));
         }
         this.onInstructionComplete();
-        return instruction.cycles;
     }
     getInterrupt() {
         if (!this.interruptsEnabled) return null;
@@ -31159,31 +31166,29 @@ class CPU {
         this.apu.stopAudio();
     }
     runFrame(timestamp) {
-        const delta = timestamp - this.lastFrameTime;
-        this.lastFrameTime = timestamp;
+        // We maintain an FPS counter by keeping track of how many frames were run
+        // over the last 1000ms
+        this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
+        this.fps = this.recentFrames.push(timestamp);
         let address = 0;
         this.controller.update();
-        const cyclesToRun = delta / 1000 * CLOCK_HZ;
-        let cycleCount = 0;
         // try {
-        cycleLoop: while(cycleCount <= cyclesToRun && !this.breakpoints.has(this.registers.PC.value)){
-            const clock = this.executeNextInstruction();
+        frameLoop: while(!this.breakpoints.has(this.registers.PC.value)){
+            this.executeNextInstruction();
             address = this.registers.PC.value;
             const interrupt = this.getInterrupt();
             if (interrupt !== null) this.handleInterrupt(interrupt);
             if (this.screen.newFrameDrawn) {
                 this.screen.newFrameDrawn = false;
-                this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
-                this.fps = this.recentFrames.push(timestamp);
+                break frameLoop;
             }
-            cycleCount += clock;
         }
-        // } catch (error) {
-        //   console.log(error.stack)
-        //   this.running = false
-        //   this.onError(error)
-        // }    
         if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
+    // } catch (error) {
+    //   console.log(error.stack)
+    //   this.running = false
+    //   this.onError(error)
+    // }    
     }
     addClockCallback(callback) {
         this.clockCallbacks.push(callback);
@@ -31429,9 +31434,7 @@ var _cartridge = require("./cartridge");
 var _mbc1Cartridge = require("./mbc1Cartridge");
 var _mbc3Cartridge = require("./mbc3Cartridge");
 var _mbc5Cartridge = require("./mbc5Cartridge");
-async function createCartridge(file) {
-    const romData = (await file.stream().getReader().read()).value;
-    if (!romData) throw new Error("Unable to read file");
+async function createCartridge(romData) {
     const cartridgeType = romData[0x147];
     switch(cartridgeType){
         case 0x00:
@@ -32553,156 +32556,96 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "default", ()=>GameLoader);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
-var _useLocalFile = require("../hooks/useLocalFile");
-var _useLocalFileDefault = parcelHelpers.interopDefault(_useLocalFile);
 var _createCartridge = require("../../emulator/memory/cartridges/createCartridge");
+var _gameStore = require("../indexedDb/gameStore");
 var _s = $RefreshSig$();
-const SAMPLE_LENGTH = 131072;
-const SAMPLE_DEPTH = 64;
-function createBuffer7() {
-    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
-    let lsfr = 0;
-    for(let i = 0; i < SAMPLE_LENGTH; i++){
-        let shift = lsfr >> 1;
-        const b0 = lsfr & 1;
-        const b1 = shift & 1;
-        const carry = 1 - (b0 ^ b1);
-        shift &= 127;
-        shift |= carry << 7;
-        lsfr = shift;
-        const value = carry ? 1 : -1;
-        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
-    }
-    return values;
-}
-function createBuffer15() {
-    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
-    let lsfr = 0;
-    for(let i = 0; i < SAMPLE_LENGTH; i++){
-        let shift = lsfr >> 1;
-        const b0 = lsfr & 1;
-        const b1 = shift & 1;
-        const carry = 1 - (b0 ^ b1);
-        shift &= 32767;
-        shift |= carry << 15;
-        lsfr = shift;
-        const value = carry ? 1 : -1;
-        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
-    }
-    return values;
-}
-function testNoise() {
-    const audioContext = new AudioContext({
-        sampleRate: 44100
-    });
-    const shift = 0;
-    const divider = 0.5;
-    const bitFreq = 262144 / (divider * (2 << shift));
-    const sampleRate = audioContext.sampleRate;
-    const playRate = bitFreq / sampleRate;
-    const buffer = audioContext.createBuffer(1, SAMPLE_DEPTH * SAMPLE_LENGTH, audioContext.sampleRate);
-    buffer.copyToChannel(createBuffer7(), 0);
-    const node = audioContext.createBufferSource();
-    node.buffer = buffer;
-    node.playbackRate.value = SAMPLE_DEPTH * playRate;
-    const gain = audioContext.createGain();
-    gain.gain.setValueAtTime(1, audioContext.currentTime);
-    gain.gain.setTargetAtTime(0, audioContext.currentTime + 0.5, 0.1);
-    node.connect(gain);
-    gain.connect(audioContext.destination);
-    node.start();
-    node.stop(1);
-}
 function GameLoader({ setCartridge }) {
     _s();
-    const [gameFile, setGameFile] = (0, _useLocalFileDefault.default)("game.gb");
-    const handleGameUpload = async function(e) {
-        e.preventDefault();
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setGameFile(file);
-            if (gameFile) setCartridge(await (0, _createCartridge.createCartridge)(gameFile));
-        }
-    };
-    const loadGame = async ()=>{
-        if (gameFile) setCartridge(await (0, _createCartridge.createCartridge)(gameFile));
-    };
+    const [storedGames, setStoredGames] = _react.useState(null);
+    const [lastChange, setLastChange] = _react.useState(0);
+    _react.useEffect(()=>{
+        (0, _gameStore.getGameList)().then(setStoredGames);
+    }, [
+        lastChange
+    ]);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
-                children: "Game Loader"
+                children: "Library"
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 103,
+                lineNumber: 22,
                 columnNumber: 5
             }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
-                htmlFor: "bios-load",
-                children: "Game: "
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                id: "game-load-db",
+                type: "file",
+                onChange: (e)=>{
+                    if (e.target.files && e.target.files[0]) (0, _gameStore.addGame)(e.target.files[0]).then(()=>setLastChange(Date.now()));
+                }
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 104,
+                lineNumber: 23,
                 columnNumber: 5
             }, this),
-            gameFile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+            storedGames === null ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                children: "Fetching games..."
+            }, void 0, false) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                 children: [
-                    "Loaded ",
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        onClick: ()=>setGameFile(null),
-                        children: "clear?"
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                        children: "Stored games"
                     }, void 0, false, {
                         fileName: "src/web/components/gameLoader.tsx",
-                        lineNumber: 107,
-                        columnNumber: 20
+                        lineNumber: 35,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("ul", {
+                        children: storedGames.map((game)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
+                                children: [
+                                    game.title,
+                                    " ",
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        onClick: ()=>{
+                                            (0, _gameStore.deleteGame)(game.id).then(()=>setLastChange(Date.now()));
+                                        },
+                                        children: "Delete"
+                                    }, void 0, false, {
+                                        fileName: "src/web/components/gameLoader.tsx",
+                                        lineNumber: 38,
+                                        columnNumber: 32
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        onClick: async ()=>{
+                                            const cartridge = await (0, _createCartridge.createCartridge)(game.data);
+                                            setCartridge(cartridge);
+                                        },
+                                        children: "Play"
+                                    }, void 0, false, {
+                                        fileName: "src/web/components/gameLoader.tsx",
+                                        lineNumber: 41,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/web/components/gameLoader.tsx",
+                                lineNumber: 38,
+                                columnNumber: 15
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameLoader.tsx",
+                        lineNumber: 35,
+                        columnNumber: 32
                     }, this)
                 ]
-            }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
-                id: "game-load",
-                type: "file",
-                onChange: handleGameUpload
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 108,
-                columnNumber: 11
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 114,
-                columnNumber: 5
-            }, this),
-            gameFile && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>loadGame(),
-                children: "Run"
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 115,
-                columnNumber: 19
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 116,
-                columnNumber: 5
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>testNoise(),
-                children: "Test noise"
-            }, void 0, false, {
-                fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 117,
-                columnNumber: 5
-            }, this)
+            }, void 0, true)
         ]
     }, void 0, true, {
         fileName: "src/web/components/gameLoader.tsx",
-        lineNumber: 102,
+        lineNumber: 21,
         columnNumber: 11
     }, this);
 }
-_s(GameLoader, "ZtWL+lYE+m7nR9zTGNQ4X08AJzo=", false, function() {
-    return [
-        (0, _useLocalFileDefault.default)
-    ];
-});
+_s(GameLoader, "IvZFSAsRRnCdRkxTWizwpmT97pg=");
 _c = GameLoader;
 var _c;
 $RefreshReg$(_c, "GameLoader");
@@ -32712,72 +32655,72 @@ $RefreshReg$(_c, "GameLoader");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../hooks/useLocalFile":"6Payo","../../emulator/memory/cartridges/createCartridge":"hpQ2G","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"6Payo":[function(require,module,exports) {
-var $parcel$ReactRefreshHelpers$9d81 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
-var prevRefreshReg = window.$RefreshReg$;
-var prevRefreshSig = window.$RefreshSig$;
-$parcel$ReactRefreshHelpers$9d81.prelude(module);
-
-try {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","../indexedDb/gameStore":"kdNdQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"kdNdQ":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "default", ()=>useLocalFile);
-var _react = require("react");
-function useLocalFile(key) {
-    const [stateFile, setStateFile] = _react.useState(null);
-    const readFromStorage = ()=>{
-        const base64EncodedFile = window.localStorage.getItem(key);
-        if (base64EncodedFile) base64Decode(base64EncodedFile).then(setStateFile);
-    };
-    _react.useEffect(()=>{
-        readFromStorage();
-        addEventListener("storage", (event)=>{
-            if (event.key === key) readFromStorage();
-        });
-    }, [
-        key
-    ]);
-    const setValue = (newFile)=>{
-        if (newFile === null) {
-            setStateFile(null);
-            window.localStorage.removeItem(key);
-            return;
-        }
-        base64Encode(newFile).then((encodedFile)=>{
-            window.localStorage.setItem(key, encodedFile);
-            readFromStorage();
-        });
-    };
-    return [
-        stateFile,
-        setValue
-    ];
-}
-function base64Encode(file) {
+parcelHelpers.export(exports, "getGameList", ()=>getGameList);
+parcelHelpers.export(exports, "addGame", ()=>addGame);
+parcelHelpers.export(exports, "deleteGame", ()=>deleteGame);
+async function getGameList() {
+    const db = await openDb();
+    const transaction = db.transaction("games", "readonly");
+    const store = transaction.objectStore("games");
     return new Promise((resolve, reject)=>{
-        const reader = new FileReader();
-        reader.onload = ()=>{
-            resolve(reader.result?.toString() || "");
+        const request = store.getAll();
+        request.onerror = reject;
+        request.onsuccess = ()=>{
+            resolve(request.result);
         };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
     });
 }
-async function base64Decode(base64) {
-    const res = await fetch(base64);
-    const blob = await res.blob();
-    return new File([
-        blob
-    ], "image.png", {
-        type: "image/png"
+async function openDb() {
+    return new Promise((resolve, reject)=>{
+        const request = window.indexedDB.open("Games", 1);
+        request.onerror = reject;
+        request.onupgradeneeded = ()=>{
+            const db = request.result;
+            // Initialise DB
+            if (!db.objectStoreNames.contains("games")) db.createObjectStore("games", {
+                keyPath: "id",
+                autoIncrement: true
+            });
+        };
+        request.onsuccess = ()=>{
+            resolve(request.result);
+        };
+    });
+}
+async function addGame(file) {
+    const title = file.name;
+    const data = new Uint8Array(await file.arrayBuffer());
+    const storedGame = {
+        data,
+        title
+    };
+    const db = await openDb();
+    const transaction = db.transaction([
+        "games"
+    ], "readwrite");
+    const store = transaction.objectStore("games");
+    return new Promise((resolve, reject)=>{
+        const request = store.add(storedGame);
+        request.onerror = reject;
+        request.onsuccess = ()=>resolve();
+    });
+}
+async function deleteGame(key) {
+    const db = await openDb();
+    const transaction = db.transaction([
+        "games"
+    ], "readwrite");
+    const store = transaction.objectStore("games");
+    return new Promise((resolve, reject)=>{
+        const request = store.delete(key);
+        request.onerror = reject;
+        request.onsuccess = ()=>resolve();
     });
 }
 
-  $parcel$ReactRefreshHelpers$9d81.postlude(module);
-} finally {
-  window.$RefreshReg$ = prevRefreshReg;
-  window.$RefreshSig$ = prevRefreshSig;
-}
-},{"react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
 
 //# sourceMappingURL=index.b9dee198.js.map
