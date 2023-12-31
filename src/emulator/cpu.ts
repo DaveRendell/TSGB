@@ -13,6 +13,8 @@ import { WordRef } from "./refs/wordRef";
 import Screen from "./screen"
 import Timer from "./timer";
 
+const CLOCK_HZ = 4194304
+
 interface ClockCallback { updateClock(cycles: number): void }
 
 const INTERRUPT_HANDLERS: Record<Interrupt, number> = {
@@ -119,11 +121,11 @@ export default class CPU {
 
   }
 
-  executeNextInstruction(): void {
+  executeNextInstruction(): number {
     // this.createGbDoctorLog()
     if (this.isHalted) {
       this.incrementClock(4)
-      return
+      return 4
     }
 
     const code = this.nextByte.value
@@ -148,6 +150,7 @@ export default class CPU {
     
     
     this.onInstructionComplete()
+    return instruction.cycles
   }
 
   getInterrupt(): Interrupt | null {
@@ -209,35 +212,34 @@ export default class CPU {
 
     this.controller.update()
 
-    if (delta >= 1000 / 61) {
-        // We maintain an FPS counter by keeping track of how many frames were run
-      // over the last 1000ms
-      this.recentFrames = this.recentFrames.filter(frame => timestamp - frame < 1000)
-      this.fps = this.recentFrames.push(timestamp)
-
+    const cyclesToRun = (delta / 1000) * CLOCK_HZ
+    let cycleCount = 0
     
-      // try {
-      frameLoop:
-      while (!this.breakpoints.has(this.registers.PC.value)) {
-        this.executeNextInstruction()
-        address = this.registers.PC.value
+    // try {
+    cycleLoop:
+    while (cycleCount <= cyclesToRun && !this.breakpoints.has(this.registers.PC.value)) {
+      const clock = this.executeNextInstruction()
+      address = this.registers.PC.value
 
-        const interrupt = this.getInterrupt()
-        if (interrupt !== null) {
-          this.handleInterrupt(interrupt)
-        }
-
-        if (this.screen.newFrameDrawn) {
-          this.screen.newFrameDrawn = false
-          break frameLoop
-        }
+      const interrupt = this.getInterrupt()
+      if (interrupt !== null) {
+        this.handleInterrupt(interrupt)
       }
+
+      if (this.screen.newFrameDrawn) {
+        this.screen.newFrameDrawn = false
+        this.recentFrames = this.recentFrames.filter(frame => timestamp - frame < 1000)
+        this.fps = this.recentFrames.push(timestamp)
+      }
+
+      cycleCount += clock
+    }
     // } catch (error) {
     //   console.log(error.stack)
     //   this.running = false
     //   this.onError(error)
     // }    
-    }
+    
     
     if (this.running && !this.breakpoints.has(address)) {
       requestAnimationFrame(timestamp => this.runFrame(timestamp))
