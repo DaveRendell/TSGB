@@ -12,6 +12,7 @@ import Controller from "../../emulator/controller"
 import Tabs from "./tabs"
 import AudioDebug from "./audioDebug"
 import { Emulator } from "../../emulator/emulator"
+import Settings from "./settings"
 
 interface Props {
   emulator: Emulator
@@ -49,6 +50,7 @@ export default function GameView({ emulator, unload }: Props) {
       <Tabs
         tabs={{
           "Info": () => <p>Title: {emulator.cpu.memory.cartridge?.title}<br/>FPS: {emulator.cpu.fps.toPrecision(2)}</p>,
+          "Settings": () => <Settings emulator={emulator} />,
           "Debug Graphics": () => <>
             <VramViewer ppu={new PPU(emulator.cpu)} />
           </>,

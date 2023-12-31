@@ -11,13 +11,6 @@ const WIDTH = 160
 const HEIGHT = 144
 const SCANLINES = 154
 
-const COLOURS = [
-  [255, 255, 255],
-  [192, 192, 192],
-  [96, 96, 96],
-  [0, 0, 0],
-]
-
 const BACKGROUND_MEMORY_START = 0x9800
 const WINDOW_MEMORY_START = 0x9C00
 
@@ -47,6 +40,13 @@ export default class Screen {
   mode: Mode = "Scanline OAM"
 
   newFrameDrawn = false
+
+  colours = [
+    [255, 255, 255],
+    [192, 192, 192],
+    [96, 96, 96],
+    [0, 0, 0],
+  ]
 
   constructor(cpu: CPU) {
     this.cpu = cpu
@@ -261,7 +261,7 @@ export default class Screen {
         pixel = this.backgroundPallette.map[0]
       }
 
-      const colour = COLOURS[pixel]
+      const colour = this.colours[pixel]
       line.data[4 * i + 0] = colour[0]
       line.data[4 * i + 1] = colour[1]
       line.data[4 * i + 2] = colour[2]
