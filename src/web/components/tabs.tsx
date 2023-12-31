@@ -12,7 +12,7 @@ export default function Tabs({ tabs }: Props) {
       <ul>
         {Object.keys(tabs).map((name, i) =>
           name == activeTab
-            ? <li className="selected">{name}</li>
+            ? <li key={i} className="selected">{name}</li>
             : <li key={i}><button onClick={() => setActiveTab(name)}>{name}</button></li>
         )}
       </ul>
