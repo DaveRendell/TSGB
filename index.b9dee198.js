@@ -2963,7 +2963,7 @@ root.render(/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _appDefault.default), {
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react-dom/client":"lOjBx","react":"21dqq","./index.css":"85YVu","./components/app":"5EgNK","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"iTorj":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react-dom/client":"lOjBx","react":"21dqq","./components/app":"5EgNK","./index.css":"85YVu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"iTorj":[function(require,module,exports) {
 "use strict";
 module.exports = require("ee51401569654d91");
 
@@ -27150,7 +27150,7 @@ module.exports = require("ef03b89c8fe2794e");
     /* global __REACT_DEVTOOLS_GLOBAL_HOOK__ */ if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 })();
 
-},{}],"85YVu":[function() {},{}],"5EgNK":[function(require,module,exports) {
+},{}],"5EgNK":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$2535 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -27196,7 +27196,175 @@ $RefreshReg$(_c, "App");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./gameView":"fgBpm","../../emulator/emulator":"6YHbn","./gameLoader":"3e0xT","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"fgBpm":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./gameView":"fgBpm","../../emulator/emulator":"6YHbn","./gameLoader":"3e0xT"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || Object.prototype.hasOwnProperty.call(dest, key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"km3Ru":[function(require,module,exports) {
+"use strict";
+var Refresh = require("7422ead32dcc1e6b");
+function debounce(func, delay) {
+    {
+        let timeout = undefined;
+        let lastTime = 0;
+        return function(args) {
+            // Call immediately if last call was more than the delay ago.
+            // Otherwise, set a timeout. This means the first call is fast
+            // (for the common case of a single update), and subsequent updates
+            // are batched.
+            let now = Date.now();
+            if (now - lastTime > delay) {
+                lastTime = now;
+                func.call(null, args);
+            } else {
+                clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    timeout = undefined;
+                    lastTime = Date.now();
+                    func.call(null, args);
+                }, delay);
+            }
+        };
+    }
+}
+var enqueueUpdate = debounce(function() {
+    Refresh.performReactRefresh();
+}, 30);
+// Everthing below is either adapted or copied from
+// https://github.com/facebook/metro/blob/61de16bd1edd7e738dd0311c89555a644023ab2d/packages/metro/src/lib/polyfills/require.js
+// MIT License - Copyright (c) Facebook, Inc. and its affiliates.
+module.exports.prelude = function(module1) {
+    window.$RefreshReg$ = function(type, id) {
+        Refresh.register(type, module1.id + " " + id);
+    };
+    window.$RefreshSig$ = Refresh.createSignatureFunctionForTransform;
+};
+module.exports.postlude = function(module1) {
+    if (isReactRefreshBoundary(module1.exports)) {
+        registerExportsForReactRefresh(module1);
+        if (module1.hot) {
+            module1.hot.dispose(function(data) {
+                if (Refresh.hasUnrecoverableErrors()) window.location.reload();
+                data.prevExports = module1.exports;
+            });
+            module1.hot.accept(function(getParents) {
+                var prevExports = module1.hot.data.prevExports;
+                var nextExports = module1.exports;
+                // Since we just executed the code for it, it's possible
+                // that the new exports make it ineligible for being a boundary.
+                var isNoLongerABoundary = !isReactRefreshBoundary(nextExports);
+                // It can also become ineligible if its exports are incompatible
+                // with the previous exports.
+                // For example, if you add/remove/change exports, we'll want
+                // to re-execute the importing modules, and force those components
+                // to re-render. Similarly, if you convert a class component
+                // to a function, we want to invalidate the boundary.
+                var didInvalidate = shouldInvalidateReactRefreshBoundary(prevExports, nextExports);
+                if (isNoLongerABoundary || didInvalidate) {
+                    // We'll be conservative. The only case in which we won't do a full
+                    // reload is if all parent modules are also refresh boundaries.
+                    // In that case we'll add them to the current queue.
+                    var parents = getParents();
+                    if (parents.length === 0) {
+                        // Looks like we bubbled to the root. Can't recover from that.
+                        window.location.reload();
+                        return;
+                    }
+                    return parents;
+                }
+                enqueueUpdate();
+            });
+        }
+    }
+};
+function isReactRefreshBoundary(exports) {
+    if (Refresh.isLikelyComponentType(exports)) return true;
+    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
+    return false;
+    var hasExports = false;
+    var areAllExportsComponents = true;
+    let isESM = "__esModule" in exports;
+    for(var key in exports){
+        hasExports = true;
+        if (key === "__esModule") continue;
+        var desc = Object.getOwnPropertyDescriptor(exports, key);
+        if (desc && desc.get && !isESM) // Don't invoke getters for CJS as they may have side effects.
+        return false;
+        var exportValue = exports[key];
+        if (!Refresh.isLikelyComponentType(exportValue)) areAllExportsComponents = false;
+    }
+    return hasExports && areAllExportsComponents;
+}
+function shouldInvalidateReactRefreshBoundary(prevExports, nextExports) {
+    var prevSignature = getRefreshBoundarySignature(prevExports);
+    var nextSignature = getRefreshBoundarySignature(nextExports);
+    if (prevSignature.length !== nextSignature.length) return true;
+    for(var i = 0; i < nextSignature.length; i++){
+        if (prevSignature[i] !== nextSignature[i]) return true;
+    }
+    return false;
+}
+// When this signature changes, it's unsafe to stop at this refresh boundary.
+function getRefreshBoundarySignature(exports) {
+    var signature = [];
+    signature.push(Refresh.getFamilyByType(exports));
+    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
+    // (This is important for legacy environments.)
+    return signature;
+    let isESM = "__esModule" in exports;
+    for(var key in exports){
+        if (key === "__esModule") continue;
+        var desc = Object.getOwnPropertyDescriptor(exports, key);
+        if (desc && desc.get && !isESM) continue;
+        var exportValue = exports[key];
+        signature.push(key);
+        signature.push(Refresh.getFamilyByType(exportValue));
+    }
+    return signature;
+}
+function registerExportsForReactRefresh(module1) {
+    var exports = module1.exports, id = module1.id;
+    Refresh.register(exports, id + " %exports%");
+    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
+    // (This is important for legacy environments.)
+    return;
+    let isESM = "__esModule" in exports;
+    for(var key in exports){
+        var desc = Object.getOwnPropertyDescriptor(exports, key);
+        if (desc && desc.get && !isESM) continue;
+        var exportValue = exports[key];
+        var typeID = id + " %exports% " + key;
+        Refresh.register(exportValue, typeID);
+    }
+}
+
+},{"7422ead32dcc1e6b":"786KC"}],"fgBpm":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$7a7e = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -27573,37 +27741,7 @@ parcelHelpers.export(exports, "addressDisplay", ()=>addressDisplay);
 const valueDisplay = (value)=>"0x" + value.toString(16).toUpperCase().padStart(2, "0");
 const addressDisplay = (address)=>"0x" + address.toString(16).toUpperCase().padStart(4, "0");
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || Object.prototype.hasOwnProperty.call(dest, key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"Dwj0V":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Dwj0V":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$bdfc = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -28941,145 +29079,7 @@ function pop(registerName) {
     };
 }
 
-},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","./jumps":"7RHU3","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"km3Ru":[function(require,module,exports) {
-"use strict";
-var Refresh = require("7422ead32dcc1e6b");
-function debounce(func, delay) {
-    {
-        let timeout = undefined;
-        let lastTime = 0;
-        return function(args) {
-            // Call immediately if last call was more than the delay ago.
-            // Otherwise, set a timeout. This means the first call is fast
-            // (for the common case of a single update), and subsequent updates
-            // are batched.
-            let now = Date.now();
-            if (now - lastTime > delay) {
-                lastTime = now;
-                func.call(null, args);
-            } else {
-                clearTimeout(timeout);
-                timeout = setTimeout(function() {
-                    timeout = undefined;
-                    lastTime = Date.now();
-                    func.call(null, args);
-                }, delay);
-            }
-        };
-    }
-}
-var enqueueUpdate = debounce(function() {
-    Refresh.performReactRefresh();
-}, 30);
-// Everthing below is either adapted or copied from
-// https://github.com/facebook/metro/blob/61de16bd1edd7e738dd0311c89555a644023ab2d/packages/metro/src/lib/polyfills/require.js
-// MIT License - Copyright (c) Facebook, Inc. and its affiliates.
-module.exports.prelude = function(module1) {
-    window.$RefreshReg$ = function(type, id) {
-        Refresh.register(type, module1.id + " " + id);
-    };
-    window.$RefreshSig$ = Refresh.createSignatureFunctionForTransform;
-};
-module.exports.postlude = function(module1) {
-    if (isReactRefreshBoundary(module1.exports)) {
-        registerExportsForReactRefresh(module1);
-        if (module1.hot) {
-            module1.hot.dispose(function(data) {
-                if (Refresh.hasUnrecoverableErrors()) window.location.reload();
-                data.prevExports = module1.exports;
-            });
-            module1.hot.accept(function(getParents) {
-                var prevExports = module1.hot.data.prevExports;
-                var nextExports = module1.exports;
-                // Since we just executed the code for it, it's possible
-                // that the new exports make it ineligible for being a boundary.
-                var isNoLongerABoundary = !isReactRefreshBoundary(nextExports);
-                // It can also become ineligible if its exports are incompatible
-                // with the previous exports.
-                // For example, if you add/remove/change exports, we'll want
-                // to re-execute the importing modules, and force those components
-                // to re-render. Similarly, if you convert a class component
-                // to a function, we want to invalidate the boundary.
-                var didInvalidate = shouldInvalidateReactRefreshBoundary(prevExports, nextExports);
-                if (isNoLongerABoundary || didInvalidate) {
-                    // We'll be conservative. The only case in which we won't do a full
-                    // reload is if all parent modules are also refresh boundaries.
-                    // In that case we'll add them to the current queue.
-                    var parents = getParents();
-                    if (parents.length === 0) {
-                        // Looks like we bubbled to the root. Can't recover from that.
-                        window.location.reload();
-                        return;
-                    }
-                    return parents;
-                }
-                enqueueUpdate();
-            });
-        }
-    }
-};
-function isReactRefreshBoundary(exports) {
-    if (Refresh.isLikelyComponentType(exports)) return true;
-    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
-    return false;
-    var hasExports = false;
-    var areAllExportsComponents = true;
-    let isESM = "__esModule" in exports;
-    for(var key in exports){
-        hasExports = true;
-        if (key === "__esModule") continue;
-        var desc = Object.getOwnPropertyDescriptor(exports, key);
-        if (desc && desc.get && !isESM) // Don't invoke getters for CJS as they may have side effects.
-        return false;
-        var exportValue = exports[key];
-        if (!Refresh.isLikelyComponentType(exportValue)) areAllExportsComponents = false;
-    }
-    return hasExports && areAllExportsComponents;
-}
-function shouldInvalidateReactRefreshBoundary(prevExports, nextExports) {
-    var prevSignature = getRefreshBoundarySignature(prevExports);
-    var nextSignature = getRefreshBoundarySignature(nextExports);
-    if (prevSignature.length !== nextSignature.length) return true;
-    for(var i = 0; i < nextSignature.length; i++){
-        if (prevSignature[i] !== nextSignature[i]) return true;
-    }
-    return false;
-}
-// When this signature changes, it's unsafe to stop at this refresh boundary.
-function getRefreshBoundarySignature(exports) {
-    var signature = [];
-    signature.push(Refresh.getFamilyByType(exports));
-    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
-    // (This is important for legacy environments.)
-    return signature;
-    let isESM = "__esModule" in exports;
-    for(var key in exports){
-        if (key === "__esModule") continue;
-        var desc = Object.getOwnPropertyDescriptor(exports, key);
-        if (desc && desc.get && !isESM) continue;
-        var exportValue = exports[key];
-        signature.push(key);
-        signature.push(Refresh.getFamilyByType(exportValue));
-    }
-    return signature;
-}
-function registerExportsForReactRefresh(module1) {
-    var exports = module1.exports, id = module1.id;
-    Refresh.register(exports, id + " %exports%");
-    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
-    // (This is important for legacy environments.)
-    return;
-    let isESM = "__esModule" in exports;
-    for(var key in exports){
-        var desc = Object.getOwnPropertyDescriptor(exports, key);
-        if (desc && desc.get && !isESM) continue;
-        var exportValue = exports[key];
-        var typeID = id + " %exports% " + key;
-        Refresh.register(exportValue, typeID);
-    }
-}
-
-},{"7422ead32dcc1e6b":"786KC"}],"2xGez":[function(require,module,exports) {
+},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","./jumps":"7RHU3","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2xGez":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$2c0d = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30069,7 +30069,7 @@ $RefreshReg$(_c, "Joypad");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./joypadButton":"gTFA6"}],"gTFA6":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./joypadButton":"gTFA6","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"gTFA6":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ba18 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30119,7 +30119,7 @@ $RefreshReg$(_c, "JoypadButton");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../joypadButton.css":"T6QOS"}],"T6QOS":[function() {},{}],"9O6KI":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../joypadButton.css":"T6QOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"T6QOS":[function() {},{}],"9O6KI":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$4922 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30252,18 +30252,11 @@ function AudioDebug({ apu }) {
                         lineNumber: 16,
                         columnNumber: 7
                     }, this),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        children: [
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                                children: "Noise"
-                            }, void 0, false, {
-                                fileName: "src/web/components/audioDebug.tsx",
-                                lineNumber: 17,
-                                columnNumber: 12
-                            }, this),
-                            "TODO"
-                        ]
-                    }, void 0, true, {
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
+                        name: "Noise",
+                        channel: apu.channel4,
+                        id: 3
+                    }, void 0, false, {
                         fileName: "src/web/components/audioDebug.tsx",
                         lineNumber: 17,
                         columnNumber: 7
@@ -30431,6 +30424,7 @@ class Emulator {
 },{"./apu":"fhvC7","./controller":"cFNSD","./cpu":"2CR9q","./memory":"cz4ku","./screen":"7Es7K","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fhvC7":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+var _noiseChannel = require("./sound/noiseChannel");
 var _pulseChannel = require("./sound/pulseChannel");
 var _pulseChannelDefault = parcelHelpers.interopDefault(_pulseChannel);
 var _waveChannel = require("./sound/waveChannel");
@@ -30462,12 +30456,18 @@ class APU {
             outputNode: this.masterControl,
             registers: this.memory.registers.channel3
         });
+        this.channel4 = new (0, _noiseChannel.NoiseChannel)({
+            audioContext: this.audioContext,
+            outputNode: this.masterControl,
+            registers: this.memory.registers.channel4
+        });
         this.masterControl.connect(this.audioContext.destination);
     }
     updateClock(cycles) {
         this.channel1.update(cycles);
         this.channel2.update(cycles);
         this.channel3.update(cycles);
+        this.channel4.update(cycles);
     }
     startAudio() {
         this.audioContext.resume();
@@ -30478,7 +30478,215 @@ class APU {
 }
 exports.default = APU;
 
-},{"./sound/pulseChannel":"iY6ME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./sound/waveChannel":"gIwWw"}],"iY6ME":[function(require,module,exports) {
+},{"./sound/noiseChannel":"bhrev","./sound/pulseChannel":"iY6ME","./sound/waveChannel":"gIwWw","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bhrev":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "NoiseChannel", ()=>NoiseChannel);
+var _lengthTimer = require("./lengthTimer");
+var _volumeEnvelope = require("./volumeEnvelope");
+const SAMPLE_LENGTH = 262144;
+const SAMPLE_DEPTH = 32;
+class NoiseChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.volume = 0;
+        this.mode = 0;
+        this.playRate = 0;
+        registers.channel = this;
+        this.audioContext = audioContext;
+        this.longBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate);
+        this.shortBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate);
+        this.longBuffer.copyToChannel(generateLSFR(15), 0);
+        this.shortBuffer.copyToChannel(generateLSFR(7), 0);
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.gain.connect(this.muteNode);
+        this.muteNode.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.createBufferSource();
+        this.setSampleRate(0.5, 0);
+        this.waveFormChanged = ()=>{};
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
+        this.setMode(0);
+    }
+    update(cycles) {
+        if (this.playing) {
+            this.timer.update(cycles);
+            this.envelope.update(cycles);
+        }
+    }
+    start() {
+        this.createBufferSource();
+        this.playing = true;
+        this.bufferSource.start();
+        this.setVolume();
+        this.timer.resetClock();
+        this.envelope.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.bufferSource.stop();
+        this.bufferSource.disconnect();
+        this.setVolume(0);
+    }
+    updateVolume(increment) {
+        this.setVolume(this.volume + increment);
+    }
+    setMode(mode) {
+        this.mode = mode;
+    }
+    setSampleRate(divider, shift) {
+        const bitFreq = 262144 / (divider * (1 << shift));
+        this.playRate = SAMPLE_DEPTH * bitFreq / this.audioContext.sampleRate;
+        this.bufferSource.playbackRate.setValueAtTime(this.playRate, this.audioContext.currentTime);
+    }
+    createBufferSource() {
+        if (this.playing) this.bufferSource.stop();
+        this.bufferSource = this.audioContext.createBufferSource();
+        this.bufferSource.playbackRate.value = this.playRate;
+        if (this.mode == 0) this.bufferSource.buffer = this.longBuffer;
+        else this.bufferSource.buffer = this.shortBuffer;
+        this.bufferSource.connect(this.gain);
+        this.bufferSource.loop = true;
+    }
+    setVolume(volume = this.volume) {
+        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
+        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+function createBuffer7() {
+    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
+    let lsfr = 0;
+    for(let i = 0; i < SAMPLE_LENGTH; i++){
+        let shift = lsfr >> 1;
+        const b0 = lsfr & 1;
+        const b1 = shift & 1;
+        const carry = 1 - (b0 ^ b1);
+        shift &= 127;
+        shift |= carry << 7;
+        lsfr = shift;
+        const value = carry ? 1 : -1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
+    }
+    return values;
+}
+function createBuffer15() {
+    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
+    let lsfr = 0;
+    for(let i = 0; i < SAMPLE_LENGTH; i++){
+        let shift = lsfr >> 1;
+        const b0 = lsfr & 1;
+        const b1 = shift & 1;
+        const carry = 1 - (b0 ^ b1);
+        shift &= 32767;
+        shift |= carry << 15;
+        lsfr = shift;
+        const value = carry ? 1 : -1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
+    }
+    return values;
+}
+function generateLSFR(width) {
+    const period = 1 << width - 1;
+    let lsfr = 127;
+    const output = new Float32Array(period * SAMPLE_DEPTH);
+    for(let i = 0; i < period; i++){
+        let bit = (lsfr ^ lsfr >> 1) & 1;
+        lsfr = lsfr >> 1 | bit << width - 1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)output[SAMPLE_DEPTH * i + j] = bit * 2 - 1;
+    }
+    return output;
+}
+
+},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature that turns the channel off after a certain amount
+ * of time has passed.
+ */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
+// Roughly equal to 4.2MHz clock speed / 256Hz 
+const LENGTH_TIMER_TICK = 0x4000;
+class LengthTimer {
+    constructor(channelStop){
+        this.clock = 0;
+        this.enabled = false;
+        this.timer = 0;
+        this.channelStop = channelStop;
+    }
+    update(cycles) {
+        if (this.enabled) {
+            this.clock += cycles;
+            if (this.clock > LENGTH_TIMER_TICK) {
+                this.clock -= LENGTH_TIMER_TICK;
+                this.timer++;
+                if (this.timer >= 64) {
+                    console.log("Timer kicking in");
+                    this.channelStop();
+                }
+            }
+        }
+    }
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    setTimer(length) {
+        this.timer = length;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature which regularly changes the volume of the channel
+ * until it reaches a maximum or minimum value.
+ */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
+// Roughly equal to 4.2MHz clock speed / 64Hz
+const ENVELOPER_TIMER_TICK = 0x10000;
+class VolumeEnvelope {
+    constructor(volumeSetter){
+        this.clock = 0;
+        this.direction = 1;
+        this.pace = 0;
+        this.timer = 0;
+        this.volumeIncrement = volumeSetter;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock > ENVELOPER_TIMER_TICK) {
+                this.clock -= ENVELOPER_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.volumeIncrement(this.direction);
+                }
+            }
+        }
+    }
+    setEnvelope(direction, pace) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iY6ME":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _lengthTimer = require("./lengthTimer");
@@ -30540,87 +30748,7 @@ class PulseChannel {
 }
 exports.default = PulseChannel;
 
-},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature that turns the channel off after a certain amount
- * of time has passed.
- */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
-// Roughly equal to 4.2MHz clock speed / 256Hz 
-const LENGTH_TIMER_TICK = 0x4000;
-class LengthTimer {
-    constructor(channelStop){
-        this.clock = 0;
-        this.enabled = false;
-        this.timer = 0;
-        this.channelStop = channelStop;
-    }
-    update(cycles) {
-        if (this.enabled) {
-            this.clock += cycles;
-            if (this.clock > LENGTH_TIMER_TICK) {
-                this.clock -= LENGTH_TIMER_TICK;
-                this.timer++;
-                if (this.timer >= 64) this.channelStop();
-            }
-        }
-    }
-    enable() {
-        this.enabled = true;
-    }
-    disable() {
-        this.enabled = false;
-    }
-    setTimer(length) {
-        this.timer = length;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature which regularly changes the volume of the channel
- * until it reaches a maximum or minimum value.
- */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
-// Roughly equal to 4.2MHz clock speed / 64Hz
-const ENVELOPER_TIMER_TICK = 0x10000;
-class VolumeEnvelope {
-    constructor(volumeSetter){
-        this.clock = 0;
-        this.direction = 1;
-        this.pace = 0;
-        this.timer = 0;
-        this.volumeIncrement = volumeSetter;
-    }
-    update(cycles) {
-        if (this.pace) {
-            this.clock += cycles;
-            if (this.clock > ENVELOPER_TIMER_TICK) {
-                this.clock -= ENVELOPER_TIMER_TICK;
-                this.timer--;
-                if (this.timer <= 0) {
-                    this.timer = this.pace;
-                    this.volumeIncrement(this.direction);
-                }
-            }
-        }
-    }
-    setEnvelope(direction, pace) {
-        this.direction = direction;
-        this.pace = pace;
-        this.timer = pace;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gIwWw":[function(require,module,exports) {
+},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gIwWw":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _lengthTimer = require("./lengthTimer");
@@ -31325,7 +31453,7 @@ async function createCartridge(file) {
     throw new Error("Unknown cartridge type: " + cartridgeType);
 }
 
-},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./mbc5Cartridge":"6zYKi"}],"jBMrX":[function(require,module,exports) {
+},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","./mbc5Cartridge":"6zYKi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBMrX":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
@@ -31656,6 +31784,7 @@ class IoRegisters {
         this.channel1 = new (0, _audioRegisters.PulseChannelRegisters)();
         this.channel2 = new (0, _audioRegisters.PulseChannelRegisters)();
         this.channel3 = new (0, _audioRegisters.WaveChannelRegisters)();
+        this.channel4 = new (0, _audioRegisters.NoiseChannelRegisters)();
         this.lcdControl = new (0, _lcdRegisters.LcdControlRegister)();
         this.lcdStatus = new (0, _lcdRegisters.LcdStatusRegister)();
         this.scrollY = new (0, _byteRef.GenericByteRef)();
@@ -31695,7 +31824,11 @@ class IoRegisters {
         this.data[0xFF1D] = this.channel3.nr3;
         this.data[0xFF1E] = this.channel3.nr4;
         for(let i = 0; i <= 16; i++)this.data[0xFF30 + i] = this.channel3.sampleByte(i);
-        // TODO channel 4
+        // Audio Channel 4 (Noise)
+        this.data[0xFF20] = this.channel4.nr1;
+        this.data[0xFF21] = this.channel4.nr2;
+        this.data[0xFF22] = this.channel4.nr3;
+        this.data[0xFF23] = this.channel4.nr4;
         // Master Audio
         this.data[0xFF26] = this.audioMasterControl;
         // TODO: this.data[0xFF24] panning
@@ -31728,6 +31861,7 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "AudioMasterControlRegister", ()=>AudioMasterControlRegister);
 parcelHelpers.export(exports, "PulseChannelRegisters", ()=>PulseChannelRegisters);
 parcelHelpers.export(exports, "WaveChannelRegisters", ()=>WaveChannelRegisters);
+parcelHelpers.export(exports, "NoiseChannelRegisters", ()=>NoiseChannelRegisters);
 var _byteRef = require("../../refs/byteRef");
 class AudioMasterControlRegister {
     get value() {
@@ -31912,8 +32046,74 @@ class WaveChannelRegisters {
         });
     }
 }
+class NoiseChannelRegisters {
+    constructor(){
+        this.lengthTimer = 0;
+        this.lengthEnabled = false;
+        this.volumeEnvelope = {
+            direction: 1,
+            pace: 0
+        };
+        this.volume = 0;
+        this.clockShift = 0;
+        this.lfsrMode = 0;
+        this.clockDivider = 0;
+        const self = this;
+        this.nr1 = {
+            get value () {
+                return self.lengthTimer;
+            },
+            set value (value){
+                self.lengthTimer = value & 0x3F;
+                if (self.channel) self.channel.timer.setTimer(self.lengthTimer);
+            }
+        };
+        this.nr2 = {
+            get value () {
+                return (self.volume << 4) + self.volumeEnvelope.pace + (self.volumeEnvelope.direction == 1 ? 0x8 : 0);
+            },
+            set value (value){
+                self.volume = value >> 4;
+                self.volumeEnvelope.pace = value & 0x7;
+                self.volumeEnvelope.direction = (value & 0x8) > 0 ? 1 : -1;
+                if (self.channel) {
+                    self.channel.setVolume(self.volume);
+                    self.channel.envelope.setEnvelope(self.volumeEnvelope.direction, self.volumeEnvelope.pace);
+                }
+            }
+        };
+        this.nr3 = {
+            get value () {
+                return (self.clockShift << 4) + (self.lfsrMode << 3) + self.clockDivider;
+            },
+            set value (value){
+                self.clockShift = value >> 4 & 0xF;
+                self.lfsrMode = value >> 3 & 1;
+                self.clockDivider = value & 0x7;
+                if (self.clockDivider == 0) self.clockDivider = 0.5;
+                if (self.channel) {
+                    self.channel.setMode(self.lfsrMode);
+                    self.channel.setSampleRate(self.clockDivider, self.clockShift);
+                }
+            }
+        };
+        this.nr4 = {
+            get value () {
+                return self.lengthEnabled ? 0x40 : 0;
+            },
+            set value (value){
+                self.lengthEnabled = (value & 0x40) > 0;
+                if (self.channel) {
+                    if (self.lengthEnabled) self.channel.timer.enable();
+                    else self.channel.timer.disable();
+                    if (value & 0x80) self.channel.start();
+                }
+            }
+        };
+    }
+}
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../refs/byteRef":"6cdGr"}],"eI0h3":[function(require,module,exports) {
+},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eI0h3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "BootRomRegister", ()=>BootRomRegister);
@@ -32353,6 +32553,62 @@ var _useLocalFile = require("../hooks/useLocalFile");
 var _useLocalFileDefault = parcelHelpers.interopDefault(_useLocalFile);
 var _createCartridge = require("../../emulator/memory/cartridges/createCartridge");
 var _s = $RefreshSig$();
+const SAMPLE_LENGTH = 131072;
+const SAMPLE_DEPTH = 64;
+function createBuffer7() {
+    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
+    let lsfr = 0;
+    for(let i = 0; i < SAMPLE_LENGTH; i++){
+        let shift = lsfr >> 1;
+        const b0 = lsfr & 1;
+        const b1 = shift & 1;
+        const carry = 1 - (b0 ^ b1);
+        shift &= 127;
+        shift |= carry << 7;
+        lsfr = shift;
+        const value = carry ? 1 : -1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
+    }
+    return values;
+}
+function createBuffer15() {
+    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
+    let lsfr = 0;
+    for(let i = 0; i < SAMPLE_LENGTH; i++){
+        let shift = lsfr >> 1;
+        const b0 = lsfr & 1;
+        const b1 = shift & 1;
+        const carry = 1 - (b0 ^ b1);
+        shift &= 32767;
+        shift |= carry << 15;
+        lsfr = shift;
+        const value = carry ? 1 : -1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
+    }
+    return values;
+}
+function testNoise() {
+    const audioContext = new AudioContext({
+        sampleRate: 44100
+    });
+    const shift = 0;
+    const divider = 0.5;
+    const bitFreq = 262144 / (divider * (2 << shift));
+    const sampleRate = audioContext.sampleRate;
+    const playRate = bitFreq / sampleRate;
+    const buffer = audioContext.createBuffer(1, SAMPLE_DEPTH * SAMPLE_LENGTH, audioContext.sampleRate);
+    buffer.copyToChannel(createBuffer7(), 0);
+    const node = audioContext.createBufferSource();
+    node.buffer = buffer;
+    node.playbackRate.value = SAMPLE_DEPTH * playRate;
+    const gain = audioContext.createGain();
+    gain.gain.setValueAtTime(1, audioContext.currentTime);
+    gain.gain.setTargetAtTime(0, audioContext.currentTime + 0.5, 0.1);
+    node.connect(gain);
+    gain.connect(audioContext.destination);
+    node.start();
+    node.stop(1);
+}
 function GameLoader({ setCartridge }) {
     _s();
     const [gameFile, setGameFile] = (0, _useLocalFileDefault.default)("game.gb");
@@ -32373,7 +32629,7 @@ function GameLoader({ setCartridge }) {
                 children: "Game Loader"
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 33,
+                lineNumber: 103,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -32381,7 +32637,7 @@ function GameLoader({ setCartridge }) {
                 children: "Game: "
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 34,
+                lineNumber: 104,
                 columnNumber: 5
             }, this),
             gameFile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
@@ -32392,7 +32648,7 @@ function GameLoader({ setCartridge }) {
                         children: "clear?"
                     }, void 0, false, {
                         fileName: "src/web/components/gameLoader.tsx",
-                        lineNumber: 37,
+                        lineNumber: 107,
                         columnNumber: 20
                     }, this)
                 ]
@@ -32402,12 +32658,12 @@ function GameLoader({ setCartridge }) {
                 onChange: handleGameUpload
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 38,
+                lineNumber: 108,
                 columnNumber: 11
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 44,
+                lineNumber: 114,
                 columnNumber: 5
             }, this),
             gameFile && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -32415,13 +32671,26 @@ function GameLoader({ setCartridge }) {
                 children: "Run"
             }, void 0, false, {
                 fileName: "src/web/components/gameLoader.tsx",
-                lineNumber: 45,
+                lineNumber: 115,
                 columnNumber: 19
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                fileName: "src/web/components/gameLoader.tsx",
+                lineNumber: 116,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                onClick: ()=>testNoise(),
+                children: "Test noise"
+            }, void 0, false, {
+                fileName: "src/web/components/gameLoader.tsx",
+                lineNumber: 117,
+                columnNumber: 5
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/gameLoader.tsx",
-        lineNumber: 32,
+        lineNumber: 102,
         columnNumber: 11
     }, this);
 }
@@ -32505,6 +32774,6 @@ async function base64Decode(base64) {
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
+},{"react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"85YVu":[function() {},{}]},["5T2NI","1xC6H","kllwR"], "kllwR", "parcelRequire9d6e")
 
 //# sourceMappingURL=index.b9dee198.js.map
