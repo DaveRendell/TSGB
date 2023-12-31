@@ -15,9 +15,10 @@ import { Emulator } from "../../emulator/emulator"
 
 interface Props {
   emulator: Emulator
+  unload: () => void
 }
 
-export default function GameView({ emulator }: Props) {
+export default function GameView({ emulator, unload }: Props) {
   // Reload this component when execution of CPU is complete
   const [toggle, setToggle] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>(undefined)
@@ -34,6 +35,7 @@ export default function GameView({ emulator }: Props) {
       <button onClick={() => emulator.cpu.run()}>Run</button>
       <button onClick={() => emulator.cpu.pause()}>Pause</button>
       <button onClick={() => emulator.cpu.runFrame(Infinity)}>Run frame</button>
+      <button onClick={() => { emulator.cpu.pause(); unload() }}>Unload</button>
       <div className="console">
         <div className="bevel">
           <Display cpu={emulator.cpu} />

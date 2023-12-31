@@ -7,13 +7,7 @@ import { Mbc5Cartridge } from "./mbc5Cartridge"
 
 // PKM R: 0x13 [MBC3+RAM+BATTERY]
 // LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
-export async function createCartridge(file: File): Promise<Cartridge> {
-  const romData = (
-    await file.stream().getReader().read()
-  ).value
-
-  if (!romData) { throw new Error("Unable to read file") }
-
+export async function createCartridge(romData: Uint8Array): Promise<Cartridge> {
   const cartridgeType = romData[0x147]
 
   switch(cartridgeType) {

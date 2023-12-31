@@ -8,7 +8,7 @@ export default function App() {
   const [cartridge, setCartridge] = React.useState<Cartridge | null>(null)
 
   if (cartridge) {
-    return <GameView emulator={new Emulator(cartridge)} />
+    return <GameView emulator={new Emulator(cartridge)} unload={() => setCartridge(null)} />
   }
 
   return <GameLoader setCartridge={setCartridge} />
