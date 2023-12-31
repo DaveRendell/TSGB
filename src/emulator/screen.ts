@@ -180,14 +180,29 @@ export default class Screen {
         : this.memory.vram.tileset1(tileId, row)
     }
 
+    const winY = scanline - this.memory.registers.windowY.value
+
+    // Returns the 8 long row of the background tile at pixel offset given
+    const getWindowTileRow = (offset: number): number[] => {
+      const tileMapNumber = (offset >> 3) + (32 * (winY >> 3))
+      const tileId = this.lcdControl.windowTilemap == 0
+        ? this.memory.vram.tilemap0(tileMapNumber)
+        : this.memory.vram.tilemap1(tileMapNumber)
+      const row = winY & 0x7
+      return this.lcdControl.tileDataArea == 1
+        ? this.memory.vram.tileset0(tileId, row)
+        : this.memory.vram.tileset1(tileId, row)
+    }
+
     let backgroundTileRow = getBackgroundTileRow(0)
     let backgroundTileCounter = scrollX & 0x7
+
+    let windowTileRow = getWindowTileRow(0)
+    let windowTileCounter = 0
 
     const sprites = this.memory.oam.spritesAtScanline()
     const highPrioritySprites = sprites.filter(s => !s.priority)
     const lowPrioritySprites = sprites.filter(s => s.priority)
-
-    const winY = scanline - this.memory.registers.windowY.value
     
     for (let i = 0; i < WIDTH; i++) {
       if (!this.lcdControl.enabled) { return }
@@ -202,19 +217,20 @@ export default class Screen {
       }
 
       // Render window
+      const winX = i - (this.memory.registers.windowX.value - 7)
       if (pixel === undefined && this.lcdControl.windowEnabled) {
-        const winX = i - (this.memory.registers.windowX.value - 7)
         if (winY >= 0 && winX >= 0) {
-          const tileMapNumber = (winX >> 3) + (32 * (winY >> 3))
-          const tileId = this.lcdControl.windowTilemap == 0
-            ? this.memory.vram.tilemap0(tileMapNumber)
-            : this.memory.vram.tilemap1(tileMapNumber)
-          const row = winY & 0x7
-          pixel =  this.lcdControl.tileDataArea == 1
-            ? this.memory.vram.tileset0(tileId, row)[winX % 8]
-            : this.memory.vram.tileset1(tileId, row)[winX % 8]
+          const windowPixel = windowTileRow[winX % 8]
+          pixel = this.backgroundPallette.map[windowPixel]          
         }
-      }      
+      }
+      if (winX >= 0 && winY >= 0) {
+        windowTileCounter ++
+        if (windowTileCounter === 8) {
+          windowTileCounter = 0
+          windowTileRow = getWindowTileRow(i + 1)
+        }
+      }
       
       // Render background (excluding the lowest colour in the pallete)
       if (pixel === undefined) {
