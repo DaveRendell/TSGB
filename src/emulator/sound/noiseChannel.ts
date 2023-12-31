@@ -87,6 +87,8 @@ export class NoiseChannel implements Channel {
 
   stop() {
     this.playing = false
+    this.bufferSource.stop()
+    this.bufferSource.disconnect()
     this.setVolume(0)
   }
 
@@ -105,7 +107,7 @@ export class NoiseChannel implements Channel {
   }
 
   createBufferSource() {
-    if (this.playing) {
+    if (this.playing ) {
       this.bufferSource.stop()
     }
     this.bufferSource = this.audioContext.createBufferSource()

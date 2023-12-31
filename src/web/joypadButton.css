@@ -17,8 +17,8 @@
 
 .dpad-button {
   background-color: darkgrey;
-  box-shadow: 0 0.25em grey;
-  color: grey
+  box-shadow: 0 0.25em #595858;;
+  color: #595858;
 }
 
 .menu-button {
