@@ -13,8 +13,8 @@ interface Props {
   registers: NoiseChannelRegisters
 }
 
-const SAMPLE_LENGTH = 2 << 16
-const SAMPLE_DEPTH = 64
+const SAMPLE_LENGTH = 2 << 17
+const SAMPLE_DEPTH = 32
 
 export class NoiseChannel implements Channel {
   audioContext: AudioContext
@@ -45,8 +45,8 @@ export class NoiseChannel implements Channel {
     this.longBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate)
     this.shortBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate)
 
-    this.longBuffer.copyToChannel(createBuffer15(), 0)
-    this.shortBuffer.copyToChannel(createBuffer7(), 0)
+    this.longBuffer.copyToChannel(generateLSFR(15), 0)
+    this.shortBuffer.copyToChannel(generateLSFR(7), 0)
 
     this.gain = audioContext.createGain()
     this.gain.gain.value = 0
@@ -92,7 +92,6 @@ export class NoiseChannel implements Channel {
 
   updateVolume(increment: number) {
     this.setVolume(this.volume + increment)
-    console.log(`Noise volume envelope changing volume by ${increment} to ${this.volume}`)
   }
 
   setMode(mode: number) {
@@ -102,7 +101,6 @@ export class NoiseChannel implements Channel {
   setSampleRate(divider: number, shift: number) {
     const bitFreq = 262144 / (divider * (1 << shift))
     this.playRate = SAMPLE_DEPTH * bitFreq / this.audioContext.sampleRate
-    console.log("Setting sample rate", { divider, shift, playRate: this.playRate })
     this.bufferSource.playbackRate.setValueAtTime(this.playRate, this.audioContext.currentTime)
   }
 
@@ -120,7 +118,7 @@ export class NoiseChannel implements Channel {
 
   setVolume(volume: number = this.volume) {
     this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume
-    this.gain.gain.setValueAtTime(this.volume / 200, this.audioContext.currentTime)
+    this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime)
     this.waveFormChanged()
   }
 }
@@ -133,7 +131,7 @@ function createBuffer7(): Float32Array {
     const b0 = lsfr & 1
     const b1 = shift & 1
     const carry = 1 - (b0 ^ b1)
-    shift &= 0b01111111
+    shift &= 0b0111_1111
     shift |= (carry << 7)
     lsfr = shift
     const value = carry ? 1 : -1
@@ -152,7 +150,7 @@ function createBuffer15(): Float32Array {
     const b0 = lsfr & 1
     const b1 = shift & 1
     const carry = 1 - (b0 ^ b1)
-    shift &= 0b0111111111111111
+    shift &= 0b0111_1111_1111_1111
     shift |= (carry << 15)
     lsfr = shift
     const value = carry ? 1 : -1
@@ -161,4 +159,20 @@ function createBuffer15(): Float32Array {
     }
   }
   return values
+}
+
+function generateLSFR(width: number): Float32Array {
+  const period = (1 << (width - 1))
+  let lsfr = (1 << 7) - 1
+  const output = new Float32Array(period * SAMPLE_DEPTH)
+
+  for (let i = 0; i < period; i++) {
+    let bit = (lsfr ^ (lsfr >> 1)) & 1
+    lsfr = (lsfr >> 1) | (bit << (width - 1))
+    for (let j = 0; j < SAMPLE_DEPTH; j++) {
+      output[SAMPLE_DEPTH * i + j] = (bit * 2 - 1)
+    }
+  }
+
+  return output
 }

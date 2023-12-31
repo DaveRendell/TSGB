@@ -242,7 +242,9 @@ export class WaveChannelRegisters {
         }
 
         if (self.channel) {
-          if (self.lengthEnabled) { self.channel.timer.enable() }
+          if (self.lengthEnabled) {
+            self.channel.timer.enable()
+          }
           else { self.channel.timer.disable() }
           if (value & 0x80) {
             self.channel.start()
@@ -292,6 +294,9 @@ export class NoiseChannelRegisters {
       get value() { return self.lengthTimer },
       set value(value) {
         self.lengthTimer = value & 0x3F
+        if (self.channel) {
+          self.channel.timer.setTimer(self.lengthTimer)
+        }
       }
     }
     this.nr2 = {
@@ -319,7 +324,6 @@ export class NoiseChannelRegisters {
           + (self.clockDivider)
       },
       set value(value) {
-        console.log("Setting clock value", value.toString(2))
         self.clockShift = (value >> 4) & 0xF
         self.lfsrMode = (value >> 3) & 1
         self.clockDivider = value & 0x7
@@ -338,8 +342,11 @@ export class NoiseChannelRegisters {
         self.lengthEnabled = (value & 0x40) > 0
 
         if (self.channel) {
-          if (self.lengthEnabled) { self.channel.timer.enable() }
-          else { self.channel.timer.disable() }
+          if (self.lengthEnabled) {
+            self.channel.timer.enable()
+          } else {
+            self.channel.timer.disable()
+          }
           if (value & 0x80) {
             self.channel.start()
           }

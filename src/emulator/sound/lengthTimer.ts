@@ -25,6 +25,7 @@ export class LengthTimer {
         this.clock -= LENGTH_TIMER_TICK
         this.timer++
         if (this.timer >= 64) {
+          console.log("Timer kicking in")
           this.channelStop()
         }
       }

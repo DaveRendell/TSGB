@@ -54,6 +54,7 @@ export default class APU {
     this.channel1.update(cycles)
     this.channel2.update(cycles)
     this.channel3.update(cycles)
+    this.channel4.update(cycles)
   }
 
   startAudio() {
