@@ -200,17 +200,23 @@ export default class CPU {
     this.apu.stopAudio()
   }
 
+  lastFrameTime: number 
+
   runFrame(timestamp: number): void {
-    // We maintain an FPS counter by keeping track of how many frames were run
-    // over the last 1000ms
-    this.recentFrames = this.recentFrames.filter(frame => timestamp - frame < 1000)
-    this.fps = this.recentFrames.push(timestamp)
-    
+    const delta = timestamp - this.lastFrameTime
+    this.lastFrameTime = timestamp    
     let address = 0
 
     this.controller.update()
+
+    if (delta >= 1000 / 61) {
+        // We maintain an FPS counter by keeping track of how many frames were run
+      // over the last 1000ms
+      this.recentFrames = this.recentFrames.filter(frame => timestamp - frame < 1000)
+      this.fps = this.recentFrames.push(timestamp)
+
     
-    // try {
+      // try {
       frameLoop:
       while (!this.breakpoints.has(this.registers.PC.value)) {
         this.executeNextInstruction()
@@ -226,14 +232,16 @@ export default class CPU {
           break frameLoop
         }
       }
-      if (this.running && !this.breakpoints.has(address)) {
-        requestAnimationFrame(timestamp => this.runFrame(timestamp))
-      }
     // } catch (error) {
     //   console.log(error.stack)
     //   this.running = false
     //   this.onError(error)
     // }    
+    }
+    
+    if (this.running && !this.breakpoints.has(address)) {
+      requestAnimationFrame(timestamp => this.runFrame(timestamp))
+    }
   }
 
   addClockCallback(callback: ClockCallback): void {
