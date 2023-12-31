@@ -76,4 +76,119 @@ body {
   display: block;
 }
 
+.console {
+  background-color: #708090;
+  border-radius: .5em .5em 3em;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 1em 1em 3em;
+}
+
+.bevel {
+  background-color: #2f4f4f;
+  border-radius: .5em .5em 3em;
+  margin-bottom: 1em;
+  padding: 1em 1em 2em;
+}
+
+.joypad-button {
+  color: #8b0000;
+  vertical-align: top;
+  border: none;
+  border-radius: 100%;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 1.5em;
+}
+
+.face-button {
+  background-color: brown;
+  box-shadow: 0 .25em #8b0000;
+}
+
+.dpad-button {
+  color: #595858;
+  background-color: #a9a9a9;
+  box-shadow: 0 .25em #595858;
+}
+
+.menu-button {
+  color: #000;
+  background-color: #2f4f4f;
+  border-radius: .5em;
+  width: 4em;
+  height: 1.5em;
+  font-size: .75em;
+  box-shadow: 0 .25em #000;
+}
+
+.joypad-button:active, .joypad-button.active {
+  box-shadow: 0 0;
+  box-shadow: 0;
+  margin-top: .25em;
+}
+
+.button-container {
+  vertical-align: top;
+  display: inline-block;
+}
+
+#container-B {
+  position: absolute;
+  top: 2.5em;
+  right: 3em;
+}
+
+#container-A {
+  position: absolute;
+  top: 1.5em;
+  right: 0;
+}
+
+#container-Up {
+  position: absolute;
+  top: 0;
+  left: 2.25em;
+}
+
+#container-Down {
+  position: absolute;
+  top: 4em;
+  left: 2.25em;
+}
+
+#container-Left {
+  position: absolute;
+  top: 2em;
+  left: 0;
+}
+
+#container-Right {
+  position: absolute;
+  top: 2em;
+  left: 4.5em;
+}
+
+.menu-buttons {
+  justify-content: center;
+  gap: .5em;
+  padding-top: 6em;
+  display: flex;
+}
+
+.dpad-single-row > * {
+  margin-left: 2.375em;
+}
+
+.dpad-middle-row > * + * {
+  margin-left: 2.5em;
+}
+
+.joypad {
+  max-width: 300px;
+  height: 100px;
+  margin: 0 auto;
+  position: relative;
+}
+
 /*# sourceMappingURL=index.f6330a41.css.map */
