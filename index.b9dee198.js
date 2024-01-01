@@ -27224,6 +27224,8 @@ var _tabs = require("./tabs");
 var _tabsDefault = parcelHelpers.interopDefault(_tabs);
 var _audioDebug = require("./audioDebug");
 var _audioDebugDefault = parcelHelpers.interopDefault(_audioDebug);
+var _settings = require("./settings");
+var _settingsDefault = parcelHelpers.interopDefault(_settings);
 var _s = $RefreshSig$();
 function GameView({ emulator, unload }) {
     _s();
@@ -27244,7 +27246,7 @@ function GameView({ emulator, unload }) {
                 children: "TSGB"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 34,
+                lineNumber: 35,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27252,7 +27254,7 @@ function GameView({ emulator, unload }) {
                 children: "Run"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 35,
+                lineNumber: 36,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27260,7 +27262,7 @@ function GameView({ emulator, unload }) {
                 children: "Pause"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 36,
+                lineNumber: 37,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27268,7 +27270,7 @@ function GameView({ emulator, unload }) {
                 children: "Run frame"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 37,
+                lineNumber: 38,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27279,7 +27281,7 @@ function GameView({ emulator, unload }) {
                 children: "Unload"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 38,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27291,25 +27293,25 @@ function GameView({ emulator, unload }) {
                             cpu: emulator.cpu
                         }, void 0, false, {
                             fileName: "src/web/components/gameView.tsx",
-                            lineNumber: 41,
+                            lineNumber: 42,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 40,
+                        lineNumber: 41,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
                         controller: emulator.controller
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 43,
+                        lineNumber: 44,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 39,
+                lineNumber: 40,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27319,7 +27321,7 @@ function GameView({ emulator, unload }) {
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 47,
+                lineNumber: 48,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
@@ -27333,6 +27335,9 @@ function GameView({ emulator, unload }) {
                                 emulator.cpu.fps.toPrecision(2)
                             ]
                         }, void 0, true, void 0, void 0),
+                    "Settings": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _settingsDefault.default), {
+                            emulator: emulator
+                        }, void 0, false, void 0, void 0),
                     "Debug Graphics": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                             children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _vramViewer.VramViewer), {
                                 ppu: new (0, _ppuDefault.default)(emulator.cpu)
@@ -27356,13 +27361,13 @@ function GameView({ emulator, unload }) {
                 }
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 49,
+                lineNumber: 50,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/gameView.tsx",
-        lineNumber: 33,
+        lineNumber: 34,
         columnNumber: 11
     }, this);
 }
@@ -27376,7 +27381,7 @@ $RefreshReg$(_c, "GameView");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"2PLGd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./settings":"e45NW"}],"2PLGd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ef66 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30081,7 +30086,7 @@ $RefreshReg$(_c, "Joypad");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./joypadButton":"gTFA6","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"gTFA6":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./joypadButton":"gTFA6"}],"gTFA6":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ba18 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30131,7 +30136,7 @@ $RefreshReg$(_c, "JoypadButton");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../joypadButton.css":"T6QOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"T6QOS":[function() {},{}],"9O6KI":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../joypadButton.css":"T6QOS"}],"T6QOS":[function() {},{}],"9O6KI":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$4922 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30408,6 +30413,349 @@ $RefreshReg$(_c, "Oscilloscope");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"e45NW":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$3d07 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$3d07.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "default", ()=>Settings);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _s = $RefreshSig$();
+const MONOCHROME_PALLETES = {
+    "Greyscale": [
+        [
+            255,
+            255,
+            255
+        ],
+        [
+            192,
+            192,
+            192
+        ],
+        [
+            96,
+            96,
+            96
+        ],
+        [
+            0,
+            0,
+            0
+        ]
+    ],
+    "Greeny greens": [
+        [
+            233,
+            245,
+            219
+        ],
+        [
+            207,
+            225,
+            185
+        ],
+        [
+            116,
+            135,
+            88
+        ],
+        [
+            51,
+            60,
+            38
+        ]
+    ],
+    "Ocean breeze": [
+        [
+            222,
+            250,
+            252
+        ],
+        [
+            180,
+            228,
+            231
+        ],
+        [
+            74,
+            138,
+            149
+        ],
+        [
+            37,
+            39,
+            61
+        ]
+    ],
+    "Puff ball": [
+        [
+            254,
+            239,
+            254
+        ],
+        [
+            231,
+            188,
+            231
+        ],
+        [
+            170,
+            106,
+            172
+        ],
+        [
+            62,
+            36,
+            61
+        ]
+    ],
+    "Burned In": [
+        [
+            254,
+            239,
+            240
+        ],
+        [
+            232,
+            187,
+            191
+        ],
+        [
+            181,
+            98,
+            111
+        ],
+        [
+            63,
+            35,
+            37
+        ]
+    ],
+    "Authentic": [
+        [
+            155,
+            188,
+            15
+        ],
+        [
+            139,
+            172,
+            15
+        ],
+        [
+            48,
+            98,
+            48
+        ],
+        [
+            15,
+            56,
+            15
+        ]
+    ]
+};
+const arrayToColour = (components)=>"#" + components.map((c)=>c.toString(16).padStart(2, "0")).join("");
+const colourToArray = (colour)=>[
+        parseInt("0x" + colour.slice(1, 3)),
+        parseInt("0x" + colour.slice(3, 5)),
+        parseInt("0x" + colour.slice(5, 7))
+    ];
+function Settings({ emulator }) {
+    _s();
+    const [monochromePallette0, setMonochromePallete0] = _react.useState(arrayToColour(emulator.screen.colours[0]));
+    const [monochromePallette1, setMonochromePallete1] = _react.useState(arrayToColour(emulator.screen.colours[1]));
+    const [monochromePallette2, setMonochromePallete2] = _react.useState(arrayToColour(emulator.screen.colours[2]));
+    const [monochromePallette3, setMonochromePallete3] = _react.useState(arrayToColour(emulator.screen.colours[3]));
+    const [chosenPresetId, setChosenPresetId] = _react.useState(-1);
+    const updateMonochromePallette = (e)=>{
+        e.preventDefault();
+        emulator.screen.colours = [
+            colourToArray(monochromePallette0),
+            colourToArray(monochromePallette1),
+            colourToArray(monochromePallette2),
+            colourToArray(monochromePallette3)
+        ];
+    };
+    const applyPreset = (e)=>{
+        e.preventDefault();
+        const chosenId = parseInt(e.target.value);
+        setChosenPresetId(chosenId);
+        if (chosenId !== -1) {
+            const pallette = Object.entries(MONOCHROME_PALLETES)[chosenId][1];
+            setMonochromePallete0(arrayToColour(pallette[0]));
+            setMonochromePallete1(arrayToColour(pallette[1]));
+            setMonochromePallete2(arrayToColour(pallette[2]));
+            setMonochromePallete3(arrayToColour(pallette[3]));
+        }
+    };
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
+        children: [
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                children: "Settings"
+            }, void 0, false, {
+                fileName: "src/web/components/settings.tsx",
+                lineNumber: 87,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("form", {
+                onSubmit: updateMonochromePallette,
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                        htmlFor: "preset-selector",
+                        children: "Use preset"
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 89,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
+                        id: "preset-selector",
+                        value: chosenPresetId,
+                        onChange: applyPreset,
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                value: -1,
+                                children: "Choose"
+                            }, void 0, false, {
+                                fileName: "src/web/components/settings.tsx",
+                                lineNumber: 91,
+                                columnNumber: 9
+                            }, this),
+                            Object.keys(MONOCHROME_PALLETES).map((name, i)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                    value: i.toString(),
+                                    children: name
+                                }, void 0, false, {
+                                    fileName: "src/web/components/settings.tsx",
+                                    lineNumber: 93,
+                                    columnNumber: 11
+                                }, this))
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 90,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                        htmlFor: "colour-0",
+                        children: "Colour 0"
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 96,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                        type: "color",
+                        name: "colour-0",
+                        value: monochromePallette0,
+                        onChange: (e)=>setMonochromePallete0(e.target.value)
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 97,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                        htmlFor: "colour-1",
+                        children: "Colour 1"
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 102,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                        type: "color",
+                        name: "colour-1",
+                        value: monochromePallette1,
+                        onChange: (e)=>setMonochromePallete1(e.target.value)
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 103,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                        htmlFor: "colour-2",
+                        children: "Colour 2"
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 108,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                        type: "color",
+                        name: "colour-2",
+                        value: monochromePallette2,
+                        onChange: (e)=>setMonochromePallete2(e.target.value)
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 109,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                        htmlFor: "colour-3",
+                        children: "Colour 3"
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 114,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                        type: "color",
+                        name: "colour-3",
+                        value: monochromePallette3,
+                        onChange: (e)=>setMonochromePallete3(e.target.value)
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 115,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                        type: "submit",
+                        value: "Update monochrome pallette"
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 120,
+                        columnNumber: 7
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/web/components/settings.tsx",
+                lineNumber: 88,
+                columnNumber: 5
+            }, this),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("pre", {
+                children: JSON.stringify([
+                    colourToArray(monochromePallette0),
+                    colourToArray(monochromePallette1),
+                    colourToArray(monochromePallette2),
+                    colourToArray(monochromePallette3)
+                ])
+            }, void 0, false, {
+                fileName: "src/web/components/settings.tsx",
+                lineNumber: 122,
+                columnNumber: 5
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "src/web/components/settings.tsx",
+        lineNumber: 86,
+        columnNumber: 11
+    }, this);
+}
+_s(Settings, "5jgL31dMYTYT6x8HdOXwj817xjI=");
+_c = Settings;
+var _c;
+$RefreshReg$(_c, "Settings");
+
+  $parcel$ReactRefreshHelpers$3d07.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
 },{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"6YHbn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -30490,7 +30838,149 @@ class APU {
 }
 exports.default = APU;
 
-},{"./sound/noiseChannel":"bhrev","./sound/pulseChannel":"iY6ME","./sound/waveChannel":"gIwWw","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bhrev":[function(require,module,exports) {
+},{"./sound/pulseChannel":"iY6ME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./sound/noiseChannel":"bhrev","./sound/waveChannel":"gIwWw"}],"iY6ME":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lengthTimer = require("./lengthTimer");
+var _volumeEnvelope = require("./volumeEnvelope");
+class PulseChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.period = 0;
+        this.volume = 0;
+        this.waveFormChanged = ()=>{};
+        this.audioContext = audioContext;
+        this.oscillator = audioContext.createOscillator();
+        this.oscillator.type = "square";
+        this.oscillator.frequency.value = 440;
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.oscillator.connect(this.muteNode);
+        this.muteNode.connect(this.gain);
+        this.gain.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.oscillator.start();
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
+        registers.channel = this;
+    }
+    update(cycles) {
+        if (this.playing) {
+            this.timer.update(cycles);
+            this.envelope.update(cycles);
+        }
+    }
+    start() {
+        this.playing = true;
+        this.setVolume();
+        this.timer.resetClock();
+        this.envelope.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.setVolume(0);
+    }
+    updateVolume(increment) {
+        this.setVolume(this.volume + increment);
+    }
+    setPeriod(period) {
+        this.period = period;
+        const frequency = 131072 / (2048 - period);
+        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+    setVolume(volume = this.volume) {
+        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
+        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+exports.default = PulseChannel;
+
+},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature that turns the channel off after a certain amount
+ * of time has passed.
+ */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
+// Roughly equal to 4.2MHz clock speed / 256Hz 
+const LENGTH_TIMER_TICK = 0x4000;
+class LengthTimer {
+    constructor(channelStop){
+        this.clock = 0;
+        this.enabled = false;
+        this.timer = 0;
+        this.channelStop = channelStop;
+    }
+    update(cycles) {
+        if (this.enabled) {
+            this.clock += cycles;
+            if (this.clock > LENGTH_TIMER_TICK) {
+                this.clock -= LENGTH_TIMER_TICK;
+                this.timer++;
+                if (this.timer >= 64) this.channelStop();
+            }
+        }
+    }
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    setTimer(length) {
+        this.timer = length;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature which regularly changes the volume of the channel
+ * until it reaches a maximum or minimum value.
+ */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
+// Roughly equal to 4.2MHz clock speed / 64Hz
+const ENVELOPER_TIMER_TICK = 0x10000;
+class VolumeEnvelope {
+    constructor(volumeSetter){
+        this.clock = 0;
+        this.direction = 1;
+        this.pace = 0;
+        this.timer = 0;
+        this.volumeIncrement = volumeSetter;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock > ENVELOPER_TIMER_TICK) {
+                this.clock -= ENVELOPER_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.volumeIncrement(this.direction);
+                }
+            }
+        }
+    }
+    setEnvelope(direction, pace) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bhrev":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "NoiseChannel", ()=>NoiseChannel);
@@ -30614,148 +31104,6 @@ function generateLSFR(width) {
     }
     return output;
 }
-
-},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature that turns the channel off after a certain amount
- * of time has passed.
- */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
-// Roughly equal to 4.2MHz clock speed / 256Hz 
-const LENGTH_TIMER_TICK = 0x4000;
-class LengthTimer {
-    constructor(channelStop){
-        this.clock = 0;
-        this.enabled = false;
-        this.timer = 0;
-        this.channelStop = channelStop;
-    }
-    update(cycles) {
-        if (this.enabled) {
-            this.clock += cycles;
-            if (this.clock > LENGTH_TIMER_TICK) {
-                this.clock -= LENGTH_TIMER_TICK;
-                this.timer++;
-                if (this.timer >= 64) this.channelStop();
-            }
-        }
-    }
-    enable() {
-        this.enabled = true;
-    }
-    disable() {
-        this.enabled = false;
-    }
-    setTimer(length) {
-        this.timer = length;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature which regularly changes the volume of the channel
- * until it reaches a maximum or minimum value.
- */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
-// Roughly equal to 4.2MHz clock speed / 64Hz
-const ENVELOPER_TIMER_TICK = 0x10000;
-class VolumeEnvelope {
-    constructor(volumeSetter){
-        this.clock = 0;
-        this.direction = 1;
-        this.pace = 0;
-        this.timer = 0;
-        this.volumeIncrement = volumeSetter;
-    }
-    update(cycles) {
-        if (this.pace) {
-            this.clock += cycles;
-            if (this.clock > ENVELOPER_TIMER_TICK) {
-                this.clock -= ENVELOPER_TIMER_TICK;
-                this.timer--;
-                if (this.timer <= 0) {
-                    this.timer = this.pace;
-                    this.volumeIncrement(this.direction);
-                }
-            }
-        }
-    }
-    setEnvelope(direction, pace) {
-        this.direction = direction;
-        this.pace = pace;
-        this.timer = pace;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iY6ME":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _lengthTimer = require("./lengthTimer");
-var _volumeEnvelope = require("./volumeEnvelope");
-class PulseChannel {
-    constructor({ audioContext, outputNode, registers }){
-        this.playing = false;
-        this.period = 0;
-        this.volume = 0;
-        this.waveFormChanged = ()=>{};
-        this.audioContext = audioContext;
-        this.oscillator = audioContext.createOscillator();
-        this.oscillator.type = "square";
-        this.oscillator.frequency.value = 440;
-        this.gain = audioContext.createGain();
-        this.gain.gain.value = 0;
-        this.analyser = audioContext.createAnalyser();
-        this.muteNode = audioContext.createGain();
-        this.muteNode.gain.value = 1;
-        this.oscillator.connect(this.muteNode);
-        this.muteNode.connect(this.gain);
-        this.gain.connect(this.analyser);
-        this.analyser.connect(outputNode);
-        this.oscillator.start();
-        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
-        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
-        registers.channel = this;
-    }
-    update(cycles) {
-        if (this.playing) {
-            this.timer.update(cycles);
-            this.envelope.update(cycles);
-        }
-    }
-    start() {
-        this.playing = true;
-        this.setVolume();
-        this.timer.resetClock();
-        this.envelope.resetClock();
-    }
-    stop() {
-        this.playing = false;
-        this.setVolume(0);
-    }
-    updateVolume(increment) {
-        this.setVolume(this.volume + increment);
-    }
-    setPeriod(period) {
-        this.period = period;
-        const frequency = 131072 / (2048 - period);
-        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-    setVolume(volume = this.volume) {
-        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
-        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-}
-exports.default = PulseChannel;
 
 },{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gIwWw":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -31460,7 +31808,7 @@ async function createCartridge(romData) {
     throw new Error("Unknown cartridge type: " + cartridgeType);
 }
 
-},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","./mbc5Cartridge":"6zYKi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBMrX":[function(require,module,exports) {
+},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./mbc5Cartridge":"6zYKi"}],"jBMrX":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
@@ -32120,7 +32468,7 @@ class NoiseChannelRegisters {
     }
 }
 
-},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eI0h3":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../refs/byteRef":"6cdGr"}],"eI0h3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "BootRomRegister", ()=>BootRomRegister);
@@ -32357,28 +32705,6 @@ var _interruptRegisters = require("./memory/registers/interruptRegisters");
 const WIDTH = 160;
 const HEIGHT = 144;
 const SCANLINES = 154;
-const COLOURS = [
-    [
-        255,
-        255,
-        255
-    ],
-    [
-        192,
-        192,
-        192
-    ],
-    [
-        96,
-        96,
-        96
-    ],
-    [
-        0,
-        0,
-        0
-    ]
-];
 const BACKGROUND_MEMORY_START = 0x9800;
 const WINDOW_MEMORY_START = 0x9C00;
 class Screen {
@@ -32386,6 +32712,28 @@ class Screen {
         this.clockCount = 0;
         this.mode = "Scanline OAM";
         this.newFrameDrawn = false;
+        this.colours = [
+            [
+                255,
+                255,
+                255
+            ],
+            [
+                192,
+                192,
+                192
+            ],
+            [
+                96,
+                96,
+                96
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ];
         this.cpu = cpu;
         this.memory = cpu.memory;
         this.buffer = new OffscreenCanvas(WIDTH, HEIGHT);
@@ -32540,7 +32888,7 @@ class Screen {
             }
             // If nothing else has rendered, use the lowest colour in the pallete
             if (pixel === undefined) pixel = this.backgroundPallette.map[0];
-            const colour = COLOURS[pixel];
+            const colour = this.colours[pixel];
             line.data[4 * i + 0] = colour[0];
             line.data[4 * i + 1] = colour[1];
             line.data[4 * i + 2] = colour[2];
@@ -32669,7 +33017,7 @@ $RefreshReg$(_c, "GameLoader");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","../indexedDb/gameStore":"kdNdQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"kdNdQ":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../indexedDb/gameStore":"kdNdQ"}],"kdNdQ":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "getGameList", ()=>getGameList);

@@ -31,6 +31,7 @@ body {
 }
 
 .screen {
+  image-rendering: pixelated;
   margin: 0 auto;
   display: block;
 }
