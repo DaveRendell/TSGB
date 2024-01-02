@@ -1,7 +1,7 @@
 type VolumeIncrementer = (increment: number) => void
 
 // Roughly equal to 4.2MHz clock speed / 64Hz
-const ENVELOPER_TIMER_TICK = 0x10000
+const ENVELOPE_TIMER_TICK = 0x10000
 
 /**
  * Sound channel feature which regularly changes the volume of the channel
@@ -21,8 +21,8 @@ export class VolumeEnvelope {
   update(cycles: number) {
     if (this.pace) {
       this.clock += cycles
-      if (this.clock > ENVELOPER_TIMER_TICK) {
-        this.clock -= ENVELOPER_TIMER_TICK
+      if (this.clock >= ENVELOPE_TIMER_TICK) {
+        this.clock -= ENVELOPE_TIMER_TICK
         this.timer--
         if (this.timer <= 0) {
           this.timer = this.pace

@@ -1,6 +1,7 @@
 import { PulseChannelRegisters } from "../memory/registers/audioRegisters"
 import { Channel } from "./channel"
 import { LengthTimer } from "./lengthTimer"
+import { PeriodSweep } from "./periodSweep"
 import { VolumeEnvelope } from "./volumeEnvelope"
 
 interface Props {
@@ -29,6 +30,7 @@ export default class PulseChannel implements Channel {
 
   timer: LengthTimer
   envelope: VolumeEnvelope
+  sweep: PeriodSweep
 
   waveFormChanged: () => void = () => {}
 
@@ -55,6 +57,7 @@ export default class PulseChannel implements Channel {
 
     this.timer = new LengthTimer(() => this.stop())
     this.envelope = new VolumeEnvelope((increment) => this.updateVolume(increment))
+    this.sweep = new PeriodSweep((step, direction) => this.updatePeriod(step, direction))
 
     registers.channel = this
   }
@@ -63,6 +66,7 @@ export default class PulseChannel implements Channel {
     if (this.playing) {
       this.timer.update(cycles)
       this.envelope.update(cycles)
+      this.sweep.update(cycles)
     }
   }
 
@@ -80,6 +84,11 @@ export default class PulseChannel implements Channel {
 
   updateVolume(increment: number) {
     this.setVolume(this.volume + increment)
+  }
+
+  updatePeriod(step: number, direction: 1 | -1) {
+    const newPeriod = this.period + direction * (this.period / (1 << step))
+    this.setPeriod(newPeriod)
   }
 
   setPeriod(period: number) {
