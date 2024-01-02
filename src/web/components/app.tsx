@@ -8,7 +8,13 @@ export default function App() {
   const [cartridge, setCartridge] = React.useState<Cartridge | null>(null)
 
   if (cartridge) {
-    return <GameView emulator={new Emulator(cartridge)} unload={() => setCartridge(null)} />
+    const emulator = new Emulator(cartridge)
+    const paletteString = window.localStorage.getItem("monochromePalette")
+    if (paletteString) {
+      const palette = JSON.parse(paletteString)
+      emulator.screen.colours = palette
+    }
+    return <GameView emulator={emulator} unload={() => setCartridge(null)} />
   }
 
   return <GameLoader setCartridge={setCartridge} />

@@ -92,3 +92,11 @@ body {
   border-radius: 0.5em 0.5em 3em 0.5em;
   margin-bottom: 1em;
 }
+
+label + input, input + label, label + select {
+  margin-left: 1em;
+}
+
+select {
+  margin-bottom: 0.5em;
+}
