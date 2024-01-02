@@ -213,14 +213,14 @@ export default class Screen {
           .find(p => p !== undefined)
       }
 
+      let tilePixel: number | undefined = undefined
+
       // Render window
       const winX = i - (this.memory.registers.windowX.value - 7)
       if (pixel === undefined && this.lcdControl.windowEnabled) {
         if (winY >= 0 && winX >= 0) {
           const windowPixel = windowTileRow[winX % 8]
-          if (windowPixel !== 0) {
-            pixel = this.backgroundPallette.map[windowPixel]     
-          }     
+          tilePixel = this.backgroundPallette.map[windowPixel]   
         }
       }
       if (winX >= 0 && winY >= 0) {
@@ -232,11 +232,9 @@ export default class Screen {
       }
       
       // Render background (excluding the lowest colour in the pallete)
-      if (pixel === undefined && this.lcdControl.backgroundWindowDisplay) {
+      if (pixel === undefined && tilePixel == undefined && this.lcdControl.backgroundWindowDisplay) {
         const backgroundPixel = backgroundTileRow[(scrollX + i) % 8]
-        if (backgroundPixel !== 0) {
-          pixel = this.backgroundPallette.map[backgroundPixel]
-        }
+        tilePixel = this.backgroundPallette.map[backgroundPixel]
       }
       
       // Get next background tile if needed
@@ -244,6 +242,10 @@ export default class Screen {
       if (backgroundTileCounter === 8) {
         backgroundTileCounter = 0
         backgroundTileRow = getBackgroundTileRow(i + 1)
+      }
+
+      if (tilePixel) {
+        pixel = tilePixel
       }
 
       // Render low priority sprites (that go below non zero background)
