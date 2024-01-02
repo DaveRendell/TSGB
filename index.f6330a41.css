@@ -92,6 +92,18 @@ body {
   padding: 1em 1em 2em;
 }
 
+label + input, input + label, label + select {
+  margin-left: 1em;
+}
+
+select {
+  margin-bottom: .5em;
+}
+
+.control-buttons {
+  margin-bottom: 1em;
+}
+
 .joypad-button {
   color: #8b0000;
   vertical-align: top;

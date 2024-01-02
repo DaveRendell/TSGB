@@ -27171,19 +27171,27 @@ var _s = $RefreshSig$();
 function App() {
     _s();
     const [cartridge, setCartridge] = _react.useState(null);
-    if (cartridge) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameViewDefault.default), {
-        emulator: new (0, _emulator.Emulator)(cartridge),
-        unload: ()=>setCartridge(null)
-    }, void 0, false, {
-        fileName: "src/web/components/app.tsx",
-        lineNumber: 11,
-        columnNumber: 12
-    }, this);
+    if (cartridge) {
+        const emulator = new (0, _emulator.Emulator)(cartridge);
+        const paletteString = window.localStorage.getItem("monochromePalette");
+        if (paletteString) {
+            const palette = JSON.parse(paletteString);
+            emulator.screen.colours = palette;
+        }
+        return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameViewDefault.default), {
+            emulator: emulator,
+            unload: ()=>setCartridge(null)
+        }, void 0, false, {
+            fileName: "src/web/components/app.tsx",
+            lineNumber: 17,
+            columnNumber: 12
+        }, this);
+    }
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameLoaderDefault.default), {
         setCartridge: setCartridge
     }, void 0, false, {
         fileName: "src/web/components/app.tsx",
-        lineNumber: 14,
+        lineNumber: 20,
         columnNumber: 10
     }, this);
 }
@@ -27249,39 +27257,48 @@ function GameView({ emulator, unload }) {
                 lineNumber: 35,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>emulator.cpu.run(),
-                children: "Run"
-            }, void 0, false, {
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "control-buttons",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: ()=>emulator.cpu.run(),
+                        children: "Run"
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameView.tsx",
+                        lineNumber: 37,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: ()=>emulator.cpu.pause(),
+                        children: "Pause"
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameView.tsx",
+                        lineNumber: 38,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: ()=>emulator.cpu.runFrame(Infinity),
+                        children: "Run frame"
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameView.tsx",
+                        lineNumber: 39,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: ()=>{
+                            emulator.cpu.pause();
+                            unload();
+                        },
+                        children: "Unload"
+                    }, void 0, false, {
+                        fileName: "src/web/components/gameView.tsx",
+                        lineNumber: 40,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
                 lineNumber: 36,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>emulator.cpu.pause(),
-                children: "Pause"
-            }, void 0, false, {
-                fileName: "src/web/components/gameView.tsx",
-                lineNumber: 37,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>emulator.cpu.runFrame(Infinity),
-                children: "Run frame"
-            }, void 0, false, {
-                fileName: "src/web/components/gameView.tsx",
-                lineNumber: 38,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: ()=>{
-                    emulator.cpu.pause();
-                    unload();
-                },
-                children: "Unload"
-            }, void 0, false, {
-                fileName: "src/web/components/gameView.tsx",
-                lineNumber: 39,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27293,25 +27310,25 @@ function GameView({ emulator, unload }) {
                             cpu: emulator.cpu
                         }, void 0, false, {
                             fileName: "src/web/components/gameView.tsx",
-                            lineNumber: 42,
+                            lineNumber: 44,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 41,
+                        lineNumber: 43,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
                         controller: emulator.controller
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 44,
+                        lineNumber: 46,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 40,
+                lineNumber: 42,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27321,7 +27338,7 @@ function GameView({ emulator, unload }) {
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 48,
+                lineNumber: 50,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
@@ -27361,7 +27378,7 @@ function GameView({ emulator, unload }) {
                 }
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 50,
+                lineNumber: 52,
                 columnNumber: 7
             }, this)
         ]
@@ -27381,7 +27398,7 @@ $RefreshReg$(_c, "GameView");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./settings":"e45NW"}],"2PLGd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","./settings":"e45NW","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"2PLGd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ef66 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30086,7 +30103,7 @@ $RefreshReg$(_c, "Joypad");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./joypadButton":"gTFA6"}],"gTFA6":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./joypadButton":"gTFA6","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"gTFA6":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ba18 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30136,7 +30153,7 @@ $RefreshReg$(_c, "JoypadButton");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../joypadButton.css":"T6QOS"}],"T6QOS":[function() {},{}],"9O6KI":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../joypadButton.css":"T6QOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"T6QOS":[function() {},{}],"9O6KI":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$4922 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30426,7 +30443,7 @@ parcelHelpers.export(exports, "default", ()=>Settings);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
 var _s = $RefreshSig$();
-const MONOCHROME_PALLETES = {
+const MONOCHROME_PALETES = {
     "Greyscale": [
         [
             255,
@@ -30568,50 +30585,65 @@ const colourToArray = (colour)=>[
     ];
 function Settings({ emulator }) {
     _s();
-    const [monochromePallette0, setMonochromePallete0] = _react.useState(arrayToColour(emulator.screen.colours[0]));
-    const [monochromePallette1, setMonochromePallete1] = _react.useState(arrayToColour(emulator.screen.colours[1]));
-    const [monochromePallette2, setMonochromePallete2] = _react.useState(arrayToColour(emulator.screen.colours[2]));
-    const [monochromePallette3, setMonochromePallete3] = _react.useState(arrayToColour(emulator.screen.colours[3]));
+    const [monochromePalette0, setMonochromePalete0] = _react.useState(arrayToColour(emulator.screen.colours[0]));
+    const [monochromePalette1, setMonochromePalete1] = _react.useState(arrayToColour(emulator.screen.colours[1]));
+    const [monochromePalette2, setMonochromePalete2] = _react.useState(arrayToColour(emulator.screen.colours[2]));
+    const [monochromePalette3, setMonochromePalete3] = _react.useState(arrayToColour(emulator.screen.colours[3]));
     const [chosenPresetId, setChosenPresetId] = _react.useState(-1);
-    const updateMonochromePallette = (e)=>{
-        e.preventDefault();
-        emulator.screen.colours = [
-            colourToArray(monochromePallette0),
-            colourToArray(monochromePallette1),
-            colourToArray(monochromePallette2),
-            colourToArray(monochromePallette3)
-        ];
+    const updatePalette = (id, colour)=>{
+        emulator.screen.colours.splice(id, 1, colour);
+        window.localStorage.setItem("monochromePalette", JSON.stringify(emulator.screen.colours));
+        switch(id){
+            case 0:
+                setMonochromePalete0(arrayToColour(colour));
+                break;
+            case 1:
+                setMonochromePalete1(arrayToColour(colour));
+                break;
+            case 2:
+                setMonochromePalete2(arrayToColour(colour));
+                break;
+            case 3:
+                setMonochromePalete3(arrayToColour(colour));
+                break;
+        }
     };
     const applyPreset = (e)=>{
         e.preventDefault();
         const chosenId = parseInt(e.target.value);
         setChosenPresetId(chosenId);
         if (chosenId !== -1) {
-            const pallette = Object.entries(MONOCHROME_PALLETES)[chosenId][1];
-            setMonochromePallete0(arrayToColour(pallette[0]));
-            setMonochromePallete1(arrayToColour(pallette[1]));
-            setMonochromePallete2(arrayToColour(pallette[2]));
-            setMonochromePallete3(arrayToColour(pallette[3]));
+            const palette = Object.entries(MONOCHROME_PALETES)[chosenId][1];
+            updatePalette(0, palette[0]);
+            updatePalette(1, palette[1]);
+            updatePalette(2, palette[2]);
+            updatePalette(3, palette[3]);
         }
     };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
         children: [
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
                 children: "Settings"
             }, void 0, false, {
                 fileName: "src/web/components/settings.tsx",
-                lineNumber: 87,
+                lineNumber: 88,
                 columnNumber: 5
             }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("form", {
-                onSubmit: updateMonochromePallette,
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                        children: "Set monochrome palette"
+                    }, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 90,
+                        columnNumber: 7
+                    }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
                         htmlFor: "preset-selector",
                         children: "Use preset"
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 89,
+                        lineNumber: 91,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
@@ -30624,129 +30656,114 @@ function Settings({ emulator }) {
                                 children: "Choose"
                             }, void 0, false, {
                                 fileName: "src/web/components/settings.tsx",
-                                lineNumber: 91,
+                                lineNumber: 93,
                                 columnNumber: 9
                             }, this),
-                            Object.keys(MONOCHROME_PALLETES).map((name, i)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                            Object.keys(MONOCHROME_PALETES).map((name, i)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
                                     value: i.toString(),
                                     children: name
                                 }, void 0, false, {
                                     fileName: "src/web/components/settings.tsx",
-                                    lineNumber: 93,
+                                    lineNumber: 95,
                                     columnNumber: 11
                                 }, this))
                         ]
                     }, void 0, true, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 90,
+                        lineNumber: 92,
+                        columnNumber: 7
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                        fileName: "src/web/components/settings.tsx",
+                        lineNumber: 98,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
                         htmlFor: "colour-0",
-                        children: "Colour 0"
+                        children: "Colour 0:"
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 96,
+                        lineNumber: 99,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
                         type: "color",
                         name: "colour-0",
-                        value: monochromePallette0,
-                        onChange: (e)=>setMonochromePallete0(e.target.value)
+                        value: monochromePalette0,
+                        onChange: (e)=>updatePalette(0, colourToArray(e.target.value))
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 97,
+                        lineNumber: 100,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
                         htmlFor: "colour-1",
-                        children: "Colour 1"
+                        children: "Colour 1:"
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 102,
+                        lineNumber: 105,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
                         type: "color",
                         name: "colour-1",
-                        value: monochromePallette1,
-                        onChange: (e)=>setMonochromePallete1(e.target.value)
+                        value: monochromePalette1,
+                        onChange: (e)=>updatePalette(1, colourToArray(e.target.value))
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 103,
+                        lineNumber: 106,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
                         htmlFor: "colour-2",
-                        children: "Colour 2"
+                        children: "Colour 2:"
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 108,
+                        lineNumber: 111,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
                         type: "color",
                         name: "colour-2",
-                        value: monochromePallette2,
-                        onChange: (e)=>setMonochromePallete2(e.target.value)
+                        value: monochromePalette2,
+                        onChange: (e)=>updatePalette(2, colourToArray(e.target.value))
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 109,
+                        lineNumber: 112,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
                         htmlFor: "colour-3",
-                        children: "Colour 3"
+                        children: "Colour 3:"
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 114,
+                        lineNumber: 117,
                         columnNumber: 7
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
                         type: "color",
                         name: "colour-3",
-                        value: monochromePallette3,
-                        onChange: (e)=>setMonochromePallete3(e.target.value)
+                        value: monochromePalette3,
+                        onChange: (e)=>updatePalette(3, colourToArray(e.target.value))
                     }, void 0, false, {
                         fileName: "src/web/components/settings.tsx",
-                        lineNumber: 115,
-                        columnNumber: 7
-                    }, this),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
-                        type: "submit",
-                        value: "Update monochrome pallette"
-                    }, void 0, false, {
-                        fileName: "src/web/components/settings.tsx",
-                        lineNumber: 120,
+                        lineNumber: 118,
                         columnNumber: 7
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/settings.tsx",
-                lineNumber: 88,
-                columnNumber: 5
-            }, this),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("pre", {
-                children: JSON.stringify([
-                    colourToArray(monochromePallette0),
-                    colourToArray(monochromePallette1),
-                    colourToArray(monochromePallette2),
-                    colourToArray(monochromePallette3)
-                ])
-            }, void 0, false, {
-                fileName: "src/web/components/settings.tsx",
-                lineNumber: 122,
+                lineNumber: 89,
                 columnNumber: 5
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/settings.tsx",
-        lineNumber: 86,
+        lineNumber: 87,
         columnNumber: 11
     }, this);
 }
-_s(Settings, "5jgL31dMYTYT6x8HdOXwj817xjI=");
+_s(Settings, "Ljzh523RQsNRWirniyK11e8cCw0=");
 _c = Settings;
 var _c;
 $RefreshReg$(_c, "Settings");
@@ -30797,30 +30814,35 @@ class APU {
         this.cpu = cpu;
         this.memory = cpu.memory;
         this.memory.registers.audioMasterControl.apu = this;
+        this.memory.registers.masterVolumeVin.updateVolume = (volume)=>{
+            this.vinVolume.gain.value = volume / 8;
+        };
         cpu.apu = this;
         cpu.addClockCallback(this);
         this.audioContext.suspend();
         this.masterControl = this.audioContext.createGain();
+        this.vinVolume = this.audioContext.createGain();
         this.channel1 = new (0, _pulseChannelDefault.default)({
             audioContext: this.audioContext,
-            outputNode: this.masterControl,
+            outputNode: this.vinVolume,
             registers: this.memory.registers.channel1
         });
         this.channel2 = new (0, _pulseChannelDefault.default)({
             audioContext: this.audioContext,
-            outputNode: this.masterControl,
+            outputNode: this.vinVolume,
             registers: this.memory.registers.channel2
         });
         this.channel3 = new (0, _waveChannelDefault.default)({
             audioContext: this.audioContext,
-            outputNode: this.masterControl,
+            outputNode: this.vinVolume,
             registers: this.memory.registers.channel3
         });
         this.channel4 = new (0, _noiseChannel.NoiseChannel)({
             audioContext: this.audioContext,
-            outputNode: this.masterControl,
+            outputNode: this.vinVolume,
             registers: this.memory.registers.channel4
         });
+        this.vinVolume.connect(this.masterControl);
         this.masterControl.connect(this.audioContext.destination);
     }
     updateClock(cycles) {
@@ -30838,149 +30860,7 @@ class APU {
 }
 exports.default = APU;
 
-},{"./sound/pulseChannel":"iY6ME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./sound/noiseChannel":"bhrev","./sound/waveChannel":"gIwWw"}],"iY6ME":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _lengthTimer = require("./lengthTimer");
-var _volumeEnvelope = require("./volumeEnvelope");
-class PulseChannel {
-    constructor({ audioContext, outputNode, registers }){
-        this.playing = false;
-        this.period = 0;
-        this.volume = 0;
-        this.waveFormChanged = ()=>{};
-        this.audioContext = audioContext;
-        this.oscillator = audioContext.createOscillator();
-        this.oscillator.type = "square";
-        this.oscillator.frequency.value = 440;
-        this.gain = audioContext.createGain();
-        this.gain.gain.value = 0;
-        this.analyser = audioContext.createAnalyser();
-        this.muteNode = audioContext.createGain();
-        this.muteNode.gain.value = 1;
-        this.oscillator.connect(this.muteNode);
-        this.muteNode.connect(this.gain);
-        this.gain.connect(this.analyser);
-        this.analyser.connect(outputNode);
-        this.oscillator.start();
-        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
-        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
-        registers.channel = this;
-    }
-    update(cycles) {
-        if (this.playing) {
-            this.timer.update(cycles);
-            this.envelope.update(cycles);
-        }
-    }
-    start() {
-        this.playing = true;
-        this.setVolume();
-        this.timer.resetClock();
-        this.envelope.resetClock();
-    }
-    stop() {
-        this.playing = false;
-        this.setVolume(0);
-    }
-    updateVolume(increment) {
-        this.setVolume(this.volume + increment);
-    }
-    setPeriod(period) {
-        this.period = period;
-        const frequency = 131072 / (2048 - period);
-        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-    setVolume(volume = this.volume) {
-        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
-        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-}
-exports.default = PulseChannel;
-
-},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature that turns the channel off after a certain amount
- * of time has passed.
- */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
-// Roughly equal to 4.2MHz clock speed / 256Hz 
-const LENGTH_TIMER_TICK = 0x4000;
-class LengthTimer {
-    constructor(channelStop){
-        this.clock = 0;
-        this.enabled = false;
-        this.timer = 0;
-        this.channelStop = channelStop;
-    }
-    update(cycles) {
-        if (this.enabled) {
-            this.clock += cycles;
-            if (this.clock > LENGTH_TIMER_TICK) {
-                this.clock -= LENGTH_TIMER_TICK;
-                this.timer++;
-                if (this.timer >= 64) this.channelStop();
-            }
-        }
-    }
-    enable() {
-        this.enabled = true;
-    }
-    disable() {
-        this.enabled = false;
-    }
-    setTimer(length) {
-        this.timer = length;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature which regularly changes the volume of the channel
- * until it reaches a maximum or minimum value.
- */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
-// Roughly equal to 4.2MHz clock speed / 64Hz
-const ENVELOPER_TIMER_TICK = 0x10000;
-class VolumeEnvelope {
-    constructor(volumeSetter){
-        this.clock = 0;
-        this.direction = 1;
-        this.pace = 0;
-        this.timer = 0;
-        this.volumeIncrement = volumeSetter;
-    }
-    update(cycles) {
-        if (this.pace) {
-            this.clock += cycles;
-            if (this.clock > ENVELOPER_TIMER_TICK) {
-                this.clock -= ENVELOPER_TIMER_TICK;
-                this.timer--;
-                if (this.timer <= 0) {
-                    this.timer = this.pace;
-                    this.volumeIncrement(this.direction);
-                }
-            }
-        }
-    }
-    setEnvelope(direction, pace) {
-        this.direction = direction;
-        this.pace = pace;
-        this.timer = pace;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bhrev":[function(require,module,exports) {
+},{"./sound/noiseChannel":"bhrev","./sound/pulseChannel":"iY6ME","./sound/waveChannel":"gIwWw","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bhrev":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "NoiseChannel", ()=>NoiseChannel);
@@ -31105,7 +30985,194 @@ function generateLSFR(width) {
     return output;
 }
 
-},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gIwWw":[function(require,module,exports) {
+},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature that turns the channel off after a certain amount
+ * of time has passed.
+ */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
+// Roughly equal to 4.2MHz clock speed / 256Hz 
+const LENGTH_TIMER_TICK = 0x4000;
+class LengthTimer {
+    constructor(channelStop){
+        this.clock = 0;
+        this.enabled = false;
+        this.timer = 0;
+        this.channelStop = channelStop;
+    }
+    update(cycles) {
+        if (this.enabled) {
+            this.clock += cycles;
+            if (this.clock > LENGTH_TIMER_TICK) {
+                this.clock -= LENGTH_TIMER_TICK;
+                this.timer++;
+                if (this.timer >= 64) this.channelStop();
+            }
+        }
+    }
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    setTimer(length) {
+        this.timer = length;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature which regularly changes the volume of the channel
+ * until it reaches a maximum or minimum value.
+ */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
+// Roughly equal to 4.2MHz clock speed / 64Hz
+const ENVELOPE_TIMER_TICK = 0x10000;
+class VolumeEnvelope {
+    constructor(volumeSetter){
+        this.clock = 0;
+        this.direction = 1;
+        this.pace = 0;
+        this.timer = 0;
+        this.volumeIncrement = volumeSetter;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock >= ENVELOPE_TIMER_TICK) {
+                this.clock -= ENVELOPE_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.volumeIncrement(this.direction);
+                }
+            }
+        }
+    }
+    setEnvelope(direction, pace) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iY6ME":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lengthTimer = require("./lengthTimer");
+var _periodSweep = require("./periodSweep");
+var _volumeEnvelope = require("./volumeEnvelope");
+class PulseChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.period = 0;
+        this.volume = 0;
+        this.waveFormChanged = ()=>{};
+        this.audioContext = audioContext;
+        this.oscillator = audioContext.createOscillator();
+        this.oscillator.type = "square";
+        this.oscillator.frequency.value = 440;
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.oscillator.connect(this.muteNode);
+        this.muteNode.connect(this.gain);
+        this.gain.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.oscillator.start();
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
+        this.sweep = new (0, _periodSweep.PeriodSweep)((step, direction)=>this.updatePeriod(step, direction));
+        registers.channel = this;
+    }
+    update(cycles) {
+        if (this.playing) {
+            this.timer.update(cycles);
+            this.envelope.update(cycles);
+            this.sweep.update(cycles);
+        }
+    }
+    start() {
+        this.playing = true;
+        this.setVolume();
+        this.timer.resetClock();
+        this.envelope.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.setVolume(0);
+    }
+    updateVolume(increment) {
+        this.setVolume(this.volume + increment);
+    }
+    updatePeriod(step, direction) {
+        const newPeriod = this.period + direction * (this.period / (1 << step));
+        this.setPeriod(newPeriod);
+    }
+    setPeriod(period) {
+        this.period = period;
+        const frequency = 131072 / (2048 - period);
+        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+    setVolume(volume = this.volume) {
+        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
+        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+exports.default = PulseChannel;
+
+},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./periodSweep":"b100a"}],"b100a":[function(require,module,exports) {
+// Roughly equal to 4.2MHz clock speed / 128Hz
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "PeriodSweep", ()=>PeriodSweep);
+const SWEEP_TIMER_TICK = 0x5000;
+class PeriodSweep {
+    constructor(incrementPeriod){
+        this.clock = 0;
+        this.pace = 0;
+        this.direction = 1;
+        this.timer = 0;
+        this.incrementPeriod = incrementPeriod;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock >= SWEEP_TIMER_TICK) {
+                this.clock -= SWEEP_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.incrementPeriod(this.step, this.direction);
+                }
+            }
+        }
+    }
+    setSweep(direction, pace, step) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+        this.step = step;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gIwWw":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _lengthTimer = require("./lengthTimer");
@@ -31708,7 +31775,6 @@ exports.default = Timer;
 },{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cz4ku":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _createCartridge = require("./memory/cartridges/createCartridge");
 var _oam = require("./memory/oam");
 var _ioRegisters = require("./memory/registers/ioRegisters");
 var _vram = require("./memory/vram");
@@ -31754,9 +31820,6 @@ class Memory {
     wordAt(address) {
         return new (0, _wordRef.CompositeWordRef)(this.at(address + 1), this.at(address));
     }
-    async loadGame(file) {
-        this.cartridge = await (0, _createCartridge.createCartridge)(file);
-    }
     async loadBootRom(file) {
     // this.bootRom = (
     //   await file.stream().getReader().read()
@@ -31771,275 +31834,7 @@ class Memory {
 }
 exports.default = Memory;
 
-},{"./memory/cartridges/createCartridge":"hpQ2G","./memory/oam":"GLSg5","./memory/registers/ioRegisters":"lu92s","./memory/vram":"iA1KW","./refs/byteRef":"6cdGr","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hpQ2G":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
-// PKM R: 0x13 [MBC3+RAM+BATTERY]
-// LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
-parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
-var _cartridge = require("./cartridge");
-var _mbc1Cartridge = require("./mbc1Cartridge");
-var _mbc3Cartridge = require("./mbc3Cartridge");
-var _mbc5Cartridge = require("./mbc5Cartridge");
-async function createCartridge(romData) {
-    const cartridgeType = romData[0x147];
-    switch(cartridgeType){
-        case 0x00:
-            return new (0, _cartridge.Cartridge)(romData);
-        case 0x01:
-        case 0x02:
-        case 0x03:
-            return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
-        case 0x0F:
-        case 0x10:
-        case 0x11:
-        case 0x12:
-        case 0x13:
-            return new (0, _mbc3Cartridge.Mbc3Cartridge)(romData);
-        case 0x19:
-        case 0x1A:
-        case 0x1B:
-        case 0x1C:
-        case 0x1D:
-        case 0x1E:
-            return new (0, _mbc5Cartridge.Mbc5Cartridge)(romData);
-    }
-    throw new Error("Unknown cartridge type: " + cartridgeType);
-}
-
-},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./mbc5Cartridge":"6zYKi"}],"jBMrX":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
-var _byteRef = require("../../refs/byteRef");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Cartridge {
-    constructor(data){
-        this.romData = data;
-        const ramBanks = [
-            0,
-            0,
-            1,
-            4,
-            16,
-            8
-        ][data[0x0149]];
-        this.ramData = new Uint8Array(ramBanks * 0x2000);
-        this.title = String.fromCharCode(...data.slice(0x0134, 0x0144));
-        this.storeRam = ()=>{
-            console.log("Saving save data to " + this.title + ".sav");
-            const blob = new Blob([
-                this.ramData
-            ]);
-            const reader = new FileReader();
-            reader.onload = ()=>{
-                window.localStorage.setItem(this.title + ".sav", reader.result?.toString() || "");
-            };
-            reader.readAsDataURL(blob);
-        };
-        this.loadLocalSave();
-    }
-    async loadData(file) {
-        this.romData = (await file.stream().getReader().read()).value || this.romData;
-        this.title = String.fromCharCode(...this.romData.slice(0x0134, 0x0144));
-        const ramBanks = [
-            0,
-            0,
-            1,
-            4,
-            16,
-            8
-        ][this.romData[0x0149]];
-        this.ramData = new Uint8Array(ramBanks * 0x2000);
-    }
-    async loadRam(file) {
-        this.ramData = (await file.stream().getReader().read()).value || this.ramData;
-    }
-    async loadLocalSave() {
-        const base64 = window.localStorage.getItem(this.title + ".sav");
-        if (base64 !== null) {
-            const res = await fetch(base64);
-            const blob = await res.blob();
-            const saveFileReadResult = await blob.stream().getReader().read();
-            this.ramData = saveFileReadResult.value || new Uint8Array();
-        }
-    }
-    rom(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            return this.romData[address & 0xFFFF];
-        }, (_)=>{});
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>this.ramData[address - 0xA000], (value)=>{
-            this.ramData[address - 0xA000] = value;
-            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-        });
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hsUyN":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC1.html
-parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 = value & 0x1F;
-            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value & 0x3;
-        };
-        else write = (value)=>{
-            this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
-        };
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 - bankBase];
-        }, (value)=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            this.ramData[address - 0xA000 + bankBase] = value;
-            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-        });
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6WBLx":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC3.html
-parcelHelpers.export(exports, "Mbc3Cartridge", ()=>Mbc3Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc3Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramAndRtcEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 = value & 0x7F;
-            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value;
-        };
-        else // Latch clock - TODO
-        write = ()=>{};
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    writeToRam(address, value) {
-        const bankBase = 0x2000 * this.bankNumber2;
-        this.ramData[address - 0xA000 + bankBase] = value;
-        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 + bankBase];
-        }, (value)=>this.writeToRam(address, value));
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6zYKi":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC5.html
-parcelHelpers.export(exports, "Mbc5Cartridge", ()=>Mbc5Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc5Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramAndRtcEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x3000) write = (value)=>{
-            this.bankNumber1 &= 0x100;
-            this.bankNumber1 |= value;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 &= 0xFF;
-            this.bankNumber1 |= (value & 0x1) << 8;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value & 0xF;
-        };
-        else // Latch clock - TODO
-        write = ()=>{};
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    writeToRam(address, value) {
-        const bankBase = 0x2000 * this.bankNumber2;
-        this.ramData[address - 0xA000 + bankBase] = value;
-        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 + bankBase];
-        }, (value)=>this.writeToRam(address, value));
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
+},{"./memory/oam":"GLSg5","./memory/registers/ioRegisters":"lu92s","./memory/vram":"iA1KW","./refs/byteRef":"6cdGr","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "OAM", ()=>OAM);
@@ -32136,6 +31931,7 @@ class IoRegisters {
         this.timerControl = new (0, _timerRegisters.TimerControlRegister)();
         this.interrupts = new (0, _interruptRegisters.InterruptRegister)();
         this.audioMasterControl = new (0, _audioRegisters.AudioMasterControlRegister)();
+        this.masterVolumeVin = new (0, _audioRegisters.MasterVolumeVinRegister)();
         this.channel1 = new (0, _audioRegisters.PulseChannelRegisters)();
         this.channel2 = new (0, _audioRegisters.PulseChannelRegisters)();
         this.channel3 = new (0, _audioRegisters.WaveChannelRegisters)();
@@ -32185,6 +31981,7 @@ class IoRegisters {
         this.data[0xFF22] = this.channel4.nr3;
         this.data[0xFF23] = this.channel4.nr4;
         // Master Audio
+        this.data[0xFF25] = this.masterVolumeVin;
         this.data[0xFF26] = this.audioMasterControl;
         // TODO: this.data[0xFF24] panning
         // TODO: this.data[0xFF25] more panning
@@ -32214,6 +32011,7 @@ class IoRegisters {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "AudioMasterControlRegister", ()=>AudioMasterControlRegister);
+parcelHelpers.export(exports, "MasterVolumeVinRegister", ()=>MasterVolumeVinRegister);
 parcelHelpers.export(exports, "PulseChannelRegisters", ()=>PulseChannelRegisters);
 parcelHelpers.export(exports, "WaveChannelRegisters", ()=>WaveChannelRegisters);
 parcelHelpers.export(exports, "NoiseChannelRegisters", ()=>NoiseChannelRegisters);
@@ -32232,6 +32030,22 @@ class AudioMasterControlRegister {
         this.channel2On = false;
         this.channel3On = false;
         this.channel4On = false;
+    }
+}
+class MasterVolumeVinRegister {
+    get value() {
+        return (this.vinLeft ? 0x80 : 0) + (this.leftVolume << 4) + (this.vinRight ? 0x8 : 0) + this.rightVolume;
+    }
+    set value(value1) {
+        this.vinLeft = (value1 & 0x80) > 0;
+        this.vinRight = (value1 & 0x8) > 0;
+        this.leftVolume = value1 >> 4 & 0x7;
+        this.rightVolume = value1 & 0x7;
+        console.log("Setting vin volume", this.rightVolume + 1 + (this.leftVolume + 1) / 2);
+        this.updateVolume(this.rightVolume + 1 + (this.leftVolume + 1) / 2);
+    }
+    constructor(){
+        this.updateVolume = (volume)=>{};
     }
 }
 class PulseChannelRegisters {
@@ -32468,7 +32282,7 @@ class NoiseChannelRegisters {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../refs/byteRef":"6cdGr"}],"eI0h3":[function(require,module,exports) {
+},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eI0h3":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "BootRomRegister", ()=>BootRomRegister);
@@ -32705,11 +32519,10 @@ var _interruptRegisters = require("./memory/registers/interruptRegisters");
 const WIDTH = 160;
 const HEIGHT = 144;
 const SCANLINES = 154;
-const BACKGROUND_MEMORY_START = 0x9800;
-const WINDOW_MEMORY_START = 0x9C00;
 class Screen {
     constructor(cpu){
         this.clockCount = 0;
+        this.windowLine = 0;
         this.mode = "Scanline OAM";
         this.newFrameDrawn = false;
         this.colours = [
@@ -32756,6 +32569,7 @@ class Screen {
                 if (this.clockCount >= 204) {
                     this.clockCount -= 204;
                     this.setScanline(this.scanlineNumber.value + 1);
+                    if (this.lcdControl.windowEnabled && this.scanlineNumber.value > this.memory.registers.windowY.value && this.memory.registers.windowX.value <= 166) this.windowLine++;
                     if (this.scanlineNumber.value === HEIGHT) {
                         this.renderScreen();
                         this.setMode("VBlank");
@@ -32769,6 +32583,7 @@ class Screen {
                     this.setScanline(this.scanlineNumber.value + 1);
                     if (this.scanlineNumber.value > SCANLINES) {
                         this.setScanline(0);
+                        this.windowLine = 0;
                         this.renderScanline();
                         this.setMode("HBlank");
                     }
@@ -32826,7 +32641,6 @@ class Screen {
         const scrollX = this.scrollX.value;
         const scrollY = this.scrollY.value;
         const backgroundY = scrollY + scanline & 0xFF;
-        const windowY = scanline - this.memory.registers.windowY.value;
         // Returns the 8 long row of the background tile at pixel offset given
         const getBackgroundTileRow = (offset)=>{
             const backgroundX = scrollX + offset & 0xFF;
@@ -32838,9 +32652,9 @@ class Screen {
         const winY = scanline - this.memory.registers.windowY.value;
         // Returns the 8 long row of the background tile at pixel offset given
         const getWindowTileRow = (offset)=>{
-            const tileMapNumber = (offset >> 3) + 32 * (winY >> 3);
+            const tileMapNumber = (offset >> 3) + 32 * (this.windowLine >> 3);
             const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
-            const row = winY & 0x7;
+            const row = this.windowLine & 0x7;
             return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
         };
         let backgroundTileRow = getBackgroundTileRow(0);
@@ -32860,18 +32674,18 @@ class Screen {
             if (pixel === undefined && this.lcdControl.windowEnabled) {
                 if (winY >= 0 && winX >= 0) {
                     const windowPixel = windowTileRow[winX % 8];
-                    pixel = this.backgroundPallette.map[windowPixel];
+                    if (windowPixel !== 0) pixel = this.backgroundPallette.map[windowPixel];
                 }
             }
             if (winX >= 0 && winY >= 0) {
                 windowTileCounter++;
                 if (windowTileCounter === 8) {
                     windowTileCounter = 0;
-                    windowTileRow = getWindowTileRow(i + 1);
+                    windowTileRow = getWindowTileRow(winX + 1);
                 }
             }
             // Render background (excluding the lowest colour in the pallete)
-            if (pixel === undefined) {
+            if (pixel === undefined && this.lcdControl.backgroundWindowDisplay) {
                 const backgroundPixel = backgroundTileRow[(scrollX + i) % 8];
                 if (backgroundPixel !== 0) pixel = this.backgroundPallette.map[backgroundPixel];
             }
@@ -33017,7 +32831,275 @@ $RefreshReg$(_c, "GameLoader");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../indexedDb/gameStore":"kdNdQ"}],"kdNdQ":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","../indexedDb/gameStore":"kdNdQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"hpQ2G":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
+// PKM R: 0x13 [MBC3+RAM+BATTERY]
+// LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
+parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
+var _cartridge = require("./cartridge");
+var _mbc1Cartridge = require("./mbc1Cartridge");
+var _mbc3Cartridge = require("./mbc3Cartridge");
+var _mbc5Cartridge = require("./mbc5Cartridge");
+async function createCartridge(romData) {
+    const cartridgeType = romData[0x147];
+    switch(cartridgeType){
+        case 0x00:
+            return new (0, _cartridge.Cartridge)(romData);
+        case 0x01:
+        case 0x02:
+        case 0x03:
+            return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
+        case 0x0F:
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x13:
+            return new (0, _mbc3Cartridge.Mbc3Cartridge)(romData);
+        case 0x19:
+        case 0x1A:
+        case 0x1B:
+        case 0x1C:
+        case 0x1D:
+        case 0x1E:
+            return new (0, _mbc5Cartridge.Mbc5Cartridge)(romData);
+    }
+    throw new Error("Unknown cartridge type: " + cartridgeType);
+}
+
+},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","./mbc5Cartridge":"6zYKi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBMrX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
+var _byteRef = require("../../refs/byteRef");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Cartridge {
+    constructor(data){
+        this.romData = data;
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][data[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+        this.title = String.fromCharCode(...data.slice(0x0134, 0x0144));
+        this.storeRam = ()=>{
+            console.log("Saving save data to " + this.title + ".sav");
+            const blob = new Blob([
+                this.ramData
+            ]);
+            const reader = new FileReader();
+            reader.onload = ()=>{
+                window.localStorage.setItem(this.title + ".sav", reader.result?.toString() || "");
+            };
+            reader.readAsDataURL(blob);
+        };
+        this.loadLocalSave();
+    }
+    async loadData(file) {
+        this.romData = (await file.stream().getReader().read()).value || this.romData;
+        this.title = String.fromCharCode(...this.romData.slice(0x0134, 0x0144));
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][this.romData[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+    }
+    async loadRam(file) {
+        this.ramData = (await file.stream().getReader().read()).value || this.ramData;
+    }
+    async loadLocalSave() {
+        const base64 = window.localStorage.getItem(this.title + ".sav");
+        if (base64 !== null) {
+            const res = await fetch(base64);
+            const blob = await res.blob();
+            const saveFileReadResult = await blob.stream().getReader().read();
+            this.ramData = saveFileReadResult.value || new Uint8Array();
+        }
+    }
+    rom(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            return this.romData[address & 0xFFFF];
+        }, (_)=>{});
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>this.ramData[address - 0xA000], (value)=>{
+            this.ramData[address - 0xA000] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+        });
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hsUyN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC1.html
+parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x1F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value & 0x3;
+        };
+        else write = (value)=>{
+            this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
+        };
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 - bankBase];
+        }, (value)=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            this.ramData[address - 0xA000 + bankBase] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+        });
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6WBLx":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC3.html
+parcelHelpers.export(exports, "Mbc3Cartridge", ()=>Mbc3Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc3Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramAndRtcEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x7F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value;
+        };
+        else // Latch clock - TODO
+        write = ()=>{};
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    writeToRam(address, value) {
+        const bankBase = 0x2000 * this.bankNumber2;
+        this.ramData[address - 0xA000 + bankBase] = value;
+        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 + bankBase];
+        }, (value)=>this.writeToRam(address, value));
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6zYKi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC5.html
+parcelHelpers.export(exports, "Mbc5Cartridge", ()=>Mbc5Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc5Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramAndRtcEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x3000) write = (value)=>{
+            this.bankNumber1 &= 0x100;
+            this.bankNumber1 |= value;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 &= 0xFF;
+            this.bankNumber1 |= (value & 0x1) << 8;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value & 0xF;
+        };
+        else // Latch clock - TODO
+        write = ()=>{};
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    writeToRam(address, value) {
+        const bankBase = 0x2000 * this.bankNumber2;
+        this.ramData[address - 0xA000 + bankBase] = value;
+        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 + bankBase];
+        }, (value)=>this.writeToRam(address, value));
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kdNdQ":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "getGameList", ()=>getGameList);
