@@ -32347,6 +32347,7 @@ class PulseChannelRegisters {
                 self.periodSweep.pace = value >> 4;
                 self.periodSweep.step = value & 0x7;
                 self.periodSweep.direction = (value & 0x8) > 0 ? -1 : 1;
+                if (self.channel) self.channel.sweep.setSweep(self.periodSweep.direction, self.periodSweep.pace, self.periodSweep.step);
             }
         };
         this.nr1 = {
