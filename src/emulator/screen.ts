@@ -1,7 +1,4 @@
-import { MutableValue } from "../types";
-import { increment } from "./arithmetic";
 import CPU from "./cpu";
-import { from2sComplement, resetBit, setBit, testBit, to2sComplement } from "./instructions/instructionHelpers";
 import Memory from "./memory";
 import { Interrupt } from "./memory/registers/interruptRegisters";
 import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
@@ -11,15 +8,7 @@ const WIDTH = 160
 const HEIGHT = 144
 const SCANLINES = 154
 
-const BACKGROUND_MEMORY_START = 0x9800
-const WINDOW_MEMORY_START = 0x9C00
-
 type Mode = "HBlank" | "VBlank" | "Scanline OAM" | "Scanline VRAM"
-
-interface SpriteRow {
-  row: (number[] | undefined)[]
-  x: number
-}
 
 export default class Screen {
   cpu: CPU
@@ -36,6 +25,8 @@ export default class Screen {
   backgroundPallette: PalletteRegister
   coincidence: ByteRef
   clockCount = 0
+
+  windowLine = 0
 
   mode: Mode = "Scanline OAM"
 
@@ -74,6 +65,12 @@ export default class Screen {
         if (this.clockCount >= 204) {
           this.clockCount -= 204
           this.setScanline(this.scanlineNumber.value + 1)
+          if (this.lcdControl.windowEnabled
+            && this.scanlineNumber.value > this.memory.registers.windowY.value
+            && this.memory.registers.windowX.value <= 166
+          ) {
+            this.windowLine++
+          }
           if (this.scanlineNumber.value === HEIGHT) {
             this.renderScreen()
             this.setMode("VBlank")
@@ -89,6 +86,7 @@ export default class Screen {
           this.setScanline(this.scanlineNumber.value + 1)
           if (this.scanlineNumber.value > SCANLINES) {
             this.setScanline(0)
+            this.windowLine = 0
             this.renderScanline()
             this.setMode("HBlank")
           }
@@ -165,7 +163,6 @@ export default class Screen {
     const scrollX = this.scrollX.value
     const scrollY = this.scrollY.value
     const backgroundY = (scrollY + scanline) & 0xFF
-    const windowY = scanline - this.memory.registers.windowY.value
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getBackgroundTileRow = (offset: number): number[] => {
@@ -184,11 +181,11 @@ export default class Screen {
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getWindowTileRow = (offset: number): number[] => {
-      const tileMapNumber = (offset >> 3) + (32 * (winY >> 3))
+      const tileMapNumber = (offset >> 3) + (32 * (this.windowLine >> 3))
       const tileId = this.lcdControl.windowTilemap == 0
         ? this.memory.vram.tilemap0(tileMapNumber)
         : this.memory.vram.tilemap1(tileMapNumber)
-      const row = winY & 0x7
+      const row = this.windowLine & 0x7
       return this.lcdControl.tileDataArea == 1
         ? this.memory.vram.tileset0(tileId, row)
         : this.memory.vram.tileset1(tileId, row)
@@ -221,19 +218,21 @@ export default class Screen {
       if (pixel === undefined && this.lcdControl.windowEnabled) {
         if (winY >= 0 && winX >= 0) {
           const windowPixel = windowTileRow[winX % 8]
-          pixel = this.backgroundPallette.map[windowPixel]          
+          if (windowPixel !== 0) {
+            pixel = this.backgroundPallette.map[windowPixel]     
+          }     
         }
       }
       if (winX >= 0 && winY >= 0) {
         windowTileCounter ++
         if (windowTileCounter === 8) {
           windowTileCounter = 0
-          windowTileRow = getWindowTileRow(i + 1)
+          windowTileRow = getWindowTileRow(winX + 1)
         }
       }
       
       // Render background (excluding the lowest colour in the pallete)
-      if (pixel === undefined) {
+      if (pixel === undefined && this.lcdControl.backgroundWindowDisplay) {
         const backgroundPixel = backgroundTileRow[(scrollX + i) % 8]
         if (backgroundPixel !== 0) {
           pixel = this.backgroundPallette.map[backgroundPixel]
