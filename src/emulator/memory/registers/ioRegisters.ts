@@ -1,5 +1,5 @@
 import { ByteRef, ConstantByteRef, GenericByteRef } from "../../refs/byteRef"
-import { AudioMasterControlRegister, NoiseChannelRegisters, PulseChannelRegisters, WaveChannelRegisters } from "./audioRegisters"
+import { AudioMasterControlRegister, MasterVolumeVinRegister, NoiseChannelRegisters, PulseChannelRegisters, WaveChannelRegisters } from "./audioRegisters"
 import { BootRomRegister } from "./bootRomRegister"
 import { DmaTransferRegister } from "./dmaTransferRegister"
 import { InterruptRegister } from "./interruptRegisters"
@@ -19,6 +19,7 @@ export class IoRegisters {
   interrupts = new InterruptRegister()
 
   audioMasterControl = new AudioMasterControlRegister()
+  masterVolumeVin = new MasterVolumeVinRegister()
   channel1 = new PulseChannelRegisters()
   channel2 = new PulseChannelRegisters()
   channel3 = new WaveChannelRegisters()
@@ -79,6 +80,7 @@ export class IoRegisters {
     this.data[0xFF23] = this.channel4.nr4
 
     // Master Audio
+    this.data[0xFF25] = this.masterVolumeVin
     this.data[0xFF26] = this.audioMasterControl
     // TODO: this.data[0xFF24] panning
     // TODO: this.data[0xFF25] more panning

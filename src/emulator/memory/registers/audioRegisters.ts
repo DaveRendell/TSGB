@@ -31,6 +31,33 @@ export class AudioMasterControlRegister implements ByteRef {
   }
 }
 
+export class MasterVolumeVinRegister implements ByteRef {
+  vinLeft: boolean
+  vinRight: boolean
+  leftVolume: number
+  rightVolume: number
+
+  updateVolume = (volume: number) => {}
+
+  get value() {
+    return (this.vinLeft ? 0x80 : 0)
+         + (this.leftVolume << 4)
+         + (this.vinRight ? 0x8 : 0)
+         + (this.rightVolume)
+  }
+
+  set value(value) {
+    this.vinLeft = (value & 0x80) > 0
+    this.vinRight = (value & 0x8) > 0
+    this.leftVolume = (value >> 4) & 0x7
+    this.rightVolume = value & 0x7
+
+    console.log("Setting vin volume", (this.rightVolume + 1) + (this.leftVolume + 1) / 2)
+
+    this.updateVolume((this.rightVolume + 1) + (this.leftVolume + 1) / 2)
+  }
+}
+
 interface PeriodSweepData {
   pace: number
   direction: 1 | -1

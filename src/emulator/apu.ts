@@ -10,6 +10,7 @@ export default class APU {
   memory: Memory
   audioContext: AudioContext = new AudioContext({ sampleRate: 44100 });
 
+  vinVolume: GainNode
   masterControl: GainNode
 
   channel1: PulseChannel
@@ -21,32 +22,37 @@ export default class APU {
     this.cpu = cpu
     this.memory = cpu.memory
     this.memory.registers.audioMasterControl.apu = this
+    this.memory.registers.masterVolumeVin.updateVolume = (volume) => {
+      this.vinVolume.gain.value = (volume / 8)
+    }
     cpu.apu = this
     cpu.addClockCallback(this)
     this.audioContext.suspend();
 
     this.masterControl = this.audioContext.createGain()
+    this.vinVolume = this.audioContext.createGain()
 
     this.channel1 = new PulseChannel({
       audioContext: this.audioContext,
-      outputNode: this.masterControl,
+      outputNode: this.vinVolume,
       registers: this.memory.registers.channel1,
     })
     this.channel2 = new PulseChannel({
       audioContext: this.audioContext,
-      outputNode: this.masterControl,
+      outputNode: this.vinVolume,
       registers: this.memory.registers.channel2,
     })
     this.channel3 = new WaveChannel({
       audioContext: this.audioContext,
-      outputNode: this.masterControl,
+      outputNode: this.vinVolume,
       registers: this.memory.registers.channel3
     })
     this.channel4 = new NoiseChannel({
       audioContext: this.audioContext,
-      outputNode: this.masterControl,
+      outputNode: this.vinVolume,
       registers: this.memory.registers.channel4
     })
+    this.vinVolume.connect(this.masterControl)
     this.masterControl.connect(this.audioContext.destination)
   }
 
