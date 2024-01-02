@@ -31134,7 +31134,7 @@ class PulseChannel {
 }
 exports.default = PulseChannel;
 
-},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./periodSweep":"b100a"}],"b100a":[function(require,module,exports) {
+},{"./lengthTimer":"k44nd","./periodSweep":"b100a","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b100a":[function(require,module,exports) {
 // Roughly equal to 4.2MHz clock speed / 128Hz
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -31775,6 +31775,7 @@ exports.default = Timer;
 },{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cz4ku":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+var _createCartridge = require("./memory/cartridges/createCartridge");
 var _oam = require("./memory/oam");
 var _ioRegisters = require("./memory/registers/ioRegisters");
 var _vram = require("./memory/vram");
@@ -31820,6 +31821,9 @@ class Memory {
     wordAt(address) {
         return new (0, _wordRef.CompositeWordRef)(this.at(address + 1), this.at(address));
     }
+    async loadGame(file) {
+        this.cartridge = await (0, _createCartridge.createCartridge)(file);
+    }
     async loadBootRom(file) {
     // this.bootRom = (
     //   await file.stream().getReader().read()
@@ -31834,7 +31838,275 @@ class Memory {
 }
 exports.default = Memory;
 
-},{"./memory/oam":"GLSg5","./memory/registers/ioRegisters":"lu92s","./memory/vram":"iA1KW","./refs/byteRef":"6cdGr","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
+},{"./memory/cartridges/createCartridge":"hpQ2G","./memory/oam":"GLSg5","./memory/registers/ioRegisters":"lu92s","./memory/vram":"iA1KW","./refs/byteRef":"6cdGr","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hpQ2G":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
+// PKM R: 0x13 [MBC3+RAM+BATTERY]
+// LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
+parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
+var _cartridge = require("./cartridge");
+var _mbc1Cartridge = require("./mbc1Cartridge");
+var _mbc3Cartridge = require("./mbc3Cartridge");
+var _mbc5Cartridge = require("./mbc5Cartridge");
+async function createCartridge(romData) {
+    const cartridgeType = romData[0x147];
+    switch(cartridgeType){
+        case 0x00:
+            return new (0, _cartridge.Cartridge)(romData);
+        case 0x01:
+        case 0x02:
+        case 0x03:
+            return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
+        case 0x0F:
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x13:
+            return new (0, _mbc3Cartridge.Mbc3Cartridge)(romData);
+        case 0x19:
+        case 0x1A:
+        case 0x1B:
+        case 0x1C:
+        case 0x1D:
+        case 0x1E:
+            return new (0, _mbc5Cartridge.Mbc5Cartridge)(romData);
+    }
+    throw new Error("Unknown cartridge type: " + cartridgeType);
+}
+
+},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","./mbc5Cartridge":"6zYKi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBMrX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
+var _byteRef = require("../../refs/byteRef");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Cartridge {
+    constructor(data){
+        this.romData = data;
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][data[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+        this.title = String.fromCharCode(...data.slice(0x0134, 0x0144));
+        this.storeRam = ()=>{
+            console.log("Saving save data to " + this.title + ".sav");
+            const blob = new Blob([
+                this.ramData
+            ]);
+            const reader = new FileReader();
+            reader.onload = ()=>{
+                window.localStorage.setItem(this.title + ".sav", reader.result?.toString() || "");
+            };
+            reader.readAsDataURL(blob);
+        };
+        this.loadLocalSave();
+    }
+    async loadData(file) {
+        this.romData = (await file.stream().getReader().read()).value || this.romData;
+        this.title = String.fromCharCode(...this.romData.slice(0x0134, 0x0144));
+        const ramBanks = [
+            0,
+            0,
+            1,
+            4,
+            16,
+            8
+        ][this.romData[0x0149]];
+        this.ramData = new Uint8Array(ramBanks * 0x2000);
+    }
+    async loadRam(file) {
+        this.ramData = (await file.stream().getReader().read()).value || this.ramData;
+    }
+    async loadLocalSave() {
+        const base64 = window.localStorage.getItem(this.title + ".sav");
+        if (base64 !== null) {
+            const res = await fetch(base64);
+            const blob = await res.blob();
+            const saveFileReadResult = await blob.stream().getReader().read();
+            this.ramData = saveFileReadResult.value || new Uint8Array();
+        }
+    }
+    rom(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            return this.romData[address & 0xFFFF];
+        }, (_)=>{});
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>this.ramData[address - 0xA000], (value)=>{
+            this.ramData[address - 0xA000] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+        });
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hsUyN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC1.html
+parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x1F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value & 0x3;
+        };
+        else write = (value)=>{
+            this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
+        };
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 - bankBase];
+        }, (value)=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            this.ramData[address - 0xA000 + bankBase] = value;
+            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+        });
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6WBLx":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC3.html
+parcelHelpers.export(exports, "Mbc3Cartridge", ()=>Mbc3Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc3Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramAndRtcEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 = value & 0x7F;
+            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value;
+        };
+        else // Latch clock - TODO
+        write = ()=>{};
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    writeToRam(address, value) {
+        const bankBase = 0x2000 * this.bankNumber2;
+        this.ramData[address - 0xA000 + bankBase] = value;
+        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 + bankBase];
+        }, (value)=>this.writeToRam(address, value));
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6zYKi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+// Reference: https://gbdev.io/pandocs/MBC5.html
+parcelHelpers.export(exports, "Mbc5Cartridge", ()=>Mbc5Cartridge);
+var _byteRef = require("../../refs/byteRef");
+var _cartridge = require("./cartridge");
+const RAM_WRITE_WAIT_MILLISECONDS = 500;
+class Mbc5Cartridge extends (0, _cartridge.Cartridge) {
+    constructor(data){
+        super(data);
+        this.ramAndRtcEnabled = false;
+        this.bankNumber1 = 1;
+        this.bankNumber2 = 0;
+        this.bankingMode = "simple";
+    }
+    rom(address) {
+        const read = ()=>{
+            if (address < 0x4000) return this.romData[address];
+            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
+            return this.romData[adjustedAddress];
+        };
+        let write;
+        if (address < 0x2000) // Set RAM enabled register
+        write = (value)=>{
+            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
+        };
+        else if (address < 0x3000) write = (value)=>{
+            this.bankNumber1 &= 0x100;
+            this.bankNumber1 |= value;
+        };
+        else if (address < 0x4000) write = (value)=>{
+            this.bankNumber1 &= 0xFF;
+            this.bankNumber1 |= (value & 0x1) << 8;
+        };
+        else if (address < 0x6000) write = (value)=>{
+            this.bankNumber2 = value & 0xF;
+        };
+        else // Latch clock - TODO
+        write = ()=>{};
+        return new (0, _byteRef.GetSetByteRef)(read, write);
+    }
+    writeToRam(address, value) {
+        const bankBase = 0x2000 * this.bankNumber2;
+        this.ramData[address - 0xA000 + bankBase] = value;
+        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
+        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
+    }
+    ram(address) {
+        return new (0, _byteRef.GetSetByteRef)(()=>{
+            const bankBase = 0x2000 * this.bankNumber2;
+            return this.ramData[address - 0xA000 + bankBase];
+        }, (value)=>this.writeToRam(address, value));
+    }
+}
+
+},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "OAM", ()=>OAM);
@@ -32669,12 +32941,13 @@ class Screen {
             let pixel;
             // Render high priority sprites (that go above background)
             if (pixel === undefined && this.lcdControl.objectsEnabled) pixel = highPrioritySprites.filter((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8).map((sprite)=>sprite.pixelAt(scanline, i, this.lcdControl.objectSize)).find((p)=>p !== undefined);
+            let tilePixel = undefined;
             // Render window
             const winX = i - (this.memory.registers.windowX.value - 7);
             if (pixel === undefined && this.lcdControl.windowEnabled) {
                 if (winY >= 0 && winX >= 0) {
                     const windowPixel = windowTileRow[winX % 8];
-                    if (windowPixel !== 0) pixel = this.backgroundPallette.map[windowPixel];
+                    tilePixel = this.backgroundPallette.map[windowPixel];
                 }
             }
             if (winX >= 0 && winY >= 0) {
@@ -32685,9 +32958,9 @@ class Screen {
                 }
             }
             // Render background (excluding the lowest colour in the pallete)
-            if (pixel === undefined && this.lcdControl.backgroundWindowDisplay) {
+            if (pixel === undefined && tilePixel == undefined && this.lcdControl.backgroundWindowDisplay) {
                 const backgroundPixel = backgroundTileRow[(scrollX + i) % 8];
-                if (backgroundPixel !== 0) pixel = this.backgroundPallette.map[backgroundPixel];
+                tilePixel = this.backgroundPallette.map[backgroundPixel];
             }
             // Get next background tile if needed
             backgroundTileCounter++;
@@ -32695,6 +32968,7 @@ class Screen {
                 backgroundTileCounter = 0;
                 backgroundTileRow = getBackgroundTileRow(i + 1);
             }
+            if (tilePixel) pixel = tilePixel;
             // Render low priority sprites (that go below non zero background)
             if (pixel === undefined && this.lcdControl.objectsEnabled) {
                 const sprite = lowPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8);
@@ -32831,275 +33105,7 @@ $RefreshReg$(_c, "GameLoader");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","../indexedDb/gameStore":"kdNdQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"hpQ2G":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
-// PKM R: 0x13 [MBC3+RAM+BATTERY]
-// LA: 0x03 [MBC1+RAM+BATTERY] (DX: 1b [MBC5+RAM+BATTERY])
-parcelHelpers.export(exports, "createCartridge", ()=>createCartridge);
-var _cartridge = require("./cartridge");
-var _mbc1Cartridge = require("./mbc1Cartridge");
-var _mbc3Cartridge = require("./mbc3Cartridge");
-var _mbc5Cartridge = require("./mbc5Cartridge");
-async function createCartridge(romData) {
-    const cartridgeType = romData[0x147];
-    switch(cartridgeType){
-        case 0x00:
-            return new (0, _cartridge.Cartridge)(romData);
-        case 0x01:
-        case 0x02:
-        case 0x03:
-            return new (0, _mbc1Cartridge.Mbc1Cartridge)(romData);
-        case 0x0F:
-        case 0x10:
-        case 0x11:
-        case 0x12:
-        case 0x13:
-            return new (0, _mbc3Cartridge.Mbc3Cartridge)(romData);
-        case 0x19:
-        case 0x1A:
-        case 0x1B:
-        case 0x1C:
-        case 0x1D:
-        case 0x1E:
-            return new (0, _mbc5Cartridge.Mbc5Cartridge)(romData);
-    }
-    throw new Error("Unknown cartridge type: " + cartridgeType);
-}
-
-},{"./cartridge":"jBMrX","./mbc1Cartridge":"hsUyN","./mbc3Cartridge":"6WBLx","./mbc5Cartridge":"6zYKi","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jBMrX":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Cartridge", ()=>Cartridge);
-var _byteRef = require("../../refs/byteRef");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Cartridge {
-    constructor(data){
-        this.romData = data;
-        const ramBanks = [
-            0,
-            0,
-            1,
-            4,
-            16,
-            8
-        ][data[0x0149]];
-        this.ramData = new Uint8Array(ramBanks * 0x2000);
-        this.title = String.fromCharCode(...data.slice(0x0134, 0x0144));
-        this.storeRam = ()=>{
-            console.log("Saving save data to " + this.title + ".sav");
-            const blob = new Blob([
-                this.ramData
-            ]);
-            const reader = new FileReader();
-            reader.onload = ()=>{
-                window.localStorage.setItem(this.title + ".sav", reader.result?.toString() || "");
-            };
-            reader.readAsDataURL(blob);
-        };
-        this.loadLocalSave();
-    }
-    async loadData(file) {
-        this.romData = (await file.stream().getReader().read()).value || this.romData;
-        this.title = String.fromCharCode(...this.romData.slice(0x0134, 0x0144));
-        const ramBanks = [
-            0,
-            0,
-            1,
-            4,
-            16,
-            8
-        ][this.romData[0x0149]];
-        this.ramData = new Uint8Array(ramBanks * 0x2000);
-    }
-    async loadRam(file) {
-        this.ramData = (await file.stream().getReader().read()).value || this.ramData;
-    }
-    async loadLocalSave() {
-        const base64 = window.localStorage.getItem(this.title + ".sav");
-        if (base64 !== null) {
-            const res = await fetch(base64);
-            const blob = await res.blob();
-            const saveFileReadResult = await blob.stream().getReader().read();
-            this.ramData = saveFileReadResult.value || new Uint8Array();
-        }
-    }
-    rom(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            return this.romData[address & 0xFFFF];
-        }, (_)=>{});
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>this.ramData[address - 0xA000], (value)=>{
-            this.ramData[address - 0xA000] = value;
-            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-        });
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hsUyN":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC1.html
-parcelHelpers.export(exports, "Mbc1Cartridge", ()=>Mbc1Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc1Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 = value & 0x1F;
-            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value & 0x3;
-        };
-        else write = (value)=>{
-            this.bankingMode = (value & 1) > 0 ? "advanced" : "simple";
-        };
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 - bankBase];
-        }, (value)=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            this.ramData[address - 0xA000 + bankBase] = value;
-            if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-            this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-        });
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6WBLx":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC3.html
-parcelHelpers.export(exports, "Mbc3Cartridge", ()=>Mbc3Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc3Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramAndRtcEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 = value & 0x7F;
-            if (this.bankNumber1 == 0) this.bankNumber1 = 1;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value;
-        };
-        else // Latch clock - TODO
-        write = ()=>{};
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    writeToRam(address, value) {
-        const bankBase = 0x2000 * this.bankNumber2;
-        this.ramData[address - 0xA000 + bankBase] = value;
-        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 + bankBase];
-        }, (value)=>this.writeToRam(address, value));
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6zYKi":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-// Reference: https://gbdev.io/pandocs/MBC5.html
-parcelHelpers.export(exports, "Mbc5Cartridge", ()=>Mbc5Cartridge);
-var _byteRef = require("../../refs/byteRef");
-var _cartridge = require("./cartridge");
-const RAM_WRITE_WAIT_MILLISECONDS = 500;
-class Mbc5Cartridge extends (0, _cartridge.Cartridge) {
-    constructor(data){
-        super(data);
-        this.ramAndRtcEnabled = false;
-        this.bankNumber1 = 1;
-        this.bankNumber2 = 0;
-        this.bankingMode = "simple";
-    }
-    rom(address) {
-        const read = ()=>{
-            if (address < 0x4000) return this.romData[address];
-            const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000;
-            return this.romData[adjustedAddress];
-        };
-        let write;
-        if (address < 0x2000) // Set RAM enabled register
-        write = (value)=>{
-            this.ramAndRtcEnabled = (value & 0xF) == 0xA;
-        };
-        else if (address < 0x3000) write = (value)=>{
-            this.bankNumber1 &= 0x100;
-            this.bankNumber1 |= value;
-        };
-        else if (address < 0x4000) write = (value)=>{
-            this.bankNumber1 &= 0xFF;
-            this.bankNumber1 |= (value & 0x1) << 8;
-        };
-        else if (address < 0x6000) write = (value)=>{
-            this.bankNumber2 = value & 0xF;
-        };
-        else // Latch clock - TODO
-        write = ()=>{};
-        return new (0, _byteRef.GetSetByteRef)(read, write);
-    }
-    writeToRam(address, value) {
-        const bankBase = 0x2000 * this.bankNumber2;
-        this.ramData[address - 0xA000 + bankBase] = value;
-        if (this.ramWriteTimeout) clearTimeout(this.ramWriteTimeout);
-        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS);
-    }
-    ram(address) {
-        return new (0, _byteRef.GetSetByteRef)(()=>{
-            const bankBase = 0x2000 * this.bankNumber2;
-            return this.ramData[address - 0xA000 + bankBase];
-        }, (value)=>this.writeToRam(address, value));
-    }
-}
-
-},{"../../refs/byteRef":"6cdGr","./cartridge":"jBMrX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"kdNdQ":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","../indexedDb/gameStore":"kdNdQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"kdNdQ":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "getGameList", ()=>getGameList);
