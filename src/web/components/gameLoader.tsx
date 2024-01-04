@@ -35,9 +35,10 @@ export default function GameLoader({ setCartridge }: Props) {
           <h3>Stored games</h3><ul>
           {
             storedGames.map(game =>
-              <li>{game.title} <button onClick={() => {
+              <li>{game.title}
+              {/* <button onClick={() => {
                 deleteGame(game.id).then(() => setLastChange(Date.now()))
-              }}>Delete</button>
+              }}>Delete</button> */}
               <button onClick={async () => {
                 const cartridge = await createCartridge(game)
                 setCartridge(cartridge)
