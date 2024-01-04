@@ -30811,11 +30811,16 @@ class APU {
         this.audioContext = new AudioContext({
             sampleRate: 44100
         });
+        this.masterVolume = 0;
         this.cpu = cpu;
         this.memory = cpu.memory;
         this.memory.registers.audioMasterControl.apu = this;
         this.memory.registers.masterVolumeVin.updateVolume = (volume)=>{
-            this.vinVolume.gain.value = volume / 8;
+            if (this.masterVolume !== volume) {
+                this.masterVolume = volume;
+                this.vinVolume.gain.setValueAtTime(volume / 8, this.audioContext.currentTime);
+                console.log(volume, this.vinVolume.gain.value);
+            }
         };
         cpu.apu = this;
         cpu.addClockCallback(this);
@@ -32313,8 +32318,7 @@ class MasterVolumeVinRegister {
         this.vinRight = (value1 & 0x8) > 0;
         this.leftVolume = value1 >> 4 & 0x7;
         this.rightVolume = value1 & 0x7;
-        console.log("Setting vin volume", this.rightVolume + 1 + (this.leftVolume + 1) / 2);
-        this.updateVolume(this.rightVolume + 1 + (this.leftVolume + 1) / 2);
+        this.updateVolume(Math.max(this.rightVolume, this.leftVolume));
     }
     constructor(){
         this.updateVolume = (volume)=>{};
@@ -32347,7 +32351,10 @@ class PulseChannelRegisters {
                 self.periodSweep.pace = value >> 4;
                 self.periodSweep.step = value & 0x7;
                 self.periodSweep.direction = (value & 0x8) > 0 ? -1 : 1;
-                if (self.channel) self.channel.sweep.setSweep(self.periodSweep.direction, self.periodSweep.pace, self.periodSweep.step);
+                if (self.channel) {
+                    self.channel.sweep.setSweep(self.periodSweep.direction, self.periodSweep.pace, self.periodSweep.step);
+                    self.period = self.channel.period;
+                }
             }
         };
         this.nr1 = {
