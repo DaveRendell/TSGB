@@ -27243,9 +27243,13 @@ function GameView({ emulator, unload }) {
     _react.useEffect(()=>{
         emulator.cpu.run();
     }, []);
-    emulator.cpu.onInstructionComplete = ()=>{
-        setToggle(!toggle);
-    };
+    _react.useEffect(()=>{
+        const interval = setInterval(()=>setToggle((t)=>!t), 1000);
+        return ()=>{
+            clearInterval(interval);
+        };
+    }, []);
+    // emulator.cpu.onInstructionComplete = () => { setToggle(!toggle) }
     emulator.cpu.onError = (e)=>setError(e.message);
     const programCounter = emulator.cpu.registers.PC.value;
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("main", {
@@ -27254,7 +27258,7 @@ function GameView({ emulator, unload }) {
                 children: "TSGB"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 35,
+                lineNumber: 42,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27265,7 +27269,7 @@ function GameView({ emulator, unload }) {
                         children: "Run"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 37,
+                        lineNumber: 44,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27273,7 +27277,7 @@ function GameView({ emulator, unload }) {
                         children: "Pause"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 38,
+                        lineNumber: 45,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27281,7 +27285,7 @@ function GameView({ emulator, unload }) {
                         children: "Run frame"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 39,
+                        lineNumber: 46,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27292,13 +27296,13 @@ function GameView({ emulator, unload }) {
                         children: "Unload"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 40,
+                        lineNumber: 47,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 36,
+                lineNumber: 43,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27310,25 +27314,25 @@ function GameView({ emulator, unload }) {
                             cpu: emulator.cpu
                         }, void 0, false, {
                             fileName: "src/web/components/gameView.tsx",
-                            lineNumber: 44,
+                            lineNumber: 51,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 43,
+                        lineNumber: 50,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
                         controller: emulator.controller
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 46,
+                        lineNumber: 53,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 42,
+                lineNumber: 49,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27338,7 +27342,7 @@ function GameView({ emulator, unload }) {
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 50,
+                lineNumber: 57,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
@@ -27349,7 +27353,11 @@ function GameView({ emulator, unload }) {
                                 emulator.cpu.memory.cartridge?.title,
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, void 0, void 0),
                                 "FPS: ",
-                                emulator.cpu.fps.toPrecision(2)
+                                emulator.cpu.fps.toPrecision(2),
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, void 0, void 0),
+                                "Frame time: ",
+                                (emulator.cpu.averageRecentFrameTime / 60).toPrecision(3),
+                                " / 16.7ms"
                             ]
                         }, void 0, true, void 0, void 0),
                     "Settings": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _settingsDefault.default), {
@@ -27378,17 +27386,17 @@ function GameView({ emulator, unload }) {
                 }
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 52,
+                lineNumber: 59,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/gameView.tsx",
-        lineNumber: 34,
+        lineNumber: 41,
         columnNumber: 11
     }, this);
 }
-_s(GameView, "X37pdlfV9zNRv/5PWPJ2Wgc4Ifk=");
+_s(GameView, "1WYTkntg7x/HVqG0LB7vSW9uH3U=");
 _c = GameView;
 var _c;
 $RefreshReg$(_c, "GameView");
@@ -28006,42 +28014,6 @@ var _nop = require("./instructions/nop");
 var _nopDefault = parcelHelpers.interopDefault(_nop);
 var _prefixInstructions = require("./instructions/prefixInstructions");
 var _stack = require("./instructions/stack");
-// Prefixed 0x80 = 10000000
-const STATIC_INSTRUCTIONS = {
-    0x00: (0, _nopDefault.default),
-    0x08: (0, _loads.loadStackPointerToAddress),
-    0x76: (0, _haltDefault.default),
-    0x10: (0, _cpuControl.stop),
-    34: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).M, (0, _instructionHelpers.ByteLocation).A, "increment"),
-    42: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).M, "increment"),
-    50: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).M, (0, _instructionHelpers.ByteLocation).A, "decrement"),
-    58: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).M, "decrement"),
-    0x07: (0, _arithmetic8Bit.rotateLeft)((0, _instructionHelpers.ByteLocation).A, false, false, false),
-    0x17: (0, _arithmetic8Bit.rotateLeft)((0, _instructionHelpers.ByteLocation).A, true, false, false),
-    0x0F: (0, _arithmetic8Bit.rotateRight)((0, _instructionHelpers.ByteLocation).A, false, false, false),
-    0x1F: (0, _arithmetic8Bit.rotateRight)((0, _instructionHelpers.ByteLocation).A, true, false, false),
-    0x18: (0, _jumps.jumpRelative)("None"),
-    0x2F: (0, _arithmetic8Bit.cpl),
-    0x37: (0, _cpuControl.scf),
-    0x3F: (0, _cpuControl.ccf),
-    0xF0: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).FF_N),
-    0xE0: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).FF_N, (0, _instructionHelpers.ByteLocation).A),
-    0xF2: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).FF_C),
-    0xE2: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).FF_C, (0, _instructionHelpers.ByteLocation).A),
-    0xCD: (0, _stack.call),
-    0xE8: (0, _arithmetic8Bit.addImmediateToSP),
-    0xC9: (0, _stack.ret),
-    0xD9: (0, _stack.reti),
-    0xC3: (0, _jumps.jump)("None"),
-    0xF8: (0, _loads.loadHlFromSpPlusN),
-    0x27: (0, _arithmetic8Bit.daa),
-    234: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).NN, (0, _instructionHelpers.ByteLocation).A),
-    250: (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).NN),
-    0xE9: (0, _jumps.jpHl),
-    0xF9: (0, _loads.loadStackPointerFromHL),
-    0xF3: (0, _cpuControl.disableInterrupts),
-    0xFB: (0, _cpuControl.enableInterrupts)
-};
 const REGISTERS_8 = [
     (0, _instructionHelpers.ByteLocation).B,
     (0, _instructionHelpers.ByteLocation).C,
@@ -28105,7 +28077,42 @@ function getRegisterColumn2(code) {
 function getRegisterColumn3(code) {
     return REGISTER_16_COLUMN_3[code >> 4 & 3];
 }
-function decodeInstruction(code, prefixedCode) {
+function decodeInstruction(cpu, code, prefixedCode) {
+    const STATIC_INSTRUCTIONS = {
+        0x00: (0, _nopDefault.default),
+        0x08: (0, _loads.loadStackPointerToAddress),
+        0x76: (0, _haltDefault.default),
+        0x10: (0, _cpuControl.stop),
+        34: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).M, (0, _instructionHelpers.ByteLocation).A, "increment"),
+        42: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).M, "increment"),
+        50: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).M, (0, _instructionHelpers.ByteLocation).A, "decrement"),
+        58: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).M, "decrement"),
+        0x07: (0, _arithmetic8Bit.rotateLeft)((0, _instructionHelpers.ByteLocation).A, false, false, false),
+        0x17: (0, _arithmetic8Bit.rotateLeft)((0, _instructionHelpers.ByteLocation).A, true, false, false),
+        0x0F: (0, _arithmetic8Bit.rotateRight)((0, _instructionHelpers.ByteLocation).A, false, false, false),
+        0x1F: (0, _arithmetic8Bit.rotateRight)((0, _instructionHelpers.ByteLocation).A, true, false, false),
+        0x18: (0, _jumps.jumpRelative)("None"),
+        0x2F: (0, _arithmetic8Bit.cpl),
+        0x37: (0, _cpuControl.scf),
+        0x3F: (0, _cpuControl.ccf),
+        0xF0: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).FF_N),
+        0xE0: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).FF_N, (0, _instructionHelpers.ByteLocation).A),
+        0xF2: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).FF_C),
+        0xE2: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).FF_C, (0, _instructionHelpers.ByteLocation).A),
+        0xCD: (0, _stack.call),
+        0xE8: (0, _arithmetic8Bit.addImmediateToSP),
+        0xC9: (0, _stack.ret),
+        0xD9: (0, _stack.reti),
+        0xC3: (0, _jumps.jump)("None"),
+        0xF8: (0, _loads.loadHlFromSpPlusN),
+        0x27: (0, _arithmetic8Bit.daa),
+        234: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).NN, (0, _instructionHelpers.ByteLocation).A),
+        250: (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).A, (0, _instructionHelpers.ByteLocation).NN),
+        0xE9: (0, _jumps.jpHl),
+        0xF9: (0, _loads.loadStackPointerFromHL),
+        0xF3: (0, _cpuControl.disableInterrupts),
+        0xFB: (0, _cpuControl.enableInterrupts)
+    };
     const staticInstruction = STATIC_INSTRUCTIONS[code];
     if (staticInstruction) return staticInstruction;
     // decoded instructions to go here...
@@ -28117,8 +28124,8 @@ function decodeInstruction(code, prefixedCode) {
         const register = getRegisterColumn2(code);
         return (0, _arithmetic8Bit.addToHL)(register);
     }
-    if ((code & 239) == 2) return (0, _loads.load8Bit)(getRegisterColumn1(code), (0, _instructionHelpers.ByteLocation).A);
-    if ((code & 239) == 10) return (0, _loads.load8Bit)((0, _instructionHelpers.ByteLocation).A, getRegisterColumn1(code));
+    if ((code & 239) == 2) return (0, _loads.load8Bit)(cpu, getRegisterColumn1(code), (0, _instructionHelpers.ByteLocation).A);
+    if ((code & 239) == 10) return (0, _loads.load8Bit)(cpu, (0, _instructionHelpers.ByteLocation).A, getRegisterColumn1(code));
     if ((code & 207) === 3) return (0, _arithmetic8Bit.increment16Bit)(getRegisterColumn2(code));
     if ((code & 207) === 11) return (0, _arithmetic8Bit.decrement16Bit)(getRegisterColumn2(code));
     if ((code & 199) === 4) {
@@ -28133,8 +28140,8 @@ function decodeInstruction(code, prefixedCode) {
         const condition = getCondition(code);
         return (0, _jumps.jumpRelative)(condition);
     }
-    if ((code & 199) === 6) return (0, _loads.load8Bit)(getDestination(code), (0, _instructionHelpers.ByteLocation).N);
-    if ((code & 192) === 64) return (0, _loads.load8Bit)(getDestination(code), getSource(code));
+    if ((code & 199) === 6) return (0, _loads.load8Bit)(cpu, getDestination(code), (0, _instructionHelpers.ByteLocation).N);
+    if ((code & 192) === 64) return (0, _loads.load8Bit)(cpu, getDestination(code), getSource(code));
     if ((code & 192) === 128) {
         const operation = getOperation(code);
         const source = getSource(code);
@@ -28670,14 +28677,14 @@ const getParameterBytes = (location)=>{
 };
 const commandName = (hlRegisterAction)=>hlRegisterAction === "increment" ? "LDI" : hlRegisterAction === "decrement" ? "LDD" : "LD";
 const getPointerAction = (hlRegisterAction)=>hlRegisterAction === "increment" ? (hl)=>hl.value++ : hlRegisterAction === "decrement" ? (hl)=>hl.value-- : ()=>{};
-function load8Bit(destinationName, sourceName, hlRegisterAction = "none") {
+function load8Bit(cpu, destinationName, sourceName, hlRegisterAction = "none") {
     const cycles = 4 + cycleCost(destinationName) + cycleCost(sourceName);
     const parameterBytes = getParameterBytes(sourceName) + getParameterBytes(destinationName);
     const pointerAction = getPointerAction(hlRegisterAction);
+    const destination = (0, _instructionHelpers.getByteRef)(destinationName, cpu);
+    const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
     return {
         execute: (cpu)=>{
-            const destination = (0, _instructionHelpers.getByteRef)(destinationName, cpu);
-            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
             destination.value = source.value;
             pointerAction(cpu.registers.HL);
         },
@@ -31462,6 +31469,8 @@ class CPU {
         this.cycleCount = 0;
         this.interruptsEnabled = false;
         this.recentFrames = [];
+        this.recentFrameTimes = [];
+        this.averageRecentFrameTime = 0;
         this.fps = 0;
         this.isHalted = false;
         this.isStopped = false;
@@ -31471,6 +31480,8 @@ class CPU {
         this.onError = ()=>{};
         this.clockCallbacks = [];
         this.gbDoctorLog = "";
+        this.instructionMap = [];
+        this.prefixInstructionMap = [];
         this.memory = memory;
         this.controller = controller;
         memory.cpu = this;
@@ -31493,6 +31504,20 @@ class CPU {
                 return (h << 8) + l;
             }
         };
+        for(let code = 0; code < 256; code++){
+            try {
+                const instruction = (0, _instruction.decodeInstruction)(this, code, undefined);
+                this.instructionMap[code] = instruction;
+            } catch (e) {
+                this.instructionMap[code] = (0, _nopDefault.default);
+            }
+            try {
+                const instruction = (0, _instruction.decodeInstruction)(this, 0xCB, code);
+                this.prefixInstructionMap[code] = instruction;
+            } catch (e) {
+                this.prefixInstructionMap[code] = (0, _nopDefault.default);
+            }
+        }
         // SKIP BOOTROM
         this.registers.A.value = 0x01;
         this.registers.F.value = 0xB0;
@@ -31532,20 +31557,9 @@ class CPU {
             return;
         }
         const code = this.nextByte.value;
-        const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
-        let instruction;
-        try {
-            instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
-        } catch  {
-            console.warn(`Unused opcode: ${code.toString(16)} at address ${this.registers.PC.value.toString(16)}`);
-            instruction = (0, _nopDefault.default);
-        }
+        const instruction = code === 0xCB ? this.prefixInstructionMap[this.nextByte.value] : this.instructionMap[code];
         instruction.execute(this);
         this.incrementClock(instruction.cycles);
-        if (this.debugMode) {
-            const parameters = new Array(instruction.parameterBytes).fill(0).map((_1, i)=>this.memory.at(this.registers.PC.value + 1 + i).value);
-            console.log(instruction.description(parameters));
-        }
         this.onInstructionComplete();
     }
     getInterrupt() {
@@ -31586,6 +31600,7 @@ class CPU {
         this.apu.stopAudio();
     }
     runFrame(timestamp) {
+        const startTime = Date.now();
         // We maintain an FPS counter by keeping track of how many frames were run
         // over the last 1000ms
         this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
@@ -31604,6 +31619,14 @@ class CPU {
             }
         }
         if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
+        const endTime = Date.now();
+        const timeTaken = endTime - startTime;
+        this.recentFrameTimes.push(timeTaken);
+        this.averageRecentFrameTime += timeTaken;
+        if (this.recentFrameTimes.length > 60) {
+            const [removed] = this.recentFrameTimes.splice(0, 1);
+            this.averageRecentFrameTime -= removed;
+        }
     // } catch (error) {
     //   console.log(error.stack)
     //   this.running = false
@@ -32924,7 +32947,7 @@ class Screen {
         // Returns the 8 long row of the background tile at pixel offset given
         const getBackgroundTileRow = (offset)=>{
             const backgroundX = scrollX + offset & 0xFF;
-            const tileMapNumber = (backgroundX >> 3) + 32 * (backgroundY >> 3);
+            const tileMapNumber = (backgroundX >> 3) + (backgroundY >> 3 << 5);
             const tileId = this.lcdControl.backgroundTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
             const row = backgroundY & 0x7;
             return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
@@ -32932,7 +32955,7 @@ class Screen {
         const winY = scanline - this.memory.registers.windowY.value;
         // Returns the 8 long row of the background tile at pixel offset given
         const getWindowTileRow = (offset)=>{
-            const tileMapNumber = (offset >> 3) + 32 * (this.windowLine >> 3);
+            const tileMapNumber = (offset >> 3) + (this.windowLine >> 3 << 5);
             const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
             const row = this.windowLine & 0x7;
             return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
@@ -32948,7 +32971,10 @@ class Screen {
             if (!this.lcdControl.enabled) return;
             let pixel;
             // Render high priority sprites (that go above background)
-            if (pixel === undefined && this.lcdControl.objectsEnabled) pixel = highPrioritySprites.filter((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8).map((sprite)=>sprite.pixelAt(scanline, i, this.lcdControl.objectSize)).find((p)=>p !== undefined);
+            if (pixel === undefined && this.lcdControl.objectsEnabled) {
+                const sprite = highPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8);
+                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
+            }
             let tilePixel = undefined;
             // Render window
             const winX = i - (this.memory.registers.windowX.value - 7);
