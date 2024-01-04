@@ -167,7 +167,7 @@ export default class Screen {
     // Returns the 8 long row of the background tile at pixel offset given
     const getBackgroundTileRow = (offset: number): number[] => {
       const backgroundX = (scrollX + offset) & 0xFF
-      const tileMapNumber = (backgroundX >> 3) + (32 * (backgroundY >> 3))
+      const tileMapNumber = (backgroundX >> 3) + ((backgroundY >> 3) << 5)
       const tileId = this.lcdControl.backgroundTilemap == 0
         ? this.memory.vram.tilemap0(tileMapNumber)
         : this.memory.vram.tilemap1(tileMapNumber)
@@ -181,7 +181,7 @@ export default class Screen {
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getWindowTileRow = (offset: number): number[] => {
-      const tileMapNumber = (offset >> 3) + (32 * (this.windowLine >> 3))
+      const tileMapNumber = (offset >> 3) + ((this.windowLine >> 3) << 5)
       const tileId = this.lcdControl.windowTilemap == 0
         ? this.memory.vram.tilemap0(tileMapNumber)
         : this.memory.vram.tilemap1(tileMapNumber)

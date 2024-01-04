@@ -26,7 +26,14 @@ export default function GameView({ emulator, unload }: Props) {
 
   React.useEffect(() => { emulator.cpu.run() }, [])
 
-  emulator.cpu.onInstructionComplete = () => { setToggle(!toggle) }
+  React.useEffect(() => {
+    const interval = setInterval(() => setToggle(t => !t), 1000)
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
+
+  // emulator.cpu.onInstructionComplete = () => { setToggle(!toggle) }
   emulator.cpu.onError = (e) => setError(e.message)
 
   const programCounter = emulator.cpu.registers.PC.value
@@ -51,7 +58,7 @@ export default function GameView({ emulator, unload }: Props) {
       }
       <Tabs
         tabs={{
-          "Info": () => <p>Title: {emulator.cpu.memory.cartridge?.title}<br/>FPS: {emulator.cpu.fps.toPrecision(2)}</p>,
+          "Info": () => <p>Title: {emulator.cpu.memory.cartridge?.title}<br/>FPS: {emulator.cpu.fps.toPrecision(2)}<br/>Frame time: {(emulator.cpu.averageRecentFrameTime / 60).toPrecision(3)} / 16.7ms</p>,
           "Settings": () => <Settings emulator={emulator} />,
           "Debug Graphics": () => <>
             <VramViewer ppu={new PPU(emulator.cpu)} />

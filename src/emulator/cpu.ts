@@ -34,6 +34,8 @@ export default class CPU {
   screen: Screen
   apu: APU
   recentFrames: number[] = []
+  recentFrameTimes: number[] = []
+  averageRecentFrameTime = 0
   fps = 0
   timer: Timer
 
@@ -201,6 +203,7 @@ export default class CPU {
   }
 
   runFrame(timestamp: number): void {
+    const startTime = Date.now()
     // We maintain an FPS counter by keeping track of how many frames were run
     // over the last 1000ms
     this.recentFrames = this.recentFrames.filter(frame => timestamp - frame < 1000)
@@ -228,6 +231,15 @@ export default class CPU {
       }
       if (this.running && !this.breakpoints.has(address)) {
         requestAnimationFrame(timestamp => this.runFrame(timestamp))
+      }
+
+      const endTime = Date.now()
+      const timeTaken = endTime - startTime
+      this.recentFrameTimes.push(timeTaken)
+      this.averageRecentFrameTime += timeTaken
+      if (this.recentFrameTimes.length > 60) {
+        const [removed] = this.recentFrameTimes.splice(0, 1)
+        this.averageRecentFrameTime -= removed
       }
     // } catch (error) {
     //   console.log(error.stack)
