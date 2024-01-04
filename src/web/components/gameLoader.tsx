@@ -39,7 +39,7 @@ export default function GameLoader({ setCartridge }: Props) {
                 deleteGame(game.id).then(() => setLastChange(Date.now()))
               }}>Delete</button>
               <button onClick={async () => {
-                const cartridge = await createCartridge(game.data)
+                const cartridge = await createCartridge(game)
                 setCartridge(cartridge)
               }}>Play</button></li>)
           }

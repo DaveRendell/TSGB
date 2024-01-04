@@ -1,5 +1,5 @@
 import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
-import { Cartridge } from "./cartridge";
+import { Cartridge, StoreRam } from "./cartridge";
 
 const RAM_WRITE_WAIT_MILLISECONDS = 500
 
@@ -10,8 +10,8 @@ export class Mbc1Cartridge extends Cartridge {
   bankNumber2 = 0
   bankingMode: "simple" | "advanced" = "simple"
 
-  constructor(data: Uint8Array) {
-    super(data)
+  constructor(data: Uint8Array, storeRam: StoreRam, loadedSave?: Uint8Array) {
+    super(data, storeRam, loadedSave)
   }
 
   override rom(address: number): ByteRef {
@@ -55,7 +55,7 @@ export class Mbc1Cartridge extends Cartridge {
         const bankBase = 0x2000 * this.bankNumber2 
         this.ramData[(address - 0xA000) + bankBase] = value
         if (this.ramWriteTimeout) { clearTimeout(this.ramWriteTimeout) }
-        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS)
+        this.ramWriteTimeout = setTimeout(() => this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS)
       }
     )
   }

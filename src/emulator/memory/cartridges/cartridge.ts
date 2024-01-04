@@ -1,6 +1,6 @@
 import { ByteRef, ConstantByteRef, GetSetByteRef } from "../../refs/byteRef"
 
-type StoreRam = () => void
+export type StoreRam = (data: Uint8Array) => void
 
 const RAM_WRITE_WAIT_MILLISECONDS = 500
 
@@ -12,21 +12,17 @@ export class Cartridge {
   storeRam: StoreRam
   ramWriteTimeout: NodeJS.Timeout
 
-  constructor(data: Uint8Array) {
+  constructor(data: Uint8Array, storeRam: StoreRam, loadedSave?: Uint8Array) {
     this.romData = data
-    const ramBanks = [0, 0, 1, 4, 16, 8][data[0x0149]]
-    this.ramData = new Uint8Array(ramBanks * 0x2000)
-    this.title = String.fromCharCode(...data.slice(0x0134, 0x0144))
-    this.storeRam = () => {
-      console.log("Saving save data to " + this.title + ".sav")
-      const blob = new Blob([this.ramData])
-      const reader = new FileReader()
-      reader.onload = () => {
-        window.localStorage.setItem(this.title + ".sav", reader.result?.toString() || "")
-      }
-      reader.readAsDataURL(blob)
+    if (loadedSave) {
+      this.ramData = loadedSave
+    } else {
+      const ramBanks = [0, 0, 1, 4, 16, 8][data[0x0149]]
+      this.ramData = new Uint8Array(ramBanks * 0x2000)
     }
-    this.loadLocalSave()
+    
+    this.title = String.fromCharCode(...data.slice(0x0134, 0x0144))
+    this.storeRam = storeRam
   }
 
   async loadData(file: File) {
@@ -44,16 +40,6 @@ export class Cartridge {
     ).value || this.ramData
   }
 
-  async loadLocalSave() {
-    const base64 = window.localStorage.getItem(this.title + ".sav")
-    if (base64 !== null) {
-      const res: Response = await fetch(base64);
-      const blob: Blob = await res.blob();
-      const saveFileReadResult = await blob.stream().getReader().read()
-      this.ramData = saveFileReadResult.value || new Uint8Array()
-    }
-  }
-
   rom(address: number): ByteRef {
     return new GetSetByteRef(
       () => { return this.romData[address & 0xFFFF] },
@@ -67,7 +53,7 @@ export class Cartridge {
       (value) => {
         this.ramData[address - 0xA000] = value
         if (this.ramWriteTimeout) { clearTimeout(this.ramWriteTimeout) }
-        this.ramWriteTimeout = setTimeout(this.storeRam, RAM_WRITE_WAIT_MILLISECONDS)
+        this.ramWriteTimeout = setTimeout(() => this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS)
       }
     )
   }

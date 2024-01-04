@@ -83,10 +83,6 @@ export default class Memory {
   wordAt(address: number): WordRef {
       return new CompositeWordRef(this.at(address + 1), this.at(address))
   }
-  
-  async loadGame(file: File) {
-    this.cartridge = await createCartridge(file)
-  }
 
   async loadBootRom(file: File) {
     // this.bootRom = (

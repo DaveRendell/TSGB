@@ -59,3 +59,26 @@ export async function deleteGame(key: number): Promise<void> {
     request.onsuccess = () => resolve()
   })
 }
+
+export  const persistSave = (gameId: number) => async (data: Uint8Array): Promise<void> => {
+  const db = await openDb()
+  const transaction = db.transaction(["games"], "readwrite")
+
+  const store = transaction.objectStore("games")
+
+  const game = await new Promise<StoredGame>((resolve, reject) => {
+    const request = store.get(gameId)
+    request.onerror = reject
+    request.onsuccess = () => {
+      resolve(request.result as StoredGame)
+    }
+  })
+
+  game.save = data
+  
+  return new Promise((resolve, reject) => {
+    const request = store.put(game)
+    request.onerror = reject
+    request.onsuccess = () => resolve()
+  })
+}
