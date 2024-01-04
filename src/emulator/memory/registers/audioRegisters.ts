@@ -52,9 +52,7 @@ export class MasterVolumeVinRegister implements ByteRef {
     this.leftVolume = (value >> 4) & 0x7
     this.rightVolume = value & 0x7
 
-    console.log("Setting vin volume", (this.rightVolume + 1) + (this.leftVolume + 1) / 2)
-
-    this.updateVolume((this.rightVolume + 1) + (this.leftVolume + 1) / 2)
+    this.updateVolume(Math.max(this.rightVolume, this.leftVolume))
   }
 }
 
@@ -110,6 +108,7 @@ export class PulseChannelRegisters {
         self.periodSweep.direction = (value & 0x8) > 0 ? -1 : 1
         if (self.channel) {
           self.channel.sweep.setSweep(self.periodSweep.direction, self.periodSweep.pace, self.periodSweep.step)
+          self.period = self.channel.period
         }
       }
     }

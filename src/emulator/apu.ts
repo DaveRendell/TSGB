@@ -10,6 +10,7 @@ export default class APU {
   memory: Memory
   audioContext: AudioContext = new AudioContext({ sampleRate: 44100 });
 
+  masterVolume: number = 0
   vinVolume: GainNode
   masterControl: GainNode
 
@@ -23,7 +24,11 @@ export default class APU {
     this.memory = cpu.memory
     this.memory.registers.audioMasterControl.apu = this
     this.memory.registers.masterVolumeVin.updateVolume = (volume) => {
-      this.vinVolume.gain.value = (volume / 8)
+      if (this.masterVolume !== volume) {
+        this.masterVolume = volume
+        this.vinVolume.gain.setValueAtTime(volume / 8, this.audioContext.currentTime)
+        console.log(volume, this.vinVolume.gain.value)
+      }
     }
     cpu.apu = this
     cpu.addClockCallback(this)
