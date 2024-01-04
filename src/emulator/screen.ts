@@ -207,10 +207,11 @@ export default class Screen {
 
       // Render high priority sprites (that go above background)
       if (pixel === undefined && this.lcdControl.objectsEnabled) {
-        pixel = highPrioritySprites
-          .filter(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8))
-          .map(sprite => sprite.pixelAt(scanline, i, this.lcdControl.objectSize))
-          .find(p => p !== undefined)
+        const sprite = highPrioritySprites
+          .find(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8))
+        if (sprite) {
+          pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
+        }
       }
 
       let tilePixel: number | undefined = undefined
