@@ -27411,7 +27411,7 @@ $RefreshReg$(_c, "GameView");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","./settings":"e45NW","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../gameDashboards/pkmnGen1Dashboard":"5z2Lr"}],"2PLGd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","./settings":"e45NW","../gameDashboards/pkmnGen1Dashboard":"5z2Lr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"2PLGd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ef66 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -30799,6 +30799,7 @@ parcelHelpers.export(exports, "default", ()=>PkmnGen1Dashboard);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
 function PkmnGen1Dashboard({ emulator }) {
+    const party = getParty(emulator.memory);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
@@ -30809,7 +30810,74 @@ function PkmnGen1Dashboard({ emulator }) {
                 columnNumber: 7
             }, this),
             "Player name: ",
-            getPlayerName(emulator.memory)
+            readStringAt(emulator.memory, 0xD158),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                children: [
+                    "Party - ",
+                    party.length,
+                    " / 6"
+                ]
+            }, void 0, true, {
+                fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                lineNumber: 16,
+                columnNumber: 7
+            }, this),
+            party.map((monster, i)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("article", {
+                    children: [
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h4", {
+                            children: monster.name
+                        }, void 0, false, {
+                            fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                            lineNumber: 19,
+                            columnNumber: 11
+                        }, this),
+                        "hp: ",
+                        monster.hp,
+                        " / ",
+                        monster.maxHp,
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                            fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                            lineNumber: 20,
+                            columnNumber: 45
+                        }, this),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("progress", {
+                            max: monster.maxHp,
+                            value: monster.hp
+                        }, void 0, false, {
+                            fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                            lineNumber: 20,
+                            columnNumber: 50
+                        }, this),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                            fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                            lineNumber: 20,
+                            columnNumber: 100
+                        }, this),
+                        "Level ",
+                        monster.level,
+                        " - ",
+                        monster.xpRequired - monster.xpThisLevel,
+                        " for level up",
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("br", {}, void 0, false, {
+                            fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                            lineNumber: 21,
+                            columnNumber: 90
+                        }, this),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("progress", {
+                            max: monster.xpRequired,
+                            value: monster.xpThisLevel
+                        }, void 0, false, {
+                            fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                            lineNumber: 22,
+                            columnNumber: 11
+                        }, this),
+                        monster.xp
+                    ]
+                }, i, true, {
+                    fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
+                    lineNumber: 18,
+                    columnNumber: 9
+                }, this))
         ]
     }, void 0, true, {
         fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
@@ -30818,9 +30886,6 @@ function PkmnGen1Dashboard({ emulator }) {
     }, this);
 }
 _c = PkmnGen1Dashboard;
-function getPlayerName(memory) {
-    return readStringAt(memory, 0xD158);
-}
 function readStringAt(memory, start) {
     let codes = [];
     for(let addr = start; addr <= start + 64; addr++){
@@ -30834,6 +30899,52 @@ function decodeString(code) {
     if (code <= 0x99) return String.fromCharCode(code - 0x80 + 65);
     return String.fromCharCode(code - 0xA0 + 97);
 }
+function getParty(memory) {
+    const count = memory.at(0xD163).value;
+    let party = [];
+    for(let i = 0; i < count; i++)party.push(decodePartyMonster(memory, i));
+    return party;
+}
+function decodePartyMonster(memory, i) {
+    const id = memory.at(0xD16B + i * 44).value;
+    const name = readStringAt(memory, 0xD2B5 + i * 11);
+    const hp = 0x100 * memory.at(0xD16C + i * 44).value + memory.at(0xD16D + i * 44).value;
+    const maxHp = 0x100 * memory.at(0xD18D + i * 44).value + memory.at(0xD18E + i * 44).value;
+    const xp = 0x10000 * memory.at(0xD179 + i * 44).value + 0x100 * memory.at(0xD17A + i * 44).value + memory.at(0xD17B + i * 44).value;
+    const { dexId, growthRate } = getMonsterStats(memory, id);
+    const level = memory.at(0xD18C + i * 44).value;
+    const levelFormula = LEVEL_FORMULAE[growthRate];
+    const xpThisLevel = xp - levelFormula(level);
+    const xpRequired = levelFormula(level + 1) - levelFormula(level);
+    return {
+        id,
+        name,
+        hp,
+        maxHp,
+        dexId,
+        growthRate,
+        level,
+        xp,
+        xpThisLevel,
+        xpRequired
+    };
+}
+function getMonsterStats(memory, id) {
+    const orderedId = memory.cartridge.romData[0x41024 + id - 1];
+    const baseAddress = 0x0383DE + orderedId * 28;
+    const dexId = memory.cartridge.romData[baseAddress] - 1;
+    const growthRate = memory.cartridge.romData[baseAddress + 0x13];
+    return {
+        dexId,
+        growthRate
+    };
+}
+const LEVEL_FORMULAE = {
+    0: (level)=>Math.floor(level * level * level),
+    3: (level)=>Math.floor(1.2 * level * level * level - 15 * level * level + 100 * level - 140),
+    4: (level)=>Math.floor(0.8 * level * level * level),
+    5: (level)=>Math.floor(5 / 4 * level * level * level)
+};
 var _c;
 $RefreshReg$(_c, "PkmnGen1Dashboard");
 
@@ -32914,7 +33025,7 @@ $RefreshReg$(_c, "GameLoader");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","../indexedDb/gameStore":"kdNdQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./libraryCard":"iaBEi","./gameOptions":"a45d8"}],"hpQ2G":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../emulator/memory/cartridges/createCartridge":"hpQ2G","../indexedDb/gameStore":"kdNdQ","./libraryCard":"iaBEi","./gameOptions":"a45d8","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"hpQ2G":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 // Reference: https://gbdev.io/pandocs/The_Cartridge_Header.html#0147--cartridge-type
