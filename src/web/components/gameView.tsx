@@ -13,6 +13,7 @@ import Tabs from "./tabs"
 import AudioDebug from "./audioDebug"
 import { Emulator } from "../../emulator/emulator"
 import Settings from "./settings"
+import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
 
 interface Props {
   emulator: Emulator
@@ -60,6 +61,7 @@ export default function GameView({ emulator, unload }: Props) {
         tabs={{
           "Info": () => <p>Title: {emulator.cpu.memory.cartridge?.title}<br/>FPS: {emulator.cpu.fps.toPrecision(2)}<br/>Frame time: {(emulator.cpu.averageRecentFrameTime / 60).toPrecision(3)} / 16.7ms</p>,
           "Settings": () => <Settings emulator={emulator} />,
+          "Dashboard": () => <PkmnGen1Dashboard emulator={emulator} />,
           "Debug Graphics": () => <>
             <VramViewer ppu={new PPU(emulator.cpu)} />
           </>,

@@ -27,7 +27,7 @@ export default class APU {
       if (this.masterVolume !== volume) {
         this.masterVolume = volume
         this.vinVolume.gain.setValueAtTime(volume / 8, this.audioContext.currentTime)
-        console.log(volume, this.vinVolume.gain.value)
+        // console.log(volume, this.vinVolume.gain.value)
       }
     }
     cpu.apu = this
