@@ -5,6 +5,8 @@ import { Cartridge } from "../../emulator/memory/cartridges/cartridge"
 import { createCartridge } from "../../emulator/memory/cartridges/createCartridge"
 import { StoredGame } from "../indexedDb/storedGame"
 import { getGameList, addGame, deleteGame } from "../indexedDb/gameStore"
+import LibraryCard from "./libraryCard"
+import GameOptions from "./gameOptions"
 
 interface Props {
   setCartridge: (cartridge: Cartridge) => void
@@ -13,13 +15,31 @@ interface Props {
 export default function GameLoader({ setCartridge }: Props) {
   const [storedGames, setStoredGames] = React.useState<StoredGame[] | null>(null)
   const [lastChange, setLastChange] = React.useState(0)
+  const [optionsFocusGame, setOptionsFocusGame] = React.useState<StoredGame | undefined>(undefined)
 
   React.useEffect(() => {
     getGameList().then(setStoredGames)
   }, [lastChange])
 
+  const loadGame = (game: StoredGame) => async () =>
+    setCartridge(await createCartridge(game))
+
+  const closeOptions = () => setOptionsFocusGame(undefined)
+
+  if (optionsFocusGame) {
+    return <GameOptions
+      game={optionsFocusGame}
+      playGame={loadGame(optionsFocusGame)}
+      closeOptions={closeOptions}
+    />
+  }
+
+  const openOptions = (game: StoredGame) => () =>
+    { setOptionsFocusGame(game) }
+
   return (<section>
     <h2>Library</h2>
+    <label htmlFor="game-load-db">Add new game:</label>
     <input
       id="game-load-db"
       type="file"
@@ -32,19 +52,15 @@ export default function GameLoader({ setCartridge }: Props) {
     { storedGames === null
       ? <>Fetching games...</>
       : <>
-          <h3>Stored games</h3><ul>
           {
             storedGames.map(game =>
-              <li>{game.title}
-              {/* <button onClick={() => {
-                deleteGame(game.id).then(() => setLastChange(Date.now()))
-              }}>Delete</button> */}
-              <button onClick={async () => {
-                const cartridge = await createCartridge(game)
-                setCartridge(cartridge)
-              }}>Play</button></li>)
+              <LibraryCard
+                game={game}
+                playGame={loadGame(game)}
+                openOptions={openOptions(game)}
+              />
+            )
           }
-          </ul>
         </>
     }
   </section>)
