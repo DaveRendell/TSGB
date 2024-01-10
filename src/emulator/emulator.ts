@@ -1,7 +1,7 @@
-import AudioProcessor from "./audio/audioProcessor";
-import Controller from "./controller";
-import CPU from "./cpu/cpu";
-import Memory from "./memory/memoryMap";
+import AudioProcessor from "./audio/audioProcessor"
+import Controller from "./controller"
+import CPU from "./cpu/cpu"
+import Memory from "./memory/memoryMap"
 import { Cartridge } from "./memory/cartridges/cartridge"
 import PictureProcessor from "./pictureProcessor"
 

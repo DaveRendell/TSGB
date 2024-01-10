@@ -1,8 +1,12 @@
-import CPU from "./cpu/cpu";
-import Memory from "./memory/memoryMap";
-import { Interrupt } from "./memory/registers/interruptRegisters";
-import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
-import { ByteRef } from "./refs/byteRef";
+import CPU from "./cpu/cpu"
+import Memory from "./memory/memoryMap"
+import { Interrupt } from "./memory/registers/interruptRegisters"
+import {
+  LcdControlRegister,
+  LcdStatusRegister,
+  PalletteRegister,
+} from "./memory/registers/lcdRegisters"
+import { ByteRef } from "./refs/byteRef"
 
 const WIDTH = 160
 const HEIGHT = 144
@@ -60,14 +64,15 @@ export default class PictureProcessor {
   // Returns true if new frame is rendered
   updateClock(cycle: number) {
     this.clockCount += cycle
-    switch(this.mode) {
+    switch (this.mode) {
       case "HBlank": // Mode 0
         if (this.clockCount >= 204) {
           this.clockCount -= 204
           this.setScanline(this.scanlineNumber.value + 1)
-          if (this.lcdControl.windowEnabled
-            && this.scanlineNumber.value > this.memory.registers.windowY.value
-            && this.memory.registers.windowX.value <= 166
+          if (
+            this.lcdControl.windowEnabled &&
+            this.scanlineNumber.value > this.memory.registers.windowY.value &&
+            this.memory.registers.windowX.value <= 166
           ) {
             this.windowLine++
           }
@@ -112,9 +117,9 @@ export default class PictureProcessor {
     this.scanlineNumber.value = value
 
     if (
-      this.lcdControl.enabled
-      && this.lcdStatus.lycInterruptEnabled
-      && this.scanlineNumber.value == this.coincidence.value
+      this.lcdControl.enabled &&
+      this.lcdStatus.lycInterruptEnabled &&
+      this.scanlineNumber.value == this.coincidence.value
     ) {
       this.lcdStatus.lycCoinciding = true
       this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
@@ -124,7 +129,7 @@ export default class PictureProcessor {
   }
 
   setMode(mode: Mode) {
-    switch(mode) {
+    switch (mode) {
       case "HBlank":
         if (this.lcdControl.enabled && this.lcdStatus.mode0InterruptEnabled) {
           this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
@@ -137,7 +142,7 @@ export default class PictureProcessor {
           if (this.lcdStatus.mode1InterruptEnabled) {
             this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
           }
-        }        
+        }
         this.lcdStatus.mode = 1
         break
       case "Scanline OAM":
@@ -154,7 +159,9 @@ export default class PictureProcessor {
   }
 
   renderScanline(): void {
-    if (!this.lcdControl.enabled) { return }
+    if (!this.lcdControl.enabled) {
+      return
+    }
 
     const scanline = this.scanlineNumber.value
 
@@ -162,15 +169,16 @@ export default class PictureProcessor {
 
     const scrollX = this.scrollX.value
     const scrollY = this.scrollY.value
-    const backgroundY = (scrollY + scanline) & 0xFF
+    const backgroundY = (scrollY + scanline) & 0xff
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getBackgroundTileRow = (offset: number): number[] => {
-      const backgroundX = (scrollX + offset) & 0xFF
+      const backgroundX = (scrollX + offset) & 0xff
       const tileMapNumber = (backgroundX >> 3) + ((backgroundY >> 3) << 5)
-      const tileId = this.lcdControl.backgroundTilemap == 0
-        ? this.memory.vram.tilemap0(tileMapNumber)
-        : this.memory.vram.tilemap1(tileMapNumber)
+      const tileId =
+        this.lcdControl.backgroundTilemap == 0
+          ? this.memory.vram.tilemap0(tileMapNumber)
+          : this.memory.vram.tilemap1(tileMapNumber)
       const row = backgroundY & 0x7
       return this.lcdControl.tileDataArea == 1
         ? this.memory.vram.tileset0(tileId, row)
@@ -182,9 +190,10 @@ export default class PictureProcessor {
     // Returns the 8 long row of the background tile at pixel offset given
     const getWindowTileRow = (offset: number): number[] => {
       const tileMapNumber = (offset >> 3) + ((this.windowLine >> 3) << 5)
-      const tileId = this.lcdControl.windowTilemap == 0
-        ? this.memory.vram.tilemap0(tileMapNumber)
-        : this.memory.vram.tilemap1(tileMapNumber)
+      const tileId =
+        this.lcdControl.windowTilemap == 0
+          ? this.memory.vram.tilemap0(tileMapNumber)
+          : this.memory.vram.tilemap1(tileMapNumber)
       const row = this.windowLine & 0x7
       return this.lcdControl.tileDataArea == 1
         ? this.memory.vram.tileset0(tileId, row)
@@ -198,17 +207,24 @@ export default class PictureProcessor {
     let windowTileCounter = 0
 
     const sprites = this.memory.oam.spritesAtScanline()
-    const highPrioritySprites = sprites.filter(s => !s.priority)
-    const lowPrioritySprites = sprites.filter(s => s.priority)
-    
+    const highPrioritySprites = sprites.filter((s) => !s.priority)
+    const lowPrioritySprites = sprites.filter((s) => s.priority)
+
     for (let i = 0; i < WIDTH; i++) {
-      if (!this.lcdControl.enabled) { return }
+      if (!this.lcdControl.enabled) {
+        return
+      }
       let pixel: number | undefined
 
       // Render high priority sprites (that go above background)
       if (pixel === undefined && this.lcdControl.objectsEnabled) {
-        const sprite = highPrioritySprites
-          .find(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8) && sprite.pixelAt(scanline, i, this.lcdControl.objectSize) != undefined)
+        const sprite = highPrioritySprites.find(
+          (sprite) =>
+            i - (sprite.x - 8) >= 0 &&
+            i - (sprite.x - 8) < 8 &&
+            sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
+              undefined,
+        )
         if (sprite) {
           pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
         }
@@ -221,23 +237,27 @@ export default class PictureProcessor {
       if (pixel === undefined && this.lcdControl.windowEnabled) {
         if (winY >= 0 && winX >= 0) {
           const windowPixel = windowTileRow[winX % 8]
-          tilePixel = this.backgroundPallette.map[windowPixel]   
+          tilePixel = this.backgroundPallette.map[windowPixel]
         }
       }
       if (winX >= 0 && winY >= 0) {
-        windowTileCounter ++
+        windowTileCounter++
         if (windowTileCounter === 8) {
           windowTileCounter = 0
           windowTileRow = getWindowTileRow(winX + 1)
         }
       }
-      
+
       // Render background (excluding the lowest colour in the pallete)
-      if (pixel === undefined && tilePixel == undefined && this.lcdControl.backgroundWindowDisplay) {
+      if (
+        pixel === undefined &&
+        tilePixel == undefined &&
+        this.lcdControl.backgroundWindowDisplay
+      ) {
         const backgroundPixel = backgroundTileRow[(scrollX + i) % 8]
         tilePixel = this.backgroundPallette.map[backgroundPixel]
       }
-      
+
       // Get next background tile if needed
       backgroundTileCounter++
       if (backgroundTileCounter === 8) {
@@ -251,8 +271,13 @@ export default class PictureProcessor {
 
       // Render low priority sprites (that go below non zero background)
       if (pixel === undefined && this.lcdControl.objectsEnabled) {
-        const sprite = lowPrioritySprites
-          .find(sprite => (i - (sprite.x - 8) >= 0) && (i - (sprite.x - 8) < 8) && sprite.pixelAt(scanline, i, this.lcdControl.objectSize) != undefined)
+        const sprite = lowPrioritySprites.find(
+          (sprite) =>
+            i - (sprite.x - 8) >= 0 &&
+            i - (sprite.x - 8) < 8 &&
+            sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
+              undefined,
+        )
         if (sprite) {
           pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
         }
@@ -268,11 +293,10 @@ export default class PictureProcessor {
       line.data[4 * i + 1] = colour[1]
       line.data[4 * i + 2] = colour[2]
       line.data[4 * i + 3] = 255
-
     }
 
     // Finally, add the new line to the buffer image
-    this.bufferContext.putImageData(line, 0, scanline)    
+    this.bufferContext.putImageData(line, 0, scanline)
   }
 
   renderScreen(): void {

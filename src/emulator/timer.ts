@@ -1,7 +1,13 @@
-import Memory from "./memory/memoryMap";
-import { Interrupt, InterruptRegister } from "./memory/registers/interruptRegisters";
-import { DividerRegister, TimerControlRegister } from "./memory/registers/timerRegisters";
-import { ByteRef } from "./refs/byteRef";
+import Memory from "./memory/memoryMap"
+import {
+  Interrupt,
+  InterruptRegister,
+} from "./memory/registers/interruptRegisters"
+import {
+  DividerRegister,
+  TimerControlRegister,
+} from "./memory/registers/timerRegisters"
+import { ByteRef } from "./refs/byteRef"
 
 const DIV_CYCLE_ROLLOVER = 256
 

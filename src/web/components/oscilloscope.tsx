@@ -15,43 +15,47 @@ export default function Oscilloscope({ name, channel, id }: Props) {
   const scopeCanvas = React.useRef<HTMLCanvasElement>(null)
 
   const draw = () => {
-    if (!scopeCanvas.current) { return }
+    if (!scopeCanvas.current) {
+      return
+    }
     const context = scopeCanvas.current.getContext("2d")!
 
-    const bufferLength = channel.analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    
-    context.clearRect(0, 0, SCOPE_WIDTH, SCOPE_HEIGHT);
-    channel.analyser.getByteTimeDomainData(dataArray);
+    const bufferLength = channel.analyser.frequencyBinCount
+    const dataArray = new Uint8Array(bufferLength)
 
-    context.lineWidth = 1;
-    context.strokeStyle = "rgb(0, 0, 0)";
-    
-    context.beginPath();
+    context.clearRect(0, 0, SCOPE_WIDTH, SCOPE_HEIGHT)
+    channel.analyser.getByteTimeDomainData(dataArray)
 
-    const sliceWidth = SCOPE_WIDTH / bufferLength;
-    let x = 0;
+    context.lineWidth = 1
+    context.strokeStyle = "rgb(0, 0, 0)"
+
+    context.beginPath()
+
+    const sliceWidth = SCOPE_WIDTH / bufferLength
+    let x = 0
 
     for (let i = 0; i < bufferLength; i++) {
       const v = (dataArray[i] - 128) / 128
-      const y = (SCOPE_HEIGHT / 2) * (1 + ZOOM_FACTOR * v);
+      const y = (SCOPE_HEIGHT / 2) * (1 + ZOOM_FACTOR * v)
 
       if (i === 0) {
-        context.moveTo(x, y);
+        context.moveTo(x, y)
       } else {
-        context.lineTo(x, y);
+        context.lineTo(x, y)
       }
 
-      x += sliceWidth;
+      x += sliceWidth
     }
 
     context.lineTo(SCOPE_WIDTH, SCOPE_HEIGHT / 2)
-    context.stroke();
+    context.stroke()
   }
 
   React.useEffect(() => {
-    channel.waveFormChanged = draw;
-    () => { channel.waveFormChanged = () => {} }
+    channel.waveFormChanged = draw
+    ;() => {
+      channel.waveFormChanged = () => {}
+    }
   })
 
   const isMuted = channel.muteNode.gain.value < 0.1
@@ -64,20 +68,21 @@ export default function Oscilloscope({ name, channel, id }: Props) {
     }
   }
 
-  return (<div>
-    <h3>{name}</h3>
-    <label htmlFor={`mute-${id}`}>Mute</label>
-    <input
-      type="checkbox"
-      id={`mute-${id}`}
-      checked={isMuted}
-      onChange={(e) => { e.preventDefault(); toggleMute() }}
-    />
-    <br/>
-    <canvas
-      width={SCOPE_WIDTH}
-      height={SCOPE_HEIGHT}
-      ref={scopeCanvas}
-    />
-  </div>)
+  return (
+    <div>
+      <h3>{name}</h3>
+      <label htmlFor={`mute-${id}`}>Mute</label>
+      <input
+        type="checkbox"
+        id={`mute-${id}`}
+        checked={isMuted}
+        onChange={(e) => {
+          e.preventDefault()
+          toggleMute()
+        }}
+      />
+      <br />
+      <canvas width={SCOPE_WIDTH} height={SCOPE_HEIGHT} ref={scopeCanvas} />
+    </div>
+  )
 }

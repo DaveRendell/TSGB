@@ -12,25 +12,25 @@ import { Mbc5Cartridge } from "./mbc5Cartridge"
 export async function createCartridge(game: StoredGame): Promise<Cartridge> {
   const cartridgeType = game.data[0x147]
 
-  switch(cartridgeType) {
+  switch (cartridgeType) {
     case 0x00:
       return new Cartridge(game.data, persistSave(game.id), game.save)
     case 0x01:
     case 0x02:
     case 0x03:
       return new Mbc1Cartridge(game.data, persistSave(game.id), game.save)
-    case 0x0F:
+    case 0x0f:
     case 0x10:
     case 0x11:
     case 0x12:
     case 0x13:
       return new Mbc3Cartridge(game.data, persistSave(game.id), game.save)
     case 0x19:
-    case 0x1A:
-    case 0x1B:
-    case 0x1C:
-    case 0x1D:
-    case 0x1E:
+    case 0x1a:
+    case 0x1b:
+    case 0x1c:
+    case 0x1d:
+    case 0x1e:
       return new Mbc5Cartridge(game.data, persistSave(game.id), game.save)
   }
 

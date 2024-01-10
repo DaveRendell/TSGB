@@ -40,7 +40,6 @@ export function VramViewer({ ppu }: Props) {
       context.rect(sX, sY - 256, 160, 144)
       context.rect(sX - 256, sY - 256, 160, 144)
       context.stroke()
-
     }
     if (windowCanvas.current) {
       ppu.printBackgroundLayer(windowCanvas.current, "window")
@@ -54,84 +53,66 @@ export function VramViewer({ ppu }: Props) {
     if (spriteCanvas.current) {
       ppu.printSpriteLayer(spriteCanvas.current)
     }
-    
+
     setSprites(ppu.getSpriteInfo())
   }
 
-  React.useEffect(() => { update() }, [])
+  React.useEffect(() => {
+    update()
+  }, [])
 
   const toColour = (values: number[]): string =>
-    `#${values.map(x => x.toString(16).padStart(2, "0")).join("")}ff`
+    `#${values.map((x) => x.toString(16).padStart(2, "0")).join("")}ff`
 
-  return (<section>
-    <button onClick={update}>Update</button>
-    <div className="flex-horizontally">
-      <div>
-        <h3>Tile data</h3>
-          <div>
-          <h4>Tileset 0</h4>
-            <canvas
-              width="128"
-              height="128"
-              ref={tileSet0Canvas}
-            />
-        </div>
-        <div>
-          <h4>Tileset 1</h4>
-            <canvas
-              width="128"
-              height="128"
-              ref={tileSet1Canvas}
-            />
-        </div>
-      </div>
-      <div>
-        <h3>Background map</h3>
-        <p>Pallette:
-        {ppu.backgroundPallete().map(
-          (colour, i) => <span
-            className="pallete-block"
-            style={{backgroundColor: toColour(colour)}}
-          >{i}</span>)}</p>
-        <p>sX: {valueDisplay(sX)}, sY: {valueDisplay(sY)}</p>
-        <canvas
-          width="256"
-          height="256"
-          ref={backgroundCanvas}
-        />
-      </div>
-      <div>
-        <h3>Window layer</h3>
-        <canvas
-          width="160"
-          height="144"
-          ref={windowCanvas}
-        />
-        <h3>Sprite layer</h3>
-        <canvas
-          width="160"
-          height="144"
-          ref={spriteCanvas}
-        />
-      </div>
-      
-    </div>
-    <div>
-      <h3>Sprites</h3>
+  return (
+    <section>
+      <button onClick={update}>Update</button>
       <div className="flex-horizontally">
         <div>
-          sprite 1-20
+          <h3>Tile data</h3>
+          <div>
+            <h4>Tileset 0</h4>
+            <canvas width="128" height="128" ref={tileSet0Canvas} />
+          </div>
+          <div>
+            <h4>Tileset 1</h4>
+            <canvas width="128" height="128" ref={tileSet1Canvas} />
+          </div>
         </div>
         <div>
-          sprite 11-20
+          <h3>Background map</h3>
+          <p>
+            Pallette:
+            {ppu.backgroundPallete().map((colour, i) => (
+              <span
+                className="pallete-block"
+                style={{ backgroundColor: toColour(colour) }}
+              >
+                {i}
+              </span>
+            ))}
+          </p>
+          <p>
+            sX: {valueDisplay(sX)}, sY: {valueDisplay(sY)}
+          </p>
+          <canvas width="256" height="256" ref={backgroundCanvas} />
         </div>
         <div>
-          sprite 21-30
-        </div>
-        <div>
-          sprite 31-40
+          <h3>Window layer</h3>
+          <canvas width="160" height="144" ref={windowCanvas} />
+          <h3>Sprite layer</h3>
+          <canvas width="160" height="144" ref={spriteCanvas} />
         </div>
       </div>
-    </div>
-  </section>)
+      <div>
+        <h3>Sprites</h3>
+        <div className="flex-horizontally">
+          <div>sprite 1-20</div>
+          <div>sprite 11-20</div>
+          <div>sprite 21-30</div>
+          <div>sprite 31-40</div>
+        </div>
+      </div>
+    </section>
+  )
 }

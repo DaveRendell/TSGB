@@ -17,12 +17,7 @@ export default function Display({ cpu }: Props) {
 
   return (
     <section>
-      <canvas
-        className="screen"
-        width="160"
-        height="144"
-        ref={canvas}
-      />
+      <canvas className="screen" width="160" height="144" ref={canvas} />
     </section>
   )
 }

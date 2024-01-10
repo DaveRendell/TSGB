@@ -1,4 +1,4 @@
-import { Instruction } from "../instruction";
+import { Instruction } from "../instruction"
 
 const halt: Instruction = {
   execute: (cpu) => {
@@ -6,7 +6,7 @@ const halt: Instruction = {
   },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "HALT"
+  description: () => "HALT",
 }
 
 export default halt

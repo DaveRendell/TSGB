@@ -18,22 +18,22 @@ export class CpuRegisters {
   BC: WordRef
   DE: WordRef
   AF: WordRef
-  
-  constructor() {
-      this.A = new GenericByteRef()
-      this.F = new Flags()
-      this.B = new GenericByteRef()
-      this.C = new GenericByteRef()
-      this.D = new GenericByteRef()
-      this.E = new GenericByteRef()
-      this.H = new GenericByteRef()
-      this.L = new GenericByteRef()
 
-      this.PC = new GenericWordRef()
-      this.SP = new GenericWordRef()
-      this.HL = new CompositeWordRef(this.H, this.L)
-      this.BC = new CompositeWordRef(this.B, this.C)
-      this.DE = new CompositeWordRef(this.D, this.E)
-      this.AF = new CompositeWordRef(this.A, this.F)
+  constructor() {
+    this.A = new GenericByteRef()
+    this.F = new Flags()
+    this.B = new GenericByteRef()
+    this.C = new GenericByteRef()
+    this.D = new GenericByteRef()
+    this.E = new GenericByteRef()
+    this.H = new GenericByteRef()
+    this.L = new GenericByteRef()
+
+    this.PC = new GenericWordRef()
+    this.SP = new GenericWordRef()
+    this.HL = new CompositeWordRef(this.H, this.L)
+    this.BC = new CompositeWordRef(this.B, this.C)
+    this.DE = new CompositeWordRef(this.D, this.E)
+    this.AF = new CompositeWordRef(this.A, this.F)
   }
 }

@@ -38,5 +38,7 @@ export class VolumeEnvelope {
     this.timer = pace
   }
 
-  resetClock() { this.clock = 0 }
+  resetClock() {
+    this.clock = 0
+  }
 }

@@ -1,5 +1,5 @@
-import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
-import { Cartridge, StoreRam } from "./cartridge";
+import { ByteRef, GetSetByteRef } from "../../refs/byteRef"
+import { Cartridge, StoreRam } from "./cartridge"
 
 const RAM_WRITE_WAIT_MILLISECONDS = 500
 
@@ -16,7 +16,9 @@ export class Mbc1Cartridge extends Cartridge {
 
   override rom(address: number): ByteRef {
     const read = () => {
-      if (address < 0x4000) { return this.romData[address] }
+      if (address < 0x4000) {
+        return this.romData[address]
+      }
       const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000
       return this.romData[adjustedAddress]
     }
@@ -25,12 +27,14 @@ export class Mbc1Cartridge extends Cartridge {
     if (address < 0x2000) {
       // Set RAM enabled register
       write = (value: number) => {
-        this.ramEnabled = (value & 0xF) == 0xA
+        this.ramEnabled = (value & 0xf) == 0xa
       }
     } else if (address < 0x4000) {
       write = (value: number) => {
-        this.bankNumber1 = value & 0x1F
-        if (this.bankNumber1 == 0) { this.bankNumber1 = 1 }
+        this.bankNumber1 = value & 0x1f
+        if (this.bankNumber1 == 0) {
+          this.bankNumber1 = 1
+        }
       }
     } else if (address < 0x6000) {
       write = (value: number) => {
@@ -48,15 +52,20 @@ export class Mbc1Cartridge extends Cartridge {
   override ram(address: number): ByteRef {
     return new GetSetByteRef(
       () => {
-        const bankBase = 0x2000 * this.bankNumber2 
-        return this.ramData[(address - 0xA000) - bankBase]
+        const bankBase = 0x2000 * this.bankNumber2
+        return this.ramData[address - 0xa000 - bankBase]
       },
       (value) => {
-        const bankBase = 0x2000 * this.bankNumber2 
-        this.ramData[(address - 0xA000) + bankBase] = value
-        if (this.ramWriteTimeout) { clearTimeout(this.ramWriteTimeout) }
-        this.ramWriteTimeout = setTimeout(() => this.storeRam(this.ramData), RAM_WRITE_WAIT_MILLISECONDS)
-      }
+        const bankBase = 0x2000 * this.bankNumber2
+        this.ramData[address - 0xa000 + bankBase] = value
+        if (this.ramWriteTimeout) {
+          clearTimeout(this.ramWriteTimeout)
+        }
+        this.ramWriteTimeout = setTimeout(
+          () => this.storeRam(this.ramData),
+          RAM_WRITE_WAIT_MILLISECONDS,
+        )
+      },
     )
   }
 }

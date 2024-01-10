@@ -1,25 +1,28 @@
-import { addressDisplay } from "../../../helpers/displayHexNumbers";
-import { JumpCondition } from "../../../types";
-import CPU from "../cpu";
-import { Instruction } from "./instruction";
-import { combineBytes, from2sComplement, splitBytes } from "./instructionHelpers";
+import { addressDisplay } from "../../../helpers/displayHexNumbers"
+import { JumpCondition } from "../../../types"
+import CPU from "../cpu"
+import { Instruction } from "./instruction"
+import {
+  combineBytes,
+  from2sComplement,
+  splitBytes,
+} from "./instructionHelpers"
 
 export const CONDITIONS: Record<JumpCondition, (cpu: CPU) => boolean> = {
   "Not-Zero": (cpu) => !cpu.registers.F.zero,
-  "Zero": (cpu) => cpu.registers.F.zero,
+  Zero: (cpu) => cpu.registers.F.zero,
   "Not-Carry": (cpu) => !cpu.registers.F.carry,
-  "Carry": (cpu) => cpu.registers.F.carry,
-  "None": () => true,
+  Carry: (cpu) => cpu.registers.F.carry,
+  None: () => true,
 }
 
 export const CONDITION_NAMES: Record<JumpCondition, string> = {
   "Not-Zero": "NZ",
-  "Zero": "Z",
+  Zero: "Z",
   "Not-Carry": "NC",
-  "Carry": "C",
-  "None": "",
+  Carry: "C",
+  None: "",
 }
-
 
 export function jumpRelative(condition: JumpCondition): Instruction {
   return {
@@ -31,7 +34,8 @@ export function jumpRelative(condition: JumpCondition): Instruction {
     },
     cycles: 12,
     parameterBytes: 1,
-    description: ([value]) => `JR${CONDITION_NAMES[condition]} ${from2sComplement(value)}`
+    description: ([value]) =>
+      `JR${CONDITION_NAMES[condition]} ${from2sComplement(value)}`,
   }
 }
 
@@ -45,7 +49,8 @@ export function jump(condition: JumpCondition): Instruction {
     },
     cycles: 16,
     parameterBytes: 2,
-    description: ([l, h]) => `JP${CONDITION_NAMES[condition]} ${addressDisplay(combineBytes(h, l))}`
+    description: ([l, h]) =>
+      `JP${CONDITION_NAMES[condition]} ${addressDisplay(combineBytes(h, l))}`,
   }
 }
 
@@ -55,7 +60,7 @@ export const jpHl: Instruction = {
   },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "JP HL"
+  description: () => "JP HL",
 }
 
 export function rst(address: number): Instruction {
@@ -73,6 +78,6 @@ export function rst(address: number): Instruction {
     },
     cycles: 16,
     parameterBytes: 0,
-    description: () => `RST ${addressDisplay(address)}`
+    description: () => `RST ${addressDisplay(address)}`,
   }
 }

@@ -1,6 +1,6 @@
-import { WaveChannelRegisters } from "../memory/registers/audioRegisters";
-import { Channel } from "./channel";
-import { LengthTimer } from "./lengthTimer";
+import { WaveChannelRegisters } from "../memory/registers/audioRegisters"
+import { Channel } from "./channel"
+import { LengthTimer } from "./lengthTimer"
 
 interface Props {
   audioContext: AudioContext
@@ -68,8 +68,12 @@ export default class WaveChannel implements Channel {
     this.bufferSource.stop()
     this.playing = true
 
-    const sampleRate = 2097152 / ( 2048 - this.registers.period)
-    const buffer = this.audioContext.createBuffer(1, 32, this.audioContext.sampleRate)
+    const sampleRate = 2097152 / (2048 - this.registers.period)
+    const buffer = this.audioContext.createBuffer(
+      1,
+      32,
+      this.audioContext.sampleRate,
+    )
     buffer.copyToChannel(this.registers.samples, 0, 0)
     const bufferSource = this.audioContext.createBufferSource()
     bufferSource.buffer = buffer
@@ -94,7 +98,7 @@ export default class WaveChannel implements Channel {
   setVolume(volumeSetting: number) {
     this.gain.gain.setValueAtTime(
       [0, 1, 0.5, 0.25][volumeSetting] * (15 / 100),
-      this.audioContext.currentTime
+      this.audioContext.currentTime,
     )
     this.waveFormChanged()
   }

@@ -25,8 +25,8 @@ export default class Memory {
 
   constructor(cartridge: Cartridge) {
     this.data = new Uint8Array(0x10000)
-    this.registers.dmaTransfer.startTransfer =
-      (address) => this.dmaTransfer(address)
+    this.registers.dmaTransfer.startTransfer = (address) =>
+      this.dmaTransfer(address)
     this.cartridge = cartridge
     this.oam = new OAM(this)
   }
@@ -36,17 +36,19 @@ export default class Memory {
       this.cpu.pause()
     }
     // ROM
-    if (address < 0x8000) { 
+    if (address < 0x8000) {
       if (
-        address < 0x100
-        && this.bootRomLoaded
-        && this.registers.bootRom.enabled
+        address < 0x100 &&
+        this.bootRomLoaded &&
+        this.registers.bootRom.enabled
       ) {
         // If Boot ROM is enabled, loaded, and we're in its address range, load
         // memory from there
         return new GetSetByteRef(
-          () => { return this.bootRom[address & 0xFFFF] },
-          (_) => {  }
+          () => {
+            return this.bootRom[address & 0xffff]
+          },
+          (_) => {},
         )
       }
 
@@ -54,34 +56,38 @@ export default class Memory {
     }
 
     // VRAM
-    if (address >= 0x8000 && address < 0xA000) {
+    if (address >= 0x8000 && address < 0xa000) {
       return this.vram.at(address)
     }
 
     // SRAM
-    if (address >= 0xA000 && address < 0xC000) {
+    if (address >= 0xa000 && address < 0xc000) {
       return this.cartridge.ram(address)
     }
 
     // OAM
-    if (address >= 0xFE00 && address < 0xFEA0) {
+    if (address >= 0xfe00 && address < 0xfea0) {
       return this.oam.at(address)
     }
 
     // IO Registers
-    if (address >= 0xFF00 && address < 0xFF80) {
+    if (address >= 0xff00 && address < 0xff80) {
       return this.registers.at(address)
     }
 
     // TODO remove this, handle each case explicitly
     return new GetSetByteRef(
-      () => { return this.data[address & 0xFFFF] },
-      (value) => { this.data[address & 0xFFFF] = value }
+      () => {
+        return this.data[address & 0xffff]
+      },
+      (value) => {
+        this.data[address & 0xffff] = value
+      },
     )
   }
 
   wordAt(address: number): WordRef {
-      return new CompositeWordRef(this.at(address + 1), this.at(address))
+    return new CompositeWordRef(this.at(address + 1), this.at(address))
   }
 
   async loadBootRom(file: File) {
@@ -94,8 +100,8 @@ export default class Memory {
 
   // https://gbdev.io/pandocs/OAM_DMA_Transfer.html
   dmaTransfer(address: number) {
-    for (let i = 0; i < 0xA0; i++) {
-      this.at(0xFE00 + i).value = this.at(address + i).value
+    for (let i = 0; i < 0xa0; i++) {
+      this.at(0xfe00 + i).value = this.at(address + i).value
     }
   }
 }

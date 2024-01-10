@@ -1,5 +1,3 @@
-
-
 .joypad-button {
   border-radius: 100%;
   width: 1.5em;
@@ -17,7 +15,7 @@
 
 .dpad-button {
   background-color: darkgrey;
-  box-shadow: 0 0.25em #595858;;
+  box-shadow: 0 0.25em #595858;
   color: #595858;
 }
 
@@ -31,7 +29,8 @@
   box-shadow: 0 0.25em black;
 }
 
-.joypad-button:active, .joypad-button.active {
+.joypad-button:active,
+.joypad-button.active {
   margin-top: 0.25em;
   box-shadow: 0 0;
   box-shadow: 0;
@@ -84,7 +83,6 @@
   gap: 0.5em;
   padding-top: 6em;
 }
-
 
 .dpad-single-row > * {
   margin-left: 2.375em;

@@ -56,8 +56,12 @@ export default class PulseChannel implements Channel {
     this.oscillator.start()
 
     this.timer = new LengthTimer(() => this.stop())
-    this.envelope = new VolumeEnvelope((increment) => this.updateVolume(increment))
-    this.sweep = new PeriodSweep((step, direction) => this.updatePeriod(step, direction))
+    this.envelope = new VolumeEnvelope((increment) =>
+      this.updateVolume(increment),
+    )
+    this.sweep = new PeriodSweep((step, direction) =>
+      this.updatePeriod(step, direction),
+    )
 
     registers.channel = this
   }
@@ -95,13 +99,18 @@ export default class PulseChannel implements Channel {
     this.period = period
     const frequency = 131072 / (2048 - period)
     this.oscillator.frequency.setValueAtTime(
-      frequency, this.audioContext.currentTime)
+      frequency,
+      this.audioContext.currentTime,
+    )
     this.waveFormChanged()
   }
 
   setVolume(volume: number = this.volume) {
     this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume
-    this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime)
+    this.gain.gain.setValueAtTime(
+      this.volume / 100,
+      this.audioContext.currentTime,
+    )
     this.waveFormChanged()
   }
 }

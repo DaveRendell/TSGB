@@ -8,9 +8,7 @@ interface Props {
 }
 
 export default function LibraryCard({ game, playGame, openOptions }: Props) {
-  const play = async () => {
-    
-  }
+  const play = async () => {}
 
   return (
     <article key={game.id} className="library-card">

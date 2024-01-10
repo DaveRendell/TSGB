@@ -13,9 +13,13 @@ interface Props {
 }
 
 export default function GameLoader({ setCartridge }: Props) {
-  const [storedGames, setStoredGames] = React.useState<StoredGame[] | null>(null)
+  const [storedGames, setStoredGames] = React.useState<StoredGame[] | null>(
+    null,
+  )
   const [lastChange, setLastChange] = React.useState(0)
-  const [optionsFocusGame, setOptionsFocusGame] = React.useState<StoredGame | undefined>(undefined)
+  const [optionsFocusGame, setOptionsFocusGame] = React.useState<
+    StoredGame | undefined
+  >(undefined)
 
   React.useEffect(() => {
     getGameList().then(setStoredGames)
@@ -27,41 +31,45 @@ export default function GameLoader({ setCartridge }: Props) {
   const closeOptions = () => setOptionsFocusGame(undefined)
 
   if (optionsFocusGame) {
-    return <GameOptions
-      game={optionsFocusGame}
-      playGame={loadGame(optionsFocusGame)}
-      closeOptions={closeOptions}
-    />
+    return (
+      <GameOptions
+        game={optionsFocusGame}
+        playGame={loadGame(optionsFocusGame)}
+        closeOptions={closeOptions}
+      />
+    )
   }
 
-  const openOptions = (game: StoredGame) => () =>
-    { setOptionsFocusGame(game) }
+  const openOptions = (game: StoredGame) => () => {
+    setOptionsFocusGame(game)
+  }
 
-  return (<section>
-    <h2>Library</h2>
-    <label htmlFor="game-load-db">Add new game:</label>
-    <input
-      id="game-load-db"
-      type="file"
-      onChange={(e) => {
-        if (e.target.files && e.target.files[0]) {
-          addGame(e.target.files[0]).then(() => setLastChange(Date.now()))        
-        }
-      }}
-    />
-    { storedGames === null
-      ? <>Fetching games...</>
-      : <>
-          {
-            storedGames.map(game =>
-              <LibraryCard
-                game={game}
-                playGame={loadGame(game)}
-                openOptions={openOptions(game)}
-              />
-            )
+  return (
+    <section>
+      <h2>Library</h2>
+      <label htmlFor="game-load-db">Add new game:</label>
+      <input
+        id="game-load-db"
+        type="file"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            addGame(e.target.files[0]).then(() => setLastChange(Date.now()))
           }
+        }}
+      />
+      {storedGames === null ? (
+        <>Fetching games...</>
+      ) : (
+        <>
+          {storedGames.map((game) => (
+            <LibraryCard
+              game={game}
+              playGame={loadGame(game)}
+              openOptions={openOptions(game)}
+            />
+          ))}
         </>
-    }
-  </section>)
+      )}
+    </section>
+  )
 }

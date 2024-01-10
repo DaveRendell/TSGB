@@ -1,26 +1,48 @@
-import { addressDisplay, valueDisplay } from "../../../helpers/displayHexNumbers";
-import { Instruction } from "./instruction";
-import { WordRef } from "../../refs/wordRef";
-import { combineBytes, getByteRef, from2sComplement, ByteLocation, describeByteLocation, getWordRef, describeWordLocation, WordLocation } from "./instructionHelpers";
+import {
+  addressDisplay,
+  valueDisplay,
+} from "../../../helpers/displayHexNumbers"
+import { Instruction } from "./instruction"
+import { WordRef } from "../../refs/wordRef"
+import {
+  combineBytes,
+  getByteRef,
+  from2sComplement,
+  ByteLocation,
+  describeByteLocation,
+  getWordRef,
+  describeWordLocation,
+  WordLocation,
+} from "./instructionHelpers"
 
 const cycleCost = (location: ByteLocation): number => {
-  switch(location) {
-    case ByteLocation.N: return 4
-    case ByteLocation.M: return 4
-    case ByteLocation.FF_N: return 8
-    case ByteLocation.FF_C: return 4
-    case ByteLocation.BC: return 4
-    case ByteLocation.DE: return 4
-    case ByteLocation.NN: return 12
+  switch (location) {
+    case ByteLocation.N:
+      return 4
+    case ByteLocation.M:
+      return 4
+    case ByteLocation.FF_N:
+      return 8
+    case ByteLocation.FF_C:
+      return 4
+    case ByteLocation.BC:
+      return 4
+    case ByteLocation.DE:
+      return 4
+    case ByteLocation.NN:
+      return 12
   }
   return 0
 }
 
 const getParameterBytes = (location: ByteLocation): number => {
-  switch(location) {
-    case ByteLocation.N: return 1
-    case ByteLocation.FF_N: return 1
-    case ByteLocation.NN: return 2
+  switch (location) {
+    case ByteLocation.N:
+      return 1
+    case ByteLocation.FF_N:
+      return 1
+    case ByteLocation.NN:
+      return 2
   }
   return 0
 }
@@ -28,9 +50,13 @@ const getParameterBytes = (location: ByteLocation): number => {
 const commandName = (hlRegisterAction: "none" | "increment" | "decrement") =>
   hlRegisterAction === "increment"
     ? "LDI"
-    : hlRegisterAction === "decrement" ? "LDD" : "LD"
+    : hlRegisterAction === "decrement"
+      ? "LDD"
+      : "LD"
 
-const getPointerAction = (hlRegisterAction: "none" | "increment" | "decrement") =>
+const getPointerAction = (
+  hlRegisterAction: "none" | "increment" | "decrement",
+) =>
   hlRegisterAction === "increment"
     ? (hl: WordRef) => hl.value++
     : hlRegisterAction === "decrement"
@@ -40,11 +66,12 @@ const getPointerAction = (hlRegisterAction: "none" | "increment" | "decrement") 
 export function load8Bit(
   destinationName: ByteLocation,
   sourceName: ByteLocation,
-  hlRegisterAction: "none" | "increment" | "decrement" = "none"
+  hlRegisterAction: "none" | "increment" | "decrement" = "none",
 ): Instruction {
   const cycles = 4 + cycleCost(destinationName) + cycleCost(sourceName)
 
-  const parameterBytes = getParameterBytes(sourceName) + getParameterBytes(destinationName)
+  const parameterBytes =
+    getParameterBytes(sourceName) + getParameterBytes(destinationName)
 
   const pointerAction = getPointerAction(hlRegisterAction)
 
@@ -60,18 +87,25 @@ export function load8Bit(
     cycles,
     parameterBytes,
     description: (values) =>
-      `${commandName(hlRegisterAction)} ${describeByteLocation(destinationName)(values)},${describeByteLocation(sourceName)(values)}`
+      `${commandName(hlRegisterAction)} ${describeByteLocation(destinationName)(
+        values,
+      )},${describeByteLocation(sourceName)(values)}`,
   }
 }
 
-export function loadImmediate16BitRegister(register: WordLocation): Instruction {
+export function loadImmediate16BitRegister(
+  register: WordLocation,
+): Instruction {
   return {
     execute: (cpu) => {
       getWordRef(register, cpu).value = cpu.nextWord.value
     },
     cycles: 12,
     parameterBytes: 2,
-    description: ([l, h]) => `LD ${describeWordLocation(register)([])},${addressDisplay(combineBytes(h, l))}`
+    description: ([l, h]) =>
+      `LD ${describeWordLocation(register)([])},${addressDisplay(
+        combineBytes(h, l),
+      )}`,
   }
 }
 
@@ -81,8 +115,8 @@ export const loadHlFromSpPlusN: Instruction = {
     const sp = cpu.registers.SP.value
     const result = sp + increment
 
-    const halfCarry = (sp & 0xF) + (increment & 0xF) !== (result & 0xF)
-    const carry = (sp & 0xFF) + (increment & 0xFF) !== (result & 0xFF)
+    const halfCarry = (sp & 0xf) + (increment & 0xf) !== (result & 0xf)
+    const carry = (sp & 0xff) + (increment & 0xff) !== (result & 0xff)
 
     cpu.registers.HL.value = result
 
@@ -93,7 +127,7 @@ export const loadHlFromSpPlusN: Instruction = {
   },
   cycles: 12,
   parameterBytes: 1,
-  description: ([value]) => `LD HL,SP+${valueDisplay(value)}`
+  description: ([value]) => `LD HL,SP+${valueDisplay(value)}`,
 }
 
 export const loadStackPointerToAddress: Instruction = {
@@ -103,7 +137,7 @@ export const loadStackPointerToAddress: Instruction = {
   },
   cycles: 20,
   parameterBytes: 2,
-  description: ([l, h]) => `LD (${addressDisplay(combineBytes(h, l))}),SP`
+  description: ([l, h]) => `LD (${addressDisplay(combineBytes(h, l))}),SP`,
 }
 
 export const loadStackPointerFromHL: Instruction = {
@@ -112,5 +146,5 @@ export const loadStackPointerFromHL: Instruction = {
   },
   cycles: 8,
   parameterBytes: 0,
-  description: () => "LD SP,HL"
+  description: () => "LD SP,HL",
 }

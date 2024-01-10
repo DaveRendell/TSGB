@@ -1,4 +1,4 @@
-import { StoredGame } from "./storedGame";
+import { StoredGame } from "./storedGame"
 
 export async function getGameList(): Promise<StoredGame[]> {
   const db = await openDb()
@@ -60,25 +60,27 @@ export async function deleteGame(key: number): Promise<void> {
   })
 }
 
-export  const persistSave = (gameId: number) => async (data: Uint8Array): Promise<void> => {
-  const db = await openDb()
-  const transaction = db.transaction(["games"], "readwrite")
+export const persistSave =
+  (gameId: number) =>
+  async (data: Uint8Array): Promise<void> => {
+    const db = await openDb()
+    const transaction = db.transaction(["games"], "readwrite")
 
-  const store = transaction.objectStore("games")
+    const store = transaction.objectStore("games")
 
-  const game = await new Promise<StoredGame>((resolve, reject) => {
-    const request = store.get(gameId)
-    request.onerror = reject
-    request.onsuccess = () => {
-      resolve(request.result as StoredGame)
-    }
-  })
+    const game = await new Promise<StoredGame>((resolve, reject) => {
+      const request = store.get(gameId)
+      request.onerror = reject
+      request.onsuccess = () => {
+        resolve(request.result as StoredGame)
+      }
+    })
 
-  game.save = data
-  
-  return new Promise((resolve, reject) => {
-    const request = store.put(game)
-    request.onerror = reject
-    request.onsuccess = () => resolve()
-  })
-}
+    game.save = data
+
+    return new Promise((resolve, reject) => {
+      const request = store.put(game)
+      request.onerror = reject
+      request.onsuccess = () => resolve()
+    })
+  }

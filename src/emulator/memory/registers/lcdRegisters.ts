@@ -1,4 +1,4 @@
-import { ByteRef } from "../../refs/byteRef";
+import { ByteRef } from "../../refs/byteRef"
 
 // Reference: https://gbdev.io/pandocs/LCDC.html#ff40--lcdc-lcd-control
 export class LcdControlRegister implements ByteRef {
@@ -12,14 +12,16 @@ export class LcdControlRegister implements ByteRef {
   backgroundWindowDisplay = false
 
   get value(): number {
-    return (this.enabled ? 0x80 : 0)
-         + (this.windowTilemap << 6)
-         + (this.windowEnabled ? 0x20 : 0)
-         + (this.tileDataArea << 4)
-         + (this.backgroundTilemap << 3)
-         + (this.objectSize == 16 ? 0x4 : 0)
-         + (this.objectsEnabled ? 0x2 : 0)
-         + (this.backgroundWindowDisplay ? 0x1 : 0)
+    return (
+      (this.enabled ? 0x80 : 0) +
+      (this.windowTilemap << 6) +
+      (this.windowEnabled ? 0x20 : 0) +
+      (this.tileDataArea << 4) +
+      (this.backgroundTilemap << 3) +
+      (this.objectSize == 16 ? 0x4 : 0) +
+      (this.objectsEnabled ? 0x2 : 0) +
+      (this.backgroundWindowDisplay ? 0x1 : 0)
+    )
   }
 
   set value(value: number) {
@@ -44,13 +46,14 @@ export class LcdStatusRegister implements ByteRef {
   mode = 0
 
   get value(): number {
-    return (this.lycInterruptEnabled ? 0x40 : 0)
-         + (this.mode2InterruptEnabled ? 0x20 : 0)
-         + (this.mode1InterruptEnabled ? 0x10 : 0)
-         + (this.mode0InterruptEnabled ? 0x8 : 0)
-         + (this.lycCoinciding ? 0x4 : 0)
-         + this.mode
-
+    return (
+      (this.lycInterruptEnabled ? 0x40 : 0) +
+      (this.mode2InterruptEnabled ? 0x20 : 0) +
+      (this.mode1InterruptEnabled ? 0x10 : 0) +
+      (this.mode0InterruptEnabled ? 0x8 : 0) +
+      (this.lycCoinciding ? 0x4 : 0) +
+      this.mode
+    )
   }
   set value(value: number) {
     this.lycInterruptEnabled = (value & 0x40) > 0
@@ -62,12 +65,14 @@ export class LcdStatusRegister implements ByteRef {
 
 export class PalletteRegister implements ByteRef {
   map = [0, 0, 0, 0]
-  
+
   get value(): number {
-    return (this.map[0] << 0)
-         + (this.map[1] << 2)
-         + (this.map[2] << 4)
-         + (this.map[3] << 6)
+    return (
+      (this.map[0] << 0) +
+      (this.map[1] << 2) +
+      (this.map[2] << 4) +
+      (this.map[3] << 6)
+    )
   }
   set value(value: number) {
     this.map = [

@@ -5,9 +5,9 @@ export default defineConfig({
   plugins: [react()],
   base: "/TSGB/",
   server: {
-    port: 1234
+    port: 1234,
   },
   build: {
     outDir: "../../dist",
-  }
+  },
 })

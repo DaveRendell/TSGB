@@ -1,57 +1,63 @@
-import { valueDisplay } from "../../../helpers/displayHexNumbers";
-import { AluOperation } from "../../../types";
-import CPU from "../cpu";
-import { Instruction } from "./instruction";
-import { ByteLocation, WordLocation, from2sComplement, getByteRef, getWordRef } from "./instructionHelpers";
+import { valueDisplay } from "../../../helpers/displayHexNumbers"
+import { AluOperation } from "../../../types"
+import CPU from "../cpu"
+import { Instruction } from "./instruction"
+import {
+  ByteLocation,
+  WordLocation,
+  from2sComplement,
+  getByteRef,
+  getWordRef,
+} from "./instructionHelpers"
 
-const splitToNibbles = (value: number) => [(value >> 4) & 0xF, value & 0xF]
+const splitToNibbles = (value: number) => [(value >> 4) & 0xf, value & 0xf]
 const combineNibbles = (h: number, l: number) => (h << 4) + l
 
 const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
-  "ADD": (cpu, value) => {
+  ADD: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.value)
-    
+
     const hR = h + hA
     const lR = l + lA
     const r = combineNibbles(hR, lR)
-    const rWrapped = r & 0xFF
+    const rWrapped = r & 0xff
 
     a.value = rWrapped
 
     cpu.registers.F.zero = rWrapped == 0
     cpu.registers.F.operation = false
-    cpu.registers.F.halfCarry = lR > 0xF
+    cpu.registers.F.halfCarry = lR > 0xf
     cpu.registers.F.carry = rWrapped != r
   },
-  "ADC": (cpu, value) => {
+  ADC: (cpu, value) => {
     const a = cpu.registers.A
     const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.value)
-    
+
     const hR = h + hA
     const lR = l + lA + carry
     const r = combineNibbles(hR, lR)
-    const rWrapped = r & 0xFF
+    const rWrapped = r & 0xff
 
     a.value = rWrapped
 
     cpu.registers.F.zero = rWrapped == 0
     cpu.registers.F.operation = false
-    cpu.registers.F.halfCarry = lR > 0xF
+    cpu.registers.F.halfCarry = lR > 0xf
     cpu.registers.F.carry = rWrapped != r
   },
-  "SUB": (cpu, value) => {
+  SUB: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.value)
-    
+
     const hR = hA - h
     const lR = lA - l
     const r = combineNibbles(hR, lR)
-    const rWrapped = r & 0xFF
+    const rWrapped = r & 0xff
 
     a.value = rWrapped
 
@@ -60,16 +66,16 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = lR < 0
     cpu.registers.F.carry = rWrapped != r
   },
-  "SBC": (cpu, value) => {
+  SBC: (cpu, value) => {
     const a = cpu.registers.A
     const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.value)
-    
+
     const hR = hA - h
     const lR = lA - l - carry
     const r = combineNibbles(hR, lR)
-    const rWrapped = r & 0xFF
+    const rWrapped = r & 0xff
 
     a.value = rWrapped
 
@@ -78,7 +84,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = lR < 0
     cpu.registers.F.carry = rWrapped != r
   },
-  "AND": (cpu, value) => {
+  AND: (cpu, value) => {
     const a = cpu.registers.A
 
     a.value &= value
@@ -88,9 +94,9 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = true
     cpu.registers.F.carry = false
   },
-  "XOR": (cpu, value) => {
+  XOR: (cpu, value) => {
     const a = cpu.registers.A
-  
+
     a.value ^= value
 
     cpu.registers.F.zero = a.value === 0
@@ -98,7 +104,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = false
     cpu.registers.F.carry = false
   },
-  "OR": (cpu, value) => {
+  OR: (cpu, value) => {
     const a = cpu.registers.A
 
     a.value |= value
@@ -108,15 +114,15 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = false
     cpu.registers.F.carry = false
   },
-  "CP": (cpu, value) => {
+  CP: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.value)
-    
+
     const hR = hA - h
     const lR = lA - l
     const r = combineNibbles(hR, lR)
-    const rWrapped = r & 0xFF
+    const rWrapped = r & 0xff
 
     cpu.registers.F.zero = rWrapped == 0
     cpu.registers.F.operation = true
@@ -125,14 +131,17 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   },
 }
 
-export function aluOperation(operation: AluOperation, sourceName: ByteLocation): Instruction {
+export function aluOperation(
+  operation: AluOperation,
+  sourceName: ByteLocation,
+): Instruction {
   return {
     execute: (cpu) => {
       OPERATIONS[operation](cpu, getByteRef(sourceName, cpu).value)
     },
     cycles: sourceName === ByteLocation.M ? 8 : 4,
     parameterBytes: 0,
-    description: () => `${operation} A,${sourceName}`
+    description: () => `${operation} A,${sourceName}`,
   }
 }
 
@@ -144,7 +153,7 @@ export function aluOperationImmediate(operation: AluOperation): Instruction {
     },
     cycles: 8,
     parameterBytes: 1,
-    description: ([value]) => `${operation} A,${valueDisplay(value)}`
+    description: ([value]) => `${operation} A,${valueDisplay(value)}`,
   }
 }
 
@@ -156,11 +165,11 @@ export function increment8Bit(targetName: ByteLocation): Instruction {
 
       cpu.registers.F.zero = target.value == 0
       cpu.registers.F.operation = false
-      cpu.registers.F.halfCarry = (target.value & 0xF) === 0
+      cpu.registers.F.halfCarry = (target.value & 0xf) === 0
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
-    description: () => `INC ${targetName}`
+    description: () => `INC ${targetName}`,
   }
 }
 
@@ -172,11 +181,11 @@ export function decrement8Bit(targetName: ByteLocation): Instruction {
 
       cpu.registers.F.zero = target.value == 0
       cpu.registers.F.operation = true
-      cpu.registers.F.halfCarry = (target.value & 0xF) === 0xF
+      cpu.registers.F.halfCarry = (target.value & 0xf) === 0xf
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
-    description: () => `DEC ${targetName}`
+    description: () => `DEC ${targetName}`,
   }
 }
 
@@ -187,7 +196,7 @@ export function increment16Bit(register: WordLocation): Instruction {
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `INC ${register}`
+    description: () => `INC ${register}`,
   }
 }
 
@@ -198,7 +207,7 @@ export function decrement16Bit(register: WordLocation): Instruction {
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `DEC ${register}`
+    description: () => `DEC ${register}`,
   }
 }
 
@@ -206,15 +215,15 @@ export function rotateLeft(
   registerName: ByteLocation,
   throughCarry: boolean,
   isPrefixed: boolean,
-  setZero = true
+  setZero = true,
 ): Instruction {
   const commandName = throughCarry ? "RL" : "RLC"
   return {
     execute: (cpu) => {
       const register = getByteRef(registerName, cpu)
       const value = register.value
-      const wrap = throughCarry ? cpu.registers.F.carry ? 1 : 0 : value >> 7
-      const rotated = ((value << 1) & 0xFF) + wrap
+      const wrap = throughCarry ? (cpu.registers.F.carry ? 1 : 0) : value >> 7
+      const rotated = ((value << 1) & 0xff) + wrap
       register.value = rotated
 
       cpu.registers.F.zero = setZero && rotated === 0
@@ -222,19 +231,24 @@ export function rotateLeft(
       cpu.registers.F.halfCarry = false
       cpu.registers.F.carry = value >> 7 > 0
     },
-    cycles: isPrefixed ? registerName === ByteLocation.M ? 12 : 8 : 4,
+    cycles: isPrefixed ? (registerName === ByteLocation.M ? 12 : 8) : 4,
     parameterBytes: 0,
-    description: () => `${commandName} ${registerName}`
+    description: () => `${commandName} ${registerName}`,
   }
 }
 
-export function rotateRight(registerName: ByteLocation, throughCarry: boolean, isPrefixed: boolean, setZero = true): Instruction {
+export function rotateRight(
+  registerName: ByteLocation,
+  throughCarry: boolean,
+  isPrefixed: boolean,
+  setZero = true,
+): Instruction {
   const commandName = throughCarry ? "RR" : "RRC"
   return {
     execute: (cpu) => {
       const register = getByteRef(registerName, cpu)
       const value = register.value
-      const wrap = throughCarry ? cpu.registers.F.carry ? 1 : 0 : (value & 1)
+      const wrap = throughCarry ? (cpu.registers.F.carry ? 1 : 0) : value & 1
       const rotated = (value >> 1) + (wrap << 7)
       register.value = rotated
 
@@ -243,22 +257,22 @@ export function rotateRight(registerName: ByteLocation, throughCarry: boolean, i
       cpu.registers.F.halfCarry = false
       cpu.registers.F.carry = (value & 1) > 0
     },
-    cycles: isPrefixed ? registerName === ByteLocation.M ? 12 : 8 : 4,
+    cycles: isPrefixed ? (registerName === ByteLocation.M ? 12 : 8) : 4,
     parameterBytes: 0,
-    description: () => `${commandName} ${registerName}`
+    description: () => `${commandName} ${registerName}`,
   }
 }
 
 export const cpl: Instruction = {
   execute: (cpu) => {
     cpu.registers.A.value = ~cpu.registers.A.value
-    
+
     cpu.registers.F.operation = true
     cpu.registers.F.halfCarry = true
   },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "CPL"
+  description: () => "CPL",
 }
 
 export const addToHL = (register: WordLocation): Instruction => {
@@ -272,17 +286,17 @@ export const addToHL = (register: WordLocation): Instruction => {
 
       const result = hlValue + rValue
 
-      hl.value = result & 0xFFFF
+      hl.value = result & 0xffff
 
-      const halfCarry = ((hlValue & 0x0FFF) + (rValue & 0x0FFF)) > 0xFFF
+      const halfCarry = (hlValue & 0x0fff) + (rValue & 0x0fff) > 0xfff
 
       cpu.registers.F.operation = false
       cpu.registers.F.halfCarry = halfCarry
-      cpu.registers.F.carry = result > 0xFFFF
+      cpu.registers.F.carry = result > 0xffff
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `ADD HL,${register}`
+    description: () => `ADD HL,${register}`,
   }
 }
 
@@ -294,10 +308,10 @@ export const addImmediateToSP: Instruction = {
     const oldValue = sp.value
     const newValue = oldValue + amount
 
-    const halfCarry = (oldValue & 0xF) + (amount & 0xF) > 0xF
-    const carry = (oldValue & 0xFF) + (amount & 0xFF) > 0xFF
+    const halfCarry = (oldValue & 0xf) + (amount & 0xf) > 0xf
+    const carry = (oldValue & 0xff) + (amount & 0xff) > 0xff
 
-    sp.value = newValue & 0xFFFF
+    sp.value = newValue & 0xffff
 
     cpu.registers.F.zero = false
     cpu.registers.F.operation = false
@@ -306,7 +320,7 @@ export const addImmediateToSP: Instruction = {
   },
   cycles: 16,
   parameterBytes: 1,
-  description: ([value]) => `ADD SP,${valueDisplay(value)}`
+  description: ([value]) => `ADD SP,${valueDisplay(value)}`,
 }
 
 export const daa: Instruction = {
@@ -319,7 +333,7 @@ export const daa: Instruction = {
     let correction = 0
 
     let setCarry = false
-    if (flags.halfCarry || (!flags.operation && (value & 0xF) > 9)) {
+    if (flags.halfCarry || (!flags.operation && (value & 0xf) > 9)) {
       correction |= 0x6
     }
     if (flags.carry || (!flags.operation && value > 0x99)) {
@@ -329,13 +343,13 @@ export const daa: Instruction = {
 
     const result = value + (flags.operation ? -correction : correction)
 
-    a.value = result & 0xFF
+    a.value = result & 0xff
 
     flags.carry = setCarry
     flags.halfCarry = false
-    flags.zero = (result & 0xFF) == 0
+    flags.zero = (result & 0xff) == 0
   },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "DAA"
+  description: () => "DAA",
 }

@@ -13,11 +13,14 @@ export const testBit = (bit: number, sourceName: ByteLocation): Instruction => {
     },
     cycles: sourceName === ByteLocation.M ? 12 : 8,
     parameterBytes: 0,
-    description: () => `BIT ${bit},${sourceName}`
+    description: () => `BIT ${bit},${sourceName}`,
   }
 }
 
-export const resetBit = (bit: number, sourceName: ByteLocation): Instruction => {
+export const resetBit = (
+  bit: number,
+  sourceName: ByteLocation,
+): Instruction => {
   return {
     execute: (cpu) => {
       const source = getByteRef(sourceName, cpu)
@@ -25,7 +28,7 @@ export const resetBit = (bit: number, sourceName: ByteLocation): Instruction => 
     },
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
-    description: () => `RES ${bit},${sourceName}`
+    description: () => `RES ${bit},${sourceName}`,
   }
 }
 
@@ -33,11 +36,11 @@ export const setBit = (bit: number, sourceName: ByteLocation): Instruction => {
   return {
     execute: (cpu) => {
       const source = getByteRef(sourceName, cpu)
-      source.value |= (1 << bit)
+      source.value |= 1 << bit
     },
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
-    description: () => `SET ${bit},${sourceName}`
+    description: () => `SET ${bit},${sourceName}`,
   }
 }
 
@@ -46,8 +49,8 @@ export const swap = (sourceName: ByteLocation): Instruction => {
     execute(cpu) {
       const byte = getByteRef(sourceName, cpu)
       const originalValue = byte.value
-      const h = (originalValue & 0xF0) >> 4
-      const l = (originalValue & 0x0F)
+      const h = (originalValue & 0xf0) >> 4
+      const l = originalValue & 0x0f
       const newValue = (l << 4) + h
       byte.value = newValue
 
@@ -55,11 +58,10 @@ export const swap = (sourceName: ByteLocation): Instruction => {
       cpu.registers.F.operation = false
       cpu.registers.F.halfCarry = false
       cpu.registers.F.carry = false
-
     },
     cycles: sourceName === ByteLocation.M ? 12 : 8,
     parameterBytes: 0,
-    description: () => `SWAP ${sourceName}`
+    description: () => `SWAP ${sourceName}`,
   }
 }
 
@@ -71,7 +73,7 @@ export const shiftRightLogical = (sourceName: ByteLocation): Instruction => {
       const newValue = originalValue >> 1
 
       byte.value = newValue
-      
+
       cpu.registers.F.zero = newValue == 0
       cpu.registers.F.operation = false
       cpu.registers.F.halfCarry = false
@@ -79,7 +81,7 @@ export const shiftRightLogical = (sourceName: ByteLocation): Instruction => {
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `SRL ${sourceName}`
+    description: () => `SRL ${sourceName}`,
   }
 }
 
@@ -89,7 +91,7 @@ export function shiftLeftArithmetic(sourceName: ByteLocation): Instruction {
       const source = getByteRef(sourceName, cpu)
 
       const oldValue = source.value
-      const newValue = ((oldValue << 1) & 0xFF) + 0
+      const newValue = ((oldValue << 1) & 0xff) + 0
 
       source.value = newValue
 
@@ -100,7 +102,7 @@ export function shiftLeftArithmetic(sourceName: ByteLocation): Instruction {
     },
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
-    description: () => `SRA ${sourceName}`
+    description: () => `SRA ${sourceName}`,
   }
 }
 
@@ -121,6 +123,6 @@ export function shiftRightArithmetic(sourceName: ByteLocation): Instruction {
     },
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
-    description: () => `SRA ${sourceName}`
+    description: () => `SRA ${sourceName}`,
   }
 }

@@ -1,6 +1,8 @@
 import * as React from "react"
 
-export default function useLocalFile(key: string): [File | null, (newFile: File | null) => void] {
+export default function useLocalFile(
+  key: string,
+): [File | null, (newFile: File | null) => void] {
   const [stateFile, setStateFile] = React.useState<File | null>(null)
 
   const readFromStorage = () => {
@@ -25,11 +27,10 @@ export default function useLocalFile(key: string): [File | null, (newFile: File 
       window.localStorage.removeItem(key)
       return
     }
-    base64Encode(newFile).then(encodedFile => {
+    base64Encode(newFile).then((encodedFile) => {
       window.localStorage.setItem(key, encodedFile)
       readFromStorage()
     })
-    
   }
 
   return [stateFile, setValue]
@@ -38,14 +39,16 @@ export default function useLocalFile(key: string): [File | null, (newFile: File 
 function base64Encode(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-    reader.onload = () => { resolve(reader.result?.toString() || "") }
+    reader.onload = () => {
+      resolve(reader.result?.toString() || "")
+    }
     reader.onerror = reject
     reader.readAsDataURL(file)
   })
 }
 
 async function base64Decode(base64: string): Promise<File> {
-  const res: Response = await fetch(base64);
-  const blob: Blob = await res.blob();
-  return new File([blob], "image.png", { type: 'image/png' });
+  const res: Response = await fetch(base64)
+  const blob: Blob = await res.blob()
+  return new File([blob], "image.png", { type: "image/png" })
 }

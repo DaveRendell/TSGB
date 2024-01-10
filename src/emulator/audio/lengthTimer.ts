@@ -1,6 +1,6 @@
 type ChannelStop = () => void
 
-// Roughly equal to 4.2MHz clock speed / 256Hz 
+// Roughly equal to 4.2MHz clock speed / 256Hz
 const LENGTH_TIMER_TICK = 0x4000
 
 /**
@@ -31,12 +31,18 @@ export class LengthTimer {
     }
   }
 
-  enable() { this.enabled = true }
-  disable() { this.enabled = false }
+  enable() {
+    this.enabled = true
+  }
+  disable() {
+    this.enabled = false
+  }
 
   setTimer(length: number) {
     this.timer = length
   }
 
-  resetClock() { this.clock = 0 }
+  resetClock() {
+    this.clock = 0
+  }
 }

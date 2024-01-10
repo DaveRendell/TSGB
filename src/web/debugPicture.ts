@@ -1,5 +1,5 @@
-import CPU from "../emulator/cpu/cpu";
-import Memory from "../emulator/memory/memoryMap";
+import CPU from "../emulator/cpu/cpu"
+import Memory from "../emulator/memory/memoryMap"
 
 const COLOURS = [
   [255, 255, 255],
@@ -35,7 +35,9 @@ export default class PPU {
 
   printTileSet(canvas: HTMLCanvasElement): void {
     const context = canvas.getContext("2d")
-    if (!context) { throw new Error("No canvas context") }
+    if (!context) {
+      throw new Error("No canvas context")
+    }
     canvas.width = 128
     canvas.height = 192
     const imageData = context.createImageData(128, 192)
@@ -44,7 +46,7 @@ export default class PPU {
     // 16 x 24 tiles
     // 1 row = 2 bytes. One tile = 16 bytes?
 
-    for (let tile = 0; tile < 16*24; tile++) {
+    for (let tile = 0; tile < 16 * 24; tile++) {
       const tileBaseAddress = baseAddress + 16 * tile
       const baseX = 8 * (tile % 16)
       const baseY = 8 * (tile >> 4)
@@ -72,7 +74,9 @@ export default class PPU {
 
   printTileset0(canvas: HTMLCanvasElement): void {
     const context = canvas.getContext("2d")
-    if (!context) { throw new Error("No canvas context") }
+    if (!context) {
+      throw new Error("No canvas context")
+    }
     canvas.width = 128
     canvas.height = 128
     const imageData = context.createImageData(128, 192)
@@ -81,11 +85,10 @@ export default class PPU {
       const baseX = (i & 0b1111) << 3
       const baseY = (i >> 4) << 3
       for (let row = 0; row < 8; row++) {
-        const rowData = this.memory.vram.tileset0(i, row)
-          .map(p => COLOURS[p])
-        const basePixelNumber = (128 * (baseY + row)) + baseX
+        const rowData = this.memory.vram.tileset0(i, row).map((p) => COLOURS[p])
+        const basePixelNumber = 128 * (baseY + row) + baseX
         for (let pixel = 0; pixel < 8; pixel++) {
-          const colour = rowData[pixel] 
+          const colour = rowData[pixel]
           const pixelNumber = basePixelNumber + pixel
           imageData.data[4 * pixelNumber + 0] = colour[0]
           imageData.data[4 * pixelNumber + 1] = colour[1]
@@ -100,7 +103,9 @@ export default class PPU {
 
   printTileset1(canvas: HTMLCanvasElement): void {
     const context = canvas.getContext("2d")
-    if (!context) { throw new Error("No canvas context") }
+    if (!context) {
+      throw new Error("No canvas context")
+    }
     canvas.width = 128
     canvas.height = 128
     const imageData = context.createImageData(128, 192)
@@ -109,11 +114,10 @@ export default class PPU {
       const baseX = (i & 0b1111) << 3
       const baseY = (i >> 4) << 3
       for (let row = 0; row < 8; row++) {
-        const rowData = this.memory.vram.tileset1(i, row)
-          .map(p => COLOURS[p])
-        const basePixelNumber = (128 * (baseY + row)) + baseX
+        const rowData = this.memory.vram.tileset1(i, row).map((p) => COLOURS[p])
+        const basePixelNumber = 128 * (baseY + row) + baseX
         for (let pixel = 0; pixel < 8; pixel++) {
-          const colour = rowData[pixel] 
+          const colour = rowData[pixel]
           const pixelNumber = basePixelNumber + pixel
           imageData.data[4 * pixelNumber + 0] = colour[0]
           imageData.data[4 * pixelNumber + 1] = colour[1]
@@ -126,10 +130,14 @@ export default class PPU {
     context.putImageData(imageData, 0, 0)
   }
 
-  printBackgroundLayer(canvas: HTMLCanvasElement, layer: "window" | "background"): void {
-    const tilemapId = layer == "background"
-      ? this.memory.registers.lcdControl.backgroundTilemap
-      : this.memory.registers.lcdControl.windowTilemap
+  printBackgroundLayer(
+    canvas: HTMLCanvasElement,
+    layer: "window" | "background",
+  ): void {
+    const tilemapId =
+      layer == "background"
+        ? this.memory.registers.lcdControl.backgroundTilemap
+        : this.memory.registers.lcdControl.windowTilemap
     const tileset = this.memory.registers.lcdControl.tileDataArea
     const pallete = this.memory.registers.backgroundPallete.map
 
@@ -142,10 +150,11 @@ export default class PPU {
     for (let y = 0; y < 32; y++) {
       const rowMap: number[] = []
       for (let x = 0; x < 32; x++) {
-        let tileNumber = (32 * y) + x
-        let tileId = tilemapId == 0
-          ? this.memory.vram.tilemap0(tileNumber)
-          : this.memory.vram.tilemap1(tileNumber)
+        let tileNumber = 32 * y + x
+        let tileId =
+          tilemapId == 0
+            ? this.memory.vram.tilemap0(tileNumber)
+            : this.memory.vram.tilemap1(tileNumber)
 
         tiles.add(tileId)
         rowMap.push(tileId)
@@ -159,25 +168,27 @@ export default class PPU {
       row.forEach((tileId, x) => {
         const tileData = tileImages[tileId]
         context.putImageData(tileData, x * 8, y * 8)
-      }))
+      }),
+    )
   }
 
   getTileData(
     tileIds: Set<number>,
     context: CanvasRenderingContext2D,
     tileset: number,
-    pallete: number[]
+    pallete: number[],
   ): ImageData[] {
     const tileImages: ImageData[] = []
-    tileIds.forEach(tileId => {
+    tileIds.forEach((tileId) => {
       const tileData = context.createImageData(8, 8)
       for (let row = 0; row < 8; row++) {
-        let rowData = tileset == 1
-          ? this.memory.vram.tileset0(tileId, row)
-          : this.memory.vram.tileset1(tileId, row)
-        
+        let rowData =
+          tileset == 1
+            ? this.memory.vram.tileset0(tileId, row)
+            : this.memory.vram.tileset1(tileId, row)
+
         for (let pixel = 0; pixel < 8; pixel++) {
-          const baseIndex = ((row * 8 + pixel) * 4)
+          const baseIndex = (row * 8 + pixel) * 4
           const colour = COLOURS[pallete[rowData[pixel]]]
           tileData.data[baseIndex + 0] = colour[0]
           tileData.data[baseIndex + 1] = colour[1]
@@ -200,32 +211,40 @@ export default class PPU {
 
     const tilesP0 = new Set(
       sprites
-        .filter(sprite => sprite.pallette == 0)
-        .map(sprite => sprite.tile))
+        .filter((sprite) => sprite.pallette == 0)
+        .map((sprite) => sprite.tile),
+    )
     const tilesP1 = new Set(
       sprites
-        .filter(sprite => sprite.pallette == 1)
-        .map(sprite => sprite.tile))
+        .filter((sprite) => sprite.pallette == 1)
+        .map((sprite) => sprite.tile),
+    )
     const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0)
     const tileImagesP1 = this.getTileData(tilesP1, context, 1, pallette1)
 
-    sprites.filter(sprite => sprite.priority).forEach(sprite => {
-      const tileData = sprite.pallette == 0
-        ? tileImagesP0[sprite.tile]
-        : tileImagesP1[sprite.tile]
-      context.putImageData(tileData, sprite.x - 8, sprite.y - 16)
-    })
-    sprites.filter(sprite => !sprite.priority).forEach(sprite => {
-      const tileData = sprite.pallette == 0
-        ? tileImagesP0[sprite.tile]
-        : tileImagesP1[sprite.tile]
-      context.putImageData(tileData, sprite.x - 8, sprite.y - 16, )
-    })
+    sprites
+      .filter((sprite) => sprite.priority)
+      .forEach((sprite) => {
+        const tileData =
+          sprite.pallette == 0
+            ? tileImagesP0[sprite.tile]
+            : tileImagesP1[sprite.tile]
+        context.putImageData(tileData, sprite.x - 8, sprite.y - 16)
+      })
+    sprites
+      .filter((sprite) => !sprite.priority)
+      .forEach((sprite) => {
+        const tileData =
+          sprite.pallette == 0
+            ? tileImagesP0[sprite.tile]
+            : tileImagesP1[sprite.tile]
+        context.putImageData(tileData, sprite.x - 8, sprite.y - 16)
+      })
     context.beginPath()
-      context.lineWidth = 1
-      context.strokeStyle = "red"
-      context.rect(0, 0, 160, 144)
-      context.stroke()
+    context.lineWidth = 1
+    context.strokeStyle = "red"
+    context.rect(0, 0, 160, 144)
+    context.stroke()
   }
 
   getSpriteInfo(): Sprite[] {
@@ -233,7 +252,7 @@ export default class PPU {
   }
 
   backgroundPallete(): number[][] {
-    const backgroundPalletByte = this.memory.at(0xFF47).value
+    const backgroundPalletByte = this.memory.at(0xff47).value
 
     return [
       COLOURS[(backgroundPalletByte >> 0) & 3],

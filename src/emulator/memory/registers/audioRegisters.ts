@@ -1,11 +1,11 @@
 // Reference:
 // https://gbdev.io/pandocs/Audio_Registers.html#audio-registers
 
-import AudioProcessor from "../../audio/audioProcessor";
-import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
-import { NoiseChannel } from "../../audio/noiseChannel";
-import PulseChannel from "../../audio/pulseChannel";
-import WaveChannel from "../../audio/waveChannel";
+import AudioProcessor from "../../audio/audioProcessor"
+import { ByteRef, GetSetByteRef } from "../../refs/byteRef"
+import { NoiseChannel } from "../../audio/noiseChannel"
+import PulseChannel from "../../audio/pulseChannel"
+import WaveChannel from "../../audio/waveChannel"
 
 export class AudioMasterControlRegister implements ByteRef {
   masterSwitch = false
@@ -16,17 +16,22 @@ export class AudioMasterControlRegister implements ByteRef {
   audioProcessor: AudioProcessor
 
   get value(): number {
-    return (this.masterSwitch ? 0x80 : 0)
-         + (this.channel4On ? 0x8 : 0)
-         + (this.channel3On ? 0x4 : 0)
-         + (this.channel2On ? 0x2 : 0)
-         + (this.channel1On ? 0x1 : 0)
+    return (
+      (this.masterSwitch ? 0x80 : 0) +
+      (this.channel4On ? 0x8 : 0) +
+      (this.channel3On ? 0x4 : 0) +
+      (this.channel2On ? 0x2 : 0) +
+      (this.channel1On ? 0x1 : 0)
+    )
   }
 
   set value(value: number) {
     this.masterSwitch = (value & 0x80) > 0
     if (this.audioProcessor) {
-      this.audioProcessor.masterControl.gain.setValueAtTime(this.masterSwitch ? 1 : 0, this.audioProcessor.audioContext.currentTime)
+      this.audioProcessor.masterControl.gain.setValueAtTime(
+        this.masterSwitch ? 1 : 0,
+        this.audioProcessor.audioContext.currentTime,
+      )
     }
   }
 }
@@ -40,10 +45,12 @@ export class MasterVolumeVinRegister implements ByteRef {
   updateVolume = (volume: number) => {}
 
   get value() {
-    return (this.vinLeft ? 0x80 : 0)
-         + (this.leftVolume << 4)
-         + (this.vinRight ? 0x8 : 0)
-         + (this.rightVolume)
+    return (
+      (this.vinLeft ? 0x80 : 0) +
+      (this.leftVolume << 4) +
+      (this.vinRight ? 0x8 : 0) +
+      this.rightVolume
+    )
   }
 
   set value(value) {
@@ -83,7 +90,7 @@ export class PulseChannelRegisters {
   period = 0
   volume = 0
   triggered = false
-  trigger: () => void = () => {  }
+  trigger: () => void = () => {}
 
   nr0: ByteRef
   nr1: ByteRef
@@ -98,19 +105,25 @@ export class PulseChannelRegisters {
 
     this.nr0 = {
       get value(): number {
-        return (self.periodSweep.pace << 4)
-             + (self.periodSweep.step)
-             + (self.periodSweep.direction == 1 ? 0x8 : 0)
+        return (
+          (self.periodSweep.pace << 4) +
+          self.periodSweep.step +
+          (self.periodSweep.direction == 1 ? 0x8 : 0)
+        )
       },
       set value(value: number) {
         self.periodSweep.pace = value >> 4
         self.periodSweep.step = value & 0x7
         self.periodSweep.direction = (value & 0x8) > 0 ? -1 : 1
         if (self.channel) {
-          self.channel.sweep.setSweep(self.periodSweep.direction, self.periodSweep.pace, self.periodSweep.step)
+          self.channel.sweep.setSweep(
+            self.periodSweep.direction,
+            self.periodSweep.pace,
+            self.periodSweep.step,
+          )
           self.period = self.channel.period
         }
-      }
+      },
     }
 
     this.nr1 = {
@@ -123,14 +136,16 @@ export class PulseChannelRegisters {
         if (self.channel) {
           self.channel.timer.setTimer(value & 0x37)
         }
-      }
+      },
     }
 
     this.nr2 = {
       get value(): number {
-        return (self.volume << 4)
-          + (self.volumeEnvelope.pace)
-          + (self.volumeEnvelope.direction == 1 ? 0x8 : 0)
+        return (
+          (self.volume << 4) +
+          self.volumeEnvelope.pace +
+          (self.volumeEnvelope.direction == 1 ? 0x8 : 0)
+        )
       },
       set value(value: number) {
         self.volume = value >> 4
@@ -140,32 +155,35 @@ export class PulseChannelRegisters {
           self.channel.setVolume(self.volume)
           self.channel.envelope.setEnvelope(
             self.volumeEnvelope.direction,
-            self.volumeEnvelope.pace)
+            self.volumeEnvelope.pace,
+          )
         }
-      }
+      },
     }
-    
+
     this.nr3 = {
       get value(): number {
-        return self.period & 0xFF
+        return self.period & 0xff
       },
       set value(value: number) {
-        self.period &= 0xF00
+        self.period &= 0xf00
         self.period |= value
         if (self.channel) {
           self.channel.setPeriod(self.period)
         }
-      }
+      },
     }
 
     this.nr4 = {
       get value(): number {
-        return (self.lengthEnabled ? 0x40 : 0)
-          + (self.triggered ? 0x80 : 0)
-          + (self.period >> 8)
+        return (
+          (self.lengthEnabled ? 0x40 : 0) +
+          (self.triggered ? 0x80 : 0) +
+          (self.period >> 8)
+        )
       },
       set value(value: number) {
-        self.period &= 0xFF
+        self.period &= 0xff
         self.period |= (value & 0x7) << 8
         self.lengthEnabled = (value & 0x40) > 0
 
@@ -176,20 +194,27 @@ export class PulseChannelRegisters {
 
         if (self.channel) {
           self.channel.setPeriod(self.period)
-          if (self.lengthEnabled) { self.channel.timer.enable() }
-          else { self.channel.timer.disable() }
+          if (self.lengthEnabled) {
+            self.channel.timer.enable()
+          } else {
+            self.channel.timer.disable()
+          }
           if (value & 0x80) {
             self.channel.start()
           }
         }
-      }
+      },
     }
   }
 
   updateVolume(newVolume: number) {
     this.volume = newVolume
-    if (this.volume < 0) { this.volume = 0 }
-    if (this.volume > 15) { this.volume = 15 }
+    if (this.volume < 0) {
+      this.volume = 0
+    }
+    if (this.volume > 15) {
+      this.volume = 15
+    }
   }
 }
 
@@ -200,7 +225,7 @@ export class WaveChannelRegisters {
   volumeSetting = 0
   period = 0
   triggered = false
-  trigger: () => void = () => {  }
+  trigger: () => void = () => {}
   samples: Float32Array = Float32Array.from(new Array(32).fill(0))
 
   nr0: ByteRef
@@ -223,7 +248,7 @@ export class WaveChannelRegisters {
         if (!self.enabled && self.channel) {
           self.channel.stop()
         }
-      }
+      },
     }
     this.nr1 = {
       get value() {
@@ -234,34 +259,36 @@ export class WaveChannelRegisters {
         if (self.channel) {
           self.channel.timer.setTimer(value)
         }
-      }
+      },
     }
-    this.nr2 = {
+    ;(this.nr2 = {
       get value() {
         return self.volumeSetting << 5
       },
       set value(value) {
         self.volumeSetting = (value >> 5) & 0x3
         self.channel.setVolume(self.volumeSetting)
-      }
-    },
-    this.nr3 = {
-      get value(): number {
-        return self.period & 0xFF
       },
-      set value(value: number) {
-        self.period &= 0xF00
-        self.period |= value
-      }
-    }
+    }),
+      (this.nr3 = {
+        get value(): number {
+          return self.period & 0xff
+        },
+        set value(value: number) {
+          self.period &= 0xf00
+          self.period |= value
+        },
+      })
     this.nr4 = {
       get value(): number {
-        return (self.lengthEnabled ? 0x40 : 0)
-          + (self.triggered ? 0x80 : 0)
-          + (self.period >> 8)
+        return (
+          (self.lengthEnabled ? 0x40 : 0) +
+          (self.triggered ? 0x80 : 0) +
+          (self.period >> 8)
+        )
       },
       set value(value: number) {
-        self.period &= 0xFF
+        self.period &= 0xff
         self.period |= (value & 0x7) << 8
         self.lengthEnabled = (value & 0x40) > 0
 
@@ -273,13 +300,14 @@ export class WaveChannelRegisters {
         if (self.channel) {
           if (self.lengthEnabled) {
             self.channel.timer.enable()
+          } else {
+            self.channel.timer.disable()
           }
-          else { self.channel.timer.disable() }
           if (value & 0x80) {
             self.channel.start()
           }
         }
-      }
+      },
     }
   }
 
@@ -292,8 +320,8 @@ export class WaveChannelRegisters {
       },
       (value) => {
         this.samples[lowIndex] = (value >> 4) / 8 - 1
-        this.samples[highIndex] = (value & 0x0F) / 8 - 1
-      }
+        this.samples[highIndex] = (value & 0x0f) / 8 - 1
+      },
     )
   }
 }
@@ -311,7 +339,7 @@ export class NoiseChannelRegisters {
   clockDivider = 0
 
   channel: NoiseChannel
-  
+
   nr1: ByteRef
   nr2: ByteRef
   nr3: ByteRef
@@ -320,19 +348,23 @@ export class NoiseChannelRegisters {
   constructor() {
     const self = this
     this.nr1 = {
-      get value() { return self.lengthTimer },
+      get value() {
+        return self.lengthTimer
+      },
       set value(value) {
-        self.lengthTimer = value & 0x3F
+        self.lengthTimer = value & 0x3f
         if (self.channel) {
           self.channel.timer.setTimer(self.lengthTimer)
         }
-      }
+      },
     }
     this.nr2 = {
       get value(): number {
-        return (self.volume << 4)
-          + (self.volumeEnvelope.pace)
-          + (self.volumeEnvelope.direction == 1 ? 0x8 : 0)
+        return (
+          (self.volume << 4) +
+          self.volumeEnvelope.pace +
+          (self.volumeEnvelope.direction == 1 ? 0x8 : 0)
+        )
       },
       set value(value: number) {
         self.volume = value >> 4
@@ -342,30 +374,31 @@ export class NoiseChannelRegisters {
           self.channel.setVolume(self.volume)
           self.channel.envelope.setEnvelope(
             self.volumeEnvelope.direction,
-            self.volumeEnvelope.pace)
+            self.volumeEnvelope.pace,
+          )
         }
-      }
+      },
     }
     this.nr3 = {
       get value() {
-        return (self.clockShift << 4)
-          + (self.lfsrMode << 3)
-          + (self.clockDivider)
+        return (self.clockShift << 4) + (self.lfsrMode << 3) + self.clockDivider
       },
       set value(value) {
-        self.clockShift = (value >> 4) & 0xF
+        self.clockShift = (value >> 4) & 0xf
         self.lfsrMode = (value >> 3) & 1
         self.clockDivider = value & 0x7
-        if (self.clockDivider == 0) { self.clockDivider = 0.5 }
+        if (self.clockDivider == 0) {
+          self.clockDivider = 0.5
+        }
         if (self.channel) {
           self.channel.setMode(self.lfsrMode)
           self.channel.setSampleRate(self.clockDivider, self.clockShift)
         }
-      }
+      },
     }
     this.nr4 = {
       get value(): number {
-        return (self.lengthEnabled ? 0x40 : 0)
+        return self.lengthEnabled ? 0x40 : 0
       },
       set value(value: number) {
         self.lengthEnabled = (value & 0x40) > 0
@@ -380,7 +413,7 @@ export class NoiseChannelRegisters {
             self.channel.start()
           }
         }
-      }
+      },
     }
   }
 }

@@ -34,5 +34,7 @@ export class PeriodSweep {
     this.step = step
   }
 
-  resetClock() { this.clock = 0 }
+  resetClock() {
+    this.clock = 0
+  }
 }

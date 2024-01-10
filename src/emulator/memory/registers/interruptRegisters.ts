@@ -1,6 +1,6 @@
 // Reference: https://gbdev.io/pandocs/Interrupts.html
 
-import { ByteRef } from "../../refs/byteRef";
+import { ByteRef } from "../../refs/byteRef"
 
 export enum Interrupt {
   VBlank,
@@ -11,15 +11,22 @@ export enum Interrupt {
 }
 
 export class InterruptRegister implements ByteRef {
-  private requested: Record<Interrupt, boolean>
-    = [false, false, false, false, false]
+  private requested: Record<Interrupt, boolean> = [
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]
 
   get value(): number {
-    return (this.requested[Interrupt.Joypad] ? 0x10 : 0)
-         + (this.requested[Interrupt.Serial] ? 0x8 : 0)
-         + (this.requested[Interrupt.Timer] ? 0x4 : 0)
-         + (this.requested[Interrupt.LCD] ? 0x2 : 0)
-         + (this.requested[Interrupt.VBlank] ? 0x1 : 0)
+    return (
+      (this.requested[Interrupt.Joypad] ? 0x10 : 0) +
+      (this.requested[Interrupt.Serial] ? 0x8 : 0) +
+      (this.requested[Interrupt.Timer] ? 0x4 : 0) +
+      (this.requested[Interrupt.LCD] ? 0x2 : 0) +
+      (this.requested[Interrupt.VBlank] ? 0x1 : 0)
+    )
   }
 
   set value(value: number) {
@@ -40,15 +47,22 @@ export class InterruptRegister implements ByteRef {
 }
 
 export class InterruptEnabledRegister implements ByteRef {
-  private enabled: Record<Interrupt, boolean>
-    = [false, false, false, false, false]
+  private enabled: Record<Interrupt, boolean> = [
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]
 
   get value(): number {
-    return (this.enabled[Interrupt.Joypad] ? 0x10 : 0)
-         + (this.enabled[Interrupt.Serial] ? 0x8 : 0)
-         + (this.enabled[Interrupt.Timer] ? 0x4 : 0)
-         + (this.enabled[Interrupt.LCD] ? 0x2 : 0)
-         + (this.enabled[Interrupt.VBlank] ? 0x1 : 0)
+    return (
+      (this.enabled[Interrupt.Joypad] ? 0x10 : 0) +
+      (this.enabled[Interrupt.Serial] ? 0x8 : 0) +
+      (this.enabled[Interrupt.Timer] ? 0x4 : 0) +
+      (this.enabled[Interrupt.LCD] ? 0x2 : 0) +
+      (this.enabled[Interrupt.VBlank] ? 0x1 : 0)
+    )
   }
 
   set value(value: number) {

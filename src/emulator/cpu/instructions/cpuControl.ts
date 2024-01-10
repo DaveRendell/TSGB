@@ -1,17 +1,21 @@
-import { Instruction } from "../instruction";
+import { Instruction } from "../instruction"
 
 export const disableInterrupts: Instruction = {
-  execute: (cpu) => { cpu.interruptsEnabled = false },
+  execute: (cpu) => {
+    cpu.interruptsEnabled = false
+  },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "DI"
+  description: () => "DI",
 }
 
 export const enableInterrupts: Instruction = {
-  execute: (cpu) => { cpu.interruptsEnabled = true },
+  execute: (cpu) => {
+    cpu.interruptsEnabled = true
+  },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "EI"
+  description: () => "EI",
 }
 
 export const stop: Instruction = {
@@ -19,11 +23,11 @@ export const stop: Instruction = {
     cpu.isStopped = true
     // TODO what does this actually do?
 
-    cpu.memory.at(0xFF04).value = 0
+    cpu.memory.at(0xff04).value = 0
   },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "STOP"
+  description: () => "STOP",
 }
 
 export const scf: Instruction = {
@@ -34,16 +38,16 @@ export const scf: Instruction = {
   },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "SCF"
+  description: () => "SCF",
 }
 
 export const ccf: Instruction = {
-  execute(cpu) {    
+  execute(cpu) {
     cpu.registers.F.operation = false
     cpu.registers.F.halfCarry = false
     cpu.registers.F.carry = !cpu.registers.F.carry
   },
   cycles: 4,
   parameterBytes: 0,
-  description: () => "CCF"
+  description: () => "CCF",
 }

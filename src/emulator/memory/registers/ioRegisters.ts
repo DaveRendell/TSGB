@@ -1,10 +1,20 @@
 import { ByteRef, ConstantByteRef, GenericByteRef } from "../../refs/byteRef"
-import { AudioMasterControlRegister, MasterVolumeVinRegister, NoiseChannelRegisters, PulseChannelRegisters, WaveChannelRegisters } from "./audioRegisters"
+import {
+  AudioMasterControlRegister,
+  MasterVolumeVinRegister,
+  NoiseChannelRegisters,
+  PulseChannelRegisters,
+  WaveChannelRegisters,
+} from "./audioRegisters"
 import { BootRomRegister } from "./bootRomRegister"
 import { DmaTransferRegister } from "./dmaTransferRegister"
 import { InterruptRegister } from "./interruptRegisters"
 import { JoypadRegister } from "./joypadRegister"
-import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./lcdRegisters"
+import {
+  LcdControlRegister,
+  LcdStatusRegister,
+  PalletteRegister,
+} from "./lcdRegisters"
 import { DividerRegister, TimerControlRegister } from "./timerRegisters"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
@@ -40,66 +50,66 @@ export class IoRegisters {
 
   bootRom = new BootRomRegister()
 
-  private data: { [address: number]: ByteRef } = [] 
+  private data: { [address: number]: ByteRef } = []
 
   constructor() {
-    this.data[0xFF00] = this.joypad
+    this.data[0xff00] = this.joypad
 
     // Timer
-    this.data[0xFF04] = this.divider
-    this.data[0xFF05] = this.timerCounter
-    this.data[0xFF06] = this.timerModulo
-    this.data[0xFF07] = this.timerControl
+    this.data[0xff04] = this.divider
+    this.data[0xff05] = this.timerCounter
+    this.data[0xff06] = this.timerModulo
+    this.data[0xff07] = this.timerControl
 
-    this.data[0xFF0F] = this.interrupts
+    this.data[0xff0f] = this.interrupts
 
     // Audio Channel 1 (Pulse 1)
-    this.data[0xFF10] = this.channel1.nr0
-    this.data[0xFF11] = this.channel1.nr1
-    this.data[0xFF12] = this.channel1.nr2
-    this.data[0xFF13] = this.channel1.nr3
-    this.data[0xFF14] = this.channel1.nr4
+    this.data[0xff10] = this.channel1.nr0
+    this.data[0xff11] = this.channel1.nr1
+    this.data[0xff12] = this.channel1.nr2
+    this.data[0xff13] = this.channel1.nr3
+    this.data[0xff14] = this.channel1.nr4
     // Audio Channel 2 (Pulse 2)
-    this.data[0xFF16] = this.channel2.nr1
-    this.data[0xFF17] = this.channel2.nr2
-    this.data[0xFF18] = this.channel2.nr3
-    this.data[0xFF19] = this.channel2.nr4
+    this.data[0xff16] = this.channel2.nr1
+    this.data[0xff17] = this.channel2.nr2
+    this.data[0xff18] = this.channel2.nr3
+    this.data[0xff19] = this.channel2.nr4
     // Audio Channel 3 (Wave)
-    this.data[0xFF1A] = this.channel3.nr0
-    this.data[0xFF1B] = this.channel3.nr1
-    this.data[0xFF1C] = this.channel3.nr2
-    this.data[0xFF1D] = this.channel3.nr3
-    this.data[0xFF1E] = this.channel3.nr4
+    this.data[0xff1a] = this.channel3.nr0
+    this.data[0xff1b] = this.channel3.nr1
+    this.data[0xff1c] = this.channel3.nr2
+    this.data[0xff1d] = this.channel3.nr3
+    this.data[0xff1e] = this.channel3.nr4
     for (let i = 0; i <= 16; i++) {
-      this.data[0xFF30 + i] = this.channel3.sampleByte(i)
+      this.data[0xff30 + i] = this.channel3.sampleByte(i)
     }
     // Audio Channel 4 (Noise)
-    this.data[0xFF20] = this.channel4.nr1
-    this.data[0xFF21] = this.channel4.nr2
-    this.data[0xFF22] = this.channel4.nr3
-    this.data[0xFF23] = this.channel4.nr4
+    this.data[0xff20] = this.channel4.nr1
+    this.data[0xff21] = this.channel4.nr2
+    this.data[0xff22] = this.channel4.nr3
+    this.data[0xff23] = this.channel4.nr4
 
     // Master Audio
-    this.data[0xFF25] = this.masterVolumeVin
-    this.data[0xFF26] = this.audioMasterControl
+    this.data[0xff25] = this.masterVolumeVin
+    this.data[0xff26] = this.audioMasterControl
     // TODO: this.data[0xFF24] panning
     // TODO: this.data[0xFF25] more panning
 
     // Graphics
-    this.data[0xFF40] = this.lcdControl
-    this.data[0xFF41] = this.lcdStatus
-    this.data[0xFF42] = this.scrollY
-    this.data[0xFF43] = this.scrollX
-    this.data[0xFF44] = this.scanline
-    this.data[0xFF45] = this.scanlineCoincidence
-    this.data[0xFF46] = this.dmaTransfer
-    this.data[0xFF47] = this.backgroundPallete
-    this.data[0xFF48] = this.objectPallete0
-    this.data[0xFF49] = this.objectPallete1
-    this.data[0xFF4A] = this.windowY
-    this.data[0xFF4B] = this.windowX
+    this.data[0xff40] = this.lcdControl
+    this.data[0xff41] = this.lcdStatus
+    this.data[0xff42] = this.scrollY
+    this.data[0xff43] = this.scrollX
+    this.data[0xff44] = this.scanline
+    this.data[0xff45] = this.scanlineCoincidence
+    this.data[0xff46] = this.dmaTransfer
+    this.data[0xff47] = this.backgroundPallete
+    this.data[0xff48] = this.objectPallete0
+    this.data[0xff49] = this.objectPallete1
+    this.data[0xff4a] = this.windowY
+    this.data[0xff4b] = this.windowX
 
-    this.data[0xFF50] = this.bootRom
+    this.data[0xff50] = this.bootRom
   }
 
   at(address: number): ByteRef {
