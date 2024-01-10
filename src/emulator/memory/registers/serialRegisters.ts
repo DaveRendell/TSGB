@@ -8,6 +8,8 @@ export default class SerialRegisters {
   transferEnabled: boolean = false
   isPrimary: boolean = false
 
+  sendByte: (_: number) => void
+
   interruptRegister: InterruptRegister
 
   serialDataRegister: ByteRef
@@ -15,13 +17,14 @@ export default class SerialRegisters {
 
   constructor(interruptRegister: InterruptRegister) {
     this.interruptRegister = interruptRegister
+    this.sendByte = () => {}
     const self = this
     this.serialDataRegister = {
       get byte() { return self.data },
       set byte(value) {
         self.data = value
         if (!self.isPrimary && self.transferEnabled) {
-          this.sendByte(value)
+          self.sendByte(value)
         }
       }
     }
@@ -33,7 +36,7 @@ export default class SerialRegisters {
         self.transferEnabled = (value & 0x80) > 0
         self.isPrimary = (value & 1) > 0
         if (self.transferEnabled) {
-          this.sendByte(self.data)
+          self.sendByte(self.data)
           if (self.isPrimary && self.lastReceivedByte) {
             self.data = self.lastReceivedByte
             this.lastReceivedByte = undefined
@@ -51,12 +54,10 @@ export default class SerialRegisters {
       this.lastReceivedByte = undefined
       this.transferEnabled = false
       this.interruptRegister.setInterrupt(Interrupt.Serial)
-      
+
       if (this.isPrimary) {
         this.sendByte(this.data)
       }
     }
   }
-
-  sendByte = (_: number) => {}
 }

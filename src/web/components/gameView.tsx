@@ -10,6 +10,7 @@ import AudioDebug from "./audioDebug"
 import { Emulator } from "../../emulator/emulator"
 import Settings from "./settings"
 import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
+import SerialPort from "./serialPort"
 
 interface Props {
   emulator: Emulator
@@ -35,7 +36,7 @@ export default function GameView({ emulator, unload }: Props) {
   // emulator.cpu.onInstructionComplete = () => { setToggle(!toggle) }
   emulator.cpu.onError = (e) => setError(e.message)
 
-  const programCounter = emulator.cpu.registers.PC.value
+  const programCounter = emulator.cpu.registers.PC.word
 
   return (
     <main>
@@ -78,6 +79,7 @@ export default function GameView({ emulator, unload }: Props) {
           ),
           Settings: () => <Settings emulator={emulator} />,
           Dashboard: () => <PkmnGen1Dashboard emulator={emulator} />,
+          "Serial port": () => <SerialPort emulator={emulator} />,
           "Debug Graphics": () => (
             <>
               <VramViewer ppu={new PPU(emulator.cpu)} />
