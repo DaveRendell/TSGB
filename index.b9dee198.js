@@ -27176,7 +27176,7 @@ function App() {
         const paletteString = window.localStorage.getItem("monochromePalette");
         if (paletteString) {
             const palette = JSON.parse(paletteString);
-            emulator.screen.colours = palette;
+            emulator.pictureProcessor.colours = palette;
         }
         return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _gameViewDefault.default), {
             emulator: emulator,
@@ -27221,8 +27221,8 @@ var _memoryExplorer = require("./memoryExplorer");
 var _memoryExplorerDefault = parcelHelpers.interopDefault(_memoryExplorer);
 var _cpuController = require("./cpuController");
 var _cpuControllerDefault = parcelHelpers.interopDefault(_cpuController);
-var _ppu = require("../../emulator/ppu");
-var _ppuDefault = parcelHelpers.interopDefault(_ppu);
+var _debugPicture = require("../debugPicture");
+var _debugPictureDefault = parcelHelpers.interopDefault(_debugPicture);
 var _vramViewer = require("./vramViewer");
 var _display = require("./display");
 var _displayDefault = parcelHelpers.interopDefault(_display);
@@ -27260,7 +27260,7 @@ function GameView({ emulator, unload }) {
                 children: "TSGB"
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 43,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27271,7 +27271,7 @@ function GameView({ emulator, unload }) {
                         children: "Run"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 45,
+                        lineNumber: 41,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27279,7 +27279,7 @@ function GameView({ emulator, unload }) {
                         children: "Pause"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 46,
+                        lineNumber: 42,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27287,7 +27287,7 @@ function GameView({ emulator, unload }) {
                         children: "Run frame"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 47,
+                        lineNumber: 43,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27298,13 +27298,13 @@ function GameView({ emulator, unload }) {
                         children: "Unload"
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 48,
+                        lineNumber: 44,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 44,
+                lineNumber: 40,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27316,25 +27316,25 @@ function GameView({ emulator, unload }) {
                             cpu: emulator.cpu
                         }, void 0, false, {
                             fileName: "src/web/components/gameView.tsx",
-                            lineNumber: 52,
+                            lineNumber: 48,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 51,
+                        lineNumber: 47,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _joypadDefault.default), {
                         controller: emulator.controller
                     }, void 0, false, {
                         fileName: "src/web/components/gameView.tsx",
-                        lineNumber: 54,
+                        lineNumber: 50,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 50,
+                lineNumber: 46,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27344,7 +27344,7 @@ function GameView({ emulator, unload }) {
                 ]
             }, void 0, true, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 58,
+                lineNumber: 54,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _tabsDefault.default), {
@@ -27370,11 +27370,11 @@ function GameView({ emulator, unload }) {
                         }, void 0, false, void 0, void 0),
                     "Debug Graphics": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                             children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _vramViewer.VramViewer), {
-                                ppu: new (0, _ppuDefault.default)(emulator.cpu)
+                                ppu: new (0, _debugPictureDefault.default)(emulator.cpu)
                             }, void 0, false, void 0, void 0)
                         }, void 0, false),
                     "Debug Sound": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _audioDebugDefault.default), {
-                            apu: emulator.apu
+                            audioProcessor: emulator.audioProcessor
                         }, void 0, false, void 0, void 0),
                     "Debug Memory": ()=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
                             children: [
@@ -27391,13 +27391,13 @@ function GameView({ emulator, unload }) {
                 }
             }, void 0, false, {
                 fileName: "src/web/components/gameView.tsx",
-                lineNumber: 60,
+                lineNumber: 56,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/web/components/gameView.tsx",
-        lineNumber: 42,
+        lineNumber: 38,
         columnNumber: 11
     }, this);
 }
@@ -27411,7 +27411,7 @@ $RefreshReg$(_c, "GameView");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","../../emulator/ppu":"f2x3M","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","./settings":"e45NW","../gameDashboards/pkmnGen1Dashboard":"5z2Lr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"2PLGd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","./memoryExplorer":"2PLGd","./cpuController":"2xGez","./vramViewer":"e5JD4","./display":"jUUTo","./joypad":"fWSSh","./tabs":"9O6KI","./audioDebug":"bNTZa","./settings":"e45NW","../gameDashboards/pkmnGen1Dashboard":"5z2Lr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../debugPicture":"bVW4M"}],"2PLGd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ef66 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -27663,8 +27663,8 @@ parcelHelpers.export(exports, "default", ()=>MemoryTableRow);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
 var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _instructionHelpers = require("../../emulator/instructions/instructionHelpers");
-var _instruction = require("../../emulator/instruction");
+var _instructionHelpers = require("../../emulator/cpu/instructions/instructionHelpers");
+var _instruction = require("../../emulator/cpu/instructions/instruction");
 var _s = $RefreshSig$();
 function MemoryTableRow({ address, memory, programCounter, breakpoints, toggle }) {
     _s();
@@ -27847,7 +27847,145 @@ $RefreshReg$(_c, "MemoryTableRow");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","../../emulator/instructions/instructionHelpers":"bJjsQ","../../emulator/instruction":"dshpP","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"bJjsQ":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../../emulator/cpu/instructions/instructionHelpers":"gPUvB","../../emulator/cpu/instructions/instruction":"7lvX4"}],"km3Ru":[function(require,module,exports) {
+"use strict";
+var Refresh = require("7422ead32dcc1e6b");
+function debounce(func, delay) {
+    {
+        let timeout = undefined;
+        let lastTime = 0;
+        return function(args) {
+            // Call immediately if last call was more than the delay ago.
+            // Otherwise, set a timeout. This means the first call is fast
+            // (for the common case of a single update), and subsequent updates
+            // are batched.
+            let now = Date.now();
+            if (now - lastTime > delay) {
+                lastTime = now;
+                func.call(null, args);
+            } else {
+                clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    timeout = undefined;
+                    lastTime = Date.now();
+                    func.call(null, args);
+                }, delay);
+            }
+        };
+    }
+}
+var enqueueUpdate = debounce(function() {
+    Refresh.performReactRefresh();
+}, 30);
+// Everthing below is either adapted or copied from
+// https://github.com/facebook/metro/blob/61de16bd1edd7e738dd0311c89555a644023ab2d/packages/metro/src/lib/polyfills/require.js
+// MIT License - Copyright (c) Facebook, Inc. and its affiliates.
+module.exports.prelude = function(module1) {
+    window.$RefreshReg$ = function(type, id) {
+        Refresh.register(type, module1.id + " " + id);
+    };
+    window.$RefreshSig$ = Refresh.createSignatureFunctionForTransform;
+};
+module.exports.postlude = function(module1) {
+    if (isReactRefreshBoundary(module1.exports)) {
+        registerExportsForReactRefresh(module1);
+        if (module1.hot) {
+            module1.hot.dispose(function(data) {
+                if (Refresh.hasUnrecoverableErrors()) window.location.reload();
+                data.prevExports = module1.exports;
+            });
+            module1.hot.accept(function(getParents) {
+                var prevExports = module1.hot.data.prevExports;
+                var nextExports = module1.exports;
+                // Since we just executed the code for it, it's possible
+                // that the new exports make it ineligible for being a boundary.
+                var isNoLongerABoundary = !isReactRefreshBoundary(nextExports);
+                // It can also become ineligible if its exports are incompatible
+                // with the previous exports.
+                // For example, if you add/remove/change exports, we'll want
+                // to re-execute the importing modules, and force those components
+                // to re-render. Similarly, if you convert a class component
+                // to a function, we want to invalidate the boundary.
+                var didInvalidate = shouldInvalidateReactRefreshBoundary(prevExports, nextExports);
+                if (isNoLongerABoundary || didInvalidate) {
+                    // We'll be conservative. The only case in which we won't do a full
+                    // reload is if all parent modules are also refresh boundaries.
+                    // In that case we'll add them to the current queue.
+                    var parents = getParents();
+                    if (parents.length === 0) {
+                        // Looks like we bubbled to the root. Can't recover from that.
+                        window.location.reload();
+                        return;
+                    }
+                    return parents;
+                }
+                enqueueUpdate();
+            });
+        }
+    }
+};
+function isReactRefreshBoundary(exports) {
+    if (Refresh.isLikelyComponentType(exports)) return true;
+    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
+    return false;
+    var hasExports = false;
+    var areAllExportsComponents = true;
+    let isESM = "__esModule" in exports;
+    for(var key in exports){
+        hasExports = true;
+        if (key === "__esModule") continue;
+        var desc = Object.getOwnPropertyDescriptor(exports, key);
+        if (desc && desc.get && !isESM) // Don't invoke getters for CJS as they may have side effects.
+        return false;
+        var exportValue = exports[key];
+        if (!Refresh.isLikelyComponentType(exportValue)) areAllExportsComponents = false;
+    }
+    return hasExports && areAllExportsComponents;
+}
+function shouldInvalidateReactRefreshBoundary(prevExports, nextExports) {
+    var prevSignature = getRefreshBoundarySignature(prevExports);
+    var nextSignature = getRefreshBoundarySignature(nextExports);
+    if (prevSignature.length !== nextSignature.length) return true;
+    for(var i = 0; i < nextSignature.length; i++){
+        if (prevSignature[i] !== nextSignature[i]) return true;
+    }
+    return false;
+}
+// When this signature changes, it's unsafe to stop at this refresh boundary.
+function getRefreshBoundarySignature(exports) {
+    var signature = [];
+    signature.push(Refresh.getFamilyByType(exports));
+    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
+    // (This is important for legacy environments.)
+    return signature;
+    let isESM = "__esModule" in exports;
+    for(var key in exports){
+        if (key === "__esModule") continue;
+        var desc = Object.getOwnPropertyDescriptor(exports, key);
+        if (desc && desc.get && !isESM) continue;
+        var exportValue = exports[key];
+        signature.push(key);
+        signature.push(Refresh.getFamilyByType(exportValue));
+    }
+    return signature;
+}
+function registerExportsForReactRefresh(module1) {
+    var exports = module1.exports, id = module1.id;
+    Refresh.register(exports, id + " %exports%");
+    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
+    // (This is important for legacy environments.)
+    return;
+    let isESM = "__esModule" in exports;
+    for(var key in exports){
+        var desc = Object.getOwnPropertyDescriptor(exports, key);
+        if (desc && desc.get && !isESM) continue;
+        var exportValue = exports[key];
+        var typeID = id + " %exports% " + key;
+        Refresh.register(exportValue, typeID);
+    }
+}
+
+},{"7422ead32dcc1e6b":"786KC"}],"gPUvB":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ByteLocation", ()=>ByteLocation);
@@ -27860,10 +27998,7 @@ parcelHelpers.export(exports, "to2sComplement", ()=>to2sComplement);
 parcelHelpers.export(exports, "from2sComplement", ()=>from2sComplement);
 parcelHelpers.export(exports, "combineBytes", ()=>combineBytes);
 parcelHelpers.export(exports, "splitBytes", ()=>splitBytes);
-parcelHelpers.export(exports, "testBit", ()=>testBit);
-parcelHelpers.export(exports, "setBit", ()=>setBit);
-parcelHelpers.export(exports, "resetBit", ()=>resetBit);
-var _displayHexNumbers = require("../../helpers/displayHexNumbers");
+var _displayHexNumbers = require("../../../helpers/displayHexNumbers");
 var ByteLocation;
 (function(ByteLocation) {
     ByteLocation[ByteLocation["A"] = 0] = "A";
@@ -27998,27 +28133,24 @@ const splitBytes = (input)=>[
         (input & 0xFF00) >> 8,
         input & 0x00FF
     ];
-const testBit = (value, bit)=>value.read() >> bit & 1;
-const setBit = (value, bit)=>value.write(value.read() | 1 << bit);
-const resetBit = (value, bit)=>value.write(value.read() & ~(1 << bit));
 
-},{"../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dshpP":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../helpers/displayHexNumbers":"iSdOS"}],"7lvX4":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "decodeInstruction", ()=>decodeInstruction);
 var _instructionNotFoundError = require("./instructionNotFoundError");
 var _instructionNotFoundErrorDefault = parcelHelpers.interopDefault(_instructionNotFoundError);
-var _arithmetic8Bit = require("./instructions/arithmetic8bit");
-var _cpuControl = require("./instructions/cpuControl");
-var _halt = require("./instructions/halt");
+var _arithmetic8Bit = require("./arithmetic8bit");
+var _cpuControl = require("./cpuControl");
+var _halt = require("./halt");
 var _haltDefault = parcelHelpers.interopDefault(_halt);
-var _instructionHelpers = require("./instructions/instructionHelpers");
-var _jumps = require("./instructions/jumps");
-var _loads = require("./instructions/loads");
-var _nop = require("./instructions/nop");
+var _instructionHelpers = require("./instructionHelpers");
+var _jumps = require("./jumps");
+var _loads = require("./loads");
+var _nop = require("./nop");
 var _nopDefault = parcelHelpers.interopDefault(_nop);
-var _prefixInstructions = require("./instructions/prefixInstructions");
-var _stack = require("./instructions/stack");
+var _prefixInstructions = require("./prefixInstructions");
+var _stack = require("./stack");
 // Prefixed 0x80 = 10000000
 const STATIC_INSTRUCTIONS = {
     0x00: (0, _nopDefault.default),
@@ -28195,18 +28327,493 @@ function decodeInstruction(code, prefixedCode) {
     throw new (0, _instructionNotFoundErrorDefault.default)(code);
 }
 
-},{"./instructionNotFoundError":"fsATl","./instructions/arithmetic8bit":"6fSXq","./instructions/cpuControl":"bM0M4","./instructions/halt":"iH7vu","./instructions/instructionHelpers":"bJjsQ","./instructions/jumps":"7RHU3","./instructions/loads":"8K2py","./instructions/nop":"jvHrF","./instructions/prefixInstructions":"ba3U1","./instructions/stack":"g6QBO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fsATl":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./cpuControl":"YYVqX","./halt":"6tALo","./instructionHelpers":"gPUvB","./jumps":"2OuQU","./loads":"gDZFH","./nop":"aPf9L","./prefixInstructions":"4ZBhi","./stack":"8UqgK","./arithmetic8bit":"8WgRb","./instructionNotFoundError":"02jZE"}],"YYVqX":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _displayHexNumbers = require("../helpers/displayHexNumbers");
-class InstructionNotFoundError extends Error {
-    constructor(code){
-        super("Instruction not found for code " + (0, _displayHexNumbers.valueDisplay)(code));
-    }
-}
-exports.default = InstructionNotFoundError;
+parcelHelpers.export(exports, "disableInterrupts", ()=>disableInterrupts);
+parcelHelpers.export(exports, "enableInterrupts", ()=>enableInterrupts);
+parcelHelpers.export(exports, "stop", ()=>stop);
+parcelHelpers.export(exports, "scf", ()=>scf);
+parcelHelpers.export(exports, "ccf", ()=>ccf);
+const disableInterrupts = {
+    execute: (cpu)=>{
+        cpu.interruptsEnabled = false;
+    },
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"DI"
+};
+const enableInterrupts = {
+    execute: (cpu)=>{
+        cpu.interruptsEnabled = true;
+    },
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"EI"
+};
+const stop = {
+    execute: (cpu)=>{
+        cpu.isStopped = true;
+        // TODO what does this actually do?
+        cpu.memory.at(0xFF04).value = 0;
+    },
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"STOP"
+};
+const scf = {
+    execute (cpu) {
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = false;
+        cpu.registers.F.carry = true;
+    },
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"SCF"
+};
+const ccf = {
+    execute (cpu) {
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = false;
+        cpu.registers.F.carry = !cpu.registers.F.carry;
+    },
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"CCF"
+};
 
-},{"../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6fSXq":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6tALo":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+const halt = {
+    execute: (cpu)=>{
+        cpu.isHalted = true;
+    },
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"HALT"
+};
+exports.default = halt;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2OuQU":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CONDITIONS", ()=>CONDITIONS);
+parcelHelpers.export(exports, "CONDITION_NAMES", ()=>CONDITION_NAMES);
+parcelHelpers.export(exports, "jumpRelative", ()=>jumpRelative);
+parcelHelpers.export(exports, "jump", ()=>jump);
+parcelHelpers.export(exports, "jpHl", ()=>jpHl);
+parcelHelpers.export(exports, "rst", ()=>rst);
+var _displayHexNumbers = require("../../../helpers/displayHexNumbers");
+var _instructionHelpers = require("./instructionHelpers");
+const CONDITIONS = {
+    "Not-Zero": (cpu)=>!cpu.registers.F.zero,
+    "Zero": (cpu)=>cpu.registers.F.zero,
+    "Not-Carry": (cpu)=>!cpu.registers.F.carry,
+    "Carry": (cpu)=>cpu.registers.F.carry,
+    "None": ()=>true
+};
+const CONDITION_NAMES = {
+    "Not-Zero": "NZ",
+    "Zero": "Z",
+    "Not-Carry": "NC",
+    "Carry": "C",
+    "None": ""
+};
+function jumpRelative(condition) {
+    return {
+        execute: (cpu)=>{
+            const jump = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.value);
+            if (CONDITIONS[condition](cpu)) cpu.registers.PC.value += jump;
+        },
+        cycles: 12,
+        parameterBytes: 1,
+        description: ([value])=>`JR${CONDITION_NAMES[condition]} ${(0, _instructionHelpers.from2sComplement)(value)}`
+    };
+}
+function jump(condition) {
+    return {
+        execute: (cpu)=>{
+            const address = cpu.nextWord.value;
+            if (CONDITIONS[condition](cpu)) cpu.registers.PC.value = address;
+        },
+        cycles: 16,
+        parameterBytes: 2,
+        description: ([l, h])=>`JP${CONDITION_NAMES[condition]} ${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
+    };
+}
+const jpHl = {
+    execute (cpu) {
+        cpu.registers.PC.value = cpu.registers.HL.value;
+    },
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"JP HL"
+};
+function rst(address) {
+    return {
+        execute (cpu) {
+            const sp = cpu.registers.SP;
+            const pc = cpu.registers.PC;
+            const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+            cpu.memory.at(--sp.value).value = h;
+            cpu.memory.at(--sp.value).value = l;
+            pc.value = address;
+        },
+        cycles: 16,
+        parameterBytes: 0,
+        description: ()=>`RST ${(0, _displayHexNumbers.addressDisplay)(address)}`
+    };
+}
+
+},{"./instructionHelpers":"gPUvB","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../helpers/displayHexNumbers":"iSdOS"}],"gDZFH":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "load8Bit", ()=>load8Bit);
+parcelHelpers.export(exports, "loadImmediate16BitRegister", ()=>loadImmediate16BitRegister);
+parcelHelpers.export(exports, "loadHlFromSpPlusN", ()=>loadHlFromSpPlusN);
+parcelHelpers.export(exports, "loadStackPointerToAddress", ()=>loadStackPointerToAddress);
+parcelHelpers.export(exports, "loadStackPointerFromHL", ()=>loadStackPointerFromHL);
+var _displayHexNumbers = require("../../../helpers/displayHexNumbers");
+var _instructionHelpers = require("./instructionHelpers");
+const cycleCost = (location)=>{
+    switch(location){
+        case (0, _instructionHelpers.ByteLocation).N:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).M:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).FF_N:
+            return 8;
+        case (0, _instructionHelpers.ByteLocation).FF_C:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).BC:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).DE:
+            return 4;
+        case (0, _instructionHelpers.ByteLocation).NN:
+            return 12;
+    }
+    return 0;
+};
+const getParameterBytes = (location)=>{
+    switch(location){
+        case (0, _instructionHelpers.ByteLocation).N:
+            return 1;
+        case (0, _instructionHelpers.ByteLocation).FF_N:
+            return 1;
+        case (0, _instructionHelpers.ByteLocation).NN:
+            return 2;
+    }
+    return 0;
+};
+const commandName = (hlRegisterAction)=>hlRegisterAction === "increment" ? "LDI" : hlRegisterAction === "decrement" ? "LDD" : "LD";
+const getPointerAction = (hlRegisterAction)=>hlRegisterAction === "increment" ? (hl)=>hl.value++ : hlRegisterAction === "decrement" ? (hl)=>hl.value-- : ()=>{};
+function load8Bit(destinationName, sourceName, hlRegisterAction = "none") {
+    const cycles = 4 + cycleCost(destinationName) + cycleCost(sourceName);
+    const parameterBytes = getParameterBytes(sourceName) + getParameterBytes(destinationName);
+    const pointerAction = getPointerAction(hlRegisterAction);
+    return {
+        execute: (cpu)=>{
+            const destination = (0, _instructionHelpers.getByteRef)(destinationName, cpu);
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            destination.value = source.value;
+            pointerAction(cpu.registers.HL);
+        },
+        cycles,
+        parameterBytes,
+        description: (values)=>`${commandName(hlRegisterAction)} ${(0, _instructionHelpers.describeByteLocation)(destinationName)(values)},${(0, _instructionHelpers.describeByteLocation)(sourceName)(values)}`
+    };
+}
+function loadImmediate16BitRegister(register) {
+    return {
+        execute: (cpu)=>{
+            (0, _instructionHelpers.getWordRef)(register, cpu).value = cpu.nextWord.value;
+        },
+        cycles: 12,
+        parameterBytes: 2,
+        description: ([l, h])=>`LD ${(0, _instructionHelpers.describeWordLocation)(register)([])},${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
+    };
+}
+const loadHlFromSpPlusN = {
+    execute (cpu) {
+        const increment = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.value);
+        const sp = cpu.registers.SP.value;
+        const result = sp + increment;
+        const halfCarry = (sp & 0xF) + (increment & 0xF) !== (result & 0xF);
+        const carry = (sp & 0xFF) + (increment & 0xFF) !== (result & 0xFF);
+        cpu.registers.HL.value = result;
+        cpu.registers.F.zero = false;
+        cpu.registers.F.operation = false;
+        cpu.registers.F.halfCarry = halfCarry;
+        cpu.registers.F.carry = carry;
+    },
+    cycles: 12,
+    parameterBytes: 1,
+    description: ([value])=>`LD HL,SP+${(0, _displayHexNumbers.valueDisplay)(value)}`
+};
+const loadStackPointerToAddress = {
+    execute (cpu) {
+        const address = cpu.nextWord.value;
+        cpu.memory.wordAt(address).value = cpu.registers.SP.value;
+    },
+    cycles: 20,
+    parameterBytes: 2,
+    description: ([l, h])=>`LD (${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}),SP`
+};
+const loadStackPointerFromHL = {
+    execute (cpu) {
+        cpu.registers.SP.value = cpu.registers.HL.value;
+    },
+    cycles: 8,
+    parameterBytes: 0,
+    description: ()=>"LD SP,HL"
+};
+
+},{"./instructionHelpers":"gPUvB","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../helpers/displayHexNumbers":"iSdOS"}],"aPf9L":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+const nop = {
+    execute: (_)=>{},
+    cycles: 4,
+    parameterBytes: 0,
+    description: ()=>"NOP"
+};
+exports.default = nop;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4ZBhi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "testBit", ()=>testBit);
+parcelHelpers.export(exports, "resetBit", ()=>resetBit);
+parcelHelpers.export(exports, "setBit", ()=>setBit);
+parcelHelpers.export(exports, "swap", ()=>swap);
+parcelHelpers.export(exports, "shiftRightLogical", ()=>shiftRightLogical);
+parcelHelpers.export(exports, "shiftLeftArithmetic", ()=>shiftLeftArithmetic);
+parcelHelpers.export(exports, "shiftRightArithmetic", ()=>shiftRightArithmetic);
+var _instructionHelpers = require("./instructionHelpers");
+const testBit = (bit, sourceName)=>{
+    return {
+        execute: (cpu)=>{
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const result = source.value >> bit & 1;
+            cpu.registers.F.zero = result == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = true;
+        },
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8,
+        parameterBytes: 0,
+        description: ()=>`BIT ${bit},${sourceName}`
+    };
+};
+const resetBit = (bit, sourceName)=>{
+    return {
+        execute: (cpu)=>{
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            source.value &= ~(1 << bit);
+        },
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
+        parameterBytes: 0,
+        description: ()=>`RES ${bit},${sourceName}`
+    };
+};
+const setBit = (bit, sourceName)=>{
+    return {
+        execute: (cpu)=>{
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            source.value |= 1 << bit;
+        },
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
+        parameterBytes: 0,
+        description: ()=>`SET ${bit},${sourceName}`
+    };
+};
+const swap = (sourceName)=>{
+    return {
+        execute (cpu) {
+            const byte = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const originalValue = byte.value;
+            const h = (originalValue & 0xF0) >> 4;
+            const l = originalValue & 0x0F;
+            const newValue = (l << 4) + h;
+            byte.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = false;
+        },
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8,
+        parameterBytes: 0,
+        description: ()=>`SWAP ${sourceName}`
+    };
+};
+const shiftRightLogical = (sourceName)=>{
+    return {
+        execute (cpu) {
+            const byte = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const originalValue = byte.value;
+            const newValue = originalValue >> 1;
+            byte.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = (originalValue & 1) > 0;
+        },
+        cycles: 8,
+        parameterBytes: 0,
+        description: ()=>`SRL ${sourceName}`
+    };
+};
+function shiftLeftArithmetic(sourceName) {
+    return {
+        execute (cpu) {
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const oldValue = source.value;
+            const newValue = (oldValue << 1 & 0xFF) + 0;
+            source.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = (oldValue & 0x80) > 0;
+        },
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
+        parameterBytes: 0,
+        description: ()=>`SRA ${sourceName}`
+    };
+}
+function shiftRightArithmetic(sourceName) {
+    return {
+        execute (cpu) {
+            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
+            const oldValue = source.value;
+            const newValue = (oldValue >> 1) + (oldValue & 0x80);
+            source.value = newValue;
+            cpu.registers.F.zero = newValue == 0;
+            cpu.registers.F.operation = false;
+            cpu.registers.F.halfCarry = false;
+            cpu.registers.F.carry = (oldValue & 1) > 0;
+        },
+        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
+        parameterBytes: 0,
+        description: ()=>`SRA ${sourceName}`
+    };
+}
+
+},{"./instructionHelpers":"gPUvB","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8UqgK":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "call", ()=>call);
+parcelHelpers.export(exports, "callF", ()=>callF);
+parcelHelpers.export(exports, "ret", ()=>ret);
+parcelHelpers.export(exports, "reti", ()=>reti);
+parcelHelpers.export(exports, "retF", ()=>retF);
+parcelHelpers.export(exports, "push", ()=>push);
+parcelHelpers.export(exports, "pop", ()=>pop);
+var _displayHexNumbers = require("../../../helpers/displayHexNumbers");
+var _instructionHelpers = require("./instructionHelpers");
+var _jumps = require("./jumps");
+const call = {
+    execute: (cpu)=>{
+        const sp = cpu.registers.SP;
+        const pc = cpu.registers.PC;
+        const address = cpu.nextWord.value;
+        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+        cpu.memory.at(--sp.value).value = h;
+        cpu.memory.at(--sp.value).value = l;
+        pc.value = address;
+    },
+    cycles: 24,
+    parameterBytes: 2,
+    description: ([l, h])=>`CALL ${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
+};
+function callF(condition) {
+    return {
+        execute (cpu) {
+            const address = cpu.nextWord.value;
+            if ((0, _jumps.CONDITIONS)[condition](cpu)) {
+                const sp = cpu.registers.SP;
+                const pc = cpu.registers.PC;
+                const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+                cpu.memory.at(--sp.value).value = h;
+                cpu.memory.at(--sp.value).value = l;
+                pc.value = address;
+            }
+        },
+        cycles: 24,
+        parameterBytes: 2,
+        description: ([l, h])=>`CALL ${(0, _jumps.CONDITION_NAMES)[condition]},${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
+    };
+}
+const ret = {
+    execute: (cpu)=>{
+        const sp = cpu.registers.SP;
+        const pc = cpu.registers.PC;
+        const l = cpu.memory.at(sp.value++).value;
+        const h = cpu.memory.at(sp.value++).value;
+        pc.value = (0, _instructionHelpers.combineBytes)(h, l);
+    },
+    cycles: 16,
+    parameterBytes: 0,
+    description: ()=>"RET"
+};
+const reti = {
+    execute (cpu) {
+        const sp = cpu.registers.SP;
+        const pc = cpu.registers.PC;
+        const l = cpu.memory.at(sp.value++).value;
+        const h = cpu.memory.at(sp.value++).value;
+        pc.value = (0, _instructionHelpers.combineBytes)(h, l);
+        cpu.interruptsEnabled = true;
+    },
+    cycles: 16,
+    parameterBytes: 0,
+    description: ()=>"RETI"
+};
+function retF(condition) {
+    return {
+        execute (cpu) {
+            if ((0, _jumps.CONDITIONS)[condition](cpu)) {
+                const sp = cpu.registers.SP;
+                const pc = cpu.registers.PC;
+                const l = cpu.memory.at(sp.value++).value;
+                const h = cpu.memory.at(sp.value++).value;
+                pc.value = (0, _instructionHelpers.combineBytes)(h, l);
+            }
+        },
+        cycles: 20,
+        parameterBytes: 0,
+        description: ()=>`RET ${(0, _jumps.CONDITION_NAMES)[condition]}`
+    };
+}
+function push(registerName) {
+    return {
+        execute: (cpu)=>{
+            const sp = cpu.registers.SP;
+            const register = (0, _instructionHelpers.getWordRef)(registerName, cpu);
+            const [h, l] = (0, _instructionHelpers.splitBytes)(register.value);
+            cpu.memory.at(--sp.value).value = h;
+            cpu.memory.at(--sp.value).value = l;
+        },
+        cycles: 16,
+        parameterBytes: 0,
+        description: ()=>`PUSH ${(0, _instructionHelpers.describeWordLocation)(registerName)}`
+    };
+}
+function pop(registerName) {
+    return {
+        execute: (cpu)=>{
+            const sp = cpu.registers.SP;
+            const register = (0, _instructionHelpers.getWordRef)(registerName, cpu);
+            const l = cpu.memory.at(sp.value++).value;
+            const h = cpu.memory.at(sp.value++).value;
+            register.value = (0, _instructionHelpers.combineBytes)(h, l);
+        },
+        cycles: 12,
+        parameterBytes: 0,
+        description: ()=>`POP ${(0, _instructionHelpers.describeWordLocation)(registerName)}`
+    };
+}
+
+},{"./instructionHelpers":"gPUvB","./jumps":"2OuQU","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../helpers/displayHexNumbers":"iSdOS"}],"8WgRb":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "aluOperation", ()=>aluOperation);
@@ -28221,7 +28828,7 @@ parcelHelpers.export(exports, "cpl", ()=>cpl);
 parcelHelpers.export(exports, "addToHL", ()=>addToHL);
 parcelHelpers.export(exports, "addImmediateToSP", ()=>addImmediateToSP);
 parcelHelpers.export(exports, "daa", ()=>daa);
-var _displayHexNumbers = require("../../helpers/displayHexNumbers");
+var _displayHexNumbers = require("../../../helpers/displayHexNumbers");
 var _instructionHelpers = require("./instructionHelpers");
 const splitToNibbles = (value)=>[
         value >> 4 & 0xF,
@@ -28502,631 +29109,18 @@ const daa = {
     description: ()=>"DAA"
 };
 
-},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bM0M4":[function(require,module,exports) {
+},{"./instructionHelpers":"gPUvB","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../../../helpers/displayHexNumbers":"iSdOS"}],"02jZE":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "disableInterrupts", ()=>disableInterrupts);
-parcelHelpers.export(exports, "enableInterrupts", ()=>enableInterrupts);
-parcelHelpers.export(exports, "stop", ()=>stop);
-parcelHelpers.export(exports, "scf", ()=>scf);
-parcelHelpers.export(exports, "ccf", ()=>ccf);
-const disableInterrupts = {
-    execute: (cpu)=>{
-        cpu.interruptsEnabled = false;
-    },
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"DI"
-};
-const enableInterrupts = {
-    execute: (cpu)=>{
-        cpu.interruptsEnabled = true;
-    },
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"EI"
-};
-const stop = {
-    execute: (cpu)=>{
-        cpu.isStopped = true;
-        // TODO what does this actually do?
-        cpu.memory.at(0xFF04).value = 0;
-    },
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"STOP"
-};
-const scf = {
-    execute (cpu) {
-        cpu.registers.F.operation = false;
-        cpu.registers.F.halfCarry = false;
-        cpu.registers.F.carry = true;
-    },
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"SCF"
-};
-const ccf = {
-    execute (cpu) {
-        cpu.registers.F.operation = false;
-        cpu.registers.F.halfCarry = false;
-        cpu.registers.F.carry = !cpu.registers.F.carry;
-    },
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"CCF"
-};
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iH7vu":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-const halt = {
-    execute: (cpu)=>{
-        cpu.isHalted = true;
-    },
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"HALT"
-};
-exports.default = halt;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7RHU3":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "CONDITIONS", ()=>CONDITIONS);
-parcelHelpers.export(exports, "CONDITION_NAMES", ()=>CONDITION_NAMES);
-parcelHelpers.export(exports, "jumpRelative", ()=>jumpRelative);
-parcelHelpers.export(exports, "jump", ()=>jump);
-parcelHelpers.export(exports, "jpHl", ()=>jpHl);
-parcelHelpers.export(exports, "rst", ()=>rst);
-var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _instructionHelpers = require("./instructionHelpers");
-const CONDITIONS = {
-    "Not-Zero": (cpu)=>!cpu.registers.F.zero,
-    "Zero": (cpu)=>cpu.registers.F.zero,
-    "Not-Carry": (cpu)=>!cpu.registers.F.carry,
-    "Carry": (cpu)=>cpu.registers.F.carry,
-    "None": ()=>true
-};
-const CONDITION_NAMES = {
-    "Not-Zero": "NZ",
-    "Zero": "Z",
-    "Not-Carry": "NC",
-    "Carry": "C",
-    "None": ""
-};
-function jumpRelative(condition) {
-    return {
-        execute: (cpu)=>{
-            const jump = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.value);
-            if (CONDITIONS[condition](cpu)) cpu.registers.PC.value += jump;
-        },
-        cycles: 12,
-        parameterBytes: 1,
-        description: ([value])=>`JR${CONDITION_NAMES[condition]} ${(0, _instructionHelpers.from2sComplement)(value)}`
-    };
-}
-function jump(condition) {
-    return {
-        execute: (cpu)=>{
-            const address = cpu.nextWord.value;
-            if (CONDITIONS[condition](cpu)) cpu.registers.PC.value = address;
-        },
-        cycles: 16,
-        parameterBytes: 2,
-        description: ([l, h])=>`JP${CONDITION_NAMES[condition]} ${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
-    };
-}
-const jpHl = {
-    execute (cpu) {
-        cpu.registers.PC.value = cpu.registers.HL.value;
-    },
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"JP HL"
-};
-function rst(address) {
-    return {
-        execute (cpu) {
-            const sp = cpu.registers.SP;
-            const pc = cpu.registers.PC;
-            const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
-            cpu.memory.at(--sp.value).value = h;
-            cpu.memory.at(--sp.value).value = l;
-            pc.value = address;
-        },
-        cycles: 16,
-        parameterBytes: 0,
-        description: ()=>`RST ${(0, _displayHexNumbers.addressDisplay)(address)}`
-    };
-}
-
-},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8K2py":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "load8Bit", ()=>load8Bit);
-parcelHelpers.export(exports, "loadImmediate16BitRegister", ()=>loadImmediate16BitRegister);
-parcelHelpers.export(exports, "loadHlFromSpPlusN", ()=>loadHlFromSpPlusN);
-parcelHelpers.export(exports, "loadStackPointerToAddress", ()=>loadStackPointerToAddress);
-parcelHelpers.export(exports, "loadStackPointerFromHL", ()=>loadStackPointerFromHL);
-var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _instructionHelpers = require("./instructionHelpers");
-const cycleCost = (location)=>{
-    switch(location){
-        case (0, _instructionHelpers.ByteLocation).N:
-            return 4;
-        case (0, _instructionHelpers.ByteLocation).M:
-            return 4;
-        case (0, _instructionHelpers.ByteLocation).FF_N:
-            return 8;
-        case (0, _instructionHelpers.ByteLocation).FF_C:
-            return 4;
-        case (0, _instructionHelpers.ByteLocation).BC:
-            return 4;
-        case (0, _instructionHelpers.ByteLocation).DE:
-            return 4;
-        case (0, _instructionHelpers.ByteLocation).NN:
-            return 12;
-    }
-    return 0;
-};
-const getParameterBytes = (location)=>{
-    switch(location){
-        case (0, _instructionHelpers.ByteLocation).N:
-            return 1;
-        case (0, _instructionHelpers.ByteLocation).FF_N:
-            return 1;
-        case (0, _instructionHelpers.ByteLocation).NN:
-            return 2;
-    }
-    return 0;
-};
-const commandName = (hlRegisterAction)=>hlRegisterAction === "increment" ? "LDI" : hlRegisterAction === "decrement" ? "LDD" : "LD";
-const getPointerAction = (hlRegisterAction)=>hlRegisterAction === "increment" ? (hl)=>hl.value++ : hlRegisterAction === "decrement" ? (hl)=>hl.value-- : ()=>{};
-function load8Bit(destinationName, sourceName, hlRegisterAction = "none") {
-    const cycles = 4 + cycleCost(destinationName) + cycleCost(sourceName);
-    const parameterBytes = getParameterBytes(sourceName) + getParameterBytes(destinationName);
-    const pointerAction = getPointerAction(hlRegisterAction);
-    return {
-        execute: (cpu)=>{
-            const destination = (0, _instructionHelpers.getByteRef)(destinationName, cpu);
-            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            destination.value = source.value;
-            pointerAction(cpu.registers.HL);
-        },
-        cycles,
-        parameterBytes,
-        description: (values)=>`${commandName(hlRegisterAction)} ${(0, _instructionHelpers.describeByteLocation)(destinationName)(values)},${(0, _instructionHelpers.describeByteLocation)(sourceName)(values)}`
-    };
-}
-function loadImmediate16BitRegister(register) {
-    return {
-        execute: (cpu)=>{
-            (0, _instructionHelpers.getWordRef)(register, cpu).value = cpu.nextWord.value;
-        },
-        cycles: 12,
-        parameterBytes: 2,
-        description: ([l, h])=>`LD ${(0, _instructionHelpers.describeWordLocation)(register)([])},${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
-    };
-}
-const loadHlFromSpPlusN = {
-    execute (cpu) {
-        const increment = (0, _instructionHelpers.from2sComplement)(cpu.nextByte.value);
-        const sp = cpu.registers.SP.value;
-        const result = sp + increment;
-        const halfCarry = (sp & 0xF) + (increment & 0xF) !== (result & 0xF);
-        const carry = (sp & 0xFF) + (increment & 0xFF) !== (result & 0xFF);
-        cpu.registers.HL.value = result;
-        cpu.registers.F.zero = false;
-        cpu.registers.F.operation = false;
-        cpu.registers.F.halfCarry = halfCarry;
-        cpu.registers.F.carry = carry;
-    },
-    cycles: 12,
-    parameterBytes: 1,
-    description: ([value])=>`LD HL,SP+${(0, _displayHexNumbers.valueDisplay)(value)}`
-};
-const loadStackPointerToAddress = {
-    execute (cpu) {
-        const address = cpu.nextWord.value;
-        cpu.memory.wordAt(address).value = cpu.registers.SP.value;
-    },
-    cycles: 20,
-    parameterBytes: 2,
-    description: ([l, h])=>`LD (${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}),SP`
-};
-const loadStackPointerFromHL = {
-    execute (cpu) {
-        cpu.registers.SP.value = cpu.registers.HL.value;
-    },
-    cycles: 8,
-    parameterBytes: 0,
-    description: ()=>"LD SP,HL"
-};
-
-},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jvHrF":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-const nop = {
-    execute: (_)=>{},
-    cycles: 4,
-    parameterBytes: 0,
-    description: ()=>"NOP"
-};
-exports.default = nop;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ba3U1":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "testBit", ()=>testBit);
-parcelHelpers.export(exports, "resetBit", ()=>resetBit);
-parcelHelpers.export(exports, "setBit", ()=>setBit);
-parcelHelpers.export(exports, "swap", ()=>swap);
-parcelHelpers.export(exports, "shiftRightLogical", ()=>shiftRightLogical);
-parcelHelpers.export(exports, "shiftLeftArithmetic", ()=>shiftLeftArithmetic);
-parcelHelpers.export(exports, "shiftRightArithmetic", ()=>shiftRightArithmetic);
-var _instructionHelpers = require("./instructionHelpers");
-const testBit = (bit, sourceName)=>{
-    return {
-        execute: (cpu)=>{
-            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            const result = source.value >> bit & 1;
-            cpu.registers.F.zero = result == 0;
-            cpu.registers.F.operation = false;
-            cpu.registers.F.halfCarry = true;
-        },
-        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8,
-        parameterBytes: 0,
-        description: ()=>`BIT ${bit},${sourceName}`
-    };
-};
-const resetBit = (bit, sourceName)=>{
-    return {
-        execute: (cpu)=>{
-            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            source.value &= ~(1 << bit);
-        },
-        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
-        parameterBytes: 0,
-        description: ()=>`RES ${bit},${sourceName}`
-    };
-};
-const setBit = (bit, sourceName)=>{
-    return {
-        execute: (cpu)=>{
-            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            source.value |= 1 << bit;
-        },
-        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
-        parameterBytes: 0,
-        description: ()=>`SET ${bit},${sourceName}`
-    };
-};
-const swap = (sourceName)=>{
-    return {
-        execute (cpu) {
-            const byte = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            const originalValue = byte.value;
-            const h = (originalValue & 0xF0) >> 4;
-            const l = originalValue & 0x0F;
-            const newValue = (l << 4) + h;
-            byte.value = newValue;
-            cpu.registers.F.zero = newValue == 0;
-            cpu.registers.F.operation = false;
-            cpu.registers.F.halfCarry = false;
-            cpu.registers.F.carry = false;
-        },
-        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 12 : 8,
-        parameterBytes: 0,
-        description: ()=>`SWAP ${sourceName}`
-    };
-};
-const shiftRightLogical = (sourceName)=>{
-    return {
-        execute (cpu) {
-            const byte = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            const originalValue = byte.value;
-            const newValue = originalValue >> 1;
-            byte.value = newValue;
-            cpu.registers.F.zero = newValue == 0;
-            cpu.registers.F.operation = false;
-            cpu.registers.F.halfCarry = false;
-            cpu.registers.F.carry = (originalValue & 1) > 0;
-        },
-        cycles: 8,
-        parameterBytes: 0,
-        description: ()=>`SRL ${sourceName}`
-    };
-};
-function shiftLeftArithmetic(sourceName) {
-    return {
-        execute (cpu) {
-            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            const oldValue = source.value;
-            const newValue = (oldValue << 1 & 0xFF) + 0;
-            source.value = newValue;
-            cpu.registers.F.zero = newValue == 0;
-            cpu.registers.F.operation = false;
-            cpu.registers.F.halfCarry = false;
-            cpu.registers.F.carry = (oldValue & 0x80) > 0;
-        },
-        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
-        parameterBytes: 0,
-        description: ()=>`SRA ${sourceName}`
-    };
-}
-function shiftRightArithmetic(sourceName) {
-    return {
-        execute (cpu) {
-            const source = (0, _instructionHelpers.getByteRef)(sourceName, cpu);
-            const oldValue = source.value;
-            const newValue = (oldValue >> 1) + (oldValue & 0x80);
-            source.value = newValue;
-            cpu.registers.F.zero = newValue == 0;
-            cpu.registers.F.operation = false;
-            cpu.registers.F.halfCarry = false;
-            cpu.registers.F.carry = (oldValue & 1) > 0;
-        },
-        cycles: sourceName === (0, _instructionHelpers.ByteLocation).M ? 16 : 8,
-        parameterBytes: 0,
-        description: ()=>`SRA ${sourceName}`
-    };
-}
-
-},{"./instructionHelpers":"bJjsQ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"g6QBO":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "call", ()=>call);
-parcelHelpers.export(exports, "callF", ()=>callF);
-parcelHelpers.export(exports, "ret", ()=>ret);
-parcelHelpers.export(exports, "reti", ()=>reti);
-parcelHelpers.export(exports, "retF", ()=>retF);
-parcelHelpers.export(exports, "push", ()=>push);
-parcelHelpers.export(exports, "pop", ()=>pop);
-var _displayHexNumbers = require("../../helpers/displayHexNumbers");
-var _instructionHelpers = require("./instructionHelpers");
-var _jumps = require("./jumps");
-const call = {
-    execute: (cpu)=>{
-        const sp = cpu.registers.SP;
-        const pc = cpu.registers.PC;
-        const address = cpu.nextWord.value;
-        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
-        cpu.memory.at(--sp.value).value = h;
-        cpu.memory.at(--sp.value).value = l;
-        pc.value = address;
-    },
-    cycles: 24,
-    parameterBytes: 2,
-    description: ([l, h])=>`CALL ${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
-};
-function callF(condition) {
-    return {
-        execute (cpu) {
-            const address = cpu.nextWord.value;
-            if ((0, _jumps.CONDITIONS)[condition](cpu)) {
-                const sp = cpu.registers.SP;
-                const pc = cpu.registers.PC;
-                const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
-                cpu.memory.at(--sp.value).value = h;
-                cpu.memory.at(--sp.value).value = l;
-                pc.value = address;
-            }
-        },
-        cycles: 24,
-        parameterBytes: 2,
-        description: ([l, h])=>`CALL ${(0, _jumps.CONDITION_NAMES)[condition]},${(0, _displayHexNumbers.addressDisplay)((0, _instructionHelpers.combineBytes)(h, l))}`
-    };
-}
-const ret = {
-    execute: (cpu)=>{
-        const sp = cpu.registers.SP;
-        const pc = cpu.registers.PC;
-        const l = cpu.memory.at(sp.value++).value;
-        const h = cpu.memory.at(sp.value++).value;
-        pc.value = (0, _instructionHelpers.combineBytes)(h, l);
-    },
-    cycles: 16,
-    parameterBytes: 0,
-    description: ()=>"RET"
-};
-const reti = {
-    execute (cpu) {
-        const sp = cpu.registers.SP;
-        const pc = cpu.registers.PC;
-        const l = cpu.memory.at(sp.value++).value;
-        const h = cpu.memory.at(sp.value++).value;
-        pc.value = (0, _instructionHelpers.combineBytes)(h, l);
-        cpu.interruptsEnabled = true;
-    },
-    cycles: 16,
-    parameterBytes: 0,
-    description: ()=>"RETI"
-};
-function retF(condition) {
-    return {
-        execute (cpu) {
-            if ((0, _jumps.CONDITIONS)[condition](cpu)) {
-                const sp = cpu.registers.SP;
-                const pc = cpu.registers.PC;
-                const l = cpu.memory.at(sp.value++).value;
-                const h = cpu.memory.at(sp.value++).value;
-                pc.value = (0, _instructionHelpers.combineBytes)(h, l);
-            }
-        },
-        cycles: 20,
-        parameterBytes: 0,
-        description: ()=>`RET ${(0, _jumps.CONDITION_NAMES)[condition]}`
-    };
-}
-function push(registerName) {
-    return {
-        execute: (cpu)=>{
-            const sp = cpu.registers.SP;
-            const register = (0, _instructionHelpers.getWordRef)(registerName, cpu);
-            const [h, l] = (0, _instructionHelpers.splitBytes)(register.value);
-            cpu.memory.at(--sp.value).value = h;
-            cpu.memory.at(--sp.value).value = l;
-        },
-        cycles: 16,
-        parameterBytes: 0,
-        description: ()=>`PUSH ${(0, _instructionHelpers.describeWordLocation)(registerName)}`
-    };
-}
-function pop(registerName) {
-    return {
-        execute: (cpu)=>{
-            const sp = cpu.registers.SP;
-            const register = (0, _instructionHelpers.getWordRef)(registerName, cpu);
-            const l = cpu.memory.at(sp.value++).value;
-            const h = cpu.memory.at(sp.value++).value;
-            register.value = (0, _instructionHelpers.combineBytes)(h, l);
-        },
-        cycles: 12,
-        parameterBytes: 0,
-        description: ()=>`POP ${(0, _instructionHelpers.describeWordLocation)(registerName)}`
-    };
-}
-
-},{"../../helpers/displayHexNumbers":"iSdOS","./instructionHelpers":"bJjsQ","./jumps":"7RHU3","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"km3Ru":[function(require,module,exports) {
-"use strict";
-var Refresh = require("7422ead32dcc1e6b");
-function debounce(func, delay) {
-    {
-        let timeout = undefined;
-        let lastTime = 0;
-        return function(args) {
-            // Call immediately if last call was more than the delay ago.
-            // Otherwise, set a timeout. This means the first call is fast
-            // (for the common case of a single update), and subsequent updates
-            // are batched.
-            let now = Date.now();
-            if (now - lastTime > delay) {
-                lastTime = now;
-                func.call(null, args);
-            } else {
-                clearTimeout(timeout);
-                timeout = setTimeout(function() {
-                    timeout = undefined;
-                    lastTime = Date.now();
-                    func.call(null, args);
-                }, delay);
-            }
-        };
+var _displayHexNumbers = require("../../../helpers/displayHexNumbers");
+class InstructionNotFoundError extends Error {
+    constructor(code){
+        super("Instruction not found for code " + (0, _displayHexNumbers.valueDisplay)(code));
     }
 }
-var enqueueUpdate = debounce(function() {
-    Refresh.performReactRefresh();
-}, 30);
-// Everthing below is either adapted or copied from
-// https://github.com/facebook/metro/blob/61de16bd1edd7e738dd0311c89555a644023ab2d/packages/metro/src/lib/polyfills/require.js
-// MIT License - Copyright (c) Facebook, Inc. and its affiliates.
-module.exports.prelude = function(module1) {
-    window.$RefreshReg$ = function(type, id) {
-        Refresh.register(type, module1.id + " " + id);
-    };
-    window.$RefreshSig$ = Refresh.createSignatureFunctionForTransform;
-};
-module.exports.postlude = function(module1) {
-    if (isReactRefreshBoundary(module1.exports)) {
-        registerExportsForReactRefresh(module1);
-        if (module1.hot) {
-            module1.hot.dispose(function(data) {
-                if (Refresh.hasUnrecoverableErrors()) window.location.reload();
-                data.prevExports = module1.exports;
-            });
-            module1.hot.accept(function(getParents) {
-                var prevExports = module1.hot.data.prevExports;
-                var nextExports = module1.exports;
-                // Since we just executed the code for it, it's possible
-                // that the new exports make it ineligible for being a boundary.
-                var isNoLongerABoundary = !isReactRefreshBoundary(nextExports);
-                // It can also become ineligible if its exports are incompatible
-                // with the previous exports.
-                // For example, if you add/remove/change exports, we'll want
-                // to re-execute the importing modules, and force those components
-                // to re-render. Similarly, if you convert a class component
-                // to a function, we want to invalidate the boundary.
-                var didInvalidate = shouldInvalidateReactRefreshBoundary(prevExports, nextExports);
-                if (isNoLongerABoundary || didInvalidate) {
-                    // We'll be conservative. The only case in which we won't do a full
-                    // reload is if all parent modules are also refresh boundaries.
-                    // In that case we'll add them to the current queue.
-                    var parents = getParents();
-                    if (parents.length === 0) {
-                        // Looks like we bubbled to the root. Can't recover from that.
-                        window.location.reload();
-                        return;
-                    }
-                    return parents;
-                }
-                enqueueUpdate();
-            });
-        }
-    }
-};
-function isReactRefreshBoundary(exports) {
-    if (Refresh.isLikelyComponentType(exports)) return true;
-    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
-    return false;
-    var hasExports = false;
-    var areAllExportsComponents = true;
-    let isESM = "__esModule" in exports;
-    for(var key in exports){
-        hasExports = true;
-        if (key === "__esModule") continue;
-        var desc = Object.getOwnPropertyDescriptor(exports, key);
-        if (desc && desc.get && !isESM) // Don't invoke getters for CJS as they may have side effects.
-        return false;
-        var exportValue = exports[key];
-        if (!Refresh.isLikelyComponentType(exportValue)) areAllExportsComponents = false;
-    }
-    return hasExports && areAllExportsComponents;
-}
-function shouldInvalidateReactRefreshBoundary(prevExports, nextExports) {
-    var prevSignature = getRefreshBoundarySignature(prevExports);
-    var nextSignature = getRefreshBoundarySignature(nextExports);
-    if (prevSignature.length !== nextSignature.length) return true;
-    for(var i = 0; i < nextSignature.length; i++){
-        if (prevSignature[i] !== nextSignature[i]) return true;
-    }
-    return false;
-}
-// When this signature changes, it's unsafe to stop at this refresh boundary.
-function getRefreshBoundarySignature(exports) {
-    var signature = [];
-    signature.push(Refresh.getFamilyByType(exports));
-    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
-    // (This is important for legacy environments.)
-    return signature;
-    let isESM = "__esModule" in exports;
-    for(var key in exports){
-        if (key === "__esModule") continue;
-        var desc = Object.getOwnPropertyDescriptor(exports, key);
-        if (desc && desc.get && !isESM) continue;
-        var exportValue = exports[key];
-        signature.push(key);
-        signature.push(Refresh.getFamilyByType(exportValue));
-    }
-    return signature;
-}
-function registerExportsForReactRefresh(module1) {
-    var exports = module1.exports, id = module1.id;
-    Refresh.register(exports, id + " %exports%");
-    if (exports == null || typeof exports !== "object") // Exit if we can't iterate over exports.
-    // (This is important for legacy environments.)
-    return;
-    let isESM = "__esModule" in exports;
-    for(var key in exports){
-        var desc = Object.getOwnPropertyDescriptor(exports, key);
-        if (desc && desc.get && !isESM) continue;
-        var exportValue = exports[key];
-        var typeID = id + " %exports% " + key;
-        Refresh.register(exportValue, typeID);
-    }
-}
+exports.default = InstructionNotFoundError;
 
-},{"7422ead32dcc1e6b":"786KC"}],"2xGez":[function(require,module,exports) {
+},{"../../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2xGez":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$2c0d = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -29413,203 +29407,7 @@ $RefreshReg$(_c, "CpuController");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"f2x3M":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-const COLOURS = [
-    [
-        255,
-        255,
-        255
-    ],
-    [
-        192,
-        192,
-        192
-    ],
-    [
-        96,
-        96,
-        96
-    ],
-    [
-        0,
-        0,
-        0
-    ]
-];
-const TILESET_BASE_ADDRESS = 0x8000;
-class PPU {
-    constructor(cpu){
-        this.cpu = cpu;
-        this.memory = cpu.memory;
-    }
-    getTile(tileId) {
-        return this.memory.vram.tiles[tileId];
-    }
-    printTileSet(canvas) {
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("No canvas context");
-        canvas.width = 128;
-        canvas.height = 192;
-        const imageData = context.createImageData(128, 192);
-        const baseAddress = 0x8000;
-        // 16 x 24 tiles
-        // 1 row = 2 bytes. One tile = 16 bytes?
-        for(let tile = 0; tile < 384; tile++){
-            const tileBaseAddress = baseAddress + 16 * tile;
-            const baseX = 8 * (tile % 16);
-            const baseY = 8 * (tile >> 4);
-            for(let row = 0; row < 8; row++){
-                const y = baseY + row;
-                const byte1 = this.memory.at(tileBaseAddress + 2 * row).value;
-                const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value;
-                for(let bit = 7; bit >= 0; bit--){
-                    const x = baseX + 7 - bit;
-                    const pixelNumber = y * 128 + x;
-                    const bit1 = byte1 >> bit & 1;
-                    const bit2 = byte2 >> bit & 1;
-                    const pixelValue = bit1 + (bit2 << 1);
-                    const colour = COLOURS[pixelValue];
-                    imageData.data[4 * pixelNumber + 0] = colour[0];
-                    imageData.data[4 * pixelNumber + 1] = colour[1];
-                    imageData.data[4 * pixelNumber + 2] = colour[2];
-                    imageData.data[4 * pixelNumber + 3] = 255;
-                }
-            }
-        }
-        context.putImageData(imageData, 0, 0);
-    }
-    printTileset0(canvas) {
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("No canvas context");
-        canvas.width = 128;
-        canvas.height = 128;
-        const imageData = context.createImageData(128, 192);
-        for(let i = 0; i < 0x100; i++){
-            const baseX = (i & 15) << 3;
-            const baseY = i >> 4 << 3;
-            for(let row = 0; row < 8; row++){
-                const rowData = this.memory.vram.tileset0(i, row).map((p)=>COLOURS[p]);
-                const basePixelNumber = 128 * (baseY + row) + baseX;
-                for(let pixel = 0; pixel < 8; pixel++){
-                    const colour = rowData[pixel];
-                    const pixelNumber = basePixelNumber + pixel;
-                    imageData.data[4 * pixelNumber + 0] = colour[0];
-                    imageData.data[4 * pixelNumber + 1] = colour[1];
-                    imageData.data[4 * pixelNumber + 2] = colour[2];
-                    imageData.data[4 * pixelNumber + 3] = 255;
-                }
-            }
-        }
-        context.putImageData(imageData, 0, 0);
-    }
-    printTileset1(canvas) {
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("No canvas context");
-        canvas.width = 128;
-        canvas.height = 128;
-        const imageData = context.createImageData(128, 192);
-        for(let i = 0; i < 0x100; i++){
-            const baseX = (i & 15) << 3;
-            const baseY = i >> 4 << 3;
-            for(let row = 0; row < 8; row++){
-                const rowData = this.memory.vram.tileset1(i, row).map((p)=>COLOURS[p]);
-                const basePixelNumber = 128 * (baseY + row) + baseX;
-                for(let pixel = 0; pixel < 8; pixel++){
-                    const colour = rowData[pixel];
-                    const pixelNumber = basePixelNumber + pixel;
-                    imageData.data[4 * pixelNumber + 0] = colour[0];
-                    imageData.data[4 * pixelNumber + 1] = colour[1];
-                    imageData.data[4 * pixelNumber + 2] = colour[2];
-                    imageData.data[4 * pixelNumber + 3] = 255;
-                }
-            }
-        }
-        context.putImageData(imageData, 0, 0);
-    }
-    printBackgroundLayer(canvas, layer) {
-        const tilemapId = layer == "background" ? this.memory.registers.lcdControl.backgroundTilemap : this.memory.registers.lcdControl.windowTilemap;
-        const tileset = this.memory.registers.lcdControl.tileDataArea;
-        const pallete = this.memory.registers.backgroundPallete.map;
-        const context = canvas.getContext("2d");
-        const tiles = new Set();
-        const tileMap = [];
-        for(let y = 0; y < 32; y++){
-            const rowMap = [];
-            for(let x = 0; x < 32; x++){
-                let tileNumber = 32 * y + x;
-                let tileId = tilemapId == 0 ? this.memory.vram.tilemap0(tileNumber) : this.memory.vram.tilemap1(tileNumber);
-                tiles.add(tileId);
-                rowMap.push(tileId);
-            }
-            tileMap.push(rowMap);
-        }
-        const tileImages = this.getTileData(tiles, context, tileset, pallete);
-        tileMap.forEach((row, y)=>row.forEach((tileId, x)=>{
-                const tileData = tileImages[tileId];
-                context.putImageData(tileData, x * 8, y * 8);
-            }));
-    }
-    getTileData(tileIds, context, tileset, pallete) {
-        const tileImages = [];
-        tileIds.forEach((tileId)=>{
-            const tileData = context.createImageData(8, 8);
-            for(let row = 0; row < 8; row++){
-                let rowData = tileset == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
-                for(let pixel = 0; pixel < 8; pixel++){
-                    const baseIndex = (row * 8 + pixel) * 4;
-                    const colour = COLOURS[pallete[rowData[pixel]]];
-                    tileData.data[baseIndex + 0] = colour[0];
-                    tileData.data[baseIndex + 1] = colour[1];
-                    tileData.data[baseIndex + 2] = colour[2];
-                    tileData.data[baseIndex + 3] = 255;
-                }
-            }
-            tileImages[tileId] = tileData;
-        });
-        return tileImages;
-    }
-    printSpriteLayer(canvas) {
-        const sprites = this.memory.oam.sprites;
-        const pallette0 = this.memory.registers.objectPallete0.map;
-        const pallette1 = this.memory.registers.objectPallete1.map;
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, 160, 144);
-        const tilesP0 = new Set(sprites.filter((sprite)=>sprite.pallette == 0).map((sprite)=>sprite.tile));
-        const tilesP1 = new Set(sprites.filter((sprite)=>sprite.pallette == 1).map((sprite)=>sprite.tile));
-        const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0);
-        const tileImagesP1 = this.getTileData(tilesP1, context, 1, pallette1);
-        sprites.filter((sprite)=>sprite.priority).forEach((sprite)=>{
-            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
-            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
-        });
-        sprites.filter((sprite)=>!sprite.priority).forEach((sprite)=>{
-            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
-            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
-        });
-        context.beginPath();
-        context.lineWidth = 1;
-        context.strokeStyle = "red";
-        context.rect(0, 0, 160, 144);
-        context.stroke();
-    }
-    getSpriteInfo() {
-        return [];
-    }
-    backgroundPallete() {
-        const backgroundPalletByte = this.memory.at(0xFF47).value;
-        return [
-            COLOURS[backgroundPalletByte >> 0 & 3],
-            COLOURS[backgroundPalletByte >> 2 & 3],
-            COLOURS[backgroundPalletByte >> 4 & 3],
-            COLOURS[backgroundPalletByte >> 6 & 3]
-        ];
-    }
-}
-exports.default = PPU;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"e5JD4":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","../../helpers/displayHexNumbers":"iSdOS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"e5JD4":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$ed9e = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -29933,12 +29731,8 @@ var _s = $RefreshSig$();
 function Display({ cpu }) {
     _s();
     const canvas = _react.useRef(null);
-    const [_, setScreen] = _react.useState(null);
     _react.useEffect(()=>{
-        if (canvas.current) {
-            cpu.screen.canvas = canvas.current;
-            setScreen(cpu.screen);
-        }
+        if (canvas.current) cpu.pictureProcessor.canvas = canvas.current;
     }, [
         canvas
     ]);
@@ -29950,16 +29744,16 @@ function Display({ cpu }) {
             ref: canvas
         }, void 0, false, {
             fileName: "src/web/components/display.tsx",
-            lineNumber: 23,
+            lineNumber: 20,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "src/web/components/display.tsx",
-        lineNumber: 22,
+        lineNumber: 19,
         columnNumber: 5
     }, this);
 }
-_s(Display, "O/Vf0/ZiXVle47Iq7s8/yGnID6M=");
+_s(Display, "Iosu+jEjScFAX5hfSp9z4J61DK4=");
 _c = Display;
 var _c;
 $RefreshReg$(_c, "Display");
@@ -30257,7 +30051,7 @@ var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
 var _oscilloscope = require("./oscilloscope");
 var _oscilloscopeDefault = parcelHelpers.interopDefault(_oscilloscope);
-function AudioDebug({ apu }) {
+function AudioDebug({ audioProcessor }) {
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("section", {
         children: [
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -30265,7 +30059,7 @@ function AudioDebug({ apu }) {
                 children: [
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
                         name: "Pulse 1",
-                        channel: apu.channel1,
+                        channel: audioProcessor.channel1,
                         id: 0
                     }, void 0, false, {
                         fileName: "src/web/components/audioDebug.tsx",
@@ -30274,7 +30068,7 @@ function AudioDebug({ apu }) {
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
                         name: "Pulse 2",
-                        channel: apu.channel2,
+                        channel: audioProcessor.channel2,
                         id: 1
                     }, void 0, false, {
                         fileName: "src/web/components/audioDebug.tsx",
@@ -30292,7 +30086,7 @@ function AudioDebug({ apu }) {
                 children: [
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
                         name: "Wave",
-                        channel: apu.channel3,
+                        channel: audioProcessor.channel3,
                         id: 2
                     }, void 0, false, {
                         fileName: "src/web/components/audioDebug.tsx",
@@ -30301,7 +30095,7 @@ function AudioDebug({ apu }) {
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _oscilloscopeDefault.default), {
                         name: "Noise",
-                        channel: apu.channel4,
+                        channel: audioProcessor.channel4,
                         id: 3
                     }, void 0, false, {
                         fileName: "src/web/components/audioDebug.tsx",
@@ -30598,14 +30392,14 @@ const colourToArray = (colour)=>[
     ];
 function Settings({ emulator }) {
     _s();
-    const [monochromePalette0, setMonochromePalete0] = _react.useState(arrayToColour(emulator.screen.colours[0]));
-    const [monochromePalette1, setMonochromePalete1] = _react.useState(arrayToColour(emulator.screen.colours[1]));
-    const [monochromePalette2, setMonochromePalete2] = _react.useState(arrayToColour(emulator.screen.colours[2]));
-    const [monochromePalette3, setMonochromePalete3] = _react.useState(arrayToColour(emulator.screen.colours[3]));
+    const [monochromePalette0, setMonochromePalete0] = _react.useState(arrayToColour(emulator.pictureProcessor.colours[0]));
+    const [monochromePalette1, setMonochromePalete1] = _react.useState(arrayToColour(emulator.pictureProcessor.colours[1]));
+    const [monochromePalette2, setMonochromePalete2] = _react.useState(arrayToColour(emulator.pictureProcessor.colours[2]));
+    const [monochromePalette3, setMonochromePalete3] = _react.useState(arrayToColour(emulator.pictureProcessor.colours[3]));
     const [chosenPresetId, setChosenPresetId] = _react.useState(-1);
     const updatePalette = (id, colour)=>{
-        emulator.screen.colours.splice(id, 1, colour);
-        window.localStorage.setItem("monochromePalette", JSON.stringify(emulator.screen.colours));
+        emulator.pictureProcessor.colours.splice(id, 1, colour);
+        window.localStorage.setItem("monochromePalette", JSON.stringify(emulator.pictureProcessor.colours));
         switch(id){
             case 0:
                 setMonochromePalete0(arrayToColour(colour));
@@ -30776,7 +30570,7 @@ function Settings({ emulator }) {
         columnNumber: 11
     }, this);
 }
-_s(Settings, "Ljzh523RQsNRWirniyK11e8cCw0=");
+_s(Settings, "Kc16zXYJbn10MS8Wr9lw2+5vcLQ=");
 _c = Settings;
 var _c;
 $RefreshReg$(_c, "Settings");
@@ -30870,8 +30664,7 @@ function PkmnGen1Dashboard({ emulator }) {
                             fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
                             lineNumber: 22,
                             columnNumber: 11
-                        }, this),
-                        monster.xp
+                        }, this)
                     ]
                 }, i, true, {
                     fileName: "src/web/gameDashboards/pkmnGen1Dashboard.tsx",
@@ -30953,477 +30746,228 @@ $RefreshReg$(_c, "PkmnGen1Dashboard");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"6YHbn":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"bVW4M":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+const COLOURS = [
+    [
+        255,
+        255,
+        255
+    ],
+    [
+        192,
+        192,
+        192
+    ],
+    [
+        96,
+        96,
+        96
+    ],
+    [
+        0,
+        0,
+        0
+    ]
+];
+const TILESET_BASE_ADDRESS = 0x8000;
+class PPU {
+    constructor(cpu){
+        this.cpu = cpu;
+        this.memory = cpu.memory;
+    }
+    getTile(tileId) {
+        return this.memory.vram.tiles[tileId];
+    }
+    printTileSet(canvas) {
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("No canvas context");
+        canvas.width = 128;
+        canvas.height = 192;
+        const imageData = context.createImageData(128, 192);
+        const baseAddress = 0x8000;
+        // 16 x 24 tiles
+        // 1 row = 2 bytes. One tile = 16 bytes?
+        for(let tile = 0; tile < 384; tile++){
+            const tileBaseAddress = baseAddress + 16 * tile;
+            const baseX = 8 * (tile % 16);
+            const baseY = 8 * (tile >> 4);
+            for(let row = 0; row < 8; row++){
+                const y = baseY + row;
+                const byte1 = this.memory.at(tileBaseAddress + 2 * row).value;
+                const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value;
+                for(let bit = 7; bit >= 0; bit--){
+                    const x = baseX + 7 - bit;
+                    const pixelNumber = y * 128 + x;
+                    const bit1 = byte1 >> bit & 1;
+                    const bit2 = byte2 >> bit & 1;
+                    const pixelValue = bit1 + (bit2 << 1);
+                    const colour = COLOURS[pixelValue];
+                    imageData.data[4 * pixelNumber + 0] = colour[0];
+                    imageData.data[4 * pixelNumber + 1] = colour[1];
+                    imageData.data[4 * pixelNumber + 2] = colour[2];
+                    imageData.data[4 * pixelNumber + 3] = 255;
+                }
+            }
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+    printTileset0(canvas) {
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("No canvas context");
+        canvas.width = 128;
+        canvas.height = 128;
+        const imageData = context.createImageData(128, 192);
+        for(let i = 0; i < 0x100; i++){
+            const baseX = (i & 15) << 3;
+            const baseY = i >> 4 << 3;
+            for(let row = 0; row < 8; row++){
+                const rowData = this.memory.vram.tileset0(i, row).map((p)=>COLOURS[p]);
+                const basePixelNumber = 128 * (baseY + row) + baseX;
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const colour = rowData[pixel];
+                    const pixelNumber = basePixelNumber + pixel;
+                    imageData.data[4 * pixelNumber + 0] = colour[0];
+                    imageData.data[4 * pixelNumber + 1] = colour[1];
+                    imageData.data[4 * pixelNumber + 2] = colour[2];
+                    imageData.data[4 * pixelNumber + 3] = 255;
+                }
+            }
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+    printTileset1(canvas) {
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("No canvas context");
+        canvas.width = 128;
+        canvas.height = 128;
+        const imageData = context.createImageData(128, 192);
+        for(let i = 0; i < 0x100; i++){
+            const baseX = (i & 15) << 3;
+            const baseY = i >> 4 << 3;
+            for(let row = 0; row < 8; row++){
+                const rowData = this.memory.vram.tileset1(i, row).map((p)=>COLOURS[p]);
+                const basePixelNumber = 128 * (baseY + row) + baseX;
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const colour = rowData[pixel];
+                    const pixelNumber = basePixelNumber + pixel;
+                    imageData.data[4 * pixelNumber + 0] = colour[0];
+                    imageData.data[4 * pixelNumber + 1] = colour[1];
+                    imageData.data[4 * pixelNumber + 2] = colour[2];
+                    imageData.data[4 * pixelNumber + 3] = 255;
+                }
+            }
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+    printBackgroundLayer(canvas, layer) {
+        const tilemapId = layer == "background" ? this.memory.registers.lcdControl.backgroundTilemap : this.memory.registers.lcdControl.windowTilemap;
+        const tileset = this.memory.registers.lcdControl.tileDataArea;
+        const pallete = this.memory.registers.backgroundPallete.map;
+        const context = canvas.getContext("2d");
+        const tiles = new Set();
+        const tileMap = [];
+        for(let y = 0; y < 32; y++){
+            const rowMap = [];
+            for(let x = 0; x < 32; x++){
+                let tileNumber = 32 * y + x;
+                let tileId = tilemapId == 0 ? this.memory.vram.tilemap0(tileNumber) : this.memory.vram.tilemap1(tileNumber);
+                tiles.add(tileId);
+                rowMap.push(tileId);
+            }
+            tileMap.push(rowMap);
+        }
+        const tileImages = this.getTileData(tiles, context, tileset, pallete);
+        tileMap.forEach((row, y)=>row.forEach((tileId, x)=>{
+                const tileData = tileImages[tileId];
+                context.putImageData(tileData, x * 8, y * 8);
+            }));
+    }
+    getTileData(tileIds, context, tileset, pallete) {
+        const tileImages = [];
+        tileIds.forEach((tileId)=>{
+            const tileData = context.createImageData(8, 8);
+            for(let row = 0; row < 8; row++){
+                let rowData = tileset == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
+                for(let pixel = 0; pixel < 8; pixel++){
+                    const baseIndex = (row * 8 + pixel) * 4;
+                    const colour = COLOURS[pallete[rowData[pixel]]];
+                    tileData.data[baseIndex + 0] = colour[0];
+                    tileData.data[baseIndex + 1] = colour[1];
+                    tileData.data[baseIndex + 2] = colour[2];
+                    tileData.data[baseIndex + 3] = 255;
+                }
+            }
+            tileImages[tileId] = tileData;
+        });
+        return tileImages;
+    }
+    printSpriteLayer(canvas) {
+        const sprites = this.memory.oam.sprites;
+        const pallette0 = this.memory.registers.objectPallete0.map;
+        const pallette1 = this.memory.registers.objectPallete1.map;
+        const context = canvas.getContext("2d");
+        context.clearRect(0, 0, 160, 144);
+        const tilesP0 = new Set(sprites.filter((sprite)=>sprite.pallette == 0).map((sprite)=>sprite.tile));
+        const tilesP1 = new Set(sprites.filter((sprite)=>sprite.pallette == 1).map((sprite)=>sprite.tile));
+        const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0);
+        const tileImagesP1 = this.getTileData(tilesP1, context, 1, pallette1);
+        sprites.filter((sprite)=>sprite.priority).forEach((sprite)=>{
+            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
+            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
+        });
+        sprites.filter((sprite)=>!sprite.priority).forEach((sprite)=>{
+            const tileData = sprite.pallette == 0 ? tileImagesP0[sprite.tile] : tileImagesP1[sprite.tile];
+            context.putImageData(tileData, sprite.x - 8, sprite.y - 16);
+        });
+        context.beginPath();
+        context.lineWidth = 1;
+        context.strokeStyle = "red";
+        context.rect(0, 0, 160, 144);
+        context.stroke();
+    }
+    getSpriteInfo() {
+        return [];
+    }
+    backgroundPallete() {
+        const backgroundPalletByte = this.memory.at(0xFF47).value;
+        return [
+            COLOURS[backgroundPalletByte >> 0 & 3],
+            COLOURS[backgroundPalletByte >> 2 & 3],
+            COLOURS[backgroundPalletByte >> 4 & 3],
+            COLOURS[backgroundPalletByte >> 6 & 3]
+        ];
+    }
+}
+exports.default = PPU;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6YHbn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Emulator", ()=>Emulator);
-var _apu = require("./apu");
-var _apuDefault = parcelHelpers.interopDefault(_apu);
+var _audioProcessor = require("./audio/audioProcessor");
+var _audioProcessorDefault = parcelHelpers.interopDefault(_audioProcessor);
 var _controller = require("./controller");
 var _controllerDefault = parcelHelpers.interopDefault(_controller);
-var _cpu = require("./cpu");
+var _cpu = require("./cpu/cpu");
 var _cpuDefault = parcelHelpers.interopDefault(_cpu);
-var _memory = require("./memory");
-var _memoryDefault = parcelHelpers.interopDefault(_memory);
-var _screen = require("./screen");
-var _screenDefault = parcelHelpers.interopDefault(_screen);
+var _memoryMap = require("./memory/memoryMap");
+var _memoryMapDefault = parcelHelpers.interopDefault(_memoryMap);
+var _pictureProcessor = require("./pictureProcessor");
+var _pictureProcessorDefault = parcelHelpers.interopDefault(_pictureProcessor);
 class Emulator {
     constructor(cartridge){
-        this.memory = new (0, _memoryDefault.default)(cartridge);
+        this.memory = new (0, _memoryMapDefault.default)(cartridge);
         this.controller = new (0, _controllerDefault.default)(this.memory);
         this.cpu = new (0, _cpuDefault.default)(this.memory, this.controller);
-        this.screen = new (0, _screenDefault.default)(this.cpu);
-        this.apu = new (0, _apuDefault.default)(this.cpu);
+        this.pictureProcessor = new (0, _pictureProcessorDefault.default)(this.cpu);
+        this.audioProcessor = new (0, _audioProcessorDefault.default)(this.cpu);
         this.controller.initialiseEvents();
     }
 }
 
-},{"./apu":"fhvC7","./controller":"cFNSD","./cpu":"2CR9q","./memory":"cz4ku","./screen":"7Es7K","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fhvC7":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _noiseChannel = require("./sound/noiseChannel");
-var _pulseChannel = require("./sound/pulseChannel");
-var _pulseChannelDefault = parcelHelpers.interopDefault(_pulseChannel);
-var _waveChannel = require("./sound/waveChannel");
-var _waveChannelDefault = parcelHelpers.interopDefault(_waveChannel);
-class APU {
-    constructor(cpu){
-        this.audioContext = new AudioContext({
-            sampleRate: 44100
-        });
-        this.masterVolume = 0;
-        this.cpu = cpu;
-        this.memory = cpu.memory;
-        this.memory.registers.audioMasterControl.apu = this;
-        this.memory.registers.masterVolumeVin.updateVolume = (volume)=>{
-            if (this.masterVolume !== volume) {
-                this.masterVolume = volume;
-                this.vinVolume.gain.setValueAtTime(volume / 8, this.audioContext.currentTime);
-            // console.log(volume, this.vinVolume.gain.value)
-            }
-        };
-        cpu.apu = this;
-        cpu.addClockCallback(this);
-        this.audioContext.suspend();
-        this.masterControl = this.audioContext.createGain();
-        this.vinVolume = this.audioContext.createGain();
-        this.channel1 = new (0, _pulseChannelDefault.default)({
-            audioContext: this.audioContext,
-            outputNode: this.vinVolume,
-            registers: this.memory.registers.channel1
-        });
-        this.channel2 = new (0, _pulseChannelDefault.default)({
-            audioContext: this.audioContext,
-            outputNode: this.vinVolume,
-            registers: this.memory.registers.channel2
-        });
-        this.channel3 = new (0, _waveChannelDefault.default)({
-            audioContext: this.audioContext,
-            outputNode: this.vinVolume,
-            registers: this.memory.registers.channel3
-        });
-        this.channel4 = new (0, _noiseChannel.NoiseChannel)({
-            audioContext: this.audioContext,
-            outputNode: this.vinVolume,
-            registers: this.memory.registers.channel4
-        });
-        this.vinVolume.connect(this.masterControl);
-        this.masterControl.connect(this.audioContext.destination);
-    }
-    updateClock(cycles) {
-        this.channel1.update(cycles);
-        this.channel2.update(cycles);
-        this.channel3.update(cycles);
-        this.channel4.update(cycles);
-    }
-    startAudio() {
-        this.audioContext.resume();
-    }
-    stopAudio() {
-        this.audioContext.suspend();
-    }
-}
-exports.default = APU;
-
-},{"./sound/noiseChannel":"bhrev","./sound/pulseChannel":"iY6ME","./sound/waveChannel":"gIwWw","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bhrev":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "NoiseChannel", ()=>NoiseChannel);
-var _lengthTimer = require("./lengthTimer");
-var _volumeEnvelope = require("./volumeEnvelope");
-const SAMPLE_LENGTH = 262144;
-const SAMPLE_DEPTH = 32;
-class NoiseChannel {
-    constructor({ audioContext, outputNode, registers }){
-        this.playing = false;
-        this.volume = 0;
-        this.mode = 0;
-        this.playRate = 0;
-        registers.channel = this;
-        this.audioContext = audioContext;
-        this.longBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate);
-        this.shortBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate);
-        this.longBuffer.copyToChannel(generateLSFR(15), 0);
-        this.shortBuffer.copyToChannel(generateLSFR(7), 0);
-        this.gain = audioContext.createGain();
-        this.gain.gain.value = 0;
-        this.analyser = audioContext.createAnalyser();
-        this.muteNode = audioContext.createGain();
-        this.muteNode.gain.value = 1;
-        this.gain.connect(this.muteNode);
-        this.muteNode.connect(this.analyser);
-        this.analyser.connect(outputNode);
-        this.createBufferSource();
-        this.setSampleRate(0.5, 0);
-        this.waveFormChanged = ()=>{};
-        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
-        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
-        this.setMode(0);
-    }
-    update(cycles) {
-        if (this.playing) {
-            this.timer.update(cycles);
-            this.envelope.update(cycles);
-        }
-    }
-    start() {
-        this.createBufferSource();
-        this.playing = true;
-        this.bufferSource.start();
-        this.setVolume();
-        this.timer.resetClock();
-        this.envelope.resetClock();
-    }
-    stop() {
-        this.playing = false;
-        this.bufferSource.stop();
-        this.bufferSource.disconnect();
-        this.setVolume(0);
-    }
-    updateVolume(increment) {
-        this.setVolume(this.volume + increment);
-    }
-    setMode(mode) {
-        this.mode = mode;
-    }
-    setSampleRate(divider, shift) {
-        const bitFreq = 262144 / (divider * (1 << shift));
-        this.playRate = SAMPLE_DEPTH * bitFreq / this.audioContext.sampleRate;
-        this.bufferSource.playbackRate.setValueAtTime(this.playRate, this.audioContext.currentTime);
-    }
-    createBufferSource() {
-        if (this.playing) this.bufferSource.stop();
-        this.bufferSource = this.audioContext.createBufferSource();
-        this.bufferSource.playbackRate.value = this.playRate;
-        if (this.mode == 0) this.bufferSource.buffer = this.longBuffer;
-        else this.bufferSource.buffer = this.shortBuffer;
-        this.bufferSource.connect(this.gain);
-        this.bufferSource.loop = true;
-    }
-    setVolume(volume = this.volume) {
-        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
-        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-}
-function createBuffer7() {
-    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
-    let lsfr = 0;
-    for(let i = 0; i < SAMPLE_LENGTH; i++){
-        let shift = lsfr >> 1;
-        const b0 = lsfr & 1;
-        const b1 = shift & 1;
-        const carry = 1 - (b0 ^ b1);
-        shift &= 127;
-        shift |= carry << 7;
-        lsfr = shift;
-        const value = carry ? 1 : -1;
-        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
-    }
-    return values;
-}
-function createBuffer15() {
-    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
-    let lsfr = 0;
-    for(let i = 0; i < SAMPLE_LENGTH; i++){
-        let shift = lsfr >> 1;
-        const b0 = lsfr & 1;
-        const b1 = shift & 1;
-        const carry = 1 - (b0 ^ b1);
-        shift &= 32767;
-        shift |= carry << 15;
-        lsfr = shift;
-        const value = carry ? 1 : -1;
-        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
-    }
-    return values;
-}
-function generateLSFR(width) {
-    const period = 1 << width - 1;
-    let lsfr = 127;
-    const output = new Float32Array(period * SAMPLE_DEPTH);
-    for(let i = 0; i < period; i++){
-        let bit = (lsfr ^ lsfr >> 1) & 1;
-        lsfr = lsfr >> 1 | bit << width - 1;
-        for(let j = 0; j < SAMPLE_DEPTH; j++)output[SAMPLE_DEPTH * i + j] = bit * 2 - 1;
-    }
-    return output;
-}
-
-},{"./lengthTimer":"k44nd","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k44nd":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature that turns the channel off after a certain amount
- * of time has passed.
- */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
-// Roughly equal to 4.2MHz clock speed / 256Hz 
-const LENGTH_TIMER_TICK = 0x4000;
-class LengthTimer {
-    constructor(channelStop){
-        this.clock = 0;
-        this.enabled = false;
-        this.timer = 0;
-        this.channelStop = channelStop;
-    }
-    update(cycles) {
-        if (this.enabled) {
-            this.clock += cycles;
-            if (this.clock > LENGTH_TIMER_TICK) {
-                this.clock -= LENGTH_TIMER_TICK;
-                this.timer++;
-                if (this.timer >= 64) this.channelStop();
-            }
-        }
-    }
-    enable() {
-        this.enabled = true;
-    }
-    disable() {
-        this.enabled = false;
-    }
-    setTimer(length) {
-        this.timer = length;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lEByF":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Sound channel feature which regularly changes the volume of the channel
- * until it reaches a maximum or minimum value.
- */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
-// Roughly equal to 4.2MHz clock speed / 64Hz
-const ENVELOPE_TIMER_TICK = 0x10000;
-class VolumeEnvelope {
-    constructor(volumeSetter){
-        this.clock = 0;
-        this.direction = 1;
-        this.pace = 0;
-        this.timer = 0;
-        this.volumeIncrement = volumeSetter;
-    }
-    update(cycles) {
-        if (this.pace) {
-            this.clock += cycles;
-            if (this.clock >= ENVELOPE_TIMER_TICK) {
-                this.clock -= ENVELOPE_TIMER_TICK;
-                this.timer--;
-                if (this.timer <= 0) {
-                    this.timer = this.pace;
-                    this.volumeIncrement(this.direction);
-                }
-            }
-        }
-    }
-    setEnvelope(direction, pace) {
-        this.direction = direction;
-        this.pace = pace;
-        this.timer = pace;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iY6ME":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _lengthTimer = require("./lengthTimer");
-var _periodSweep = require("./periodSweep");
-var _volumeEnvelope = require("./volumeEnvelope");
-class PulseChannel {
-    constructor({ audioContext, outputNode, registers }){
-        this.playing = false;
-        this.period = 0;
-        this.volume = 0;
-        this.waveFormChanged = ()=>{};
-        this.audioContext = audioContext;
-        this.oscillator = audioContext.createOscillator();
-        this.oscillator.type = "square";
-        this.oscillator.frequency.value = 440;
-        this.gain = audioContext.createGain();
-        this.gain.gain.value = 0;
-        this.analyser = audioContext.createAnalyser();
-        this.muteNode = audioContext.createGain();
-        this.muteNode.gain.value = 1;
-        this.oscillator.connect(this.muteNode);
-        this.muteNode.connect(this.gain);
-        this.gain.connect(this.analyser);
-        this.analyser.connect(outputNode);
-        this.oscillator.start();
-        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
-        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
-        this.sweep = new (0, _periodSweep.PeriodSweep)((step, direction)=>this.updatePeriod(step, direction));
-        registers.channel = this;
-    }
-    update(cycles) {
-        if (this.playing) {
-            this.timer.update(cycles);
-            this.envelope.update(cycles);
-            this.sweep.update(cycles);
-        }
-    }
-    start() {
-        this.playing = true;
-        this.setVolume();
-        this.timer.resetClock();
-        this.envelope.resetClock();
-    }
-    stop() {
-        this.playing = false;
-        this.setVolume(0);
-    }
-    updateVolume(increment) {
-        this.setVolume(this.volume + increment);
-    }
-    updatePeriod(step, direction) {
-        const newPeriod = this.period + direction * (this.period / (1 << step));
-        this.setPeriod(newPeriod);
-    }
-    setPeriod(period) {
-        this.period = period;
-        const frequency = 131072 / (2048 - period);
-        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-    setVolume(volume = this.volume) {
-        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
-        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-}
-exports.default = PulseChannel;
-
-},{"./lengthTimer":"k44nd","./periodSweep":"b100a","./volumeEnvelope":"lEByF","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"b100a":[function(require,module,exports) {
-// Roughly equal to 4.2MHz clock speed / 128Hz
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "PeriodSweep", ()=>PeriodSweep);
-const SWEEP_TIMER_TICK = 0x5000;
-class PeriodSweep {
-    constructor(incrementPeriod){
-        this.clock = 0;
-        this.pace = 0;
-        this.direction = 1;
-        this.timer = 0;
-        this.incrementPeriod = incrementPeriod;
-    }
-    update(cycles) {
-        if (this.pace) {
-            this.clock += cycles;
-            if (this.clock >= SWEEP_TIMER_TICK) {
-                this.clock -= SWEEP_TIMER_TICK;
-                this.timer--;
-                if (this.timer <= 0) {
-                    this.timer = this.pace;
-                    this.incrementPeriod(this.step, this.direction);
-                }
-            }
-        }
-    }
-    setSweep(direction, pace, step) {
-        this.direction = direction;
-        this.pace = pace;
-        this.timer = pace;
-        this.step = step;
-    }
-    resetClock() {
-        this.clock = 0;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gIwWw":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _lengthTimer = require("./lengthTimer");
-const SAMPLE_RATE = 65536;
-class WaveChannel {
-    constructor({ audioContext, outputNode, registers }){
-        this.playing = false;
-        this.period = 0;
-        this.waveFormChanged = ()=>{};
-        this.registers = registers;
-        registers.channel = this;
-        this.audioContext = audioContext;
-        this.buffer = audioContext.createBuffer(1, 32, 65536);
-        this.bufferSource = audioContext.createBufferSource();
-        this.gain = audioContext.createGain();
-        this.gain.gain.value = 0;
-        this.analyser = audioContext.createAnalyser();
-        this.muteNode = audioContext.createGain();
-        this.muteNode.gain.value = 1;
-        this.bufferSource.buffer = this.buffer;
-        this.bufferSource.loop = true;
-        this.bufferSource.connect(this.gain);
-        this.gain.connect(this.muteNode);
-        this.muteNode.connect(this.analyser);
-        this.analyser.connect(outputNode);
-        this.bufferSource.start();
-        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
-    }
-    update(cycles) {
-        if (this.playing) this.timer.update(cycles);
-    }
-    start() {
-        this.bufferSource.stop();
-        this.playing = true;
-        const sampleRate = 2097152 / (2048 - this.registers.period);
-        const buffer = this.audioContext.createBuffer(1, 32, this.audioContext.sampleRate);
-        buffer.copyToChannel(this.registers.samples, 0, 0);
-        const bufferSource = this.audioContext.createBufferSource();
-        bufferSource.buffer = buffer;
-        bufferSource.loop = true;
-        bufferSource.playbackRate.value = sampleRate / this.audioContext.sampleRate;
-        bufferSource.connect(this.gain);
-        bufferSource.start();
-        this.bufferSource = bufferSource;
-        this.setVolume(this.registers.volumeSetting);
-        this.timer.resetClock();
-    }
-    stop() {
-        this.playing = false;
-        this.setVolume(0);
-        this.bufferSource.stop();
-        this.waveFormChanged();
-    }
-    setVolume(volumeSetting) {
-        this.gain.gain.setValueAtTime([
-            0,
-            1,
-            0.5,
-            0.25
-        ][volumeSetting] * 0.15, this.audioContext.currentTime);
-        this.waveFormChanged();
-    }
-}
-exports.default = WaveChannel;
-
-},{"./lengthTimer":"k44nd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cFNSD":[function(require,module,exports) {
+},{"./controller":"cFNSD","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./audio/audioProcessor":"bz9FZ","./pictureProcessor":"bEjLj","./memory/memoryMap":"ft6mh","./cpu/cpu":"jh61E"}],"cFNSD":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _interruptRegisters = require("./memory/registers/interruptRegisters");
@@ -31618,364 +31162,672 @@ class InterruptEnabledRegister {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2CR9q":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bz9FZ":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _cpuRegisters = require("./cpu/cpuRegisters");
-var _instruction = require("./instruction");
-var _instructionHelpers = require("./instructions/instructionHelpers");
-var _nop = require("./instructions/nop");
-var _nopDefault = parcelHelpers.interopDefault(_nop);
-var _interruptRegisters = require("./memory/registers/interruptRegisters");
-var _timer = require("./timer");
-var _timerDefault = parcelHelpers.interopDefault(_timer);
-const INTERRUPT_HANDLERS = {
-    [(0, _interruptRegisters.Interrupt).VBlank]: 0x0040,
-    [(0, _interruptRegisters.Interrupt).LCD]: 0x0048,
-    [(0, _interruptRegisters.Interrupt).Timer]: 0x0050,
-    [(0, _interruptRegisters.Interrupt).Serial]: 0x0058,
-    [(0, _interruptRegisters.Interrupt).Joypad]: 0x0060
-};
-class CPU {
-    constructor(memory, controller){
-        this.running = false;
-        this.cycleCount = 0;
-        this.interruptsEnabled = false;
-        this.recentFrames = [];
-        this.recentFrameTimes = [];
-        this.averageRecentFrameTime = 0;
-        this.fps = 0;
-        this.isHalted = false;
-        this.isStopped = false;
-        this.debugMode = false;
-        this.breakpoints = new Set();
-        this.onInstructionComplete = ()=>{};
-        this.onError = ()=>{};
-        this.clockCallbacks = [];
-        this.gbDoctorLog = "";
-        this.memory = memory;
-        this.controller = controller;
-        memory.cpu = this;
-        this.registers = new (0, _cpuRegisters.CpuRegisters)();
-        this.timer = new (0, _timerDefault.default)(memory);
-        this.addClockCallback(this.timer);
-        this.interruptEnableRegister = memory.at(0xFFFF);
-        this.interruptFlags = memory.at(0xFF0F);
-        const self = this;
-        this.nextByte = {
-            get value () {
-                return memory.at(self.registers.PC.value++).value;
-            },
-            set value (_){}
-        };
-        this.nextWord = {
-            get value () {
-                const l = memory.at(self.registers.PC.value++).value;
-                const h = memory.at(self.registers.PC.value++).value;
-                return (h << 8) + l;
+var _noiseChannel = require("./noiseChannel");
+var _pulseChannel = require("./pulseChannel");
+var _pulseChannelDefault = parcelHelpers.interopDefault(_pulseChannel);
+var _waveChannel = require("./waveChannel");
+var _waveChannelDefault = parcelHelpers.interopDefault(_waveChannel);
+class AudioProcessor {
+    constructor(cpu){
+        this.audioContext = new AudioContext({
+            sampleRate: 44100
+        });
+        this.masterVolume = 0;
+        this.cpu = cpu;
+        this.memory = cpu.memory;
+        this.memory.registers.audioMasterControl.audioProcessor = this;
+        this.memory.registers.masterVolumeVin.updateVolume = (volume)=>{
+            if (this.masterVolume !== volume) {
+                this.masterVolume = volume;
+                this.vinVolume.gain.setValueAtTime(volume / 8, this.audioContext.currentTime);
+            // console.log(volume, this.vinVolume.gain.value)
             }
         };
-        // SKIP BOOTROM
-        this.registers.A.value = 0x01;
-        this.registers.F.value = 0xB0;
-        this.registers.B.value = 0x00;
-        this.registers.C.value = 0x13;
-        this.registers.D.value = 0x00;
-        this.registers.E.value = 0xD8;
-        this.registers.H.value = 0x01;
-        this.registers.L.value = 0x4D;
-        this.registers.SP.value = 0xFFFE;
-        this.registers.PC.value = 0x0100;
-    }
-    createGbDoctorLog() {
-        // GB Doctor logging
-        const A = this.registers.A.value.toString(16).padStart(2, "0").toUpperCase();
-        const B = this.registers.B.value.toString(16).padStart(2, "0").toUpperCase();
-        const C = this.registers.C.value.toString(16).padStart(2, "0").toUpperCase();
-        const D = this.registers.D.value.toString(16).padStart(2, "0").toUpperCase();
-        const E = this.registers.E.value.toString(16).padStart(2, "0").toUpperCase();
-        const F = this.registers.F.value.toString(16).padStart(2, "0").toUpperCase();
-        const H = this.registers.H.value.toString(16).padStart(2, "0").toUpperCase();
-        const L = this.registers.L.value.toString(16).padStart(2, "0").toUpperCase();
-        const SP = this.registers.SP.value.toString(16).padStart(4, "0").toUpperCase();
-        const PC = this.registers.PC.value.toString(16).padStart(4, "0").toUpperCase();
-        const PCMEM = [
-            this.memory.at(this.registers.PC.value + 0).value,
-            this.memory.at(this.registers.PC.value + 1).value,
-            this.memory.at(this.registers.PC.value + 2).value,
-            this.memory.at(this.registers.PC.value + 3).value
-        ].map((x)=>x.toString(16).padStart(2, "0").toUpperCase()).join(",");
-        this.gbDoctorLog += `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`;
-    }
-    executeNextInstruction() {
-        // this.createGbDoctorLog()
-        if (this.isHalted) {
-            this.incrementClock(4);
-            return;
-        }
-        const code = this.nextByte.value;
-        const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
-        let instruction;
-        try {
-            instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
-        } catch  {
-            console.warn(`Unused opcode: ${code.toString(16)} at address ${this.registers.PC.value.toString(16)}`);
-            instruction = (0, _nopDefault.default);
-        }
-        instruction.execute(this);
-        this.incrementClock(instruction.cycles);
-        if (this.debugMode) {
-            const parameters = new Array(instruction.parameterBytes).fill(0).map((_1, i)=>this.memory.at(this.registers.PC.value + 1 + i).value);
-            console.log(instruction.description(parameters));
-        }
-        this.onInstructionComplete();
-    }
-    getInterrupt() {
-        if (!this.interruptsEnabled) return null;
-        const activeInterrupts = this.interruptEnableRegister.value & this.interruptFlags.value;
-        if (activeInterrupts === 0) return null;
-        // Find id of highest priority interrupt
-        let id = 0;
-        while((activeInterrupts >> id & 1) === 0)id++;
-        this.interruptFlags.value = this.interruptFlags.value & ~(1 << id);
-        return id;
-    }
-    handleInterrupt(interrupt) {
-        this.isHalted = false;
-        // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
-        // Push PC to stack and jump to handler address
-        const handlerAddress = INTERRUPT_HANDLERS[interrupt];
-        const sp = this.registers.SP;
-        const pc = this.registers.PC;
-        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
-        this.memory.at(--sp.value).value = h;
-        this.memory.at(--sp.value).value = l;
-        pc.value = handlerAddress;
-        this.incrementClock(20);
-        this.interruptsEnabled = false;
-    }
-    incrementClock(cycles) {
-        this.cycleCount += cycles;
-        this.clockCallbacks.forEach((callback)=>callback.updateClock(cycles));
-    }
-    run() {
-        this.running = true;
-        this.apu.startAudio();
-        requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
-    }
-    pause() {
-        this.running = false;
-        this.apu.stopAudio();
-    }
-    runFrame(timestamp) {
-        const startTime = Date.now();
-        // We maintain an FPS counter by keeping track of how many frames were run
-        // over the last 1000ms
-        this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
-        this.fps = this.recentFrames.push(timestamp);
-        let address = 0;
-        this.controller.update();
-        // try {
-        frameLoop: while(!this.breakpoints.has(this.registers.PC.value)){
-            this.executeNextInstruction();
-            address = this.registers.PC.value;
-            const interrupt = this.getInterrupt();
-            if (interrupt !== null) this.handleInterrupt(interrupt);
-            if (this.screen.newFrameDrawn) {
-                this.screen.newFrameDrawn = false;
-                break frameLoop;
-            }
-        }
-        if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
-        const endTime = Date.now();
-        const timeTaken = endTime - startTime;
-        this.recentFrameTimes.push(timeTaken);
-        this.averageRecentFrameTime += timeTaken;
-        if (this.recentFrameTimes.length > 60) {
-            const [removed] = this.recentFrameTimes.splice(0, 1);
-            this.averageRecentFrameTime -= removed;
-        }
-    // } catch (error) {
-    //   console.log(error.stack)
-    //   this.running = false
-    //   this.onError(error)
-    // }    
-    }
-    addClockCallback(callback) {
-        this.clockCallbacks.push(callback);
-    }
-}
-exports.default = CPU;
-
-},{"./cpu/cpuRegisters":"7SgHs","./instruction":"dshpP","./instructions/instructionHelpers":"bJjsQ","./instructions/nop":"jvHrF","./memory/registers/interruptRegisters":"gq7ph","./timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7SgHs":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "CpuRegisters", ()=>CpuRegisters);
-var _byteRef = require("../refs/byteRef");
-var _wordRef = require("../refs/wordRef");
-var _flags = require("./flags");
-class CpuRegisters {
-    constructor(){
-        this.A = new (0, _byteRef.GenericByteRef)();
-        this.F = new (0, _flags.Flags)();
-        this.B = new (0, _byteRef.GenericByteRef)();
-        this.C = new (0, _byteRef.GenericByteRef)();
-        this.D = new (0, _byteRef.GenericByteRef)();
-        this.E = new (0, _byteRef.GenericByteRef)();
-        this.H = new (0, _byteRef.GenericByteRef)();
-        this.L = new (0, _byteRef.GenericByteRef)();
-        this.PC = new (0, _wordRef.GenericWordRef)();
-        this.SP = new (0, _wordRef.GenericWordRef)();
-        this.HL = new (0, _wordRef.CompositeWordRef)(this.H, this.L);
-        this.BC = new (0, _wordRef.CompositeWordRef)(this.B, this.C);
-        this.DE = new (0, _wordRef.CompositeWordRef)(this.D, this.E);
-        this.AF = new (0, _wordRef.CompositeWordRef)(this.A, this.F);
-    }
-}
-
-},{"../refs/byteRef":"6cdGr","../refs/wordRef":"lDlTE","./flags":"dO5Cj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6cdGr":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "GenericByteRef", ()=>GenericByteRef);
-parcelHelpers.export(exports, "ConstantByteRef", ()=>ConstantByteRef);
-parcelHelpers.export(exports, "GetSetByteRef", ()=>GetSetByteRef);
-class GenericByteRef {
-    constructor(value = 0){
-        this._value = value & 0xFF;
-    }
-    get value() {
-        return this._value;
-    }
-    set value(value) {
-        this._value = value & 0xFF;
-    }
-}
-class ConstantByteRef {
-    constructor(value = 0){
-        this._value = value;
-    }
-    get value() {
-        return this._value;
-    }
-    set value(value) {}
-}
-class GetSetByteRef {
-    constructor(getter, setter){
-        this.getter = getter;
-        this.setter = setter;
-    }
-    get value() {
-        return this.getter();
-    }
-    set value(value) {
-        this.setter(value);
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lDlTE":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "GenericWordRef", ()=>GenericWordRef);
-parcelHelpers.export(exports, "CompositeWordRef", ()=>CompositeWordRef);
-class GenericWordRef {
-    constructor(value = 0){
-        this._value = value & 0xFFFF;
-    }
-    get value() {
-        return this._value;
-    }
-    set value(value) {
-        this._value = value & 0xFFFF;
-    }
-}
-class CompositeWordRef {
-    constructor(high, low){
-        this.high = high;
-        this.low = low;
-    }
-    get value() {
-        return (this.high.value << 8) + this.low.value;
-    }
-    set value(value) {
-        this.high.value = value >> 8;
-        this.low.value = value & 0xFF;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dO5Cj":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Flags", ()=>Flags);
-class Flags {
-    get value() {
-        return (this.zero ? 0x80 : 0) + (this.operation ? 0x40 : 0) + (this.halfCarry ? 0x20 : 0) + (this.carry ? 0x10 : 0);
-    }
-    set value(value) {
-        this.zero = (value & 0x80) > 0;
-        this.operation = (value & 0x40) > 0;
-        this.halfCarry = (value & 0x20) > 0;
-        this.carry = (value & 0x10) > 0;
-    }
-    constructor(){
-        this.zero = false;
-        this.operation = false;
-        this.halfCarry = false;
-        this.carry = false;
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsN5b":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _interruptRegisters = require("./memory/registers/interruptRegisters");
-const DIV_CYCLE_ROLLOVER = 256;
-class Timer {
-    constructor(memory){
-        this.timerCycles = 0;
-        this.divCycles = 0;
-        this.divider = memory.registers.divider;
-        this.counter = memory.registers.timerCounter;
-        this.modulo = memory.registers.timerModulo;
-        this.control = memory.registers.timerControl;
-        this.interrupts = memory.registers.interrupts;
+        cpu.audioProcessor = this;
+        cpu.addClockCallback(this);
+        this.audioContext.suspend();
+        this.masterControl = this.audioContext.createGain();
+        this.vinVolume = this.audioContext.createGain();
+        this.channel1 = new (0, _pulseChannelDefault.default)({
+            audioContext: this.audioContext,
+            outputNode: this.vinVolume,
+            registers: this.memory.registers.channel1
+        });
+        this.channel2 = new (0, _pulseChannelDefault.default)({
+            audioContext: this.audioContext,
+            outputNode: this.vinVolume,
+            registers: this.memory.registers.channel2
+        });
+        this.channel3 = new (0, _waveChannelDefault.default)({
+            audioContext: this.audioContext,
+            outputNode: this.vinVolume,
+            registers: this.memory.registers.channel3
+        });
+        this.channel4 = new (0, _noiseChannel.NoiseChannel)({
+            audioContext: this.audioContext,
+            outputNode: this.vinVolume,
+            registers: this.memory.registers.channel4
+        });
+        this.vinVolume.connect(this.masterControl);
+        this.masterControl.connect(this.audioContext.destination);
     }
     updateClock(cycles) {
-        this.timerCycles += cycles;
-        this.divCycles += cycles;
-        if (this.divCycles > DIV_CYCLE_ROLLOVER) {
-            this.divCycles -= DIV_CYCLE_ROLLOVER;
-            this.divider.increment();
+        this.channel1.update(cycles);
+        this.channel2.update(cycles);
+        this.channel3.update(cycles);
+        this.channel4.update(cycles);
+    }
+    startAudio() {
+        this.audioContext.resume();
+    }
+    stopAudio() {
+        this.audioContext.suspend();
+    }
+}
+exports.default = AudioProcessor;
+
+},{"./noiseChannel":"aEMvL","./pulseChannel":"dByBM","./waveChannel":"eSndN","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aEMvL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "NoiseChannel", ()=>NoiseChannel);
+var _lengthTimer = require("./lengthTimer");
+var _volumeEnvelope = require("./volumeEnvelope");
+const SAMPLE_LENGTH = 262144;
+const SAMPLE_DEPTH = 32;
+class NoiseChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.volume = 0;
+        this.mode = 0;
+        this.playRate = 0;
+        registers.channel = this;
+        this.audioContext = audioContext;
+        this.longBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate);
+        this.shortBuffer = audioContext.createBuffer(1, SAMPLE_LENGTH, audioContext.sampleRate);
+        this.longBuffer.copyToChannel(generateLSFR(15), 0);
+        this.shortBuffer.copyToChannel(generateLSFR(7), 0);
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.gain.connect(this.muteNode);
+        this.muteNode.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.createBufferSource();
+        this.setSampleRate(0.5, 0);
+        this.waveFormChanged = ()=>{};
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
+        this.setMode(0);
+    }
+    update(cycles) {
+        if (this.playing) {
+            this.timer.update(cycles);
+            this.envelope.update(cycles);
         }
-        const timerRollover = this.getTimerRollover();
-        if (this.timerCycles > timerRollover) {
-            this.timerCycles -= timerRollover;
-            this.counter.value++;
-            if (this.counter.value === 0) {
-                this.counter.value = this.modulo.value;
-                this.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).Timer);
+    }
+    start() {
+        this.createBufferSource();
+        this.playing = true;
+        this.bufferSource.start();
+        this.setVolume();
+        this.timer.resetClock();
+        this.envelope.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.bufferSource.stop();
+        this.bufferSource.disconnect();
+        this.setVolume(0);
+    }
+    updateVolume(increment) {
+        this.setVolume(this.volume + increment);
+    }
+    setMode(mode) {
+        this.mode = mode;
+    }
+    setSampleRate(divider, shift) {
+        const bitFreq = 262144 / (divider * (1 << shift));
+        this.playRate = SAMPLE_DEPTH * bitFreq / this.audioContext.sampleRate;
+        this.bufferSource.playbackRate.setValueAtTime(this.playRate, this.audioContext.currentTime);
+    }
+    createBufferSource() {
+        if (this.playing) this.bufferSource.stop();
+        this.bufferSource = this.audioContext.createBufferSource();
+        this.bufferSource.playbackRate.value = this.playRate;
+        if (this.mode == 0) this.bufferSource.buffer = this.longBuffer;
+        else this.bufferSource.buffer = this.shortBuffer;
+        this.bufferSource.connect(this.gain);
+        this.bufferSource.loop = true;
+    }
+    setVolume(volume = this.volume) {
+        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
+        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+function createBuffer7() {
+    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
+    let lsfr = 0;
+    for(let i = 0; i < SAMPLE_LENGTH; i++){
+        let shift = lsfr >> 1;
+        const b0 = lsfr & 1;
+        const b1 = shift & 1;
+        const carry = 1 - (b0 ^ b1);
+        shift &= 127;
+        shift |= carry << 7;
+        lsfr = shift;
+        const value = carry ? 1 : -1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
+    }
+    return values;
+}
+function createBuffer15() {
+    const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH);
+    let lsfr = 0;
+    for(let i = 0; i < SAMPLE_LENGTH; i++){
+        let shift = lsfr >> 1;
+        const b0 = lsfr & 1;
+        const b1 = shift & 1;
+        const carry = 1 - (b0 ^ b1);
+        shift &= 32767;
+        shift |= carry << 15;
+        lsfr = shift;
+        const value = carry ? 1 : -1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)values[i * SAMPLE_DEPTH + j] = value;
+    }
+    return values;
+}
+function generateLSFR(width) {
+    const period = 1 << width - 1;
+    let lsfr = 127;
+    const output = new Float32Array(period * SAMPLE_DEPTH);
+    for(let i = 0; i < period; i++){
+        let bit = (lsfr ^ lsfr >> 1) & 1;
+        lsfr = lsfr >> 1 | bit << width - 1;
+        for(let j = 0; j < SAMPLE_DEPTH; j++)output[SAMPLE_DEPTH * i + j] = bit * 2 - 1;
+    }
+    return output;
+}
+
+},{"./lengthTimer":"e8FHC","./volumeEnvelope":"fZNRz","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"e8FHC":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Sound channel feature that turns the channel off after a certain amount
+ * of time has passed.
+ */ parcelHelpers.export(exports, "LengthTimer", ()=>LengthTimer);
+// Roughly equal to 4.2MHz clock speed / 256Hz 
+const LENGTH_TIMER_TICK = 0x4000;
+class LengthTimer {
+    constructor(channelStop){
+        this.clock = 0;
+        this.enabled = false;
+        this.timer = 0;
+        this.channelStop = channelStop;
+    }
+    update(cycles) {
+        if (this.enabled) {
+            this.clock += cycles;
+            if (this.clock > LENGTH_TIMER_TICK) {
+                this.clock -= LENGTH_TIMER_TICK;
+                this.timer++;
+                if (this.timer >= 64) this.channelStop();
             }
         }
     }
-    getTimerRollover() {
-        const mode = this.control.clockSelect;
-        return [
-            1024,
-            16,
-            64,
-            256
-        ][mode];
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    setTimer(length) {
+        this.timer = length;
+    }
+    resetClock() {
+        this.clock = 0;
     }
 }
-exports.default = Timer;
 
-},{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cz4ku":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"fZNRz":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _oam = require("./memory/oam");
-var _ioRegisters = require("./memory/registers/ioRegisters");
-var _vram = require("./memory/vram");
-var _byteRef = require("./refs/byteRef");
-var _wordRef = require("./refs/wordRef");
+/**
+ * Sound channel feature which regularly changes the volume of the channel
+ * until it reaches a maximum or minimum value.
+ */ parcelHelpers.export(exports, "VolumeEnvelope", ()=>VolumeEnvelope);
+// Roughly equal to 4.2MHz clock speed / 64Hz
+const ENVELOPE_TIMER_TICK = 0x10000;
+class VolumeEnvelope {
+    constructor(volumeSetter){
+        this.clock = 0;
+        this.direction = 1;
+        this.pace = 0;
+        this.timer = 0;
+        this.volumeIncrement = volumeSetter;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock >= ENVELOPE_TIMER_TICK) {
+                this.clock -= ENVELOPE_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.volumeIncrement(this.direction);
+                }
+            }
+        }
+    }
+    setEnvelope(direction, pace) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dByBM":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lengthTimer = require("./lengthTimer");
+var _periodSweep = require("./periodSweep");
+var _volumeEnvelope = require("./volumeEnvelope");
+class PulseChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.period = 0;
+        this.volume = 0;
+        this.waveFormChanged = ()=>{};
+        this.audioContext = audioContext;
+        this.oscillator = audioContext.createOscillator();
+        this.oscillator.type = "square";
+        this.oscillator.frequency.value = 440;
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.oscillator.connect(this.muteNode);
+        this.muteNode.connect(this.gain);
+        this.gain.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.oscillator.start();
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+        this.envelope = new (0, _volumeEnvelope.VolumeEnvelope)((increment)=>this.updateVolume(increment));
+        this.sweep = new (0, _periodSweep.PeriodSweep)((step, direction)=>this.updatePeriod(step, direction));
+        registers.channel = this;
+    }
+    update(cycles) {
+        if (this.playing) {
+            this.timer.update(cycles);
+            this.envelope.update(cycles);
+            this.sweep.update(cycles);
+        }
+    }
+    start() {
+        this.playing = true;
+        this.setVolume();
+        this.timer.resetClock();
+        this.envelope.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.setVolume(0);
+    }
+    updateVolume(increment) {
+        this.setVolume(this.volume + increment);
+    }
+    updatePeriod(step, direction) {
+        const newPeriod = this.period + direction * (this.period / (1 << step));
+        this.setPeriod(newPeriod);
+    }
+    setPeriod(period) {
+        this.period = period;
+        const frequency = 131072 / (2048 - period);
+        this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+    setVolume(volume = this.volume) {
+        this.volume = volume < 0 ? 0 : volume > 15 ? 15 : volume;
+        this.gain.gain.setValueAtTime(this.volume / 100, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+exports.default = PulseChannel;
+
+},{"./lengthTimer":"e8FHC","./periodSweep":"4HVS8","./volumeEnvelope":"fZNRz","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4HVS8":[function(require,module,exports) {
+// Roughly equal to 4.2MHz clock speed / 128Hz
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "PeriodSweep", ()=>PeriodSweep);
+const SWEEP_TIMER_TICK = 0x5000;
+class PeriodSweep {
+    constructor(incrementPeriod){
+        this.clock = 0;
+        this.pace = 0;
+        this.direction = 1;
+        this.timer = 0;
+        this.incrementPeriod = incrementPeriod;
+    }
+    update(cycles) {
+        if (this.pace) {
+            this.clock += cycles;
+            if (this.clock >= SWEEP_TIMER_TICK) {
+                this.clock -= SWEEP_TIMER_TICK;
+                this.timer--;
+                if (this.timer <= 0) {
+                    this.timer = this.pace;
+                    this.incrementPeriod(this.step, this.direction);
+                }
+            }
+        }
+    }
+    setSweep(direction, pace, step) {
+        this.direction = direction;
+        this.pace = pace;
+        this.timer = pace;
+        this.step = step;
+    }
+    resetClock() {
+        this.clock = 0;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eSndN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _lengthTimer = require("./lengthTimer");
+const SAMPLE_RATE = 65536;
+class WaveChannel {
+    constructor({ audioContext, outputNode, registers }){
+        this.playing = false;
+        this.period = 0;
+        this.waveFormChanged = ()=>{};
+        this.registers = registers;
+        registers.channel = this;
+        this.audioContext = audioContext;
+        this.buffer = audioContext.createBuffer(1, 32, 65536);
+        this.bufferSource = audioContext.createBufferSource();
+        this.gain = audioContext.createGain();
+        this.gain.gain.value = 0;
+        this.analyser = audioContext.createAnalyser();
+        this.muteNode = audioContext.createGain();
+        this.muteNode.gain.value = 1;
+        this.bufferSource.buffer = this.buffer;
+        this.bufferSource.loop = true;
+        this.bufferSource.connect(this.gain);
+        this.gain.connect(this.muteNode);
+        this.muteNode.connect(this.analyser);
+        this.analyser.connect(outputNode);
+        this.bufferSource.start();
+        this.timer = new (0, _lengthTimer.LengthTimer)(()=>this.stop());
+    }
+    update(cycles) {
+        if (this.playing) this.timer.update(cycles);
+    }
+    start() {
+        this.bufferSource.stop();
+        this.playing = true;
+        const sampleRate = 2097152 / (2048 - this.registers.period);
+        const buffer = this.audioContext.createBuffer(1, 32, this.audioContext.sampleRate);
+        buffer.copyToChannel(this.registers.samples, 0, 0);
+        const bufferSource = this.audioContext.createBufferSource();
+        bufferSource.buffer = buffer;
+        bufferSource.loop = true;
+        bufferSource.playbackRate.value = sampleRate / this.audioContext.sampleRate;
+        bufferSource.connect(this.gain);
+        bufferSource.start();
+        this.bufferSource = bufferSource;
+        this.setVolume(this.registers.volumeSetting);
+        this.timer.resetClock();
+    }
+    stop() {
+        this.playing = false;
+        this.setVolume(0);
+        this.bufferSource.stop();
+        this.waveFormChanged();
+    }
+    setVolume(volumeSetting) {
+        this.gain.gain.setValueAtTime([
+            0,
+            1,
+            0.5,
+            0.25
+        ][volumeSetting] * 0.15, this.audioContext.currentTime);
+        this.waveFormChanged();
+    }
+}
+exports.default = WaveChannel;
+
+},{"./lengthTimer":"e8FHC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bEjLj":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _interruptRegisters = require("./memory/registers/interruptRegisters");
+const WIDTH = 160;
+const HEIGHT = 144;
+const SCANLINES = 154;
+class PictureProcessor {
+    constructor(cpu){
+        this.clockCount = 0;
+        this.windowLine = 0;
+        this.mode = "Scanline OAM";
+        this.newFrameDrawn = false;
+        this.colours = [
+            [
+                255,
+                255,
+                255
+            ],
+            [
+                192,
+                192,
+                192
+            ],
+            [
+                96,
+                96,
+                96
+            ],
+            [
+                0,
+                0,
+                0
+            ]
+        ];
+        this.cpu = cpu;
+        this.memory = cpu.memory;
+        this.buffer = new OffscreenCanvas(WIDTH, HEIGHT);
+        this.bufferContext = this.buffer.getContext("2d");
+        this.lcdControl = this.memory.registers.lcdControl;
+        this.lcdStatus = this.memory.registers.lcdStatus;
+        this.scrollY = this.memory.registers.scrollY;
+        this.scrollX = this.memory.registers.scrollX;
+        this.scanlineNumber = this.memory.registers.scanline;
+        this.backgroundPallette = this.memory.registers.backgroundPallete;
+        this.coincidence = this.memory.registers.scanlineCoincidence;
+        cpu.addClockCallback(this);
+        cpu.pictureProcessor = this;
+    }
+    // Returns true if new frame is rendered
+    updateClock(cycle) {
+        this.clockCount += cycle;
+        switch(this.mode){
+            case "HBlank":
+                if (this.clockCount >= 204) {
+                    this.clockCount -= 204;
+                    this.setScanline(this.scanlineNumber.value + 1);
+                    if (this.lcdControl.windowEnabled && this.scanlineNumber.value > this.memory.registers.windowY.value && this.memory.registers.windowX.value <= 166) this.windowLine++;
+                    if (this.scanlineNumber.value === HEIGHT) {
+                        this.renderScreen();
+                        this.setMode("VBlank");
+                        this.newFrameDrawn = true;
+                    } else this.setMode("Scanline OAM");
+                }
+                break;
+            case "VBlank":
+                if (this.clockCount >= 456) {
+                    this.clockCount -= 456;
+                    this.setScanline(this.scanlineNumber.value + 1);
+                    if (this.scanlineNumber.value > SCANLINES) {
+                        this.setScanline(0);
+                        this.windowLine = 0;
+                        this.renderScanline();
+                        this.setMode("HBlank");
+                    }
+                }
+                break;
+            case "Scanline OAM":
+                if (this.clockCount >= 80) {
+                    this.clockCount -= 80;
+                    this.setMode("Scanline VRAM");
+                }
+                break;
+            case "Scanline VRAM":
+                if (this.clockCount >= 172) {
+                    this.clockCount -= 172;
+                    this.renderScanline();
+                    this.setMode("HBlank");
+                }
+                break;
+        }
+    }
+    setScanline(value) {
+        this.scanlineNumber.value = value;
+        if (this.lcdControl.enabled && this.lcdStatus.lycInterruptEnabled && this.scanlineNumber.value == this.coincidence.value) {
+            this.lcdStatus.lycCoinciding = true;
+            this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+        } else this.lcdStatus.lycCoinciding = false;
+    }
+    setMode(mode) {
+        switch(mode){
+            case "HBlank":
+                if (this.lcdControl.enabled && this.lcdStatus.mode0InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                this.lcdStatus.mode = 0;
+                break;
+            case "VBlank":
+                if (this.lcdControl.enabled) {
+                    this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).VBlank);
+                    if (this.lcdStatus.mode1InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                }
+                this.lcdStatus.mode = 1;
+                break;
+            case "Scanline OAM":
+                if (this.lcdControl.enabled && this.lcdStatus.mode2InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
+                this.lcdStatus.mode = 2;
+                break;
+            case "Scanline VRAM":
+                this.lcdStatus.mode = 3;
+                break;
+        }
+        this.mode = mode;
+    }
+    renderScanline() {
+        if (!this.lcdControl.enabled) return;
+        const scanline = this.scanlineNumber.value;
+        const line = this.bufferContext.createImageData(WIDTH, 1);
+        const scrollX = this.scrollX.value;
+        const scrollY = this.scrollY.value;
+        const backgroundY = scrollY + scanline & 0xFF;
+        // Returns the 8 long row of the background tile at pixel offset given
+        const getBackgroundTileRow = (offset)=>{
+            const backgroundX = scrollX + offset & 0xFF;
+            const tileMapNumber = (backgroundX >> 3) + (backgroundY >> 3 << 5);
+            const tileId = this.lcdControl.backgroundTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
+            const row = backgroundY & 0x7;
+            return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
+        };
+        const winY = scanline - this.memory.registers.windowY.value;
+        // Returns the 8 long row of the background tile at pixel offset given
+        const getWindowTileRow = (offset)=>{
+            const tileMapNumber = (offset >> 3) + (this.windowLine >> 3 << 5);
+            const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
+            const row = this.windowLine & 0x7;
+            return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
+        };
+        let backgroundTileRow = getBackgroundTileRow(0);
+        let backgroundTileCounter = scrollX & 0x7;
+        let windowTileRow = getWindowTileRow(0);
+        let windowTileCounter = 0;
+        const sprites = this.memory.oam.spritesAtScanline();
+        const highPrioritySprites = sprites.filter((s)=>!s.priority);
+        const lowPrioritySprites = sprites.filter((s)=>s.priority);
+        for(let i = 0; i < WIDTH; i++){
+            if (!this.lcdControl.enabled) return;
+            let pixel;
+            // Render high priority sprites (that go above background)
+            if (pixel === undefined && this.lcdControl.objectsEnabled) {
+                const sprite = highPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8 && sprite.pixelAt(scanline, i, this.lcdControl.objectSize) != undefined);
+                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
+            }
+            let tilePixel = undefined;
+            // Render window
+            const winX = i - (this.memory.registers.windowX.value - 7);
+            if (pixel === undefined && this.lcdControl.windowEnabled) {
+                if (winY >= 0 && winX >= 0) {
+                    const windowPixel = windowTileRow[winX % 8];
+                    tilePixel = this.backgroundPallette.map[windowPixel];
+                }
+            }
+            if (winX >= 0 && winY >= 0) {
+                windowTileCounter++;
+                if (windowTileCounter === 8) {
+                    windowTileCounter = 0;
+                    windowTileRow = getWindowTileRow(winX + 1);
+                }
+            }
+            // Render background (excluding the lowest colour in the pallete)
+            if (pixel === undefined && tilePixel == undefined && this.lcdControl.backgroundWindowDisplay) {
+                const backgroundPixel = backgroundTileRow[(scrollX + i) % 8];
+                tilePixel = this.backgroundPallette.map[backgroundPixel];
+            }
+            // Get next background tile if needed
+            backgroundTileCounter++;
+            if (backgroundTileCounter === 8) {
+                backgroundTileCounter = 0;
+                backgroundTileRow = getBackgroundTileRow(i + 1);
+            }
+            if (tilePixel) pixel = tilePixel;
+            // Render low priority sprites (that go below non zero background)
+            if (pixel === undefined && this.lcdControl.objectsEnabled) {
+                const sprite = lowPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8 && sprite.pixelAt(scanline, i, this.lcdControl.objectSize) != undefined);
+                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
+            }
+            // If nothing else has rendered, use the lowest colour in the pallete
+            if (pixel === undefined) pixel = this.backgroundPallette.map[0];
+            const colour = this.colours[pixel];
+            line.data[4 * i + 0] = colour[0];
+            line.data[4 * i + 1] = colour[1];
+            line.data[4 * i + 2] = colour[2];
+            line.data[4 * i + 3] = 255;
+        }
+        // Finally, add the new line to the buffer image
+        this.bufferContext.putImageData(line, 0, scanline);
+    }
+    renderScreen() {
+        if (this.canvas) {
+            const screenContext = this.canvas.getContext("2d");
+            screenContext.drawImage(this.buffer, 0, 0);
+        }
+    }
+}
+exports.default = PictureProcessor;
+
+},{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ft6mh":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _oam = require("./oam");
+var _ioRegisters = require("./registers/ioRegisters");
+var _vram = require("./vram");
+var _byteRef = require("../refs/byteRef");
+var _wordRef = require("../refs/wordRef");
 class Memory {
     constructor(cartridge){
         this.registers = new (0, _ioRegisters.IoRegisters)();
@@ -32030,7 +31882,7 @@ class Memory {
 }
 exports.default = Memory;
 
-},{"./memory/oam":"GLSg5","./memory/registers/ioRegisters":"lu92s","./memory/vram":"iA1KW","./refs/byteRef":"6cdGr","./refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
+},{"./oam":"GLSg5","./registers/ioRegisters":"lu92s","./vram":"iA1KW","../refs/byteRef":"6cdGr","../refs/wordRef":"lDlTE","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"GLSg5":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "OAM", ()=>OAM);
@@ -32105,7 +31957,46 @@ class Sprite {
     }
 }
 
-},{"../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lu92s":[function(require,module,exports) {
+},{"../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6cdGr":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "GenericByteRef", ()=>GenericByteRef);
+parcelHelpers.export(exports, "ConstantByteRef", ()=>ConstantByteRef);
+parcelHelpers.export(exports, "GetSetByteRef", ()=>GetSetByteRef);
+class GenericByteRef {
+    constructor(value = 0){
+        this._value = value & 0xFF;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        this._value = value & 0xFF;
+    }
+}
+class ConstantByteRef {
+    constructor(value = 0){
+        this._value = value;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {}
+}
+class GetSetByteRef {
+    constructor(getter, setter){
+        this.getter = getter;
+        this.setter = setter;
+    }
+    get value() {
+        return this.getter();
+    }
+    set value(value) {
+        this.setter(value);
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lu92s":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
@@ -32218,7 +32109,7 @@ class AudioMasterControlRegister {
     }
     set value(value1) {
         this.masterSwitch = (value1 & 0x80) > 0;
-        if (this.apu) this.apu.masterControl.gain.setValueAtTime(this.masterSwitch ? 1 : 0, this.apu.audioContext.currentTime);
+        if (this.audioProcessor) this.audioProcessor.masterControl.gain.setValueAtTime(this.masterSwitch ? 1 : 0, this.audioProcessor.audioContext.currentTime);
     }
     constructor(){
         this.masterSwitch = false;
@@ -32664,7 +32555,7 @@ class TimerControlRegister {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "VRAM", ()=>VRAM);
-var _instructionHelpers = require("../instructions/instructionHelpers");
+var _instructionHelpers = require("../cpu/instructions/instructionHelpers");
 var _byteRef = require("../refs/byteRef");
 class VRAM {
     constructor(){
@@ -32711,218 +32602,316 @@ class VRAM {
     }
 }
 
-},{"../instructions/instructionHelpers":"bJjsQ","../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7Es7K":[function(require,module,exports) {
+},{"../refs/byteRef":"6cdGr","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../cpu/instructions/instructionHelpers":"gPUvB"}],"lDlTE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "GenericWordRef", ()=>GenericWordRef);
+parcelHelpers.export(exports, "CompositeWordRef", ()=>CompositeWordRef);
+class GenericWordRef {
+    constructor(value = 0){
+        this._value = value & 0xFFFF;
+    }
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        this._value = value & 0xFFFF;
+    }
+}
+class CompositeWordRef {
+    constructor(high, low){
+        this.high = high;
+        this.low = low;
+    }
+    get value() {
+        return (this.high.value << 8) + this.low.value;
+    }
+    set value(value) {
+        this.high.value = value >> 8;
+        this.low.value = value & 0xFF;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jh61E":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cpuRegisters = require("./cpuRegisters");
+var _instruction = require("./instructions/instruction");
+var _instructionHelpers = require("./instructions/instructionHelpers");
+var _nop = require("./instructions/nop");
+var _nopDefault = parcelHelpers.interopDefault(_nop);
+var _interruptRegisters = require("../memory/registers/interruptRegisters");
+var _timer = require("../timer");
+var _timerDefault = parcelHelpers.interopDefault(_timer);
+const INTERRUPT_HANDLERS = {
+    [(0, _interruptRegisters.Interrupt).VBlank]: 0x0040,
+    [(0, _interruptRegisters.Interrupt).LCD]: 0x0048,
+    [(0, _interruptRegisters.Interrupt).Timer]: 0x0050,
+    [(0, _interruptRegisters.Interrupt).Serial]: 0x0058,
+    [(0, _interruptRegisters.Interrupt).Joypad]: 0x0060
+};
+class CPU {
+    constructor(memory, controller){
+        this.running = false;
+        this.cycleCount = 0;
+        this.interruptsEnabled = false;
+        this.recentFrames = [];
+        this.recentFrameTimes = [];
+        this.averageRecentFrameTime = 0;
+        this.fps = 0;
+        this.isHalted = false;
+        this.isStopped = false;
+        this.debugMode = false;
+        this.breakpoints = new Set();
+        this.onInstructionComplete = ()=>{};
+        this.onError = ()=>{};
+        this.clockCallbacks = [];
+        this.gbDoctorLog = "";
+        this.memory = memory;
+        this.controller = controller;
+        memory.cpu = this;
+        this.registers = new (0, _cpuRegisters.CpuRegisters)();
+        this.timer = new (0, _timerDefault.default)(memory);
+        this.addClockCallback(this.timer);
+        this.interruptEnableRegister = memory.at(0xFFFF);
+        this.interruptFlags = memory.at(0xFF0F);
+        const self = this;
+        this.nextByte = {
+            get value () {
+                return memory.at(self.registers.PC.value++).value;
+            },
+            set value (_){}
+        };
+        this.nextWord = {
+            get value () {
+                const l = memory.at(self.registers.PC.value++).value;
+                const h = memory.at(self.registers.PC.value++).value;
+                return (h << 8) + l;
+            }
+        };
+        // SKIP BOOTROM
+        this.registers.A.value = 0x01;
+        this.registers.F.value = 0xB0;
+        this.registers.B.value = 0x00;
+        this.registers.C.value = 0x13;
+        this.registers.D.value = 0x00;
+        this.registers.E.value = 0xD8;
+        this.registers.H.value = 0x01;
+        this.registers.L.value = 0x4D;
+        this.registers.SP.value = 0xFFFE;
+        this.registers.PC.value = 0x0100;
+    }
+    createGbDoctorLog() {
+        // GB Doctor logging
+        const A = this.registers.A.value.toString(16).padStart(2, "0").toUpperCase();
+        const B = this.registers.B.value.toString(16).padStart(2, "0").toUpperCase();
+        const C = this.registers.C.value.toString(16).padStart(2, "0").toUpperCase();
+        const D = this.registers.D.value.toString(16).padStart(2, "0").toUpperCase();
+        const E = this.registers.E.value.toString(16).padStart(2, "0").toUpperCase();
+        const F = this.registers.F.value.toString(16).padStart(2, "0").toUpperCase();
+        const H = this.registers.H.value.toString(16).padStart(2, "0").toUpperCase();
+        const L = this.registers.L.value.toString(16).padStart(2, "0").toUpperCase();
+        const SP = this.registers.SP.value.toString(16).padStart(4, "0").toUpperCase();
+        const PC = this.registers.PC.value.toString(16).padStart(4, "0").toUpperCase();
+        const PCMEM = [
+            this.memory.at(this.registers.PC.value + 0).value,
+            this.memory.at(this.registers.PC.value + 1).value,
+            this.memory.at(this.registers.PC.value + 2).value,
+            this.memory.at(this.registers.PC.value + 3).value
+        ].map((x)=>x.toString(16).padStart(2, "0").toUpperCase()).join(",");
+        this.gbDoctorLog += `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`;
+    }
+    executeNextInstruction() {
+        // this.createGbDoctorLog()
+        if (this.isHalted) {
+            this.incrementClock(4);
+            return;
+        }
+        const code = this.nextByte.value;
+        const prefixedCode = code === 0xCB ? this.nextByte.value : undefined;
+        let instruction;
+        try {
+            instruction = (0, _instruction.decodeInstruction)(code, prefixedCode);
+        } catch  {
+            console.warn(`Unused opcode: ${code.toString(16)} at address ${this.registers.PC.value.toString(16)}`);
+            instruction = (0, _nopDefault.default);
+        }
+        instruction.execute(this);
+        this.incrementClock(instruction.cycles);
+        if (this.debugMode) {
+            const parameters = new Array(instruction.parameterBytes).fill(0).map((_1, i)=>this.memory.at(this.registers.PC.value + 1 + i).value);
+            console.log(instruction.description(parameters));
+        }
+        this.onInstructionComplete();
+    }
+    getInterrupt() {
+        if (!this.interruptsEnabled) return null;
+        const activeInterrupts = this.interruptEnableRegister.value & this.interruptFlags.value;
+        if (activeInterrupts === 0) return null;
+        // Find id of highest priority interrupt
+        let id = 0;
+        while((activeInterrupts >> id & 1) === 0)id++;
+        this.interruptFlags.value = this.interruptFlags.value & ~(1 << id);
+        return id;
+    }
+    handleInterrupt(interrupt) {
+        this.isHalted = false;
+        // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
+        // Push PC to stack and jump to handler address
+        const handlerAddress = INTERRUPT_HANDLERS[interrupt];
+        const sp = this.registers.SP;
+        const pc = this.registers.PC;
+        const [h, l] = (0, _instructionHelpers.splitBytes)(pc.value);
+        this.memory.at(--sp.value).value = h;
+        this.memory.at(--sp.value).value = l;
+        pc.value = handlerAddress;
+        this.incrementClock(20);
+        this.interruptsEnabled = false;
+    }
+    incrementClock(cycles) {
+        this.cycleCount += cycles;
+        this.clockCallbacks.forEach((callback)=>callback.updateClock(cycles));
+    }
+    run() {
+        this.running = true;
+        this.audioProcessor.startAudio();
+        requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
+    }
+    pause() {
+        this.running = false;
+        this.audioProcessor.stopAudio();
+    }
+    runFrame(timestamp) {
+        const startTime = Date.now();
+        // We maintain an FPS counter by keeping track of how many frames were run
+        // over the last 1000ms
+        this.recentFrames = this.recentFrames.filter((frame)=>timestamp - frame < 1000);
+        this.fps = this.recentFrames.push(timestamp);
+        let address = 0;
+        this.controller.update();
+        // try {
+        frameLoop: while(!this.breakpoints.has(this.registers.PC.value)){
+            this.executeNextInstruction();
+            address = this.registers.PC.value;
+            const interrupt = this.getInterrupt();
+            if (interrupt !== null) this.handleInterrupt(interrupt);
+            if (this.pictureProcessor.newFrameDrawn) {
+                this.pictureProcessor.newFrameDrawn = false;
+                break frameLoop;
+            }
+        }
+        if (this.running && !this.breakpoints.has(address)) requestAnimationFrame((timestamp)=>this.runFrame(timestamp));
+        const endTime = Date.now();
+        const timeTaken = endTime - startTime;
+        this.recentFrameTimes.push(timeTaken);
+        this.averageRecentFrameTime += timeTaken;
+        if (this.recentFrameTimes.length > 60) {
+            const [removed] = this.recentFrameTimes.splice(0, 1);
+            this.averageRecentFrameTime -= removed;
+        }
+    // } catch (error) {
+    //   console.log(error.stack)
+    //   this.running = false
+    //   this.onError(error)
+    // }    
+    }
+    addClockCallback(callback) {
+        this.clockCallbacks.push(callback);
+    }
+}
+exports.default = CPU;
+
+},{"./cpuRegisters":"7SgHs","./instructions/instructionHelpers":"gPUvB","./instructions/nop":"aPf9L","../memory/registers/interruptRegisters":"gq7ph","../timer":"dsN5b","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./instructions/instruction":"7lvX4"}],"7SgHs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CpuRegisters", ()=>CpuRegisters);
+var _byteRef = require("../refs/byteRef");
+var _wordRef = require("../refs/wordRef");
+var _flags = require("./flags");
+class CpuRegisters {
+    constructor(){
+        this.A = new (0, _byteRef.GenericByteRef)();
+        this.F = new (0, _flags.Flags)();
+        this.B = new (0, _byteRef.GenericByteRef)();
+        this.C = new (0, _byteRef.GenericByteRef)();
+        this.D = new (0, _byteRef.GenericByteRef)();
+        this.E = new (0, _byteRef.GenericByteRef)();
+        this.H = new (0, _byteRef.GenericByteRef)();
+        this.L = new (0, _byteRef.GenericByteRef)();
+        this.PC = new (0, _wordRef.GenericWordRef)();
+        this.SP = new (0, _wordRef.GenericWordRef)();
+        this.HL = new (0, _wordRef.CompositeWordRef)(this.H, this.L);
+        this.BC = new (0, _wordRef.CompositeWordRef)(this.B, this.C);
+        this.DE = new (0, _wordRef.CompositeWordRef)(this.D, this.E);
+        this.AF = new (0, _wordRef.CompositeWordRef)(this.A, this.F);
+    }
+}
+
+},{"../refs/byteRef":"6cdGr","../refs/wordRef":"lDlTE","./flags":"dO5Cj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dO5Cj":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Flags", ()=>Flags);
+class Flags {
+    get value() {
+        return (this.zero ? 0x80 : 0) + (this.operation ? 0x40 : 0) + (this.halfCarry ? 0x20 : 0) + (this.carry ? 0x10 : 0);
+    }
+    set value(value) {
+        this.zero = (value & 0x80) > 0;
+        this.operation = (value & 0x40) > 0;
+        this.halfCarry = (value & 0x20) > 0;
+        this.carry = (value & 0x10) > 0;
+    }
+    constructor(){
+        this.zero = false;
+        this.operation = false;
+        this.halfCarry = false;
+        this.carry = false;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsN5b":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _interruptRegisters = require("./memory/registers/interruptRegisters");
-const WIDTH = 160;
-const HEIGHT = 144;
-const SCANLINES = 154;
-class Screen {
-    constructor(cpu){
-        this.clockCount = 0;
-        this.windowLine = 0;
-        this.mode = "Scanline OAM";
-        this.newFrameDrawn = false;
-        this.colours = [
-            [
-                255,
-                255,
-                255
-            ],
-            [
-                192,
-                192,
-                192
-            ],
-            [
-                96,
-                96,
-                96
-            ],
-            [
-                0,
-                0,
-                0
-            ]
-        ];
-        this.cpu = cpu;
-        this.memory = cpu.memory;
-        this.buffer = new OffscreenCanvas(WIDTH, HEIGHT);
-        this.bufferContext = this.buffer.getContext("2d");
-        this.lcdControl = this.memory.registers.lcdControl;
-        this.lcdStatus = this.memory.registers.lcdStatus;
-        this.scrollY = this.memory.registers.scrollY;
-        this.scrollX = this.memory.registers.scrollX;
-        this.scanlineNumber = this.memory.registers.scanline;
-        this.backgroundPallette = this.memory.registers.backgroundPallete;
-        this.coincidence = this.memory.registers.scanlineCoincidence;
-        cpu.addClockCallback(this);
-        cpu.screen = this;
+const DIV_CYCLE_ROLLOVER = 256;
+class Timer {
+    constructor(memory){
+        this.timerCycles = 0;
+        this.divCycles = 0;
+        this.divider = memory.registers.divider;
+        this.counter = memory.registers.timerCounter;
+        this.modulo = memory.registers.timerModulo;
+        this.control = memory.registers.timerControl;
+        this.interrupts = memory.registers.interrupts;
     }
-    // Returns true if new frame is rendered
-    updateClock(cycle) {
-        this.clockCount += cycle;
-        switch(this.mode){
-            case "HBlank":
-                if (this.clockCount >= 204) {
-                    this.clockCount -= 204;
-                    this.setScanline(this.scanlineNumber.value + 1);
-                    if (this.lcdControl.windowEnabled && this.scanlineNumber.value > this.memory.registers.windowY.value && this.memory.registers.windowX.value <= 166) this.windowLine++;
-                    if (this.scanlineNumber.value === HEIGHT) {
-                        this.renderScreen();
-                        this.setMode("VBlank");
-                        this.newFrameDrawn = true;
-                    } else this.setMode("Scanline OAM");
-                }
-                break;
-            case "VBlank":
-                if (this.clockCount >= 456) {
-                    this.clockCount -= 456;
-                    this.setScanline(this.scanlineNumber.value + 1);
-                    if (this.scanlineNumber.value > SCANLINES) {
-                        this.setScanline(0);
-                        this.windowLine = 0;
-                        this.renderScanline();
-                        this.setMode("HBlank");
-                    }
-                }
-                break;
-            case "Scanline OAM":
-                if (this.clockCount >= 80) {
-                    this.clockCount -= 80;
-                    this.setMode("Scanline VRAM");
-                }
-                break;
-            case "Scanline VRAM":
-                if (this.clockCount >= 172) {
-                    this.clockCount -= 172;
-                    this.renderScanline();
-                    this.setMode("HBlank");
-                }
-                break;
+    updateClock(cycles) {
+        this.timerCycles += cycles;
+        this.divCycles += cycles;
+        if (this.divCycles > DIV_CYCLE_ROLLOVER) {
+            this.divCycles -= DIV_CYCLE_ROLLOVER;
+            this.divider.increment();
+        }
+        const timerRollover = this.getTimerRollover();
+        if (this.timerCycles > timerRollover) {
+            this.timerCycles -= timerRollover;
+            this.counter.value++;
+            if (this.counter.value === 0) {
+                this.counter.value = this.modulo.value;
+                this.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).Timer);
+            }
         }
     }
-    setScanline(value) {
-        this.scanlineNumber.value = value;
-        if (this.lcdControl.enabled && this.lcdStatus.lycInterruptEnabled && this.scanlineNumber.value == this.coincidence.value) {
-            this.lcdStatus.lycCoinciding = true;
-            this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-        } else this.lcdStatus.lycCoinciding = false;
-    }
-    setMode(mode) {
-        switch(mode){
-            case "HBlank":
-                if (this.lcdControl.enabled && this.lcdStatus.mode0InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-                this.lcdStatus.mode = 0;
-                break;
-            case "VBlank":
-                if (this.lcdControl.enabled) {
-                    this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).VBlank);
-                    if (this.lcdStatus.mode1InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-                }
-                this.lcdStatus.mode = 1;
-                break;
-            case "Scanline OAM":
-                if (this.lcdControl.enabled && this.lcdStatus.mode2InterruptEnabled) this.memory.registers.interrupts.setInterrupt((0, _interruptRegisters.Interrupt).LCD);
-                this.lcdStatus.mode = 2;
-                break;
-            case "Scanline VRAM":
-                this.lcdStatus.mode = 3;
-                break;
-        }
-        this.mode = mode;
-    }
-    renderScanline() {
-        if (!this.lcdControl.enabled) return;
-        const scanline = this.scanlineNumber.value;
-        const line = this.bufferContext.createImageData(WIDTH, 1);
-        const scrollX = this.scrollX.value;
-        const scrollY = this.scrollY.value;
-        const backgroundY = scrollY + scanline & 0xFF;
-        // Returns the 8 long row of the background tile at pixel offset given
-        const getBackgroundTileRow = (offset)=>{
-            const backgroundX = scrollX + offset & 0xFF;
-            const tileMapNumber = (backgroundX >> 3) + (backgroundY >> 3 << 5);
-            const tileId = this.lcdControl.backgroundTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
-            const row = backgroundY & 0x7;
-            return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
-        };
-        const winY = scanline - this.memory.registers.windowY.value;
-        // Returns the 8 long row of the background tile at pixel offset given
-        const getWindowTileRow = (offset)=>{
-            const tileMapNumber = (offset >> 3) + (this.windowLine >> 3 << 5);
-            const tileId = this.lcdControl.windowTilemap == 0 ? this.memory.vram.tilemap0(tileMapNumber) : this.memory.vram.tilemap1(tileMapNumber);
-            const row = this.windowLine & 0x7;
-            return this.lcdControl.tileDataArea == 1 ? this.memory.vram.tileset0(tileId, row) : this.memory.vram.tileset1(tileId, row);
-        };
-        let backgroundTileRow = getBackgroundTileRow(0);
-        let backgroundTileCounter = scrollX & 0x7;
-        let windowTileRow = getWindowTileRow(0);
-        let windowTileCounter = 0;
-        const sprites = this.memory.oam.spritesAtScanline();
-        const highPrioritySprites = sprites.filter((s)=>!s.priority);
-        const lowPrioritySprites = sprites.filter((s)=>s.priority);
-        for(let i = 0; i < WIDTH; i++){
-            if (!this.lcdControl.enabled) return;
-            let pixel;
-            // Render high priority sprites (that go above background)
-            if (pixel === undefined && this.lcdControl.objectsEnabled) {
-                const sprite = highPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8 && sprite.pixelAt(scanline, i, this.lcdControl.objectSize) != undefined);
-                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
-            }
-            let tilePixel = undefined;
-            // Render window
-            const winX = i - (this.memory.registers.windowX.value - 7);
-            if (pixel === undefined && this.lcdControl.windowEnabled) {
-                if (winY >= 0 && winX >= 0) {
-                    const windowPixel = windowTileRow[winX % 8];
-                    tilePixel = this.backgroundPallette.map[windowPixel];
-                }
-            }
-            if (winX >= 0 && winY >= 0) {
-                windowTileCounter++;
-                if (windowTileCounter === 8) {
-                    windowTileCounter = 0;
-                    windowTileRow = getWindowTileRow(winX + 1);
-                }
-            }
-            // Render background (excluding the lowest colour in the pallete)
-            if (pixel === undefined && tilePixel == undefined && this.lcdControl.backgroundWindowDisplay) {
-                const backgroundPixel = backgroundTileRow[(scrollX + i) % 8];
-                tilePixel = this.backgroundPallette.map[backgroundPixel];
-            }
-            // Get next background tile if needed
-            backgroundTileCounter++;
-            if (backgroundTileCounter === 8) {
-                backgroundTileCounter = 0;
-                backgroundTileRow = getBackgroundTileRow(i + 1);
-            }
-            if (tilePixel) pixel = tilePixel;
-            // Render low priority sprites (that go below non zero background)
-            if (pixel === undefined && this.lcdControl.objectsEnabled) {
-                const sprite = lowPrioritySprites.find((sprite)=>i - (sprite.x - 8) >= 0 && i - (sprite.x - 8) < 8 && sprite.pixelAt(scanline, i, this.lcdControl.objectSize) != undefined);
-                if (sprite) pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize);
-            }
-            // If nothing else has rendered, use the lowest colour in the pallete
-            if (pixel === undefined) pixel = this.backgroundPallette.map[0];
-            const colour = this.colours[pixel];
-            line.data[4 * i + 0] = colour[0];
-            line.data[4 * i + 1] = colour[1];
-            line.data[4 * i + 2] = colour[2];
-            line.data[4 * i + 3] = 255;
-        }
-        // Finally, add the new line to the buffer image
-        this.bufferContext.putImageData(line, 0, scanline);
-    }
-    renderScreen() {
-        if (this.canvas) {
-            const screenContext = this.canvas.getContext("2d");
-            screenContext.drawImage(this.buffer, 0, 0);
-        }
+    getTimerRollover() {
+        const mode = this.control.clockSelect;
+        return [
+            1024,
+            16,
+            64,
+            256
+        ][mode];
     }
 }
-exports.default = Screen;
+exports.default = Timer;
 
 },{"./memory/registers/interruptRegisters":"gq7ph","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3e0xT":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$119f = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
