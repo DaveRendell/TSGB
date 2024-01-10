@@ -15,6 +15,7 @@ import {
   LcdStatusRegister,
   PalletteRegister,
 } from "./lcdRegisters"
+import SerialRegisters from "./serialRegisters"
 import { DividerRegister, TimerControlRegister } from "./timerRegisters"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
@@ -27,6 +28,7 @@ export class IoRegisters {
   timerControl = new TimerControlRegister()
 
   interrupts = new InterruptRegister()
+  serialRegisters = new SerialRegisters(this.interrupts)
 
   audioMasterControl = new AudioMasterControlRegister()
   masterVolumeVin = new MasterVolumeVinRegister()
@@ -54,6 +56,8 @@ export class IoRegisters {
 
   constructor() {
     this.data[0xff00] = this.joypad
+    this.data[0xff01] = this.serialRegisters.serialDataRegister
+    this.data[0xff02] = this.serialRegisters.serialControlRegister
 
     // Timer
     this.data[0xff04] = this.divider
