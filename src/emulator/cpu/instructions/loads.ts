@@ -1,6 +1,6 @@
-import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers";
-import { Instruction } from "../instruction";
-import { WordRef } from "../refs/wordRef";
+import { addressDisplay, valueDisplay } from "../../../helpers/displayHexNumbers";
+import { Instruction } from "./instruction";
+import { WordRef } from "../../refs/wordRef";
 import { combineBytes, getByteRef, from2sComplement, ByteLocation, describeByteLocation, getWordRef, describeWordLocation, WordLocation } from "./instructionHelpers";
 
 const cycleCost = (location: ByteLocation): number => {

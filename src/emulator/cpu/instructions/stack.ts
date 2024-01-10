@@ -1,7 +1,7 @@
-import { addressDisplay } from "../../helpers/displayHexNumbers";
-import { JumpCondition } from "../../types";
-import { Instruction } from "../instruction";
-import { WordLocation, combineBytes, describeByteLocation, describeWordLocation, getWordRef, splitBytes } from "./instructionHelpers";
+import { addressDisplay } from "../../../helpers/displayHexNumbers";
+import { JumpCondition } from "../../../types";
+import { Instruction } from "./instruction";
+import { WordLocation, combineBytes, describeWordLocation, getWordRef, splitBytes } from "./instructionHelpers";
 import { CONDITIONS, CONDITION_NAMES } from "./jumps";
 
 export const call: Instruction = {

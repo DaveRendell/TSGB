@@ -1,9 +1,8 @@
-import { valueDisplay } from "../../helpers/displayHexNumbers";
-import { AluOperation, Register16Name, Register8Name, Target8Name } from "../../types";
-import { add, decrement, increment } from "../arithmetic";
+import { valueDisplay } from "../../../helpers/displayHexNumbers";
+import { AluOperation } from "../../../types";
 import CPU from "../cpu";
-import { Instruction } from "../instruction";
-import { ByteLocation, WordLocation, from2sComplement, getByteRef, getWordRef, splitBytes, to2sComplement } from "./instructionHelpers";
+import { Instruction } from "./instruction";
+import { ByteLocation, WordLocation, from2sComplement, getByteRef, getWordRef } from "./instructionHelpers";
 
 const splitToNibbles = (value: number) => [(value >> 4) & 0xF, value & 0xF]
 const combineNibbles = (h: number, l: number) => (h << 4) + l

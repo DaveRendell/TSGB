@@ -1,4 +1,4 @@
-import { Instruction } from "../instruction"
+import { Instruction } from "./instruction"
 import { ByteLocation, getByteRef } from "./instructionHelpers"
 
 export const testBit = (bit: number, sourceName: ByteLocation): Instruction => {

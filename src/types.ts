@@ -11,14 +11,3 @@ export type AluOperation = "ADD" | "ADC" | "SUB" | "SBC" | "AND" | "XOR" | "OR" 
 export type JumpCondition = "Not-Zero" | "Zero" | "Not-Carry" | "Carry" | "None"
 
 export type Interrupt = "VBlank" | "LCD" | "Timer" | "Serial" | "Joypad"
-
-export interface ReadableValue<IntSize extends number> {
-  intSize: IntSize
-  read(): number
-}
-
-export interface MutableValue<IntSize extends number> {
-  intSize: IntSize
-  read(): number
-  write(value: number): void
-}

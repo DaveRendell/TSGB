@@ -1,5 +1,5 @@
 import * as React from "react"
-import Memory from "../../emulator/memory"
+import Memory from "../../emulator/memory/memoryMap"
 import { addressDisplay } from "../../helpers/displayHexNumbers"
 import MemoryTableRow from "./memoryTableRow"
 

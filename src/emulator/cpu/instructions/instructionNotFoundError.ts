@@ -1,4 +1,4 @@
-import { valueDisplay } from "../helpers/displayHexNumbers"
+import { valueDisplay } from "../../../helpers/displayHexNumbers"
 
 export default class InstructionNotFoundError extends Error {
   constructor(code: number) {

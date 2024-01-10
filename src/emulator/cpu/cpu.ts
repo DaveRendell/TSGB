@@ -1,17 +1,15 @@
-import { MutableValue } from "../types";
-import APU from "./apu";
-import Controller from "./controller";
-import { CpuRegisters } from "./cpu/cpuRegisters";
-import { Instruction, decodeInstruction } from "./instruction";
-import halt from "./instructions/halt";
-import { resetBit, splitBytes } from "./instructions/instructionHelpers";
+import AudioProcessor from "../audio/audioProcessor";
+import Controller from "../controller";
+import { CpuRegisters } from "./cpuRegisters";
+import { Instruction, decodeInstruction } from "./instructions/instruction";
+import { splitBytes } from "./instructions/instructionHelpers";
 import nop from "./instructions/nop";
-import Memory from "./memory";
-import { Interrupt } from "./memory/registers/interruptRegisters";
-import { ByteRef } from "./refs/byteRef";
-import { WordRef } from "./refs/wordRef";
-import Screen from "./screen"
-import Timer from "./timer";
+import Memory from "../memory/memoryMap";
+import { Interrupt } from "../memory/registers/interruptRegisters";
+import { ByteRef } from "../refs/byteRef";
+import { WordRef } from "../refs/wordRef";
+import PictureProcessor from "../pictureProcessor"
+import Timer from "../timer";
 
 interface ClockCallback { updateClock(cycles: number): void }
 
@@ -31,8 +29,8 @@ export default class CPU {
   controller: Controller
   cycleCount: number = 0
   interruptsEnabled = false
-  screen: Screen
-  apu: APU
+  pictureProcessor: PictureProcessor
+  audioProcessor: AudioProcessor
   recentFrames: number[] = []
   recentFrameTimes: number[] = []
   averageRecentFrameTime = 0
@@ -193,13 +191,13 @@ export default class CPU {
 
   run() {
     this.running = true
-    this.apu.startAudio()
+    this.audioProcessor.startAudio()
     requestAnimationFrame(timestamp => this.runFrame(timestamp))
   }
 
   pause() {
     this.running = false
-    this.apu.stopAudio()
+    this.audioProcessor.stopAudio()
   }
 
   runFrame(timestamp: number): void {
@@ -224,8 +222,8 @@ export default class CPU {
           this.handleInterrupt(interrupt)
         }
 
-        if (this.screen.newFrameDrawn) {
-          this.screen.newFrameDrawn = false
+        if (this.pictureProcessor.newFrameDrawn) {
+          this.pictureProcessor.newFrameDrawn = false
           break frameLoop
         }
       }

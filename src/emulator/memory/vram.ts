@@ -1,4 +1,4 @@
-import { from2sComplement } from "../instructions/instructionHelpers"
+import { from2sComplement } from "../cpu/instructions/instructionHelpers"
 import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 
 type Tile = number[][]

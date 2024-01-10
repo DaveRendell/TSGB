@@ -1,8 +1,7 @@
-import { addressDisplay } from "../../helpers/displayHexNumbers";
-import { JumpCondition } from "../../types";
-import { add, decrement } from "../arithmetic";
+import { addressDisplay } from "../../../helpers/displayHexNumbers";
+import { JumpCondition } from "../../../types";
 import CPU from "../cpu";
-import { Instruction } from "../instruction";
+import { Instruction } from "./instruction";
 import { combineBytes, from2sComplement, splitBytes } from "./instructionHelpers";
 
 export const CONDITIONS: Record<JumpCondition, (cpu: CPU) => boolean> = {

@@ -1,6 +1,6 @@
 import * as React from "react"
-import CPU from "../../emulator/cpu"
-import Screen from "../../emulator/screen"
+import CPU from "../../emulator/cpu/cpu"
+import PictureProcessor from "../../emulator/pictureProcessor"
 
 interface Props {
   cpu: CPU
@@ -9,12 +9,9 @@ interface Props {
 export default function Display({ cpu }: Props) {
   const canvas = React.useRef<HTMLCanvasElement>(null)
 
-  const [_, setScreen] = React.useState<Screen | null>(null)
-
   React.useEffect(() => {
     if (canvas.current) {
-      cpu.screen.canvas = canvas.current
-      setScreen(cpu.screen)
+      cpu.pictureProcessor.canvas = canvas.current
     }
   }, [canvas])
 

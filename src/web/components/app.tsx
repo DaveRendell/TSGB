@@ -12,7 +12,7 @@ export default function App() {
     const paletteString = window.localStorage.getItem("monochromePalette")
     if (paletteString) {
       const palette = JSON.parse(paletteString)
-      emulator.screen.colours = palette
+      emulator.pictureProcessor.colours = palette
     }
     return <GameView emulator={emulator} unload={() => setCartridge(null)} />
   }

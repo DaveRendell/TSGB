@@ -1,4 +1,4 @@
-import Memory from "./memory"
+import Memory from "./memory/memoryMap"
 import { Interrupt, InterruptRegister } from "./memory/registers/interruptRegisters"
 import { JoypadRegister } from "./memory/registers/joypadRegister"
 

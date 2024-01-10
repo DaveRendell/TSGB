@@ -1,23 +1,23 @@
-import APU from "./apu";
+import AudioProcessor from "./audio/audioProcessor";
 import Controller from "./controller";
-import CPU from "./cpu";
-import Memory from "./memory";
+import CPU from "./cpu/cpu";
+import Memory from "./memory/memoryMap";
 import { Cartridge } from "./memory/cartridges/cartridge"
-import Screen from "./screen"
+import PictureProcessor from "./pictureProcessor"
 
 export class Emulator {
   memory: Memory
   cpu: CPU
-  screen: Screen
-  apu: APU
+  pictureProcessor: PictureProcessor
+  audioProcessor: AudioProcessor
   controller: Controller
 
   constructor(cartridge: Cartridge) {
     this.memory = new Memory(cartridge)
     this.controller = new Controller(this.memory)
     this.cpu = new CPU(this.memory, this.controller)
-    this.screen = new Screen(this.cpu)
-    this.apu = new APU(this.cpu)
+    this.pictureProcessor = new PictureProcessor(this.cpu)
+    this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
   }
 }

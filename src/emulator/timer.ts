@@ -1,4 +1,4 @@
-import Memory from "./memory";
+import Memory from "./memory/memoryMap";
 import { Interrupt, InterruptRegister } from "./memory/registers/interruptRegisters";
 import { DividerRegister, TimerControlRegister } from "./memory/registers/timerRegisters";
 import { ByteRef } from "./refs/byteRef";

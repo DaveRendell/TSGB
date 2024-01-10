@@ -1,17 +1,16 @@
-import { valueDisplay } from "../helpers/displayHexNumbers";
-import { AluOperation, JumpCondition, Register16Name, Target8Name } from "../types";
-import CPU from "./cpu";
+import { AluOperation, JumpCondition } from "../../../types";
+import CPU from "../cpu";
 import InstructionNotFoundError from "./instructionNotFoundError";
-import { addImmediateToSP, addToHL, aluOperation, aluOperationImmediate, cpl, daa, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./instructions/arithmetic8bit";
-import { ccf, disableInterrupts, enableInterrupts, scf, stop } from "./instructions/cpuControl";
-import halt from "./instructions/halt";
-import { ByteLocation, WordLocation } from "./instructions/instructionHelpers";
-import { jpHl, jump, jumpRelative, rst } from "./instructions/jumps";
+import { addImmediateToSP, addToHL, aluOperation, aluOperationImmediate, cpl, daa, decrement16Bit, decrement8Bit, increment16Bit, increment8Bit, rotateLeft, rotateRight } from "./arithmetic8bit";
+import { ccf, disableInterrupts, enableInterrupts, scf, stop } from "./cpuControl";
+import halt from "./halt";
+import { ByteLocation, WordLocation } from "./instructionHelpers";
+import { jpHl, jump, jumpRelative, rst } from "./jumps";
 
-import { load8Bit, loadHlFromSpPlusN, loadImmediate16BitRegister, loadStackPointerFromHL, loadStackPointerToAddress } from "./instructions/loads";
-import nop from "./instructions/nop";
-import { resetBit, setBit, shiftLeftArithmetic, shiftRightArithmetic, shiftRightLogical, swap, testBit } from "./instructions/prefixInstructions";
-import { call, callF, pop, push, ret, retF, reti } from "./instructions/stack";
+import { load8Bit, loadHlFromSpPlusN, loadImmediate16BitRegister, loadStackPointerFromHL, loadStackPointerToAddress } from "./loads";
+import nop from "./nop";
+import { resetBit, setBit, shiftLeftArithmetic, shiftRightArithmetic, shiftRightLogical, swap, testBit } from "./prefixInstructions";
+import { call, callF, pop, push, ret, retF, reti } from "./stack";
 
 export interface Instruction {
   execute: (cpu: CPU) => void

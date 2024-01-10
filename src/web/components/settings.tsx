@@ -54,15 +54,15 @@ const colourToArray = (colour: string): number[] => [
 ]
 
 export default function Settings({ emulator }: Props) {
-  const [monochromePalette0, setMonochromePalete0] = React.useState(arrayToColour(emulator.screen.colours[0]))
-  const [monochromePalette1, setMonochromePalete1] = React.useState(arrayToColour(emulator.screen.colours[1]))
-  const [monochromePalette2, setMonochromePalete2] = React.useState(arrayToColour(emulator.screen.colours[2]))
-  const [monochromePalette3, setMonochromePalete3] = React.useState(arrayToColour(emulator.screen.colours[3]))
+  const [monochromePalette0, setMonochromePalete0] = React.useState(arrayToColour(emulator.pictureProcessor.colours[0]))
+  const [monochromePalette1, setMonochromePalete1] = React.useState(arrayToColour(emulator.pictureProcessor.colours[1]))
+  const [monochromePalette2, setMonochromePalete2] = React.useState(arrayToColour(emulator.pictureProcessor.colours[2]))
+  const [monochromePalette3, setMonochromePalete3] = React.useState(arrayToColour(emulator.pictureProcessor.colours[3]))
   const [chosenPresetId, setChosenPresetId] = React.useState(-1)
 
   const updatePalette = (id: number, colour: number[]) => {
-    emulator.screen.colours.splice(id, 1, colour)
-    window.localStorage.setItem("monochromePalette", JSON.stringify(emulator.screen.colours))
+    emulator.pictureProcessor.colours.splice(id, 1, colour)
+    window.localStorage.setItem("monochromePalette", JSON.stringify(emulator.pictureProcessor.colours))
     switch(id) {
       case 0: setMonochromePalete0(arrayToColour(colour)); break
       case 1: setMonochromePalete1(arrayToColour(colour)); break

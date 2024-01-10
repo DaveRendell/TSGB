@@ -1,12 +1,12 @@
-import Controller from "./controller"
-import CPU from "./cpu"
-import { Cartridge } from "./memory/cartridges/cartridge"
-import { createCartridge } from "./memory/cartridges/createCartridge"
-import { OAM } from "./memory/oam"
-import { IoRegisters } from "./memory/registers/ioRegisters"
-import { VRAM } from "./memory/vram"
-import { ByteRef, GetSetByteRef } from "./refs/byteRef"
-import { CompositeWordRef, WordRef } from "./refs/wordRef"
+import Controller from "../controller"
+import CPU from "../cpu/cpu"
+import { Cartridge } from "./cartridges/cartridge"
+import { createCartridge } from "./cartridges/createCartridge"
+import { OAM } from "./oam"
+import { IoRegisters } from "./registers/ioRegisters"
+import { VRAM } from "./vram"
+import { ByteRef, GetSetByteRef } from "../refs/byteRef"
+import { CompositeWordRef, WordRef } from "../refs/wordRef"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {

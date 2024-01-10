@@ -1,5 +1,5 @@
-import CPU from "./cpu";
-import Memory from "./memory";
+import CPU from "./cpu/cpu";
+import Memory from "./memory/memoryMap";
 import { Interrupt } from "./memory/registers/interruptRegisters";
 import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
 import { ByteRef } from "./refs/byteRef";
@@ -10,7 +10,7 @@ const SCANLINES = 154
 
 type Mode = "HBlank" | "VBlank" | "Scanline OAM" | "Scanline VRAM"
 
-export default class Screen {
+export default class PictureProcessor {
   cpu: CPU
   memory: Memory
   canvas: HTMLCanvasElement
@@ -54,7 +54,7 @@ export default class Screen {
     this.coincidence = this.memory.registers.scanlineCoincidence
 
     cpu.addClockCallback(this)
-    cpu.screen = this
+    cpu.pictureProcessor = this
   }
 
   // Returns true if new frame is rendered

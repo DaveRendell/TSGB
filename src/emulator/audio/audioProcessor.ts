@@ -1,11 +1,11 @@
-import CPU from "./cpu";
-import Memory from "./memory";
-import { NoiseChannel } from "./sound/noiseChannel";
-import PulseChannel from "./sound/pulseChannel";
-import WaveChannel from "./sound/waveChannel";
+import CPU from "../cpu/cpu";
+import Memory from "../memory/memoryMap";
+import { NoiseChannel } from "./noiseChannel";
+import PulseChannel from "./pulseChannel";
+import WaveChannel from "./waveChannel";
 
 // Reference: https://gbdev.io/pandocs/Audio_Registers.html
-export default class APU {
+export default class AudioProcessor {
   cpu: CPU
   memory: Memory
   audioContext: AudioContext = new AudioContext({ sampleRate: 44100 });
@@ -22,7 +22,7 @@ export default class APU {
   constructor(cpu: CPU) {
     this.cpu = cpu
     this.memory = cpu.memory
-    this.memory.registers.audioMasterControl.apu = this
+    this.memory.registers.audioMasterControl.audioProcessor = this
     this.memory.registers.masterVolumeVin.updateVolume = (volume) => {
       if (this.masterVolume !== volume) {
         this.masterVolume = volume
@@ -30,7 +30,7 @@ export default class APU {
         // console.log(volume, this.vinVolume.gain.value)
       }
     }
-    cpu.apu = this
+    cpu.audioProcessor = this
     cpu.addClockCallback(this)
     this.audioContext.suspend();
 

@@ -1,5 +1,5 @@
 import * as React from "react"
-import PPU, { Sprite } from "../../emulator/ppu"
+import PPU, { Sprite } from "../debugPicture"
 import { valueDisplay } from "../../helpers/displayHexNumbers"
 
 interface Props {

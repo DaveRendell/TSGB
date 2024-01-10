@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Channel } from "../../emulator/sound/channel"
+import { Channel } from "../../emulator/audio/channel"
 
 interface Props {
   name: string

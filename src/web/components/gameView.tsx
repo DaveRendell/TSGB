@@ -1,14 +1,10 @@
 import * as React from "react"
 import MemoryExplorer from "./memoryExplorer"
-import CPU from "../../emulator/cpu"
 import CpuController from "./cpuController"
-import GameLoader from "./gameLoader"
-import PPU from "../../emulator/ppu"
+import PPU from "../debugPicture"
 import { VramViewer } from "./vramViewer"
 import Display from "./display"
-import APU from "../../emulator/apu"
 import Joypad from "./joypad"
-import Controller from "../../emulator/controller"
 import Tabs from "./tabs"
 import AudioDebug from "./audioDebug"
 import { Emulator } from "../../emulator/emulator"
@@ -65,7 +61,7 @@ export default function GameView({ emulator, unload }: Props) {
           "Debug Graphics": () => <>
             <VramViewer ppu={new PPU(emulator.cpu)} />
           </>,
-          "Debug Sound": () => <AudioDebug apu={emulator.apu} />,
+          "Debug Sound": () => <AudioDebug audioProcessor={emulator.audioProcessor} />,
           "Debug Memory": () => <>
             <CpuController cpu={emulator.cpu} />
             <MemoryExplorer

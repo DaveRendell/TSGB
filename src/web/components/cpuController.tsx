@@ -1,5 +1,5 @@
 import * as React from "react"
-import CPU from "../../emulator/cpu"
+import CPU from "../../emulator/cpu/cpu"
 import { FlagName, Register16Name, Register8Name } from "../../types"
 import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers"
 

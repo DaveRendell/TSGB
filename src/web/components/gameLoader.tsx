@@ -1,5 +1,5 @@
 import * as React from "react"
-import Memory from "../../emulator/memory"
+import Memory from "../../emulator/memory/memoryMap"
 import useLocalFile from "../hooks/useLocalFile"
 import { Cartridge } from "../../emulator/memory/cartridges/cartridge"
 import { createCartridge } from "../../emulator/memory/cartridges/createCartridge"

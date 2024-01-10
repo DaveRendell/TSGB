@@ -1,11 +1,11 @@
 // Reference:
 // https://gbdev.io/pandocs/Audio_Registers.html#audio-registers
 
-import APU from "../../apu";
+import AudioProcessor from "../../audio/audioProcessor";
 import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
-import { NoiseChannel } from "../../sound/noiseChannel";
-import PulseChannel from "../../sound/pulseChannel";
-import WaveChannel from "../../sound/waveChannel";
+import { NoiseChannel } from "../../audio/noiseChannel";
+import PulseChannel from "../../audio/pulseChannel";
+import WaveChannel from "../../audio/waveChannel";
 
 export class AudioMasterControlRegister implements ByteRef {
   masterSwitch = false
@@ -13,7 +13,7 @@ export class AudioMasterControlRegister implements ByteRef {
   channel2On = false
   channel3On = false
   channel4On = false
-  apu: APU
+  audioProcessor: AudioProcessor
 
   get value(): number {
     return (this.masterSwitch ? 0x80 : 0)
@@ -25,8 +25,8 @@ export class AudioMasterControlRegister implements ByteRef {
 
   set value(value: number) {
     this.masterSwitch = (value & 0x80) > 0
-    if (this.apu) {
-      this.apu.masterControl.gain.setValueAtTime(this.masterSwitch ? 1 : 0, this.apu.audioContext.currentTime)
+    if (this.audioProcessor) {
+      this.audioProcessor.masterControl.gain.setValueAtTime(this.masterSwitch ? 1 : 0, this.audioProcessor.audioContext.currentTime)
     }
   }
 }

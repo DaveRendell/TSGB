@@ -1,6 +1,5 @@
-import CPU from "./cpu";
-import { from2sComplement } from "./instructions/instructionHelpers";
-import Memory from "./memory";
+import CPU from "../emulator/cpu/cpu";
+import Memory from "../emulator/memory/memoryMap";
 
 const COLOURS = [
   [255, 255, 255],

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Emulator } from "../../emulator/emulator"
-import Memory from "../../emulator/memory"
+import Memory from "../../emulator/memory/memoryMap"
 
 interface Props {
   emulator: Emulator

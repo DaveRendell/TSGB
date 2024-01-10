@@ -1,8 +1,7 @@
-import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers";
-import { MutableValue, Register16Name } from "../../types";
+import { addressDisplay, valueDisplay } from "../../../helpers/displayHexNumbers";
 import CPU from "../cpu";
-import { ByteRef } from "../refs/byteRef";
-import { WordRef } from "../refs/wordRef";
+import { ByteRef } from "../../refs/byteRef";
+import { WordRef } from "../../refs/wordRef";
 
 export enum ByteLocation {
   A, F, B, C, D, E, H, L, N, M, FF_N, FF_C, BC, DE, NN
@@ -85,12 +84,3 @@ export const combineBytes = (high: number, low: number) =>
 
 export const splitBytes = (input: number) =>
   [(input & 0xFF00) >> 8, input & 0x00FF]
-
-export const testBit = <IntSize extends number>(value: MutableValue<IntSize>, bit: number): number =>
-  (value.read() >> bit) & 1
-
-export const setBit = <IntSize extends number>(value: MutableValue<IntSize>, bit: number) =>
-  value.write(value.read() | (1 << bit))
-
-export const resetBit = <IntSize extends number>(value: MutableValue<IntSize>, bit: number) =>
-  value.write(value.read() & ~(1 << bit))
