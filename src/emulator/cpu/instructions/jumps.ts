@@ -27,9 +27,9 @@ export const CONDITION_NAMES: Record<JumpCondition, string> = {
 export function jumpRelative(condition: JumpCondition): Instruction {
   return {
     execute: (cpu) => {
-      const jump = from2sComplement(cpu.nextByte.value)
+      const jump = from2sComplement(cpu.nextByte.byte)
       if (CONDITIONS[condition](cpu)) {
-        cpu.registers.PC.value += jump
+        cpu.registers.PC.word += jump
       }
     },
     cycles: 12,
@@ -42,9 +42,9 @@ export function jumpRelative(condition: JumpCondition): Instruction {
 export function jump(condition: JumpCondition): Instruction {
   return {
     execute: (cpu: CPU) => {
-      const address = cpu.nextWord.value
+      const address = cpu.nextWord.word
       if (CONDITIONS[condition](cpu)) {
-        cpu.registers.PC.value = address
+        cpu.registers.PC.word = address
       }
     },
     cycles: 16,
@@ -56,7 +56,7 @@ export function jump(condition: JumpCondition): Instruction {
 
 export const jpHl: Instruction = {
   execute(cpu) {
-    cpu.registers.PC.value = cpu.registers.HL.value
+    cpu.registers.PC.word = cpu.registers.HL.word
   },
   cycles: 4,
   parameterBytes: 0,
@@ -69,12 +69,12 @@ export function rst(address: number): Instruction {
       const sp = cpu.registers.SP
       const pc = cpu.registers.PC
 
-      const [h, l] = splitBytes(pc.value)
+      const [h, l] = splitBytes(pc.word)
 
-      cpu.memory.at(--sp.value).value = h
-      cpu.memory.at(--sp.value).value = l
+      cpu.memory.at(--sp.word).byte = h
+      cpu.memory.at(--sp.word).byte = l
 
-      pc.value = address
+      pc.word = address
     },
     cycles: 16,
     parameterBytes: 0,

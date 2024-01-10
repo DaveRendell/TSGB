@@ -11,7 +11,7 @@ export class LcdControlRegister implements ByteRef {
   objectsEnabled = false
   backgroundWindowDisplay = false
 
-  get value(): number {
+  get byte(): number {
     return (
       (this.enabled ? 0x80 : 0) +
       (this.windowTilemap << 6) +
@@ -24,7 +24,7 @@ export class LcdControlRegister implements ByteRef {
     )
   }
 
-  set value(value: number) {
+  set byte(value: number) {
     this.enabled = (value & 0x80) > 0
     this.windowTilemap = (value & 0x40) >> 6
     this.windowEnabled = (value & 0x20) > 0
@@ -45,7 +45,7 @@ export class LcdStatusRegister implements ByteRef {
   lycCoinciding = false
   mode = 0
 
-  get value(): number {
+  get byte(): number {
     return (
       (this.lycInterruptEnabled ? 0x40 : 0) +
       (this.mode2InterruptEnabled ? 0x20 : 0) +
@@ -55,7 +55,7 @@ export class LcdStatusRegister implements ByteRef {
       this.mode
     )
   }
-  set value(value: number) {
+  set byte(value: number) {
     this.lycInterruptEnabled = (value & 0x40) > 0
     this.mode2InterruptEnabled = (value & 0x20) > 0
     this.mode1InterruptEnabled = (value & 0x10) > 0
@@ -66,7 +66,7 @@ export class LcdStatusRegister implements ByteRef {
 export class PalletteRegister implements ByteRef {
   map = [0, 0, 0, 0]
 
-  get value(): number {
+  get byte(): number {
     return (
       (this.map[0] << 0) +
       (this.map[1] << 2) +
@@ -74,7 +74,7 @@ export class PalletteRegister implements ByteRef {
       (this.map[3] << 6)
     )
   }
-  set value(value: number) {
+  set byte(value: number) {
     this.map = [
       (value >> 0) & 3,
       (value >> 2) & 3,

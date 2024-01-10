@@ -1,5 +1,5 @@
 export interface ByteRef {
-  value: number
+  byte: number
 }
 
 export class GenericByteRef implements ByteRef {
@@ -9,10 +9,10 @@ export class GenericByteRef implements ByteRef {
     this._value = value & 0xff
   }
 
-  get value() {
+  get byte() {
     return this._value
   }
-  set value(value: number) {
+  set byte(value: number) {
     this._value = value & 0xff
   }
 }
@@ -22,10 +22,10 @@ export class ConstantByteRef implements ByteRef {
   constructor(value: number = 0) {
     this._value = value
   }
-  get value() {
+  get byte() {
     return this._value
   }
-  set value(value: number) {}
+  set byte(value: number) {}
 }
 
 export class GetSetByteRef implements ByteRef {
@@ -37,10 +37,10 @@ export class GetSetByteRef implements ByteRef {
     this.setter = setter
   }
 
-  get value(): number {
+  get byte(): number {
     return this.getter()
   }
-  set value(value: number) {
+  set byte(value: number) {
     this.setter(value)
   }
 }

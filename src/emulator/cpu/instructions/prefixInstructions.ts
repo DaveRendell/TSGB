@@ -5,7 +5,7 @@ export const testBit = (bit: number, sourceName: ByteLocation): Instruction => {
   return {
     execute: (cpu) => {
       const source = getByteRef(sourceName, cpu)
-      const result = (source.value >> bit) & 0b1
+      const result = (source.byte >> bit) & 0b1
 
       cpu.registers.F.zero = result == 0
       cpu.registers.F.operation = false
@@ -24,7 +24,7 @@ export const resetBit = (
   return {
     execute: (cpu) => {
       const source = getByteRef(sourceName, cpu)
-      source.value &= ~(1 << bit)
+      source.byte &= ~(1 << bit)
     },
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
@@ -36,7 +36,7 @@ export const setBit = (bit: number, sourceName: ByteLocation): Instruction => {
   return {
     execute: (cpu) => {
       const source = getByteRef(sourceName, cpu)
-      source.value |= 1 << bit
+      source.byte |= 1 << bit
     },
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
@@ -48,11 +48,11 @@ export const swap = (sourceName: ByteLocation): Instruction => {
   return {
     execute(cpu) {
       const byte = getByteRef(sourceName, cpu)
-      const originalValue = byte.value
+      const originalValue = byte.byte
       const h = (originalValue & 0xf0) >> 4
       const l = originalValue & 0x0f
       const newValue = (l << 4) + h
-      byte.value = newValue
+      byte.byte = newValue
 
       cpu.registers.F.zero = newValue == 0
       cpu.registers.F.operation = false
@@ -69,10 +69,10 @@ export const shiftRightLogical = (sourceName: ByteLocation): Instruction => {
   return {
     execute(cpu) {
       const byte = getByteRef(sourceName, cpu)
-      const originalValue = byte.value
+      const originalValue = byte.byte
       const newValue = originalValue >> 1
 
-      byte.value = newValue
+      byte.byte = newValue
 
       cpu.registers.F.zero = newValue == 0
       cpu.registers.F.operation = false
@@ -90,10 +90,10 @@ export function shiftLeftArithmetic(sourceName: ByteLocation): Instruction {
     execute(cpu) {
       const source = getByteRef(sourceName, cpu)
 
-      const oldValue = source.value
+      const oldValue = source.byte
       const newValue = ((oldValue << 1) & 0xff) + 0
 
-      source.value = newValue
+      source.byte = newValue
 
       cpu.registers.F.zero = newValue == 0
       cpu.registers.F.operation = false
@@ -111,10 +111,10 @@ export function shiftRightArithmetic(sourceName: ByteLocation): Instruction {
     execute(cpu) {
       const source = getByteRef(sourceName, cpu)
 
-      const oldValue = source.value
+      const oldValue = source.byte
       const newValue = (oldValue >> 1) + (oldValue & 0x80)
 
-      source.value = newValue
+      source.byte = newValue
 
       cpu.registers.F.zero = newValue == 0
       cpu.registers.F.operation = false

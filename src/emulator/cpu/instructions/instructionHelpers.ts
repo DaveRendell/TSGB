@@ -45,17 +45,17 @@ export const getByteRef = (name: ByteLocation, cpu: CPU): ByteRef => {
     case ByteLocation.N:
       return cpu.nextByte
     case ByteLocation.M:
-      return cpu.memory.at(cpu.registers.HL.value)
+      return cpu.memory.at(cpu.registers.HL.word)
     case ByteLocation.BC:
-      return cpu.memory.at(cpu.registers.BC.value)
+      return cpu.memory.at(cpu.registers.BC.word)
     case ByteLocation.DE:
-      return cpu.memory.at(cpu.registers.DE.value)
+      return cpu.memory.at(cpu.registers.DE.word)
     case ByteLocation.FF_C:
-      return cpu.memory.at(0xff00 + cpu.registers.C.value)
+      return cpu.memory.at(0xff00 + cpu.registers.C.byte)
     case ByteLocation.FF_N:
-      return cpu.memory.at(0xff00 + cpu.nextByte.value)
+      return cpu.memory.at(0xff00 + cpu.nextByte.byte)
     case ByteLocation.NN:
-      return cpu.memory.at(cpu.nextWord.value)
+      return cpu.memory.at(cpu.nextWord.word)
   }
 }
 

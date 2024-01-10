@@ -17,14 +17,14 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   ADD: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.value)
+    const [hA, lA] = splitToNibbles(a.byte)
 
     const hR = h + hA
     const lR = l + lA
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xff
 
-    a.value = rWrapped
+    a.byte = rWrapped
 
     cpu.registers.F.zero = rWrapped == 0
     cpu.registers.F.operation = false
@@ -35,14 +35,14 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     const a = cpu.registers.A
     const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.value)
+    const [hA, lA] = splitToNibbles(a.byte)
 
     const hR = h + hA
     const lR = l + lA + carry
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xff
 
-    a.value = rWrapped
+    a.byte = rWrapped
 
     cpu.registers.F.zero = rWrapped == 0
     cpu.registers.F.operation = false
@@ -52,14 +52,14 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   SUB: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.value)
+    const [hA, lA] = splitToNibbles(a.byte)
 
     const hR = hA - h
     const lR = lA - l
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xff
 
-    a.value = rWrapped
+    a.byte = rWrapped
 
     cpu.registers.F.zero = rWrapped == 0
     cpu.registers.F.operation = true
@@ -70,14 +70,14 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     const a = cpu.registers.A
     const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.value)
+    const [hA, lA] = splitToNibbles(a.byte)
 
     const hR = hA - h
     const lR = lA - l - carry
     const r = combineNibbles(hR, lR)
     const rWrapped = r & 0xff
 
-    a.value = rWrapped
+    a.byte = rWrapped
 
     cpu.registers.F.zero = rWrapped == 0
     cpu.registers.F.operation = true
@@ -87,9 +87,9 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   AND: (cpu, value) => {
     const a = cpu.registers.A
 
-    a.value &= value
+    a.byte &= value
 
-    cpu.registers.F.zero = a.value === 0
+    cpu.registers.F.zero = a.byte === 0
     cpu.registers.F.operation = false
     cpu.registers.F.halfCarry = true
     cpu.registers.F.carry = false
@@ -97,9 +97,9 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   XOR: (cpu, value) => {
     const a = cpu.registers.A
 
-    a.value ^= value
+    a.byte ^= value
 
-    cpu.registers.F.zero = a.value === 0
+    cpu.registers.F.zero = a.byte === 0
     cpu.registers.F.operation = false
     cpu.registers.F.halfCarry = false
     cpu.registers.F.carry = false
@@ -107,9 +107,9 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   OR: (cpu, value) => {
     const a = cpu.registers.A
 
-    a.value |= value
+    a.byte |= value
 
-    cpu.registers.F.zero = a.value === 0
+    cpu.registers.F.zero = a.byte === 0
     cpu.registers.F.operation = false
     cpu.registers.F.halfCarry = false
     cpu.registers.F.carry = false
@@ -117,7 +117,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
   CP: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
-    const [hA, lA] = splitToNibbles(a.value)
+    const [hA, lA] = splitToNibbles(a.byte)
 
     const hR = hA - h
     const lR = lA - l
@@ -137,7 +137,7 @@ export function aluOperation(
 ): Instruction {
   return {
     execute: (cpu) => {
-      OPERATIONS[operation](cpu, getByteRef(sourceName, cpu).value)
+      OPERATIONS[operation](cpu, getByteRef(sourceName, cpu).byte)
     },
     cycles: sourceName === ByteLocation.M ? 8 : 4,
     parameterBytes: 0,
@@ -148,7 +148,7 @@ export function aluOperation(
 export function aluOperationImmediate(operation: AluOperation): Instruction {
   return {
     execute: (cpu) => {
-      const value = cpu.nextByte.value
+      const value = cpu.nextByte.byte
       OPERATIONS[operation](cpu, value)
     },
     cycles: 8,
@@ -161,11 +161,11 @@ export function increment8Bit(targetName: ByteLocation): Instruction {
   return {
     execute: (cpu) => {
       const target = getByteRef(targetName, cpu)
-      target.value++
+      target.byte++
 
-      cpu.registers.F.zero = target.value == 0
+      cpu.registers.F.zero = target.byte == 0
       cpu.registers.F.operation = false
-      cpu.registers.F.halfCarry = (target.value & 0xf) === 0
+      cpu.registers.F.halfCarry = (target.byte & 0xf) === 0
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
@@ -177,11 +177,11 @@ export function decrement8Bit(targetName: ByteLocation): Instruction {
   return {
     execute: (cpu) => {
       const target = getByteRef(targetName, cpu)
-      target.value--
+      target.byte--
 
-      cpu.registers.F.zero = target.value == 0
+      cpu.registers.F.zero = target.byte == 0
       cpu.registers.F.operation = true
-      cpu.registers.F.halfCarry = (target.value & 0xf) === 0xf
+      cpu.registers.F.halfCarry = (target.byte & 0xf) === 0xf
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
@@ -192,7 +192,7 @@ export function decrement8Bit(targetName: ByteLocation): Instruction {
 export function increment16Bit(register: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      getWordRef(register, cpu).value++
+      getWordRef(register, cpu).word++
     },
     cycles: 8,
     parameterBytes: 0,
@@ -203,7 +203,7 @@ export function increment16Bit(register: WordLocation): Instruction {
 export function decrement16Bit(register: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      getWordRef(register, cpu).value--
+      getWordRef(register, cpu).word--
     },
     cycles: 8,
     parameterBytes: 0,
@@ -221,10 +221,10 @@ export function rotateLeft(
   return {
     execute: (cpu) => {
       const register = getByteRef(registerName, cpu)
-      const value = register.value
+      const value = register.byte
       const wrap = throughCarry ? (cpu.registers.F.carry ? 1 : 0) : value >> 7
       const rotated = ((value << 1) & 0xff) + wrap
-      register.value = rotated
+      register.byte = rotated
 
       cpu.registers.F.zero = setZero && rotated === 0
       cpu.registers.F.operation = false
@@ -247,10 +247,10 @@ export function rotateRight(
   return {
     execute: (cpu) => {
       const register = getByteRef(registerName, cpu)
-      const value = register.value
+      const value = register.byte
       const wrap = throughCarry ? (cpu.registers.F.carry ? 1 : 0) : value & 1
       const rotated = (value >> 1) + (wrap << 7)
-      register.value = rotated
+      register.byte = rotated
 
       cpu.registers.F.zero = setZero && rotated === 0
       cpu.registers.F.operation = false
@@ -265,7 +265,7 @@ export function rotateRight(
 
 export const cpl: Instruction = {
   execute: (cpu) => {
-    cpu.registers.A.value = ~cpu.registers.A.value
+    cpu.registers.A.byte = ~cpu.registers.A.byte
 
     cpu.registers.F.operation = true
     cpu.registers.F.halfCarry = true
@@ -281,12 +281,12 @@ export const addToHL = (register: WordLocation): Instruction => {
       const hl = cpu.registers.HL
       const r = getWordRef(register, cpu)
 
-      const hlValue = hl.value
-      const rValue = r.value
+      const hlValue = hl.word
+      const rValue = r.word
 
       const result = hlValue + rValue
 
-      hl.value = result & 0xffff
+      hl.word = result & 0xffff
 
       const halfCarry = (hlValue & 0x0fff) + (rValue & 0x0fff) > 0xfff
 
@@ -303,15 +303,15 @@ export const addToHL = (register: WordLocation): Instruction => {
 export const addImmediateToSP: Instruction = {
   execute(cpu) {
     const sp = cpu.registers.SP
-    const amount = from2sComplement(cpu.nextByte.value)
+    const amount = from2sComplement(cpu.nextByte.byte)
 
-    const oldValue = sp.value
+    const oldValue = sp.word
     const newValue = oldValue + amount
 
     const halfCarry = (oldValue & 0xf) + (amount & 0xf) > 0xf
     const carry = (oldValue & 0xff) + (amount & 0xff) > 0xff
 
-    sp.value = newValue & 0xffff
+    sp.word = newValue & 0xffff
 
     cpu.registers.F.zero = false
     cpu.registers.F.operation = false
@@ -328,7 +328,7 @@ export const daa: Instruction = {
     const a = cpu.registers.A
     const flags = cpu.registers.F
 
-    const value = a.value
+    const value = a.byte
 
     let correction = 0
 
@@ -343,7 +343,7 @@ export const daa: Instruction = {
 
     const result = value + (flags.operation ? -correction : correction)
 
-    a.value = result & 0xff
+    a.byte = result & 0xff
 
     flags.carry = setCarry
     flags.halfCarry = false

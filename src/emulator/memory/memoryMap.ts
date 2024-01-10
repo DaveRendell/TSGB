@@ -101,7 +101,7 @@ export default class Memory {
   // https://gbdev.io/pandocs/OAM_DMA_Transfer.html
   dmaTransfer(address: number) {
     for (let i = 0; i < 0xa0; i++) {
-      this.at(0xfe00 + i).value = this.at(address + i).value
+      this.at(0xfe00 + i).byte = this.at(address + i).byte
     }
   }
 }

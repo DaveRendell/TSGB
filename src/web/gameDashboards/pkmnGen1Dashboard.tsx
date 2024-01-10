@@ -34,11 +34,11 @@ export default function PkmnGen1Dashboard({ emulator }: Props) {
 function readStringAt(memory: Memory, start: number): string {
   let codes: number[] = []
   for (let addr = start; addr <= start + 64; addr++) {
-    const code = memory.at(addr).value
+    const code = memory.at(addr).byte
     if (code == 0x50) {
       break
     }
-    codes.push(memory.at(addr).value)
+    codes.push(memory.at(addr).byte)
   }
   return codes.map(decodeString).join("")
 }
@@ -73,21 +73,21 @@ function getParty(memory): Monster[] {
 }
 
 function decodePartyMonster(memory: Memory, i: number): Monster {
-  const id = memory.at(0xd16b + i * 44).value
+  const id = memory.at(0xd16b + i * 44).byte
   const name = readStringAt(memory, 0xd2b5 + i * 11)
   const hp =
-    0x100 * memory.at(0xd16c + i * 44).value + memory.at(0xd16d + i * 44).value
+    0x100 * memory.at(0xd16c + i * 44).byte + memory.at(0xd16d + i * 44).byte
   const maxHp =
-    0x100 * memory.at(0xd18d + i * 44).value + memory.at(0xd18e + i * 44).value
+    0x100 * memory.at(0xd18d + i * 44).byte + memory.at(0xd18e + i * 44).byte
 
   const xp =
-    0x10000 * memory.at(0xd179 + i * 44).value +
-    0x100 * memory.at(0xd17a + i * 44).value +
-    memory.at(0xd17b + i * 44).value
+    0x10000 * memory.at(0xd179 + i * 44).byte +
+    0x100 * memory.at(0xd17a + i * 44).byte +
+    memory.at(0xd17b + i * 44).byte
 
   const { dexId, growthRate } = getMonsterStats(memory, id)
 
-  const level = memory.at(0xd18c + i * 44).value
+  const level = memory.at(0xd18c + i * 44).byte
   const levelFormula = LEVEL_FORMULAE[growthRate]
   const xpThisLevel = xp - levelFormula(level)
   const xpRequired = levelFormula(level + 1) - levelFormula(level)

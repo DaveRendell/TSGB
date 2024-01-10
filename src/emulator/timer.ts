@@ -43,9 +43,9 @@ export default class Timer {
     const timerRollover = this.getTimerRollover()
     if (this.timerCycles > timerRollover) {
       this.timerCycles -= timerRollover
-      this.counter.value++
-      if (this.counter.value === 0) {
-        this.counter.value = this.modulo.value
+      this.counter.byte++
+      if (this.counter.byte === 0) {
+        this.counter.byte = this.modulo.byte
         this.interrupts.setInterrupt(Interrupt.Timer)
       }
     }

@@ -58,9 +58,9 @@ const getPointerAction = (
   hlRegisterAction: "none" | "increment" | "decrement",
 ) =>
   hlRegisterAction === "increment"
-    ? (hl: WordRef) => hl.value++
+    ? (hl: WordRef) => hl.word++
     : hlRegisterAction === "decrement"
-      ? (hl: WordRef) => hl.value--
+      ? (hl: WordRef) => hl.word--
       : () => {}
 
 export function load8Bit(
@@ -80,7 +80,7 @@ export function load8Bit(
       const destination = getByteRef(destinationName, cpu)
       const source = getByteRef(sourceName, cpu)
 
-      destination.value = source.value
+      destination.byte = source.byte
 
       pointerAction(cpu.registers.HL)
     },
@@ -98,7 +98,7 @@ export function loadImmediate16BitRegister(
 ): Instruction {
   return {
     execute: (cpu) => {
-      getWordRef(register, cpu).value = cpu.nextWord.value
+      getWordRef(register, cpu).word = cpu.nextWord.word
     },
     cycles: 12,
     parameterBytes: 2,
@@ -111,14 +111,14 @@ export function loadImmediate16BitRegister(
 
 export const loadHlFromSpPlusN: Instruction = {
   execute(cpu) {
-    const increment = from2sComplement(cpu.nextByte.value)
-    const sp = cpu.registers.SP.value
+    const increment = from2sComplement(cpu.nextByte.byte)
+    const sp = cpu.registers.SP.word
     const result = sp + increment
 
     const halfCarry = (sp & 0xf) + (increment & 0xf) !== (result & 0xf)
     const carry = (sp & 0xff) + (increment & 0xff) !== (result & 0xff)
 
-    cpu.registers.HL.value = result
+    cpu.registers.HL.word = result
 
     cpu.registers.F.zero = false
     cpu.registers.F.operation = false
@@ -132,8 +132,8 @@ export const loadHlFromSpPlusN: Instruction = {
 
 export const loadStackPointerToAddress: Instruction = {
   execute(cpu) {
-    const address = cpu.nextWord.value
-    cpu.memory.wordAt(address).value = cpu.registers.SP.value
+    const address = cpu.nextWord.word
+    cpu.memory.wordAt(address).word = cpu.registers.SP.word
   },
   cycles: 20,
   parameterBytes: 2,
@@ -142,7 +142,7 @@ export const loadStackPointerToAddress: Instruction = {
 
 export const loadStackPointerFromHL: Instruction = {
   execute(cpu) {
-    cpu.registers.SP.value = cpu.registers.HL.value
+    cpu.registers.SP.word = cpu.registers.HL.word
   },
   cycles: 8,
   parameterBytes: 0,

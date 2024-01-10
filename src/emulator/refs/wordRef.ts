@@ -1,7 +1,7 @@
 import { ByteRef } from "./byteRef"
 
 export interface WordRef {
-  value: number
+  word: number
 }
 
 export class GenericWordRef implements WordRef {
@@ -11,11 +11,11 @@ export class GenericWordRef implements WordRef {
     this._value = value & 0xffff
   }
 
-  get value() {
+  get word() {
     return this._value
   }
 
-  set value(value: number) {
+  set word(value: number) {
     this._value = value & 0xffff
   }
 }
@@ -29,12 +29,12 @@ export class CompositeWordRef implements WordRef {
     this.low = low
   }
 
-  get value() {
-    return (this.high.value << 8) + this.low.value
+  get word() {
+    return (this.high.byte << 8) + this.low.byte
   }
 
-  set value(value: number) {
-    this.high.value = value >> 8
-    this.low.value = value & 0xff
+  set word(value: number) {
+    this.high.byte = value >> 8
+    this.low.byte = value & 0xff
   }
 }

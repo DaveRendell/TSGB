@@ -14,7 +14,7 @@ export class JoypadRegister implements ByteRef {
   selectButtons = true
   selectDpad = true
 
-  get value() {
+  get byte() {
     const upperNibble =
       (this.selectButtons ? 0x20 : 0) + (this.selectDpad ? 0x10 : 0)
     if (this.selectButtons) {
@@ -25,7 +25,7 @@ export class JoypadRegister implements ByteRef {
     }
     return (upperNibble << 4) + 0xf
   }
-  set value(value: number) {
+  set byte(value: number) {
     this.selectButtons = (value & 0x10) > 0
     this.selectDpad = (value & 0x20) > 0
   }

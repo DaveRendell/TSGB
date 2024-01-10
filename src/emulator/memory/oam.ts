@@ -27,7 +27,7 @@ export class OAM {
   }
 
   spritesAtScanline(): Sprite[] {
-    const scanline = this.scanline.value
+    const scanline = this.scanline.byte
     const spriteSize = this.lcdControl.objectSize
     return this.sprites
       .filter((sprite) => {

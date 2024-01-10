@@ -5,10 +5,10 @@ export class DmaTransferRegister implements ByteRef {
   address: number
   startTransfer: (addr: number) => void = () => {}
 
-  get value(): number {
+  get byte(): number {
     return this.address >> 8
   }
-  set value(value: number) {
+  set byte(value: number) {
     this.address = value << 8
     this.startTransfer(this.address)
   }

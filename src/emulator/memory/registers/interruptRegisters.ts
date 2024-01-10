@@ -19,7 +19,7 @@ export class InterruptRegister implements ByteRef {
     false,
   ]
 
-  get value(): number {
+  get byte(): number {
     return (
       (this.requested[Interrupt.Joypad] ? 0x10 : 0) +
       (this.requested[Interrupt.Serial] ? 0x8 : 0) +
@@ -29,7 +29,7 @@ export class InterruptRegister implements ByteRef {
     )
   }
 
-  set value(value: number) {
+  set byte(value: number) {
     this.requested[Interrupt.Joypad] = (value & 0x10) > 0
     this.requested[Interrupt.Serial] = (value & 0x8) > 0
     this.requested[Interrupt.Timer] = (value & 0x4) > 0
@@ -55,7 +55,7 @@ export class InterruptEnabledRegister implements ByteRef {
     false,
   ]
 
-  get value(): number {
+  get byte(): number {
     return (
       (this.enabled[Interrupt.Joypad] ? 0x10 : 0) +
       (this.enabled[Interrupt.Serial] ? 0x8 : 0) +
@@ -65,7 +65,7 @@ export class InterruptEnabledRegister implements ByteRef {
     )
   }
 
-  set value(value: number) {
+  set byte(value: number) {
     this.enabled[Interrupt.Joypad] = (value & 0x10) > 0
     this.enabled[Interrupt.Serial] = (value & 0x8) > 0
     this.enabled[Interrupt.Timer] = (value & 0x4) > 0

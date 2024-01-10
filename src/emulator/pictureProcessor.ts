@@ -68,15 +68,15 @@ export default class PictureProcessor {
       case "HBlank": // Mode 0
         if (this.clockCount >= 204) {
           this.clockCount -= 204
-          this.setScanline(this.scanlineNumber.value + 1)
+          this.setScanline(this.scanlineNumber.byte + 1)
           if (
             this.lcdControl.windowEnabled &&
-            this.scanlineNumber.value > this.memory.registers.windowY.value &&
-            this.memory.registers.windowX.value <= 166
+            this.scanlineNumber.byte > this.memory.registers.windowY.byte &&
+            this.memory.registers.windowX.byte <= 166
           ) {
             this.windowLine++
           }
-          if (this.scanlineNumber.value === HEIGHT) {
+          if (this.scanlineNumber.byte === HEIGHT) {
             this.renderScreen()
             this.setMode("VBlank")
             this.newFrameDrawn = true
@@ -88,8 +88,8 @@ export default class PictureProcessor {
       case "VBlank": // Mode 1
         if (this.clockCount >= 456) {
           this.clockCount -= 456
-          this.setScanline(this.scanlineNumber.value + 1)
-          if (this.scanlineNumber.value > SCANLINES) {
+          this.setScanline(this.scanlineNumber.byte + 1)
+          if (this.scanlineNumber.byte > SCANLINES) {
             this.setScanline(0)
             this.windowLine = 0
             this.renderScanline()
@@ -114,12 +114,12 @@ export default class PictureProcessor {
   }
 
   setScanline(value: number) {
-    this.scanlineNumber.value = value
+    this.scanlineNumber.byte = value
 
     if (
       this.lcdControl.enabled &&
       this.lcdStatus.lycInterruptEnabled &&
-      this.scanlineNumber.value == this.coincidence.value
+      this.scanlineNumber.byte == this.coincidence.byte
     ) {
       this.lcdStatus.lycCoinciding = true
       this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
@@ -163,12 +163,12 @@ export default class PictureProcessor {
       return
     }
 
-    const scanline = this.scanlineNumber.value
+    const scanline = this.scanlineNumber.byte
 
     const line = this.bufferContext.createImageData(WIDTH, 1)
 
-    const scrollX = this.scrollX.value
-    const scrollY = this.scrollY.value
+    const scrollX = this.scrollX.byte
+    const scrollY = this.scrollY.byte
     const backgroundY = (scrollY + scanline) & 0xff
 
     // Returns the 8 long row of the background tile at pixel offset given
@@ -185,7 +185,7 @@ export default class PictureProcessor {
         : this.memory.vram.tileset1(tileId, row)
     }
 
-    const winY = scanline - this.memory.registers.windowY.value
+    const winY = scanline - this.memory.registers.windowY.byte
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getWindowTileRow = (offset: number): number[] => {
@@ -233,7 +233,7 @@ export default class PictureProcessor {
       let tilePixel: number | undefined = undefined
 
       // Render window
-      const winX = i - (this.memory.registers.windowX.value - 7)
+      const winX = i - (this.memory.registers.windowX.byte - 7)
       if (pixel === undefined && this.lcdControl.windowEnabled) {
         if (winY >= 0 && winX >= 0) {
           const windowPixel = windowTileRow[winX % 8]

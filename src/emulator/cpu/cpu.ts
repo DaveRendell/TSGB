@@ -70,56 +70,56 @@ export default class CPU {
     const self = this
 
     this.nextByte = {
-      get value(): number {
-        return memory.at(self.registers.PC.value++).value
+      get byte(): number {
+        return memory.at(self.registers.PC.word++).byte
       },
-      set value(_: number) {},
+      set byte(_: number) {},
     }
 
     this.nextWord = {
-      get value(): number {
-        const l = memory.at(self.registers.PC.value++).value
-        const h = memory.at(self.registers.PC.value++).value
+      get word(): number {
+        const l = memory.at(self.registers.PC.word++).byte
+        const h = memory.at(self.registers.PC.word++).byte
         return (h << 8) + l
       },
     }
 
     // SKIP BOOTROM
-    this.registers.A.value = 0x01
-    this.registers.F.value = 0xb0
-    this.registers.B.value = 0x00
-    this.registers.C.value = 0x13
-    this.registers.D.value = 0x00
-    this.registers.E.value = 0xd8
-    this.registers.H.value = 0x01
-    this.registers.L.value = 0x4d
-    this.registers.SP.value = 0xfffe
-    this.registers.PC.value = 0x0100
+    this.registers.A.byte = 0x01
+    this.registers.F.byte = 0xb0
+    this.registers.B.byte = 0x00
+    this.registers.C.byte = 0x13
+    this.registers.D.byte = 0x00
+    this.registers.E.byte = 0xd8
+    this.registers.H.byte = 0x01
+    this.registers.L.byte = 0x4d
+    this.registers.SP.word = 0xfffe
+    this.registers.PC.word = 0x0100
   }
 
   createGbDoctorLog() {
     // GB Doctor logging
-    const A = this.registers.A.value.toString(16).padStart(2, "0").toUpperCase()
-    const B = this.registers.B.value.toString(16).padStart(2, "0").toUpperCase()
-    const C = this.registers.C.value.toString(16).padStart(2, "0").toUpperCase()
-    const D = this.registers.D.value.toString(16).padStart(2, "0").toUpperCase()
-    const E = this.registers.E.value.toString(16).padStart(2, "0").toUpperCase()
-    const F = this.registers.F.value.toString(16).padStart(2, "0").toUpperCase()
-    const H = this.registers.H.value.toString(16).padStart(2, "0").toUpperCase()
-    const L = this.registers.L.value.toString(16).padStart(2, "0").toUpperCase()
-    const SP = this.registers.SP.value
+    const A = this.registers.A.byte.toString(16).padStart(2, "0").toUpperCase()
+    const B = this.registers.B.byte.toString(16).padStart(2, "0").toUpperCase()
+    const C = this.registers.C.byte.toString(16).padStart(2, "0").toUpperCase()
+    const D = this.registers.D.byte.toString(16).padStart(2, "0").toUpperCase()
+    const E = this.registers.E.byte.toString(16).padStart(2, "0").toUpperCase()
+    const F = this.registers.F.byte.toString(16).padStart(2, "0").toUpperCase()
+    const H = this.registers.H.byte.toString(16).padStart(2, "0").toUpperCase()
+    const L = this.registers.L.byte.toString(16).padStart(2, "0").toUpperCase()
+    const SP = this.registers.SP.word
       .toString(16)
       .padStart(4, "0")
       .toUpperCase()
-    const PC = this.registers.PC.value
+    const PC = this.registers.PC.word
       .toString(16)
       .padStart(4, "0")
       .toUpperCase()
     const PCMEM = [
-      this.memory.at(this.registers.PC.value + 0).value,
-      this.memory.at(this.registers.PC.value + 1).value,
-      this.memory.at(this.registers.PC.value + 2).value,
-      this.memory.at(this.registers.PC.value + 3).value,
+      this.memory.at(this.registers.PC.word + 0).byte,
+      this.memory.at(this.registers.PC.word + 1).byte,
+      this.memory.at(this.registers.PC.word + 2).byte,
+      this.memory.at(this.registers.PC.word + 3).byte,
     ]
       .map((x) => x.toString(16).padStart(2, "0").toUpperCase())
       .join(",")
@@ -133,8 +133,8 @@ export default class CPU {
       return
     }
 
-    const code = this.nextByte.value
-    const prefixedCode = code === 0xcb ? this.nextByte.value : undefined
+    const code = this.nextByte.byte
+    const prefixedCode = code === 0xcb ? this.nextByte.byte : undefined
     let instruction: Instruction
     try {
       instruction = decodeInstruction(code, prefixedCode)
@@ -142,7 +142,7 @@ export default class CPU {
       console.warn(
         `Unused opcode: ${code.toString(
           16,
-        )} at address ${this.registers.PC.value.toString(16)}`,
+        )} at address ${this.registers.PC.word.toString(16)}`,
       )
       instruction = nop
     }
@@ -153,7 +153,7 @@ export default class CPU {
     if (this.debugMode) {
       const parameters = new Array(instruction.parameterBytes)
         .fill(0)
-        .map((_, i) => this.memory.at(this.registers.PC.value + 1 + i).value)
+        .map((_, i) => this.memory.at(this.registers.PC.word + 1 + i).byte)
       console.log(instruction.description(parameters))
     }
 
@@ -165,7 +165,7 @@ export default class CPU {
       return null
     }
     const activeInterrupts =
-      this.interruptEnableRegister.value & this.interruptFlags.value
+      this.interruptEnableRegister.byte & this.interruptFlags.byte
 
     if (activeInterrupts === 0) {
       return null
@@ -177,7 +177,7 @@ export default class CPU {
       id++
     }
 
-    this.interruptFlags.value = this.interruptFlags.value & ~(1 << id)
+    this.interruptFlags.byte = this.interruptFlags.byte & ~(1 << id)
 
     return id as Interrupt
   }
@@ -190,11 +190,11 @@ export default class CPU {
     const sp = this.registers.SP
     const pc = this.registers.PC
 
-    const [h, l] = splitBytes(pc.value)
+    const [h, l] = splitBytes(pc.word)
 
-    this.memory.at(--sp.value).value = h
-    this.memory.at(--sp.value).value = l
-    pc.value = handlerAddress
+    this.memory.at(--sp.word).byte = h
+    this.memory.at(--sp.word).byte = l
+    pc.word = handlerAddress
 
     this.incrementClock(20)
     this.interruptsEnabled = false
@@ -230,9 +230,9 @@ export default class CPU {
     this.controller.update()
 
     // try {
-    frameLoop: while (!this.breakpoints.has(this.registers.PC.value)) {
+    frameLoop: while (!this.breakpoints.has(this.registers.PC.word)) {
       this.executeNextInstruction()
-      address = this.registers.PC.value
+      address = this.registers.PC.word
 
       const interrupt = this.getInterrupt()
       if (interrupt !== null) {
