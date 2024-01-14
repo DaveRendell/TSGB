@@ -14,6 +14,7 @@ import {
   describeWordLocation,
   WordLocation,
 } from "./instructionHelpers"
+import CPU from "../cpu"
 
 const cycleCost = (location: ByteLocation): number => {
   switch (location) {
@@ -64,6 +65,7 @@ const getPointerAction = (
       : () => {}
 
 export function load8Bit(
+  cpu: CPU,
   destinationName: ByteLocation,
   sourceName: ByteLocation,
   hlRegisterAction: "none" | "increment" | "decrement" = "none",

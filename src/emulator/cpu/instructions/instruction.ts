@@ -54,41 +54,7 @@ export interface Instruction {
 
 // Prefixed 0x80 = 10000000
 
-const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
-  0x00: nop,
-  0x08: loadStackPointerToAddress,
-  0x76: halt,
-  0x10: stop,
-  0b00100010: load8Bit(ByteLocation.M, ByteLocation.A, "increment"),
-  0b00101010: load8Bit(ByteLocation.A, ByteLocation.M, "increment"),
-  0b00110010: load8Bit(ByteLocation.M, ByteLocation.A, "decrement"),
-  0b00111010: load8Bit(ByteLocation.A, ByteLocation.M, "decrement"),
-  0x07: rotateLeft(ByteLocation.A, false, false, false),
-  0x17: rotateLeft(ByteLocation.A, true, false, false),
-  0x0f: rotateRight(ByteLocation.A, false, false, false),
-  0x1f: rotateRight(ByteLocation.A, true, false, false),
-  0x18: jumpRelative("None"),
-  0x2f: cpl,
-  0x37: scf,
-  0x3f: ccf,
-  0xf0: load8Bit(ByteLocation.A, ByteLocation.FF_N),
-  0xe0: load8Bit(ByteLocation.FF_N, ByteLocation.A),
-  0xf2: load8Bit(ByteLocation.A, ByteLocation.FF_C),
-  0xe2: load8Bit(ByteLocation.FF_C, ByteLocation.A),
-  0xcd: call,
-  0xe8: addImmediateToSP,
-  0xc9: ret,
-  0xd9: reti,
-  0xc3: jump("None"),
-  0xf8: loadHlFromSpPlusN,
-  0x27: daa,
-  0b11101010: load8Bit(ByteLocation.NN, ByteLocation.A),
-  0b11111010: load8Bit(ByteLocation.A, ByteLocation.NN),
-  0xe9: jpHl,
-  0xf9: loadStackPointerFromHL,
-  0xf3: disableInterrupts,
-  0xfb: enableInterrupts,
-}
+
 
 const REGISTERS_8: ByteLocation[] = [
   ByteLocation.B,
@@ -153,9 +119,46 @@ function getRegisterColumn3(code: number): WordLocation {
 }
 
 export function decodeInstruction(
+  cpu: CPU,
   code: number,
   prefixedCode?: number,
 ): Instruction {
+  const STATIC_INSTRUCTIONS: { [code: number]: Instruction } = {
+    0x00: nop,
+    0x08: loadStackPointerToAddress,
+    0x76: halt,
+    0x10: stop,
+    0b00100010: load8Bit(cpu, ByteLocation.M, ByteLocation.A, "increment"),
+    0b00101010: load8Bit(cpu, ByteLocation.A, ByteLocation.M, "increment"),
+    0b00110010: load8Bit(cpu, ByteLocation.M, ByteLocation.A, "decrement"),
+    0b00111010: load8Bit(cpu, ByteLocation.A, ByteLocation.M, "decrement"),
+    0x07: rotateLeft(ByteLocation.A, false, false, false),
+    0x17: rotateLeft(ByteLocation.A, true, false, false),
+    0x0f: rotateRight(ByteLocation.A, false, false, false),
+    0x1f: rotateRight(ByteLocation.A, true, false, false),
+    0x18: jumpRelative("None"),
+    0x2f: cpl,
+    0x37: scf,
+    0x3f: ccf,
+    0xf0: load8Bit(cpu, ByteLocation.A, ByteLocation.FF_N),
+    0xe0: load8Bit(cpu, ByteLocation.FF_N, ByteLocation.A),
+    0xf2: load8Bit(cpu, ByteLocation.A, ByteLocation.FF_C),
+    0xe2: load8Bit(cpu, ByteLocation.FF_C, ByteLocation.A),
+    0xcd: call,
+    0xe8: addImmediateToSP,
+    0xc9: ret,
+    0xd9: reti,
+    0xc3: jump("None"),
+    0xf8: loadHlFromSpPlusN,
+    0x27: daa,
+    0b11101010: load8Bit(cpu, ByteLocation.NN, ByteLocation.A),
+    0b11111010: load8Bit(cpu, ByteLocation.A, ByteLocation.NN),
+    0xe9: jpHl,
+    0xf9: loadStackPointerFromHL,
+    0xf3: disableInterrupts,
+    0xfb: enableInterrupts,
+  }
+
   const staticInstruction = STATIC_INSTRUCTIONS[code]
   if (staticInstruction) {
     return staticInstruction
@@ -176,12 +179,12 @@ export function decodeInstruction(
 
   if ((code & 0b11101111) == 0b00000010) {
     // LD (R),A
-    return load8Bit(getRegisterColumn1(code), ByteLocation.A)
+    return load8Bit(cpu, getRegisterColumn1(code), ByteLocation.A)
   }
 
   if ((code & 0b11101111) == 0b00001010) {
     // LD A,(R)
-    return load8Bit(ByteLocation.A, getRegisterColumn1(code))
+    return load8Bit(cpu, ByteLocation.A, getRegisterColumn1(code))
   }
 
   if ((code & 0b11001111) === 0b00000011) {
@@ -212,12 +215,12 @@ export function decodeInstruction(
 
   if ((code & 0b11000111) === 0b00000110) {
     // LD R,N
-    return load8Bit(getDestination(code), ByteLocation.N)
+    return load8Bit(cpu, getDestination(code), ByteLocation.N)
   }
 
   if ((code & 0b11000000) === 0b01000000) {
     // LD R,R
-    return load8Bit(getDestination(code), getSource(code))
+    return load8Bit(cpu, getDestination(code), getSource(code))
   }
 
   if ((code & 0b11000000) === 0b10000000) {

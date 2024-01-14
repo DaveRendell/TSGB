@@ -73,25 +73,6 @@ export default class CPU {
     this.interruptEnableRegister = memory.at(0xffff)
     this.interruptFlags = memory.at(0xff0f)
 
-    for (let code = 0x00; code < 0x100; code++) {
-      try {
-        const instruction = decodeInstruction(code)
-        this.instructions[code] = instruction.execute
-        this.cycleLengths[code] = instruction.cycles
-      } catch {
-        this.instructions[code] = nop
-        this.cycleLengths[code] = 4
-      }
-      try {
-        const instruction = decodeInstruction(0xCB, code)
-        this.prefixedInstructions[code] = instruction.execute
-        this.prefixedCycleLengths[code] = instruction.cycles
-      } catch {
-        this.instructions[code] = nop
-        this.cycleLengths[code] = 4
-      }
-    }
-
     const self = this
 
     this.nextByte = {
@@ -107,6 +88,25 @@ export default class CPU {
         const h = memory.at(self.registers.PC.word++).byte
         return (h << 8) + l
       },
+    }
+
+    for (let code = 0x00; code < 0x100; code++) {
+      try {
+        const instruction = decodeInstruction(this, code)
+        this.instructions[code] = instruction.execute
+        this.cycleLengths[code] = instruction.cycles
+      } catch {
+        this.instructions[code] = nop
+        this.cycleLengths[code] = 4
+      }
+      try {
+        const instruction = decodeInstruction(this, 0xCB, code)
+        this.prefixedInstructions[code] = instruction.execute
+        this.prefixedCycleLengths[code] = instruction.cycles
+      } catch {
+        this.instructions[code] = nop
+        this.cycleLengths[code] = 4
+      }
     }
 
     // SKIP BOOTROM
