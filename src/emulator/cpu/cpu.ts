@@ -6,7 +6,7 @@ import { splitBytes } from "./instructions/instructionHelpers"
 import nop from "./instructions/nop"
 import Memory from "../memory/memoryMap"
 import { Interrupt } from "../memory/registers/interruptRegisters"
-import { ByteRef } from "../refs/byteRef"
+import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 import { WordRef } from "../refs/wordRef"
 import PictureProcessor from "../pictureProcessor"
 import Timer from "../timer"
@@ -75,12 +75,10 @@ export default class CPU {
 
     const self = this
 
-    this.nextByte = {
-      get byte(): number {
-        return memory.at(self.registers.PC.word++).byte
-      },
-      set byte(_: number) {},
-    }
+    this.nextByte =  new GetSetByteRef(
+      () => memory.at(self.registers.PC.word++).byte,
+      () => {}
+    )
 
     this.nextWord = {
       get word(): number {

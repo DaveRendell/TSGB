@@ -79,7 +79,7 @@ export default function GameView({ emulator, unload }: Props) {
           ),
           Settings: () => <Settings emulator={emulator} />,
           Dashboard: () => <PkmnGen1Dashboard emulator={emulator} />,
-          "Serial port": () => <SerialPort emulator={emulator} />,
+          // "Serial port": () => <SerialPort emulator={emulator} />,
           "Debug Graphics": () => (
             <>
               <VramViewer ppu={new PPU(emulator.cpu)} />
