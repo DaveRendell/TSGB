@@ -56,6 +56,12 @@ export default class CPU {
   nextByte: ByteRef
   nextWord: WordRef
 
+  instructions: { [code: number]: (cpu: CPU) => void } = {}
+  cycleLengths: { [code: number]: number } = {}
+
+  prefixedInstructions: { [code: number]: (cpu: CPU) => void } = {}
+  prefixedCycleLengths: { [code: number]: number } = {}
+
   constructor(memory: Memory, controller: Controller) {
     this.memory = memory
     this.controller = controller
@@ -66,6 +72,25 @@ export default class CPU {
 
     this.interruptEnableRegister = memory.at(0xffff)
     this.interruptFlags = memory.at(0xff0f)
+
+    for (let code = 0x00; code < 0x100; code++) {
+      try {
+        const instruction = decodeInstruction(code)
+        this.instructions[code] = instruction.execute
+        this.cycleLengths[code] = instruction.cycles
+      } catch {
+        this.instructions[code] = nop
+        this.cycleLengths[code] = 4
+      }
+      try {
+        const instruction = decodeInstruction(0xCB, code)
+        this.prefixedInstructions[code] = instruction.execute
+        this.prefixedCycleLengths[code] = instruction.cycles
+      } catch {
+        this.instructions[code] = nop
+        this.cycleLengths[code] = 4
+      }
+    }
 
     const self = this
 
@@ -134,27 +159,14 @@ export default class CPU {
     }
 
     const code = this.nextByte.byte
-    const prefixedCode = code === 0xcb ? this.nextByte.byte : undefined
-    let instruction: Instruction
-    try {
-      instruction = decodeInstruction(code, prefixedCode)
-    } catch {
-      console.warn(
-        `Unused opcode: ${code.toString(
-          16,
-        )} at address ${this.registers.PC.word.toString(16)}`,
-      )
-      instruction = nop
-    }
 
-    instruction.execute(this)
-    this.incrementClock(instruction.cycles)
-
-    if (this.debugMode) {
-      const parameters = new Array(instruction.parameterBytes)
-        .fill(0)
-        .map((_, i) => this.memory.at(this.registers.PC.word + 1 + i).byte)
-      console.log(instruction.description(parameters))
+    if (code != 0xcb) {
+      this.instructions[code](this)
+      this.incrementClock(this.cycleLengths[code])
+    } else {
+      const prefixedCode = this.nextByte.byte
+      this.prefixedInstructions[prefixedCode](this)
+      this.incrementClock(this.prefixedCycleLengths[prefixedCode])
     }
 
     this.onInstructionComplete()
