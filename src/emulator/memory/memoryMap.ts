@@ -86,6 +86,20 @@ export default class Memory {
     )
   }
 
+  atPointer(pointer: WordRef): ByteRef {
+    return new GetSetByteRef(
+      () => this.at(pointer.word).byte,
+      (value) => this.at(pointer.word).byte = value
+    )
+  }
+
+  atLastPagePointer(pointer: ByteRef): ByteRef {
+    return new GetSetByteRef(
+      () => this.at(0xff00 + pointer.byte).byte,
+      (value) => this.at(0xff00 + pointer.byte).byte = value
+    )
+  }
+
   wordAt(address: number): WordRef {
     return new CompositeWordRef(this.at(address + 1), this.at(address))
   }

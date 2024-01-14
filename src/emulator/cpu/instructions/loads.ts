@@ -77,11 +77,11 @@ export function load8Bit(
 
   const pointerAction = getPointerAction(hlRegisterAction)
 
+  const destination = getByteRef(destinationName, cpu)
+  const source = getByteRef(sourceName, cpu)
+
   return {
     execute: (cpu) => {
-      const destination = getByteRef(destinationName, cpu)
-      const source = getByteRef(sourceName, cpu)
-
       destination.byte = source.byte
 
       pointerAction(cpu.registers.HL)

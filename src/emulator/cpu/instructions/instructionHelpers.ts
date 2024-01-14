@@ -3,8 +3,8 @@ import {
   valueDisplay,
 } from "../../../helpers/displayHexNumbers"
 import CPU from "../cpu"
-import { ByteRef } from "../../refs/byteRef"
-import { WordRef } from "../../refs/wordRef"
+import { ByteRef, ConstantByteRef } from "../../refs/byteRef"
+import { CompositeWordRef, WordRef } from "../../refs/wordRef"
 
 export enum ByteLocation {
   A,
@@ -45,17 +45,17 @@ export const getByteRef = (name: ByteLocation, cpu: CPU): ByteRef => {
     case ByteLocation.N:
       return cpu.nextByte
     case ByteLocation.M:
-      return cpu.memory.at(cpu.registers.HL.word)
+      return cpu.memory.atPointer(cpu.registers.HL)
     case ByteLocation.BC:
-      return cpu.memory.at(cpu.registers.BC.word)
+      return cpu.memory.atPointer(cpu.registers.BC)
     case ByteLocation.DE:
-      return cpu.memory.at(cpu.registers.DE.word)
+      return cpu.memory.atPointer(cpu.registers.DE)
     case ByteLocation.FF_C:
-      return cpu.memory.at(0xff00 + cpu.registers.C.byte)
+      return cpu.memory.atLastPagePointer(cpu.registers.C)
     case ByteLocation.FF_N:
-      return cpu.memory.at(0xff00 + cpu.nextByte.byte)
+      return cpu.memory.atLastPagePointer(cpu.nextByte)
     case ByteLocation.NN:
-      return cpu.memory.at(cpu.nextWord.word)
+      return cpu.memory.atPointer(cpu.nextWord)
   }
 }
 
