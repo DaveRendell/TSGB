@@ -10,10 +10,12 @@ export class Mbc1Cartridge extends Cartridge {
   bankNumber2 = 0
   advancedMode = false
   romBanks = 0
+  ramBanks = 0
 
   constructor(data: Uint8Array, storeRam: StoreRam, loadedSave?: Uint8Array) {
     super(data, storeRam, loadedSave)
     this.romBanks = 1 << (data[0x0148] + 1)
+    this.ramBanks = [0, 0, 1, 4, 16, 8][data[0x149]]
   }
 
   override rom(address: number): ByteRef {
@@ -65,16 +67,17 @@ export class Mbc1Cartridge extends Cartridge {
   override ram(address: number): ByteRef {
     return new GetSetByteRef(
       () => {
-        if (!this.ramEnabled) { return 0 }
+        if (!this.ramEnabled) { return 0xff }
         if (this.advancedMode) {
-          return this.ramData[(address & 0x1fff) + (this.bankNumber2 << 13)]
+          const bank = this.bankNumber2 & (this.ramBanks - 1)
+          return this.ramData[(address & 0x1fff) + (bank << 13)]
         }
         return this.ramData[address & 0x1fff]
       },
       (value) => {
         if (!this.ramEnabled) { return }
         const ramAddress = this.advancedMode
-          ? (address & 0x1fff) + (this.bankNumber2 << 13)
+          ? (address & 0x1fff) + ((this.bankNumber2 & (this.ramBanks - 1)) << 13)
           : address & 0x1fff
         this.ramData[ramAddress] = value
         if (this.ramWriteTimeout) {
