@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Emulator } from "../../emulator/emulator"
 import Memory from "../../emulator/memory/memoryMap"
+import "./pkmnGen1Dashboard.css"
 
 interface Props {
   emulator: Emulator
@@ -10,21 +11,26 @@ export default function PkmnGen1Dashboard({ emulator }: Props) {
   const party = getParty(emulator.memory)
 
   return (
-    <section>
-      <h2>Dashboard</h2>
-      Player name: {readStringAt(emulator.memory, 0xd158)}
-      <h3>Party - {party.length} / 6</h3>
+    <section className="pkmn-gen-1-dashboard">
+      <h2>Trainer {readStringAt(emulator.memory, 0xd158)}</h2>
       {party.map((monster, i) => (
-        <article key={i}>
-          <h4>{monster.name}</h4>
-          hp: {monster.hp} / {monster.maxHp}
-          <br />
-          <progress max={monster.maxHp} value={monster.hp} />
-          <br />
-          Level {monster.level} - {monster.xpRequired - monster.xpThisLevel} for
-          level up
-          <br />
-          <progress max={monster.xpRequired} value={monster.xpThisLevel} />
+        <article className="monster" key={i}>
+          <h4 className="sentence-case">{monster.name.toLowerCase()} - Level {monster.level}</h4>
+          <div className="status-bars">
+            <div>
+              <progress className="hp-bar" max={monster.maxHp} value={monster.hp} />
+              <br />
+              <strong>Hit points:</strong> {monster.hp} / {monster.maxHp}
+            </div>
+            <div>
+              <progress className="xp-bar" max={monster.xpRequired} value={monster.xpThisLevel} />
+              <br />
+              <strong>XP for level up:</strong> {monster.xpRequired - monster.xpThisLevel} 
+            </div>
+          </div>
+          
+          <br/>
+          
         </article>
       ))}
     </section>

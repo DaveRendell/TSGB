@@ -1,0 +1,42 @@
+.monster {
+  background-color: rgb(154, 161, 160);
+  padding: 1em;
+  border-radius: 0.25em 0.25em 1.5em 0.25em;
+}
+
+.monster h4 {
+  margin-top: 0;
+}
+
+.monster + .monster {
+  margin-top: 1em;
+}
+
+.status-bars {
+  display: flex;
+  justify-content: space-between;
+}
+
+.status-bars > * {
+  flex-basis: 50%;
+  padding: 0 1em;;
+}
+
+.pkmn-gen-1-dashboard progress{
+  border-radius: 1em;
+  height: 0.5em;
+  width: 100%;
+}
+
+.pkmn-gen-1-dashboard progress.hp-bar::-moz-progress-bar, .pkmn-gen-1-dashboard progress.hp-bar::-webkit-progress-value {
+  background-color: green;
+}
+
+.pkmn-gen-1-dashboard progress.xp-bar::-moz-progress-bar, .pkmn-gen-1-dashboard progress.xp-bar::-webkit-progress-value {
+  background-color: rgb(0, 157, 255);
+}
+
+.sentence-case {
+  text-transform: lowercase;
+  text-transform: capitalize;
+}
