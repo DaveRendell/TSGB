@@ -57,14 +57,14 @@ export default function MemoryTableRow({
   ): Instruction | undefined => {
     try {
       const code = memory.at(memoryLocation).byte
-      return decodeInstruction(code, memory.at(memoryLocation + 1).byte)
+      return decodeInstruction(memory.cpu, code, memory.at(memoryLocation + 1).byte)
     } catch {
       return undefined
     }
   }
 
   try {
-    const instruction = decodeInstruction(value, memory.at(address + 1).byte)
+    const instruction = decodeInstruction(memory.cpu, value, memory.at(address + 1).byte)
     const parameters = new Array(instruction.parameterBytes)
       .fill(0)
       .map((_, i) => memory.at(address + 1 + i).byte)

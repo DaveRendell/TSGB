@@ -8,19 +8,32 @@ export class Mbc1Cartridge extends Cartridge {
   ramEnabled = false
   bankNumber1 = 1
   bankNumber2 = 0
-  bankingMode: "simple" | "advanced" = "simple"
+  advancedMode = false
+  romBanks = 0
 
   constructor(data: Uint8Array, storeRam: StoreRam, loadedSave?: Uint8Array) {
     super(data, storeRam, loadedSave)
+    this.romBanks = 1 << (data[0x0148] + 1)
   }
 
   override rom(address: number): ByteRef {
-    const read = () => {
-      if (address < 0x4000) {
-        return this.romData[address]
+    let read: () => number
+
+    if (address < 0x4000) {
+      read = () =>  {
+        if (!this.advancedMode) {
+          return this.romData[address]
+        }
+        const bankNumber = (this.bankNumber2 << 5) & (this.romBanks - 1)
+        const adjustedAddress = (address & 0x3fff) + (bankNumber << 14)
+        return this.romData[adjustedAddress]
       }
-      const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000
-      return this.romData[adjustedAddress]
+    } else {
+      read = () => {
+        const bankNumber = ((this.bankNumber2 << 5) + this.bankNumber1) & (this.romBanks - 1)
+        const adjustedAddress = (address & 0x3fff) + (bankNumber << 14)
+        return this.romData[adjustedAddress]
+      }
     }
     let write: (value: number) => void
 
@@ -42,7 +55,7 @@ export class Mbc1Cartridge extends Cartridge {
       }
     } else {
       write = (value: number) => {
-        this.bankingMode = (value & 1) > 0 ? "advanced" : "simple"
+        this.advancedMode = (value & 1) > 0
       }
     }
 
@@ -52,12 +65,18 @@ export class Mbc1Cartridge extends Cartridge {
   override ram(address: number): ByteRef {
     return new GetSetByteRef(
       () => {
-        const bankBase = 0x2000 * this.bankNumber2
-        return this.ramData[address - 0xa000 - bankBase]
+        if (!this.ramEnabled) { return 0 }
+        if (this.advancedMode) {
+          return this.ramData[(address & 0x1fff) + (this.bankNumber2 << 13)]
+        }
+        return this.ramData[address & 0x1fff]
       },
       (value) => {
-        const bankBase = 0x2000 * this.bankNumber2
-        this.ramData[address - 0xa000 + bankBase] = value
+        if (!this.ramEnabled) { return }
+        const ramAddress = this.advancedMode
+          ? (address & 0x1fff) + (this.bankNumber2 << 13)
+          : address & 0x1fff
+        this.ramData[ramAddress] = value
         if (this.ramWriteTimeout) {
           clearTimeout(this.ramWriteTimeout)
         }
