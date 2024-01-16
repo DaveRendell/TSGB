@@ -64,7 +64,7 @@ interface Monster {
 }
 
 function getParty(memory): Monster[] {
-  const count = memory.at(0xd163).value
+  const count = memory.at(0xd163).byte
   let party: Monster[] = []
   for (let i = 0; i < count; i++) {
     party.push(decodePartyMonster(memory, i))

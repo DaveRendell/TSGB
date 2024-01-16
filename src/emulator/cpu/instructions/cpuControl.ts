@@ -1,4 +1,4 @@
-import { Instruction } from "../instruction"
+import { Instruction } from "../instructions/instruction"
 
 export const disableInterrupts: Instruction = {
   execute: (cpu) => {
@@ -23,7 +23,7 @@ export const stop: Instruction = {
     cpu.isStopped = true
     // TODO what does this actually do?
 
-    cpu.memory.at(0xff04).value = 0
+    cpu.memory.at(0xff04).byte = 0
   },
   cycles: 4,
   parameterBytes: 0,

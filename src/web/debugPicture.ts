@@ -52,8 +52,8 @@ export default class PPU {
       const baseY = 8 * (tile >> 4)
       for (let row = 0; row < 8; row++) {
         const y = baseY + row
-        const byte1 = this.memory.at(tileBaseAddress + 2 * row).value
-        const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).value
+        const byte1 = this.memory.at(tileBaseAddress + 2 * row).byte
+        const byte2 = this.memory.at(tileBaseAddress + 2 * row + 1).byte
         for (let bit = 7; bit >= 0; bit--) {
           const x = baseX + 7 - bit
           const pixelNumber = y * 128 + x
@@ -252,7 +252,7 @@ export default class PPU {
   }
 
   backgroundPallete(): number[][] {
-    const backgroundPalletByte = this.memory.at(0xff47).value
+    const backgroundPalletByte = this.memory.at(0xff47).byte
 
     return [
       COLOURS[(backgroundPalletByte >> 0) & 3],

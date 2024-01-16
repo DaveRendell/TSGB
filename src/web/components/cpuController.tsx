@@ -55,7 +55,7 @@ export default function CpuController({ cpu }: Props) {
               {REGISTERS_8_BIT.map((reg) => (
                 <tr key={reg}>
                   <td>{reg}</td>
-                  <td>{valueDisplay(cpu.registers[reg].value)}</td>
+                  <td>{valueDisplay(cpu.registers[reg].byte)}</td>
                 </tr>
               ))}
             </tbody>
@@ -68,7 +68,7 @@ export default function CpuController({ cpu }: Props) {
               {REGISTERS_16_BIT.map((reg) => (
                 <tr key={reg}>
                   <td>{reg}</td>
-                  <td>{addressDisplay(cpu.registers[reg].value)}</td>
+                  <td>{addressDisplay(cpu.registers[reg].word)}</td>
                 </tr>
               ))}
             </tbody>
