@@ -19,10 +19,10 @@ export function VramViewer({ ppu }: Props) {
   const [wY, setWY] = React.useState(0)
 
   const update = () => {
-    setSX(ppu.memory.registers.scrollX.value)
-    setSY(ppu.memory.registers.scrollY.value)
-    setWX(ppu.memory.registers.windowX.value)
-    setWY(ppu.memory.registers.windowY.value)
+    setSX(ppu.memory.registers.scrollX.byte)
+    setSY(ppu.memory.registers.scrollY.byte)
+    setWX(ppu.memory.registers.windowX.byte)
+    setWY(ppu.memory.registers.windowY.byte)
     if (tileSet0Canvas.current) {
       ppu.printTileset0(tileSet0Canvas.current)
     }
