@@ -14,8 +14,14 @@ export default function App() {
       const palette = JSON.parse(paletteString)
       emulator.pictureProcessor.colours = palette
     }
-    return <GameView emulator={emulator} unload={() => setCartridge(null)} />
+    return <>
+      <h1>TSGB</h1>
+      <GameView emulator={emulator} unload={() => setCartridge(null)} />
+    </>
   }
 
-  return <GameLoader setCartridge={setCartridge} />
+  return <>
+    <h1>TSGB</h1>
+    <GameLoader setCartridge={setCartridge} />
+  </>
 }

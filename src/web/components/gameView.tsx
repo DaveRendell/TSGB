@@ -40,7 +40,6 @@ export default function GameView({ emulator, unload }: Props) {
 
   return (
     <main>
-      <h1>TSGB</h1>
       <div className="control-buttons">
         <button onClick={() => emulator.cpu.run()}>Run</button>
         <button onClick={() => emulator.cpu.pause()}>Pause</button>
