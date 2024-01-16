@@ -47,20 +47,23 @@ export default function GameLoader({ setCartridge }: Props) {
   return (
     <section>
       <h2>Library</h2>
-      <label htmlFor="game-load-db">Add new game:</label>
-      <input
-        id="game-load-db"
-        type="file"
-        onChange={(e) => {
-          if (e.target.files && e.target.files[0]) {
-            addGame(e.target.files[0]).then(() => setLastChange(Date.now()))
-          }
-        }}
-      />
+      <div className="game-upload floating-panel">
+        <label htmlFor="game-load-db">Add new game:</label>
+        <input
+          id="game-load-db"
+          type="file"
+          onChange={(e) => {
+            if (e.target.files && e.target.files[0]) {
+              addGame(e.target.files[0]).then(() => setLastChange(Date.now()))
+            }
+          }}
+        />
+      </div>
+      
       {storedGames === null ? (
         <>Fetching games...</>
       ) : (
-        <>
+        <div className="library">
           {storedGames.map((game) => (
             <LibraryCard
               game={game}
@@ -68,7 +71,7 @@ export default function GameLoader({ setCartridge }: Props) {
               openOptions={openOptions(game)}
             />
           ))}
-        </>
+        </div>
       )}
     </section>
   )

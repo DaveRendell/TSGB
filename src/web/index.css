@@ -15,6 +15,7 @@ body {
 
   max-width: 800px;
   margin: 0 auto;
+  padding: 0.5em;
 }
 
 .narrow {
@@ -116,4 +117,38 @@ select {
 
 .control-buttons {
   margin-bottom: 1em;
+}
+
+.floating-panel {
+  background-color: rgb(154, 161, 160);
+  padding: 0.25em 0.75em;
+  border-radius: 0.25em 0.25em 1.5em 0.25em;
+  margin-bottom: 1em;
+  box-shadow: 0 2px 1px grey;
+}
+
+.chunky-button {
+  background-color: rgb(17, 88, 171);
+  border-radius: 0;
+  border: none;
+  box-shadow: 0 0.25em rgb(7, 7, 125);
+  vertical-align: top;
+  padding: 0.25em 0.5em;
+  font-weight: bolder;
+  color: rgb(234, 230, 224);
+  border-radius: 2px;
+}
+
+.action-button {
+  background-color: green;
+  box-shadow: 0 0.25em rgb(2, 48, 2);
+}
+
+.chunky-button:active {
+  margin-top: 0.25em;
+  box-shadow: 0 0;
+}
+
+.chunky-button + .chunky-button {
+  margin-left: 0.5em;
 }

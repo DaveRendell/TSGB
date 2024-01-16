@@ -2,6 +2,7 @@
   background-color: rgb(154, 161, 160);
   padding: 1em;
   border-radius: 0.25em 0.25em 1.5em 0.25em;
+  box-shadow: 0 2px 1px grey;
 }
 
 .monster h4 {
@@ -19,7 +20,7 @@
 
 .status-bars > * {
   flex-basis: 50%;
-  padding: 0 1em;;
+  padding: 0 1em;
 }
 
 .pkmn-gen-1-dashboard progress{

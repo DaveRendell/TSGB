@@ -3,4 +3,5 @@ export interface StoredGame {
   title: string
   data: Uint8Array
   save?: Uint8Array
+  boxart?: File
 }

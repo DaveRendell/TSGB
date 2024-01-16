@@ -1,0 +1,41 @@
+.library {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1000px;
+  gap: 1em;
+}
+
+.game-upload {
+  padding: 1em;
+}
+
+.library-card {
+  width: 350px;
+  height: 100px;
+}
+
+.library-card img {
+  float: left;
+  margin-top: 7px;
+  margin-right: 1em;
+  border-radius: 5px;
+  width: 85px;
+  height: 85px;
+}
+
+.no-boxart {
+  width: 85px;
+  height: 85px;
+  float: left;
+  border-radius: 5px;
+  margin-top: 7px;
+  margin-right: 1em;
+  border: 2px dashed grey;
+}
+
+.library-card h4 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

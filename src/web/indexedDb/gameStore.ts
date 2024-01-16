@@ -60,6 +60,19 @@ export async function deleteGame(key: number): Promise<void> {
   })
 }
 
+export async function updateGame(game: StoredGame): Promise<void> {
+  const db = await openDb()
+  const transaction = db.transaction(["games"], "readwrite")
+
+  const store = transaction.objectStore("games")
+
+  return new Promise((resolve, reject) => {
+    const request = store.put(game)
+    request.onerror = reject
+    request.onsuccess = () => resolve()
+  })
+}
+
 export const persistSave =
   (gameId: number) =>
   async (data: Uint8Array): Promise<void> => {
