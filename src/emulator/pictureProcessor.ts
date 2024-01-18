@@ -92,8 +92,7 @@ export default class PictureProcessor {
           if (this.scanlineNumber.byte > SCANLINES) {
             this.setScanline(0)
             this.windowLine = 0
-            this.renderScanline()
-            this.setMode("HBlank")
+            this.setMode("Scanline OAM")
           }
         }
         break
