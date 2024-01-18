@@ -236,8 +236,7 @@ export default class PictureProcessor {
       const winX = i - (this.memory.registers.windowX.byte - 7)
       if (pixel === undefined && this.lcdControl.windowEnabled) {
         if (winY >= 0 && winX >= 0) {
-          const windowPixel = windowTileRow[winX % 8]
-          tilePixel = this.backgroundPallette.map[windowPixel]
+          tilePixel = windowTileRow[winX % 8]
         }
       }
       if (winX >= 0 && winY >= 0) {
@@ -254,8 +253,7 @@ export default class PictureProcessor {
         tilePixel == undefined &&
         this.lcdControl.backgroundWindowDisplay
       ) {
-        const backgroundPixel = backgroundTileRow[(scrollX + i) % 8]
-        tilePixel = this.backgroundPallette.map[backgroundPixel]
+        tilePixel = backgroundTileRow[(scrollX + i) % 8]
       }
 
       // Get next background tile if needed
@@ -266,7 +264,7 @@ export default class PictureProcessor {
       }
 
       if (tilePixel) {
-        pixel = tilePixel
+        pixel = this.backgroundPallette.map[tilePixel]
       }
 
       // Render low priority sprites (that go below non zero background)
