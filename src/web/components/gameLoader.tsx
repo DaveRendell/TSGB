@@ -46,8 +46,11 @@ export default function GameLoader({ setCartridge }: Props) {
 
   return (
     <section>
-      <div className="game-upload floating-panel">
-        <label htmlFor="game-load-db">Add new game:</label>
+      <div className="floating-panel game-upload">
+        <label
+          htmlFor="game-load-db"
+          className="chunky-button"
+        >Add new game</label>
         <input
           id="game-load-db"
           type="file"

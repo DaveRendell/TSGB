@@ -40,13 +40,13 @@ export default function GameView({ emulator, unload }: Props) {
 
   return (
     <main>
-      <div className="control-buttons">
-        <button onClick={() => emulator.cpu.run()}>Run</button>
-        <button onClick={() => emulator.cpu.pause()}>Pause</button>
-        <button onClick={() => emulator.cpu.runFrame(Infinity)}>
+      <div className="control-buttons floating-panel">
+        <button className="chunky-button" onClick={() => emulator.cpu.run()}>Run</button>
+        <button className="chunky-button" onClick={() => emulator.cpu.pause()}>Pause</button>
+        <button className="chunky-button" onClick={() => emulator.cpu.runFrame(Infinity)}>
           Run frame
         </button>
-        <button
+        <button className="chunky-button"
           onClick={() => {
             emulator.cpu.pause()
             unload()

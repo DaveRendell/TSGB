@@ -8,6 +8,11 @@
 
 .game-upload {
   padding: 1em;
+  height: 2em;
+}
+
+.game-upload input[type=file] {
+  display: none;
 }
 
 .library-card {
