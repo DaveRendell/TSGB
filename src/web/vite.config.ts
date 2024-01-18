@@ -8,6 +8,7 @@ export default defineConfig({
     VitePWA({ injectRegister: "script" })
   ],
   base: "/TSGB/",
+  assetsInclude: "*.png",
   server: {
     port: 1234,
   },
