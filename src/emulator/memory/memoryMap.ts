@@ -28,7 +28,7 @@ export default class Memory {
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)
     this.cartridge = cartridge
-    this.oam = new OAM(this)
+    this.oam = new OAM(this.registers, this.vram)
   }
 
   at(address: number): ByteRef {

@@ -1,5 +1,5 @@
-import Memory from "../memory"
 import { ByteRef, GetSetByteRef } from "../refs/byteRef"
+import { IoRegisters } from "./registers/ioRegisters"
 import { PalletteRegister } from "./registers/lcdRegisters"
 import { VRAM } from "./vram"
 
@@ -19,7 +19,7 @@ export class Sprite {
   pallette1: PalletteRegister
   vram: VRAM
 
-  constructor(memory: Memory) {
+  constructor(vram: VRAM, registers: IoRegisters) {
     const bytes: ByteRef[] = []
     bytes.push(
       new GetSetByteRef( // 0: Y Position
@@ -55,9 +55,9 @@ export class Sprite {
       ),
     )
     this.bytes = bytes
-    this.pallette0 = memory.registers.objectPallete0
-    this.pallette1 = memory.registers.objectPallete1
-    this.vram = memory.vram
+    this.pallette0 = registers.objectPallete0
+    this.pallette1 = registers.objectPallete1
+    this.vram = vram
   }
 
   scanlineIntersect(scanline: number): number {
