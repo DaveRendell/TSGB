@@ -1,7 +1,6 @@
 // Reference:
 // https://gbdev.io/pandocs/Timer_and_Divider_Registers.html#timer-and-divider-registers
 
-import { increment } from "../../arithmetic"
 import { ByteRef } from "../../refs/byteRef"
 
 export class DividerRegister implements ByteRef {

@@ -1,4 +1,5 @@
 import CPU from "./cpu/cpu"
+import DmgScanlineRenderer from "./dmgScanlineRenderer"
 import Memory from "./memory/memoryMap"
 import { Interrupt } from "./memory/registers/interruptRegisters"
 import {
@@ -7,6 +8,7 @@ import {
   PalletteRegister,
 } from "./memory/registers/lcdRegisters"
 import { ByteRef } from "./refs/byteRef"
+import ScanlineRenderer from "./scanlineRenderer"
 
 const WIDTH = 160
 const HEIGHT = 144
@@ -15,22 +17,15 @@ const SCANLINES = 154
 type Mode = "HBlank" | "VBlank" | "Scanline OAM" | "Scanline VRAM"
 
 export default class PictureProcessor {
-  cpu: CPU
   memory: Memory
-  canvas: HTMLCanvasElement
-  buffer: OffscreenCanvas
-  bufferContext: OffscreenCanvasRenderingContext2D
+
+  scanlineRenderer: ScanlineRenderer
 
   lcdControl: LcdControlRegister
   lcdStatus: LcdStatusRegister
-  scrollX: ByteRef
-  scrollY: ByteRef
   scanlineNumber: ByteRef
-  backgroundPallette: PalletteRegister
   coincidence: ByteRef
   clockCount = 0
-
-  windowLine = 0
 
   mode: Mode = "Scanline OAM"
 
@@ -44,21 +39,18 @@ export default class PictureProcessor {
   ]
 
   constructor(cpu: CPU) {
-    this.cpu = cpu
     this.memory = cpu.memory
-    this.buffer = new OffscreenCanvas(WIDTH, HEIGHT)
-    this.bufferContext = this.buffer.getContext("2d")!
 
     this.lcdControl = this.memory.registers.lcdControl
     this.lcdStatus = this.memory.registers.lcdStatus
-    this.scrollY = this.memory.registers.scrollY
-    this.scrollX = this.memory.registers.scrollX
     this.scanlineNumber = this.memory.registers.scanline
-    this.backgroundPallette = this.memory.registers.backgroundPallete
     this.coincidence = this.memory.registers.scanlineCoincidence
 
     cpu.addClockCallback(this)
     cpu.pictureProcessor = this
+
+    this.scanlineRenderer = new DmgScanlineRenderer(
+      this.memory.registers, this.memory.vram, this.memory.oam)
   }
 
   // Returns true if new frame is rendered
@@ -74,10 +66,10 @@ export default class PictureProcessor {
             this.scanlineNumber.byte > this.memory.registers.windowY.byte &&
             this.memory.registers.windowX.byte <= 166
           ) {
-            this.windowLine++
+            this.scanlineRenderer.windowLine++
           }
           if (this.scanlineNumber.byte === HEIGHT) {
-            this.renderScreen()
+            this.scanlineRenderer.renderScreen()
             this.setMode("VBlank")
             this.newFrameDrawn = true
           } else {
@@ -91,7 +83,7 @@ export default class PictureProcessor {
           this.setScanline(this.scanlineNumber.byte + 1)
           if (this.scanlineNumber.byte > SCANLINES) {
             this.setScanline(0)
-            this.windowLine = 0
+            this.scanlineRenderer.windowLine = 0
             this.setMode("Scanline OAM")
           }
         }
@@ -105,7 +97,7 @@ export default class PictureProcessor {
       case "Scanline VRAM": // Mode 3
         if (this.clockCount >= 172) {
           this.clockCount -= 172
-          this.renderScanline()
+          this.scanlineRenderer.renderScanline()
           this.setMode("HBlank")
         }
         break
@@ -155,151 +147,5 @@ export default class PictureProcessor {
         break
     }
     this.mode = mode
-  }
-
-  renderScanline(): void {
-    if (!this.lcdControl.enabled) {
-      return
-    }
-
-    const scanline = this.scanlineNumber.byte
-
-    const line = this.bufferContext.createImageData(WIDTH, 1)
-
-    const scrollX = this.scrollX.byte
-    const scrollY = this.scrollY.byte
-    const backgroundY = (scrollY + scanline) & 0xff
-
-    // Returns the 8 long row of the background tile at pixel offset given
-    const getBackgroundTileRow = (offset: number): number[] => {
-      const backgroundX = (scrollX + offset) & 0xff
-      const tileMapNumber = (backgroundX >> 3) + ((backgroundY >> 3) << 5)
-      const tileId =
-        this.lcdControl.backgroundTilemap == 0
-          ? this.memory.vram.tilemap0(tileMapNumber)
-          : this.memory.vram.tilemap1(tileMapNumber)
-      const row = backgroundY & 0x7
-      return this.lcdControl.tileDataArea == 1
-        ? this.memory.vram.tileset0(tileId, row)
-        : this.memory.vram.tileset1(tileId, row)
-    }
-
-    const winY = scanline - this.memory.registers.windowY.byte
-
-    // Returns the 8 long row of the background tile at pixel offset given
-    const getWindowTileRow = (offset: number): number[] => {
-      const tileMapNumber = (offset >> 3) + ((this.windowLine >> 3) << 5)
-      const tileId =
-        this.lcdControl.windowTilemap == 0
-          ? this.memory.vram.tilemap0(tileMapNumber)
-          : this.memory.vram.tilemap1(tileMapNumber)
-      const row = this.windowLine & 0x7
-      return this.lcdControl.tileDataArea == 1
-        ? this.memory.vram.tileset0(tileId, row)
-        : this.memory.vram.tileset1(tileId, row)
-    }
-
-    let backgroundTileRow = getBackgroundTileRow(0)
-    let backgroundTileCounter = scrollX & 0x7
-
-    let windowTileRow = getWindowTileRow(0)
-    let windowTileCounter = 0
-
-    const sprites = this.memory.oam.spritesAtScanline()
-    const highPrioritySprites = sprites.filter((s) => !s.priority)
-    const lowPrioritySprites = sprites.filter((s) => s.priority)
-
-    for (let i = 0; i < WIDTH; i++) {
-      if (!this.lcdControl.enabled) {
-        return
-      }
-      let pixel: number | undefined
-
-      // Render high priority sprites (that go above background)
-      if (pixel === undefined && this.lcdControl.objectsEnabled) {
-        const sprite = highPrioritySprites.find(
-          (sprite) =>
-            i - (sprite.x - 8) >= 0 &&
-            i - (sprite.x - 8) < 8 &&
-            sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
-              undefined,
-        )
-        if (sprite) {
-          pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
-        }
-      }
-
-      let tilePixel: number | undefined = undefined
-
-      // Render window
-      const winX = i - (this.memory.registers.windowX.byte - 7)
-      if (pixel === undefined && this.lcdControl.windowEnabled) {
-        if (winY >= 0 && winX >= 0) {
-          tilePixel = windowTileRow[winX % 8]
-        }
-      }
-      if (winX >= 0 && winY >= 0) {
-        windowTileCounter++
-        if (windowTileCounter === 8) {
-          windowTileCounter = 0
-          windowTileRow = getWindowTileRow(winX + 1)
-        }
-      }
-
-      // Render background (excluding the lowest colour in the pallete)
-      if (
-        pixel === undefined &&
-        tilePixel == undefined &&
-        this.lcdControl.backgroundWindowDisplay
-      ) {
-        tilePixel = backgroundTileRow[(scrollX + i) % 8]
-      }
-
-      // Get next background tile if needed
-      backgroundTileCounter++
-      if (backgroundTileCounter === 8) {
-        backgroundTileCounter = 0
-        backgroundTileRow = getBackgroundTileRow(i + 1)
-      }
-
-      if (tilePixel) {
-        pixel = this.backgroundPallette.map[tilePixel]
-      }
-
-      // Render low priority sprites (that go below non zero background)
-      if (pixel === undefined && this.lcdControl.objectsEnabled) {
-        const sprite = lowPrioritySprites.find(
-          (sprite) =>
-            i - (sprite.x - 8) >= 0 &&
-            i - (sprite.x - 8) < 8 &&
-            sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
-              undefined,
-        )
-        if (sprite) {
-          pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
-        }
-      }
-
-      // If nothing else has rendered, use the lowest colour in the pallete
-      if (pixel === undefined) {
-        pixel = this.backgroundPallette.map[0]
-      }
-
-      const colour = this.colours[pixel]
-      line.data[4 * i + 0] = colour[0]
-      line.data[4 * i + 1] = colour[1]
-      line.data[4 * i + 2] = colour[2]
-      line.data[4 * i + 3] = 255
-    }
-
-    // Finally, add the new line to the buffer image
-    this.bufferContext.putImageData(line, 0, scanline)
-  }
-
-  renderScreen(): void {
-    if (this.canvas) {
-      const screenContext = this.canvas.getContext("2d")!
-      screenContext.drawImage(this.buffer, 0, 0)
-    }
   }
 }

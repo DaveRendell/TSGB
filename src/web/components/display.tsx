@@ -11,7 +11,7 @@ export default function Display({ cpu }: Props) {
 
   React.useEffect(() => {
     if (canvas.current) {
-      cpu.pictureProcessor.canvas = canvas.current
+      cpu.pictureProcessor.scanlineRenderer.canvas = canvas.current
     }
   }, [canvas])
 

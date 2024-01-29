@@ -12,7 +12,7 @@ export default function App() {
     const paletteString = window.localStorage.getItem("monochromePalette")
     if (paletteString) {
       const palette = JSON.parse(paletteString)
-      emulator.pictureProcessor.colours = palette
+      emulator.pictureProcessor.scanlineRenderer.colours = palette
     }
     return <>
       <h1>TSGB</h1>
