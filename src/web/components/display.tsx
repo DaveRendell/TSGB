@@ -1,23 +1,28 @@
 import * as React from "react"
-import CPU from "../../emulator/cpu/cpu"
-import PictureProcessor from "../../emulator/pictureProcessor"
+import { Emulator } from "../../emulator/emulator"
+import { MessageType } from "../../emulator/graphics/message"
 
 interface Props {
-  cpu: CPU
+  emulator: Emulator
 }
 
-export default function Display({ cpu }: Props) {
+export default function Display({ emulator }: Props) {
   const canvas = React.useRef<HTMLCanvasElement>(null)
 
   React.useEffect(() => {
     if (canvas.current) {
-      cpu.pictureProcessor.scanlineRenderer.canvas = canvas.current
+      console.log("Updating canvas")
+      const offscreen = canvas.current.transferControlToOffscreen()
+      emulator.renderWorker.postMessage({
+        type: MessageType.SetCanvas,
+        canvas: offscreen
+      }, [offscreen])
     }
   }, [canvas])
 
   return (
     <section>
-      <canvas className="screen" width="160" height="144" ref={canvas} />
+      <canvas className="screen" width="160" height="144" ref={canvas} moz-opaque={true} />
     </section>
   )
 }

@@ -1,5 +1,5 @@
 export default interface ScanlineRenderer {
-  canvas?: HTMLCanvasElement
+  canvas?: OffscreenCanvas
   colours: number[][]
   windowLine: number
   renderScanline(): void

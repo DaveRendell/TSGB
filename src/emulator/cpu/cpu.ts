@@ -10,6 +10,7 @@ import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 import { WordRef } from "../refs/wordRef"
 import PictureProcessor from "../pictureProcessor"
 import Timer from "../timer"
+import { MessageType } from "../graphics/message"
 
 interface ClockCallback {
   updateClock(cycles: number): void
@@ -38,6 +39,7 @@ export default class CPU {
   averageRecentFrameTime = 0
   fps = 0
   timer: Timer
+  rendererWorker: Worker
 
   isHalted = false
   isStopped = false
@@ -62,13 +64,14 @@ export default class CPU {
   prefixedInstructions: { [code: number]: (cpu: CPU) => void } = {}
   prefixedCycleLengths: { [code: number]: number } = {}
 
-  constructor(memory: Memory, controller: Controller) {
+  constructor(memory: Memory, controller: Controller, rendererWorker: Worker) {
     this.memory = memory
     this.controller = controller
     memory.cpu = this
     this.registers = new CpuRegisters()
     this.timer = new Timer(memory)
     this.addClockCallback(this.timer)
+    this.rendererWorker = rendererWorker
 
     this.interruptEnableRegister = memory.at(0xffff)
     this.interruptFlags = memory.at(0xff0f)
@@ -228,6 +231,10 @@ export default class CPU {
 
   runFrame(timestamp: number): void {
     const startTime = Date.now()
+    this.rendererWorker.postMessage({
+      type: MessageType.FrameStart,
+      startTime
+    })
     // We maintain an FPS counter by keeping track of how many frames were run
     // over the last 1000ms
     this.recentFrames = this.recentFrames.filter(

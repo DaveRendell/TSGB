@@ -57,7 +57,7 @@ export default function GameView({ emulator, unload }: Props) {
       </div>
       <div className="console">
         <div className="bevel">
-          <Display cpu={emulator.cpu} />
+          <Display emulator={emulator} />
         </div>
         <Joypad controller={emulator.controller} />
       </div>

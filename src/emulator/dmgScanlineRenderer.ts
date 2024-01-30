@@ -13,7 +13,7 @@ const HEIGHT = 144
  * Scanline renderer for displaying DMG compatible games in monochrome.
  */
 export default class DmgScanlineRenderer implements ScanlineRenderer {
-  canvas?: HTMLCanvasElement = undefined
+  canvas?: OffscreenCanvas = undefined
   buffer: OffscreenCanvas
   bufferContext: OffscreenCanvasRenderingContext2D
 
@@ -49,7 +49,7 @@ export default class DmgScanlineRenderer implements ScanlineRenderer {
     this.backgroundPallette = registers.backgroundPallete
 
     this.buffer = new OffscreenCanvas(WIDTH, HEIGHT)
-    this.bufferContext = this.buffer.getContext("2d")!
+    this.bufferContext = this.buffer.getContext("2d", { alpha: false })!
   }
 
   renderScanline(): void {
@@ -193,7 +193,7 @@ export default class DmgScanlineRenderer implements ScanlineRenderer {
 
   renderScreen(): void {
     if (this.canvas) {
-      const screenContext = this.canvas.getContext("2d")!
+      const screenContext = this.canvas.getContext("2d", { alpha: false })!
       screenContext.drawImage(this.buffer, 0, 0)
     }
   }

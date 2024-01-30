@@ -3,7 +3,9 @@ export enum MessageType {
   RenderScanline,
   RenderScreen,
   SetCanvas,
-  SetMonochromePalette
+  SetMonochromePalette,
+  IncrementWindowLine,
+  FrameStart,
 }
 
 export interface MemoryWriteMessage {
@@ -30,9 +32,20 @@ export interface SetMonochromePaletteMessage {
   palette: number[][]
 }
 
+export interface IncrementWindowLineMessage {
+  type: MessageType.IncrementWindowLine
+}
+
+export interface FrameStartMessage {
+  type: MessageType.FrameStart
+  startTime: number
+}
+
 export type Message =
   MemoryWriteMessage
   | RenderScalineMessage
   | RenderScreenMessage
   | SetCanvasMessage
   | SetMonochromePaletteMessage
+  | IncrementWindowLineMessage
+  | FrameStartMessage

@@ -10,6 +10,8 @@ const oam = new OAM(registers, vram)
 
 const renderer = new DmgScanlineRenderer(registers, vram, oam)
 
+let startTime = 0
+
 self.addEventListener("message", (e) => {
   const message = e.data as Message
   switch (message.type) {
@@ -26,13 +28,22 @@ self.addEventListener("message", (e) => {
       break
     case MessageType.RenderScreen:
       renderer.renderScreen()
+      renderer.windowLine = 0
+      const time = Date.now()
+      postMessage(time - startTime)
+      console.log(time - startTime)
       break
     case MessageType.SetCanvas:
-      // TODO as final step probably
+      renderer.canvas = message.canvas
       break
     case MessageType.SetMonochromePalette:
       // TODO
       renderer.colours = message.palette
       break
+    case MessageType.IncrementWindowLine:
+      renderer.windowLine++
+      break
+    case MessageType.FrameStart:
+      startTime = message.startTime
   }
 })

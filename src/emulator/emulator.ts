@@ -18,8 +18,8 @@ export class Emulator {
     this.renderWorker = new Worker(renderWorkerUrl, { type: "module" })
     this.memory = new Memory(cartridge, this.renderWorker)
     this.controller = new Controller(this.memory)
-    this.cpu = new CPU(this.memory, this.controller)
-    this.pictureProcessor = new PictureProcessor(this.cpu)
+    this.cpu = new CPU(this.memory, this.controller, this.renderWorker)
+    this.pictureProcessor = new PictureProcessor(this.cpu, this.renderWorker)
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
     

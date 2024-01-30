@@ -1,5 +1,6 @@
 import CPU from "./cpu/cpu"
 import DmgScanlineRenderer from "./dmgScanlineRenderer"
+import { MessageType } from "./graphics/message"
 import Memory from "./memory/memoryMap"
 import { Interrupt } from "./memory/registers/interruptRegisters"
 import {
@@ -20,6 +21,7 @@ export default class PictureProcessor {
   memory: Memory
 
   scanlineRenderer: ScanlineRenderer
+  rendererWorker: Worker
 
   lcdControl: LcdControlRegister
   lcdStatus: LcdStatusRegister
@@ -38,8 +40,9 @@ export default class PictureProcessor {
     [0, 0, 0],
   ]
 
-  constructor(cpu: CPU) {
+  constructor(cpu: CPU, rendererWorker: Worker) {
     this.memory = cpu.memory
+    this.rendererWorker = rendererWorker
 
     this.lcdControl = this.memory.registers.lcdControl
     this.lcdStatus = this.memory.registers.lcdStatus
@@ -66,10 +69,10 @@ export default class PictureProcessor {
             this.scanlineNumber.byte > this.memory.registers.windowY.byte &&
             this.memory.registers.windowX.byte <= 166
           ) {
-            this.scanlineRenderer.windowLine++
+            this.rendererWorker.postMessage({ type: MessageType.IncrementWindowLine })
           }
           if (this.scanlineNumber.byte === HEIGHT) {
-            this.scanlineRenderer.renderScreen()
+            this.rendererWorker.postMessage({ type: MessageType.RenderScreen })
             this.setMode("VBlank")
             this.newFrameDrawn = true
           } else {
@@ -97,7 +100,7 @@ export default class PictureProcessor {
       case "Scanline VRAM": // Mode 3
         if (this.clockCount >= 172) {
           this.clockCount -= 172
-          this.scanlineRenderer.renderScanline()
+          this.rendererWorker.postMessage({ type: MessageType.RenderScanline })
           this.setMode("HBlank")
         }
         break
