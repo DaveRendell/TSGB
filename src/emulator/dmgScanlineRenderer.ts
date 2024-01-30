@@ -1,3 +1,4 @@
+import { WorkerRegisters } from "./graphics/workerRegisters";
 import { OAM } from "./memory/oam";
 import { IoRegisters } from "./memory/registers/ioRegisters";
 import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
@@ -35,7 +36,7 @@ export default class DmgScanlineRenderer implements ScanlineRenderer {
     [0, 0, 0],
   ]
 
-  constructor(registers: IoRegisters, vram: VRAM, oam: OAM) {
+  constructor(registers: IoRegisters | WorkerRegisters, vram: VRAM, oam: OAM) {
     this.vram = vram
     this.oam = oam
 

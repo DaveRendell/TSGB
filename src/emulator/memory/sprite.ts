@@ -1,3 +1,4 @@
+import { WorkerRegisters } from "../graphics/workerRegisters"
 import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 import { IoRegisters } from "./registers/ioRegisters"
 import { PalletteRegister } from "./registers/lcdRegisters"
@@ -19,7 +20,7 @@ export class Sprite {
   pallette1: PalletteRegister
   vram: VRAM
 
-  constructor(vram: VRAM, registers: IoRegisters) {
+  constructor(vram: VRAM, registers: IoRegisters | WorkerRegisters) {
     const bytes: ByteRef[] = []
     bytes.push(
       new GetSetByteRef( // 0: Y Position

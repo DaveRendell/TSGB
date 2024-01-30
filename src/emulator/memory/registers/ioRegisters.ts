@@ -1,4 +1,4 @@
-import { ByteRef, ConstantByteRef, GenericByteRef } from "../../refs/byteRef"
+import { ByteRef, ConstantByteRef, ForwardedByteRef, GenericByteRef } from "../../refs/byteRef"
 import {
   AudioMasterControlRegister,
   MasterVolumeVinRegister,
@@ -41,7 +41,7 @@ export class IoRegisters {
   lcdStatus = new LcdStatusRegister()
   scrollY = new GenericByteRef()
   scrollX = new GenericByteRef()
-  scanline = new GenericByteRef()
+  scanline: ByteRef
   scanlineCoincidence = new GenericByteRef()
   dmaTransfer = new DmaTransferRegister()
   backgroundPallete = new PalletteRegister()
@@ -54,7 +54,11 @@ export class IoRegisters {
 
   private data: { [address: number]: ByteRef } = []
 
-  constructor() {
+  constructor(rendererWorker: Worker) {
+    this.scanline = new ForwardedByteRef(
+      0xff44, new GenericByteRef(), rendererWorker
+    )
+
     this.data[0xff00] = this.joypad
     this.data[0xff01] = this.serialRegisters.serialDataRegister
     this.data[0xff02] = this.serialRegisters.serialControlRegister
@@ -100,18 +104,18 @@ export class IoRegisters {
     // TODO: this.data[0xFF25] more panning
 
     // Graphics
-    this.data[0xff40] = this.lcdControl
+    this.data[0xff40] = new ForwardedByteRef(0xff40, this.lcdControl, rendererWorker)
     this.data[0xff41] = this.lcdStatus
-    this.data[0xff42] = this.scrollY
-    this.data[0xff43] = this.scrollX
+    this.data[0xff42] = new ForwardedByteRef(0xff42, this.scrollY, rendererWorker)
+    this.data[0xff43] = new ForwardedByteRef(0xff43, this.scrollX, rendererWorker)
     this.data[0xff44] = this.scanline
     this.data[0xff45] = this.scanlineCoincidence
     this.data[0xff46] = this.dmaTransfer
-    this.data[0xff47] = this.backgroundPallete
-    this.data[0xff48] = this.objectPallete0
-    this.data[0xff49] = this.objectPallete1
-    this.data[0xff4a] = this.windowY
-    this.data[0xff4b] = this.windowX
+    this.data[0xff47] = new ForwardedByteRef(0xff47, this.backgroundPallete, rendererWorker)
+    this.data[0xff48] = new ForwardedByteRef(0xff48, this.objectPallete0, rendererWorker)
+    this.data[0xff49] = new ForwardedByteRef(0xff49, this.objectPallete1, rendererWorker)
+    this.data[0xff4a] = new ForwardedByteRef(0xff4a, this.windowY, rendererWorker)
+    this.data[0xff4b] = new ForwardedByteRef(0xff4b, this.windowX, rendererWorker)
 
     this.data[0xff50] = this.bootRom
   }

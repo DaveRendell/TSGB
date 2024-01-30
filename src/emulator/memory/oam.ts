@@ -1,3 +1,4 @@
+import { WorkerRegisters } from "../graphics/workerRegisters"
 import { ByteRef } from "../refs/byteRef"
 import { IoRegisters } from "./registers/ioRegisters"
 import { LcdControlRegister } from "./registers/lcdRegisters"
@@ -12,7 +13,7 @@ export class OAM {
   scanline: ByteRef
   lcdControl: LcdControlRegister
 
-  constructor(registers: IoRegisters, vram: VRAM) {
+  constructor(registers: IoRegisters | WorkerRegisters, vram: VRAM) {
     for (let i = 0; i < 40; i++) {
       this.sprites.push(new Sprite(vram, registers))
       this.scanline = registers.scanline

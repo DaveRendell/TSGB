@@ -5,15 +5,16 @@ import { createCartridge } from "./cartridges/createCartridge"
 import { OAM } from "./oam"
 import { IoRegisters } from "./registers/ioRegisters"
 import { VRAM } from "./vram"
-import { ByteRef, GetSetByteRef } from "../refs/byteRef"
+import { ByteRef, ForwardedByteRef, GetSetByteRef } from "../refs/byteRef"
 import { CompositeWordRef, WordRef } from "../refs/wordRef"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
   private data: Uint8Array
   cpu: CPU
+  rendererWorker: Worker
 
-  registers: IoRegisters = new IoRegisters()
+  registers: IoRegisters
 
   bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
@@ -23,7 +24,9 @@ export default class Memory {
 
   controller: Controller
 
-  constructor(cartridge: Cartridge) {
+  constructor(cartridge: Cartridge, rendererWorker: Worker) {
+    this.rendererWorker = rendererWorker
+    this.registers = new IoRegisters(rendererWorker)
     this.data = new Uint8Array(0x10000)
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)
@@ -57,7 +60,9 @@ export default class Memory {
 
     // VRAM
     if (address >= 0x8000 && address < 0xa000) {
-      return this.vram.at(address)
+      return new ForwardedByteRef(
+        address, this.vram.at(address), this.rendererWorker
+      )
     }
 
     // SRAM
@@ -67,7 +72,9 @@ export default class Memory {
 
     // OAM
     if (address >= 0xfe00 && address < 0xfea0) {
-      return this.oam.at(address)
+      return new ForwardedByteRef(
+        address, this.oam.at(address), this.rendererWorker
+      )
     }
 
     // IO Registers
