@@ -1,28 +1,34 @@
 import DmgScanlineRenderer from "../dmgScanlineRenderer"
 import { OAM } from "../memory/oam"
 import { VRAM } from "../memory/vram"
+import ScanlineRenderer from "../scanlineRenderer"
 import { Message, MessageType } from "./message"
 import { WorkerRegisters } from "./workerRegisters"
 
-const registers = new WorkerRegisters
-const vram = new VRAM()
-const oam = new OAM(registers, vram)
+const registers = new WorkerRegisters()
+let vram: VRAM | undefined = undefined
+let oam: OAM | undefined = undefined
 
-const renderer = new DmgScanlineRenderer(registers, vram, oam)
+let renderer: ScanlineRenderer | undefined = undefined
 
 let startTime = 0
+
+let memUpdates = 0
 
 self.addEventListener("message", (e) => {
   const message = e.data as Message
   switch (message.type) {
     case MessageType.MemoryWrite:
-      if (message.address >= 0x8000 && message.address < 0xa000) {
-        vram.at(message.address).byte = message.value
-      } else if (message.address >= 0xfe00 && message.address < 0xfea0) {
+      if (message.address >= 0xfe00 && message.address < 0xfea0) {
         oam.at(message.address).byte = message.value
       } else {
         registers.at(message.address).byte = message.value
       }
+      memUpdates++
+      // if (memUpdates > 100) {
+      //   console.log(message)
+      // }
+      break
     case MessageType.RenderScanline:
       renderer.renderScanline()
       break
@@ -31,7 +37,7 @@ self.addEventListener("message", (e) => {
       renderer.windowLine = 0
       const time = Date.now()
       postMessage(time - startTime)
-      console.log(time - startTime)
+      memUpdates = 0
       break
     case MessageType.SetCanvas:
       renderer.canvas = message.canvas
@@ -45,5 +51,12 @@ self.addEventListener("message", (e) => {
       break
     case MessageType.FrameStart:
       startTime = message.startTime
+      break
+    case MessageType.ShareMemory:
+      vram = new VRAM(message.vramData)
+      oam  = new OAM(registers, vram)
+      renderer = new DmgScanlineRenderer(registers, vram, oam)
+      console.log("Renderer set up", vram.data.byteLength, vram.data[0])
+      break
   }
 })

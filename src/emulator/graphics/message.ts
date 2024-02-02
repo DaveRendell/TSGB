@@ -6,6 +6,7 @@ export enum MessageType {
   SetMonochromePalette,
   IncrementWindowLine,
   FrameStart,
+  ShareMemory,
 }
 
 export interface MemoryWriteMessage {
@@ -41,6 +42,11 @@ export interface FrameStartMessage {
   startTime: number
 }
 
+export interface ShareMemoryMessage {
+  type: MessageType.ShareMemory
+  vramData: SharedArrayBuffer
+}
+
 export type Message =
   MemoryWriteMessage
   | RenderScalineMessage
@@ -49,3 +55,4 @@ export type Message =
   | SetMonochromePaletteMessage
   | IncrementWindowLineMessage
   | FrameStartMessage
+  | ShareMemoryMessage

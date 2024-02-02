@@ -27,6 +27,10 @@ export default defineConfig({
   assetsInclude: "*.png",
   server: {
     port: 1234,
+    headers: {
+      "Cross-Origin-Embedder-Policy": "require-corp",
+      "Cross-Origin-Opener-Policy": "same-origin",
+    }
   },
   build: {
     outDir: "../../dist",

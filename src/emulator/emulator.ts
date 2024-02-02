@@ -5,6 +5,7 @@ import Memory from "./memory/memoryMap"
 import { Cartridge } from "./memory/cartridges/cartridge"
 import PictureProcessor from "./pictureProcessor"
 import renderWorkerUrl from "./graphics/renderWorker?worker&url"
+import { MessageType } from "./graphics/message"
 
 export class Emulator {
   memory: Memory
@@ -23,6 +24,9 @@ export class Emulator {
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
     
-    this.renderWorker.postMessage({ type: 1, data: "bleh"})
+    this.renderWorker.postMessage({
+      type: MessageType.ShareMemory,
+      vramData: this.memory.vramData
+    })
   }
 }

@@ -19,7 +19,8 @@ export default class Memory {
   bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
   cartridge: Cartridge
-  vram = new VRAM()
+  vramData = new SharedArrayBuffer(0x2000)
+  vram = new VRAM(this.vramData)
   oam: OAM
 
   controller: Controller
@@ -60,8 +61,9 @@ export default class Memory {
 
     // VRAM
     if (address >= 0x8000 && address < 0xa000) {
-      return new ForwardedByteRef(
-        address, this.vram.at(address), this.rendererWorker
+      return new GetSetByteRef(
+        () => this.vram.data[address - 0x8000],
+        (value) => this.vram.data[address - 0x8000] = value
       )
     }
 
