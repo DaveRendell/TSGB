@@ -22,7 +22,7 @@ export default function Display({ emulator }: Props) {
 
   return (
     <section>
-      <canvas className="screen" width="160" height="144" ref={canvas} moz-opaque={true} />
+      <canvas className="screen" width="160" height="144" ref={canvas} moz-opaque="true" />
     </section>
   )
 }

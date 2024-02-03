@@ -19,9 +19,10 @@ export default class Memory {
   bootRomLoaded = false
   private bootRom = new Uint8Array(0x100)
   cartridge: Cartridge
-  vramData = new SharedArrayBuffer(0x2000)
-  vram = new VRAM(this.vramData)
-  oam: OAM
+  vramBuffer = new SharedArrayBuffer(0x2000)
+  vram = new Uint8Array(this.vramBuffer)
+  oamBuffer = new SharedArrayBuffer(160)
+  oam = new Uint8Array(this.oamBuffer)
 
   controller: Controller
 
@@ -32,7 +33,6 @@ export default class Memory {
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)
     this.cartridge = cartridge
-    this.oam = new OAM(this.registers, this.vram)
   }
 
   at(address: number): ByteRef {
@@ -62,8 +62,8 @@ export default class Memory {
     // VRAM
     if (address >= 0x8000 && address < 0xa000) {
       return new GetSetByteRef(
-        () => this.vram.data[address - 0x8000],
-        (value) => this.vram.data[address - 0x8000] = value
+        () => this.vram[address - 0x8000],
+        (value) => this.vram[address - 0x8000] = value
       )
     }
 
@@ -74,8 +74,9 @@ export default class Memory {
 
     // OAM
     if (address >= 0xfe00 && address < 0xfea0) {
-      return new ForwardedByteRef(
-        address, this.oam.at(address), this.rendererWorker
+      return new GetSetByteRef(
+        () => this.oam[address - 0xfe00],
+        (value) => this.oam[address - 0xfe00] = value
       )
     }
 

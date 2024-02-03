@@ -26,7 +26,8 @@ export class Emulator {
     
     this.renderWorker.postMessage({
       type: MessageType.ShareMemory,
-      vramData: this.memory.vramData
+      vramData: this.memory.vramBuffer,
+      oamData: this.memory.oamBuffer,
     })
   }
 }

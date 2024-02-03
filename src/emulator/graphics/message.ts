@@ -45,6 +45,7 @@ export interface FrameStartMessage {
 export interface ShareMemoryMessage {
   type: MessageType.ShareMemory
   vramData: SharedArrayBuffer
+  oamData: SharedArrayBuffer
 }
 
 export type Message =

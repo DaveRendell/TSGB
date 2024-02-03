@@ -19,11 +19,7 @@ self.addEventListener("message", (e) => {
   const message = e.data as Message
   switch (message.type) {
     case MessageType.MemoryWrite:
-      if (message.address >= 0xfe00 && message.address < 0xfea0) {
-        oam.at(message.address).byte = message.value
-      } else {
-        registers.at(message.address).byte = message.value
-      }
+      registers.at(message.address).byte = message.value
       memUpdates++
       // if (memUpdates > 100) {
       //   console.log(message)
@@ -54,9 +50,9 @@ self.addEventListener("message", (e) => {
       break
     case MessageType.ShareMemory:
       vram = new VRAM(message.vramData)
-      oam  = new OAM(registers, vram)
+      oam  = new OAM(registers, vram, message.oamData)
       renderer = new DmgScanlineRenderer(registers, vram, oam)
-      console.log("Renderer set up", vram.data.byteLength, vram.data[0])
+      console.log("Renderer set up")
       break
   }
 })

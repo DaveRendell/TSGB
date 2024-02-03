@@ -6,63 +6,29 @@ import { VRAM } from "./vram"
 
 // Reference: https://gbdev.io/pandocs/OAM.html#object-attribute-memory-oam
 export class Sprite {
-  x = 0
-  y = 0
-  tile = 0
-  priority = false
-  flipY = false
-  flipX = false
-  pallette = 0
-
-  bytes: ByteRef[]
+  data: Uint8Array
 
   pallette0: PalletteRegister
   pallette1: PalletteRegister
   vram: VRAM
 
-  constructor(vram: VRAM, registers: IoRegisters | WorkerRegisters) {
-    const bytes: ByteRef[] = []
-    bytes.push(
-      new GetSetByteRef( // 0: Y Position
-        () => this.y,
-        (value) => (this.y = value),
-      ),
-    )
-    bytes.push(
-      new GetSetByteRef( // 1: X Position
-        () => this.x,
-        (value) => (this.x = value),
-      ),
-    )
-    bytes.push(
-      new GetSetByteRef( // 2: Tile index
-        () => this.tile,
-        (value) => (this.tile = value),
-      ),
-    )
-    bytes.push(
-      new GetSetByteRef( // 3: Attributes / Flags
-        () =>
-          (this.priority ? 0x80 : 0) +
-          (this.flipY ? 0x40 : 0) +
-          (this.flipX ? 0x20 : 0) +
-          (this.pallette << 4),
-        (value) => {
-          this.priority = (value & 0x80) > 0
-          this.flipY = (value & 0x40) > 0
-          this.flipX = (value & 0x20) > 0
-          this.pallette = (value & 0x10) >> 4
-        },
-      ),
-    )
-    this.bytes = bytes
+  constructor(data: Uint8Array, vram: VRAM, registers: IoRegisters | WorkerRegisters) {
+    this.data = data   
     this.pallette0 = registers.objectPallete0
     this.pallette1 = registers.objectPallete1
     this.vram = vram
   }
 
+  y() { return this.data[0] }
+  x() { return this.data[1] }
+  tile() { return this.data[2] }
+  priority() { return (this.data[3] & 0x80) > 0 }
+  flipY() { return (this.data[3] & 0x40) > 0 }
+  flipX() { return (this.data[3] & 0x20) > 0 }
+  monochromePallete() { return this.data[3] & 0x10 }
+
   scanlineIntersect(scanline: number): number {
-    return scanline - (this.y - 16)
+    return scanline - (this.y() - 16)
   }
 
   pixelAt(
@@ -70,21 +36,21 @@ export class Sprite {
     column: number,
     spriteSize: number,
   ): number | undefined {
-    const row = this.flipY
+    const row = this.flipY()
       ? spriteSize - 1 - this.scanlineIntersect(scanline)
       : this.scanlineIntersect(scanline)
 
     const tileId =
       spriteSize == 16
         ? row >= 8
-          ? this.tile | 1
-          : this.tile & 0xfe
-        : this.tile
+          ? this.tile() | 1
+          : this.tile() & 0xfe
+        : this.tile()
 
-    const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8)
+    const x = this.flipX() ? 7 - (column - (this.x() - 8)) : column - (this.x() - 8)
     const tileValue = this.vram.tileset0(tileId, row % 8)[x]
     if (tileValue == 0) return undefined // Transparent pixel
-    return this.pallette == 0
+    return this.monochromePallete() == 0
       ? this.pallette0.map[tileValue]
       : this.pallette1.map[tileValue]
   }

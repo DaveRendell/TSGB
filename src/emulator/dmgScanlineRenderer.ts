@@ -101,8 +101,8 @@ export default class DmgScanlineRenderer implements ScanlineRenderer {
     let windowTileCounter = 0
 
     const sprites = this.oam.spritesAtScanline()
-    const highPrioritySprites = sprites.filter((s) => !s.priority)
-    const lowPrioritySprites = sprites.filter((s) => s.priority)
+    const highPrioritySprites = sprites.filter((s) => !s.priority())
+    const lowPrioritySprites = sprites.filter((s) => s.priority())
 
     for (let i = 0; i < WIDTH; i++) {
       if (!this.lcdControl.enabled) {
@@ -114,8 +114,8 @@ export default class DmgScanlineRenderer implements ScanlineRenderer {
       if (pixel === undefined && this.lcdControl.objectsEnabled) {
         const sprite = highPrioritySprites.find(
           (sprite) =>
-            i - (sprite.x - 8) >= 0 &&
-            i - (sprite.x - 8) < 8 &&
+            i - (sprite.x() - 8) >= 0 &&
+            i - (sprite.x() - 8) < 8 &&
             sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
               undefined,
         )
@@ -165,8 +165,8 @@ export default class DmgScanlineRenderer implements ScanlineRenderer {
       if (pixel === undefined && this.lcdControl.objectsEnabled) {
         const sprite = lowPrioritySprites.find(
           (sprite) =>
-            i - (sprite.x - 8) >= 0 &&
-            i - (sprite.x - 8) < 8 &&
+            i - (sprite.x() - 8) >= 0 &&
+            i - (sprite.x() - 8) < 8 &&
             sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
               undefined,
         )
