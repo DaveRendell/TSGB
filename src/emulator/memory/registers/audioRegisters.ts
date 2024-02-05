@@ -166,7 +166,7 @@ export class PulseChannelRegisters {
         return self.period & 0xff
       },
       set byte(value: number) {
-        self.period &= 0xf00
+        self.period &= 0x700
         self.period |= value
         if (self.channel) {
           self.channel.setPeriod(self.period)
