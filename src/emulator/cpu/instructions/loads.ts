@@ -100,7 +100,8 @@ export function loadImmediate16BitRegister(
 ): Instruction {
   return {
     execute: (cpu) => {
-      getWordRef(register, cpu).word = cpu.nextWord.word
+      const value = cpu.nextWord.word
+      getWordRef(register, cpu).word = value
     },
     cycles: 12,
     parameterBytes: 2,

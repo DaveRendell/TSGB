@@ -191,7 +191,7 @@ export default class DmgScanlineRenderer implements ScanlineRenderer {
   }
 
   renderScreen(): void {
-    if (this.canvas) {
+    if (this.canvas && this.lcdControl.enabled) {
       const screenContext = this.canvas.getContext("2d")!
       screenContext.drawImage(this.buffer, 0, 0)
     }

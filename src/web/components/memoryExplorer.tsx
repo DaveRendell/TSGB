@@ -2,6 +2,7 @@ import * as React from "react"
 import Memory from "../../emulator/memory/memoryMap"
 import { addressDisplay } from "../../helpers/displayHexNumbers"
 import MemoryTableRow from "./memoryTableRow"
+import { cpuUsage } from "process"
 
 interface Props {
   memory: Memory
@@ -23,9 +24,15 @@ export default function MemoryExplorer({
   )
   const [lengthInput, setLengthInput] = React.useState(length)
 
+  const [newBreakpointInput, setNewBreakpointInput] = React.useState("")
+
   const update = () => {
     setLength(lengthInput)
     setBaseAddress(parseInt(baseAddressInput))
+  }
+
+  const addBreakpoint = (address: number): void => {
+    memory.cpu.breakpoints.add(address)
   }
 
   const addresses = Array.from({ length }, (_, i) => baseAddress + i)
@@ -33,6 +40,22 @@ export default function MemoryExplorer({
   return (
     <section>
       <h2>Memory Explorer</h2>
+      { breakpoints.size > 0 && <p>
+          Breakpoints:
+          <ul>
+            {[...breakpoints].map(address =>
+              <li>
+                <a onClick={() => setBaseAddress(Math.max(0, address - 4))}>{addressDisplay(address)} <button onClick={() => memory.cpu.breakpoints.delete(address)}>X</button></a>
+              </li>)}
+          </ul>
+        </p>}
+      <input
+        className="narrow"
+        value={newBreakpointInput}
+        type="text"
+        onChange={e => setNewBreakpointInput(e.target.value)}/>
+      <button onClick={() => addBreakpoint(parseInt("0x" + newBreakpointInput))}>Add breakpoint</button>
+      <br/>
       Showing{" "}
       <input
         className="narrow"
@@ -49,7 +72,7 @@ export default function MemoryExplorer({
       />{" "}
       <button onClick={update}>Update</button>
       <br />
-      <button onClick={() => setBaseAddress(programCounter - 1)}>
+      <button onClick={() => setBaseAddress(Math.max(programCounter - 4, 0))}>
         Jump to PC
       </button>
       <table className="memory-table">

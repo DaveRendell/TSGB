@@ -10,6 +10,7 @@ import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 import { WordRef } from "../refs/wordRef"
 import PictureProcessor from "../pictureProcessor"
 import Timer from "../timer"
+import { addressDisplay } from "../../helpers/displayHexNumbers"
 
 interface ClockCallback {
   updateClock(cycles: number): void
@@ -199,7 +200,6 @@ export default class CPU {
     const handlerAddress = INTERRUPT_HANDLERS[interrupt]
     const sp = this.registers.SP
     const pc = this.registers.PC
-
     const [h, l] = splitBytes(pc.word)
 
     this.memory.at(--sp.word).byte = h
@@ -275,5 +275,18 @@ export default class CPU {
 
   addClockCallback(callback: ClockCallback): void {
     this.clockCallbacks.push(callback)
+  }
+
+  printStack(size: number): string {
+    let stackPointer = this.registers.SP.word
+    let stack: number[] = []
+
+    for (let i = 0; i < size; i++) {
+      const l = this.memory.at(stackPointer++).byte
+      const h = this.memory.at(stackPointer++).byte
+      stack.push((h << 8) + l)
+    }
+
+    return stack.map(addressDisplay).join("\n")
   }
 }

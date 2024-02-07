@@ -32,9 +32,6 @@ export default class Memory {
   }
 
   at(address: number): ByteRef {
-    if (this.cpu.breakpoints.has(address)) {
-      this.cpu.pause()
-    }
     // ROM
     if (address < 0x8000) {
       if (

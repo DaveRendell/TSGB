@@ -55,6 +55,10 @@ export default class PictureProcessor {
 
   // Returns true if new frame is rendered
   updateClock(cycle: number) {
+    if (!this.lcdControl.enabled) {
+      this.setMode("VBlank")
+      return
+    }
     this.clockCount += cycle
     switch (this.mode) {
       case "HBlank": // Mode 0
