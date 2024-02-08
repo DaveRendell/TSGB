@@ -15,7 +15,7 @@ export default function PkmnGen1Dashboard({ emulator }: Props) {
       <h2>Trainer {readStringAt(emulator.memory, 0xd158)}</h2>
       {party.map((monster, i) => (
         <article className="monster" key={i}>
-          <h4 className="sentence-case">{monster.name.toLowerCase()} - Level {monster.level}</h4>
+          <h4 className="sentence-case">{monster.dexId} {monster.name.toLowerCase()} - Level {monster.level}</h4>
           <div className="status-bars">
             <div>
               <progress className="hp-bar" max={monster.maxHp} value={monster.hp} />
@@ -98,6 +98,8 @@ function decodePartyMonster(memory: Memory, i: number): Monster {
   const xpThisLevel = xp - levelFormula(level)
   const xpRequired = levelFormula(level + 1) - levelFormula(level)
 
+  // console.log(name, growthRate, xp)
+
   return {
     id,
     name,
@@ -134,6 +136,8 @@ const LEVEL_FORMULAE = {
     Math.floor(
       (6 / 5) * level * level * level - 15 * level * level + 100 * level - 140,
     ),
-  4: (level: number): number => Math.floor((4 / 5) * level * level * level),
+  4: (level: number): number => Math.floor(
+    (6 / 5) * level * level * level - 15 * level * level + 100 * level - 140,
+  ),
   5: (level: number): number => Math.floor((5 / 4) * level * level * level),
 }

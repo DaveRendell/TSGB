@@ -37,6 +37,44 @@ export default function GameView({ emulator, unload }: Props) {
 
   const programCounter = emulator.cpu.registers.PC.word
 
+  const tabs = {
+    Info: () => (
+      <p>
+        Title: {emulator.cpu.memory.cartridge?.title}
+        <br />
+        FPS: {emulator.cpu.fps.toPrecision(2)}
+        <br />
+        Frame time:{" "}
+        {(emulator.cpu.averageRecentFrameTime / 60).toPrecision(3)} /
+        16.7ms
+      </p>
+    ),
+    Settings: () => <Settings emulator={emulator} />,
+    "Debug Graphics": () => (
+      <>
+        <VramViewer ppu={new PPU(emulator.cpu)} />
+      </>
+    ),
+    "Debug Sound": () => (
+      <AudioDebug audioProcessor={emulator.audioProcessor} />
+    ),
+    "Debug Memory": () => (
+      <>
+        <CpuController cpu={emulator.cpu} />
+        <MemoryExplorer
+          memory={emulator.cpu.memory}
+          programCounter={programCounter}
+          breakpoints={emulator.cpu.breakpoints}
+        />
+      </>
+    ),
+  }
+
+  if (emulator.memory.cartridge.title.includes("POKEMON RED")
+  || emulator.memory.cartridge.title.includes("POKEMON BLUE")) {
+    tabs["Dashboard"] = () => <PkmnGen1Dashboard emulator={emulator} />
+  }
+
   return (
     <main>
       <div className="control-buttons floating-panel">
@@ -63,40 +101,7 @@ export default function GameView({ emulator, unload }: Props) {
 
       {error && <p>Error: {error}</p>}
       <Tabs
-        tabs={{
-          Info: () => (
-            <p>
-              Title: {emulator.cpu.memory.cartridge?.title}
-              <br />
-              FPS: {emulator.cpu.fps.toPrecision(2)}
-              <br />
-              Frame time:{" "}
-              {(emulator.cpu.averageRecentFrameTime / 60).toPrecision(3)} /
-              16.7ms
-            </p>
-          ),
-          Settings: () => <Settings emulator={emulator} />,
-          Dashboard: () => <PkmnGen1Dashboard emulator={emulator} />,
-          // "Serial port": () => <SerialPort emulator={emulator} />,
-          "Debug Graphics": () => (
-            <>
-              <VramViewer ppu={new PPU(emulator.cpu)} />
-            </>
-          ),
-          "Debug Sound": () => (
-            <AudioDebug audioProcessor={emulator.audioProcessor} />
-          ),
-          "Debug Memory": () => (
-            <>
-              <CpuController cpu={emulator.cpu} />
-              <MemoryExplorer
-                memory={emulator.cpu.memory}
-                programCounter={programCounter}
-                breakpoints={emulator.cpu.breakpoints}
-              />
-            </>
-          ),
-        }}
+        tabs={tabs}
       />
     </main>
   )
