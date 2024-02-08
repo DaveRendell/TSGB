@@ -139,6 +139,11 @@ select {
   box-shadow: 0 0.25em rgb(2, 48, 2);
 }
 
+.danger-button {
+  background-color: rgb(210, 31, 31);
+  box-shadow: 0 0.25em rgb(48, 2, 2);
+}
+
 .chunky-button:active {
   margin-top: 0.25em;
   box-shadow: 0 0;

@@ -1,6 +1,7 @@
 import * as React from "react"
 import { StoredGame } from "../indexedDb/storedGame"
 import { deleteGame, persistSave, updateGame } from "../indexedDb/gameStore"
+import "../gameOptions.css"
 
 interface Props {
   game: StoredGame
@@ -43,10 +44,18 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
     await updateGame(game)
   }
 
+  const deleteSave = async () => {
+    game.save = undefined
+    await updateGame(game)
+  }
+
   return (
-    <section>
-      <h2>{game.title}</h2>
-      <button onClick={playGame}>Play</button>
+    <section className="game-options floating-panel">
+      <h2>{name}</h2>
+      <div>
+        <button className="chunky-button action-button" onClick={playGame}>Play</button>
+        <button className="chunky-button" onClick={closeOptions}>Back</button>
+      </div>
       <br />
       <form onSubmit={updateName}>
         <input
@@ -56,11 +65,12 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
           value={name}
         />
         <input
+          className="chunky-button"
           type="submit"
           value="Update name"
         />
-      </form>
-      <button onClick={downloadSave}>Export Save</button>
+      </form><br/>
+      <button className="chunky-button" onClick={downloadSave}>Export Save</button>
       <br />
       <label htmlFor="save-import">Import save</label>
       <input id="save-import" type="file" onChange={importSave} />
@@ -68,9 +78,10 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <label htmlFor="set-boxart">Set boxart</label>
       <input id="set-boxart" type="file" onChange={updateBoxArt} />
       <br />
-      <button onClick={() => deleteGame(game.id)}>Delete</button>
       <br />
-      <button onClick={closeOptions}>Back</button>
+      <h3>Danger zone</h3>
+      <button className="chunky-button danger-button" onClick={() => deleteGame(game.id)}>Delete Game</button>
+      <button className="chunky-button danger-button" onClick={() => deleteSave()}>Delete Save</button>
     </section>
   )
 }
