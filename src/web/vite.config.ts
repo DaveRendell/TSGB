@@ -14,8 +14,8 @@ export default defineConfig({
           {"src":"/TSGB/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},
           {"src":"/TSGB/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}
         ],
-        "theme_color": "#ffffff",
-        "background_color": "#285db1",
+        "theme_color": "#285db1",
+        "background_color": "#ffffff",
         "display": "standalone",
         "description": "An emulator for game for the Game Boy console",
         "start_url": "/TSGB/",
