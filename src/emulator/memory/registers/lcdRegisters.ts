@@ -2,14 +2,14 @@ import { ByteRef } from "../../refs/byteRef"
 
 // Reference: https://gbdev.io/pandocs/LCDC.html#ff40--lcdc-lcd-control
 export class LcdControlRegister implements ByteRef {
-  enabled = false
+  enabled = true
   windowTilemap = 0
   windowEnabled = false
-  tileDataArea = 0
+  tileDataArea = 1
   backgroundTilemap = 1
   objectSize: 8 | 16 = 8
   objectsEnabled = false
-  backgroundWindowDisplay = false
+  backgroundWindowDisplay = true
 
   get byte(): number {
     return (

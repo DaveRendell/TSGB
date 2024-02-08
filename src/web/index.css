@@ -93,7 +93,7 @@ body {
 .bevel {
   background-color: darkslategray;
   padding: 1em 0.5em 2em 0.5em;
-  border-radius: 0.5em 0.3em 3em 0.3em;
+  border-radius: 0.5em 0.5em 2em 0.5em;
   margin-bottom: 1em;
 }
 
