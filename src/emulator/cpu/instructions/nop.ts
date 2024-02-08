@@ -1,5 +1,4 @@
-import { increment } from "../arithmetic"
-import { Instruction } from "../instruction"
+import { Instruction } from "./instruction"
 
 const nop: Instruction = {
   execute: (_) => {},

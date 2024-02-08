@@ -10,7 +10,6 @@ import AudioDebug from "./audioDebug"
 import { Emulator } from "../../emulator/emulator"
 import Settings from "./settings"
 import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
-import SerialPort from "./serialPort"
 
 interface Props {
   emulator: Emulator

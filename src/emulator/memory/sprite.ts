@@ -1,4 +1,4 @@
-import Memory from "../memory"
+import Memory from "./memoryMap"
 import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 import { PalletteRegister } from "./registers/lcdRegisters"
 import { VRAM } from "./vram"

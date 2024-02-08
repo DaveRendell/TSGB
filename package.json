@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "vite src/web",
-    "build": "vite build src/web",
+    "compile": "tsc --noEmit",
+    "build": "npm run compile && npx prettier src/ && vite build src/web",
     "test": "jest",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

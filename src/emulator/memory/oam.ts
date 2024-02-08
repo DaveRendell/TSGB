@@ -1,4 +1,4 @@
-import Memory from "../memory"
+import Memory from "./memoryMap"
 import { ByteRef } from "../refs/byteRef"
 import { LcdControlRegister } from "./registers/lcdRegisters"
 import { Sprite } from "./sprite"
