@@ -1,30 +1,30 @@
 import Controller from "../controller"
 import CPU from "../cpu/cpu"
 import { Cartridge } from "./cartridges/cartridge"
-import { createCartridge } from "./cartridges/createCartridge"
 import { OAM } from "./oam"
 import { IoRegisters } from "./registers/ioRegisters"
 import { VRAM } from "./vram"
-import { ByteRef, GetSetByteRef } from "../refs/byteRef"
+import { ByteRef, ConstantByteRef, GetSetByteRef } from "../refs/byteRef"
 import { CompositeWordRef, WordRef } from "../refs/wordRef"
+import { InterruptEnabledRegister } from "./registers/interruptRegisters"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
-  private data: Uint8Array
   cpu: CPU
 
   registers: IoRegisters = new IoRegisters()
 
   bootRomLoaded = false
-  private bootRom = new Uint8Array(0x100)
   cartridge: Cartridge
   vram = new VRAM()
+  wram = new Uint8Array(0x2000)
   oam: OAM
+  hram = new Uint8Array(0x7f)
+  interruptsEnabled = new InterruptEnabledRegister()
 
   controller: Controller
 
   constructor(cartridge: Cartridge) {
-    this.data = new Uint8Array(0x10000)
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)
     this.cartridge = cartridge
@@ -34,21 +34,6 @@ export default class Memory {
   at(address: number): ByteRef {
     // ROM
     if (address < 0x8000) {
-      if (
-        address < 0x100 &&
-        this.bootRomLoaded &&
-        this.registers.bootRom.enabled
-      ) {
-        // If Boot ROM is enabled, loaded, and we're in its address range, load
-        // memory from there
-        return new GetSetByteRef(
-          () => {
-            return this.bootRom[address & 0xffff]
-          },
-          (_) => {},
-        )
-      }
-
       return this.cartridge.rom(address)
     }
 
@@ -62,9 +47,30 @@ export default class Memory {
       return this.cartridge.ram(address)
     }
 
+    // WRAM
+    if (address >= 0xc000 && address < 0xe000) {
+      return new GetSetByteRef(
+        () => this.wram[address - 0xc000],
+        (value) => this.wram[address - 0xc000] = value
+      )
+    }
+
+    // Echo RAM
+    if (address >= 0xe000 && address < 0xfe00) {
+      return new GetSetByteRef(
+        () => this.wram[address - 0xe000],
+        (value) => this.wram[address - 0xe000] = value
+      )
+    }
+    
     // OAM
     if (address >= 0xfe00 && address < 0xfea0) {
       return this.oam.at(address)
+    }
+
+    // Prohibited
+    if (address >= 0xFEA0 && address < 0xFEFF) {
+      return new ConstantByteRef(0xFF)
     }
 
     // IO Registers
@@ -72,15 +78,15 @@ export default class Memory {
       return this.registers.at(address)
     }
 
-    // TODO remove this, handle each case explicitly
-    return new GetSetByteRef(
-      () => {
-        return this.data[address & 0xffff]
-      },
-      (value) => {
-        this.data[address & 0xffff] = value
-      },
-    )
+    // HRAM
+    if (address >= 0xff80 && address < 0xffff) {
+      return new GetSetByteRef(
+        () => this.hram[address - 0xff80],
+        (value) => this.hram[address - 0xff80] = value
+      )
+    }
+
+    return this.interruptsEnabled
   }
 
   atPointer(pointer: WordRef): ByteRef {
