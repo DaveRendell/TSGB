@@ -6,6 +6,7 @@ const RAM_WRITE_WAIT_MILLISECONDS = 500
 
 export class Cartridge {
   title: string
+  colourSupport: boolean
   romData: Uint8Array
   ramData: Uint8Array
 
@@ -22,6 +23,7 @@ export class Cartridge {
     }
 
     this.title = String.fromCharCode(...data.slice(0x0134, 0x0144))
+    this.colourSupport = (data[0x143] & 0x80) > 0
     this.storeRam = storeRam
   }
 

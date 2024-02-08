@@ -1,5 +1,6 @@
 import CPU from "./cpu/cpu"
 import DmgScanlineRenderer from "./dmgScanlineRenderer"
+import GbcScanlineRenderer from "./gbcScanlineRenderer"
 import Memory from "./memory/memoryMap"
 import { Interrupt } from "./memory/registers/interruptRegisters"
 import {
@@ -38,7 +39,7 @@ export default class PictureProcessor {
     [0, 0, 0],
   ]
 
-  constructor(cpu: CPU) {
+  constructor(cpu: CPU, colourMode: boolean) {
     this.memory = cpu.memory
 
     this.lcdControl = this.memory.registers.lcdControl
@@ -49,8 +50,14 @@ export default class PictureProcessor {
     cpu.addClockCallback(this)
     cpu.pictureProcessor = this
 
-    this.scanlineRenderer = new DmgScanlineRenderer(
-      this.memory.registers, this.memory.vram, this.memory.oam)
+    if (!colourMode) {
+      this.scanlineRenderer = new DmgScanlineRenderer(
+        this.memory.registers, this.memory.vram, this.memory.oam)
+    } else {
+      this.scanlineRenderer = new GbcScanlineRenderer(
+        this.memory.registers, this.memory.vram, this.memory.oam
+      )
+    }
   }
 
   // Returns true if new frame is rendered

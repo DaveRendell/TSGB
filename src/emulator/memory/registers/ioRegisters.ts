@@ -15,8 +15,10 @@ import {
   LcdStatusRegister,
   PalletteRegister,
 } from "./lcdRegisters"
+import { PaletteRam } from "./paletteRegisters"
 import SerialRegisters from "./serialRegisters"
 import { DividerRegister, TimerControlRegister } from "./timerRegisters"
+import { VramBankRegister } from "./vramBankRegister"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
 export class IoRegisters {
@@ -51,6 +53,10 @@ export class IoRegisters {
   windowX = new GenericByteRef()
 
   bootRom = new BootRomRegister()
+
+  backgroundPalettes = new PaletteRam()
+  objectPalettes = new PaletteRam()
+  vramBank = new VramBankRegister()
 
   private data: { [address: number]: ByteRef } = []
 
@@ -114,6 +120,13 @@ export class IoRegisters {
     this.data[0xff4b] = this.windowX
 
     this.data[0xff50] = this.bootRom
+
+    this.data[0xff68] = this.backgroundPalettes.indexRegister
+    this.data[0xff69] = this.backgroundPalettes.accessRegister
+    this.data[0xff6a] = this.objectPalettes.indexRegister
+    this.data[0xff6b] = this.objectPalettes.accessRegister
+
+    this.data[0xff4f] = this.vramBank
   }
 
   at(address: number): ByteRef {

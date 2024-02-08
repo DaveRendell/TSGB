@@ -30,7 +30,7 @@ export default class PPU {
   }
 
   getTile(tileId: number): Tile {
-    return this.memory.vram.tiles[tileId]
+    return this.memory.vram.tiles0[tileId]
   }
 
   printTileSet(canvas: HTMLCanvasElement): void {
@@ -211,12 +211,12 @@ export default class PPU {
 
     const tilesP0 = new Set(
       sprites
-        .filter((sprite) => sprite.pallette == 0)
+        .filter((sprite) => sprite.monochromePalette == 0)
         .map((sprite) => sprite.tile),
     )
     const tilesP1 = new Set(
       sprites
-        .filter((sprite) => sprite.pallette == 1)
+        .filter((sprite) => sprite.monochromePalette == 1)
         .map((sprite) => sprite.tile),
     )
     const tileImagesP0 = this.getTileData(tilesP0, context, 1, pallette0)
@@ -226,7 +226,7 @@ export default class PPU {
       .filter((sprite) => sprite.priority)
       .forEach((sprite) => {
         const tileData =
-          sprite.pallette == 0
+          sprite.monochromePalette == 0
             ? tileImagesP0[sprite.tile]
             : tileImagesP1[sprite.tile]
         context.putImageData(tileData, sprite.x - 8, sprite.y - 16)
@@ -235,7 +235,7 @@ export default class PPU {
       .filter((sprite) => !sprite.priority)
       .forEach((sprite) => {
         const tileData =
-          sprite.pallette == 0
+          sprite.monochromePalette == 0
             ? tileImagesP0[sprite.tile]
             : tileImagesP1[sprite.tile]
         context.putImageData(tileData, sprite.x - 8, sprite.y - 16)

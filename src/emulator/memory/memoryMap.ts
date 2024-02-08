@@ -16,7 +16,7 @@ export default class Memory {
 
   bootRomLoaded = false
   cartridge: Cartridge
-  vram = new VRAM()
+  vram = new VRAM(this.registers)
   wram = new Uint8Array(0x2000)
   oam: OAM
   hram = new Uint8Array(0x7f)

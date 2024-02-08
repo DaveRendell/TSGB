@@ -11,7 +11,8 @@ export class Sprite {
   priority = false
   flipY = false
   flipX = false
-  pallette = 0
+  monochromePalette = 0
+  colourPalette = 0
 
   bytes: ByteRef[]
 
@@ -45,12 +46,14 @@ export class Sprite {
           (this.priority ? 0x80 : 0) +
           (this.flipY ? 0x40 : 0) +
           (this.flipX ? 0x20 : 0) +
-          (this.pallette << 4),
+          (this.monochromePalette << 4) +
+          this.colourPalette,
         (value) => {
           this.priority = (value & 0x80) > 0
           this.flipY = (value & 0x40) > 0
           this.flipX = (value & 0x20) > 0
-          this.pallette = (value & 0x10) >> 4
+          this.monochromePalette = (value & 0x10) >> 4
+          this.colourPalette = value & 0x7
         },
       ),
     )
@@ -83,7 +86,7 @@ export class Sprite {
     const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8)
     const tileValue = this.vram.tileset0(tileId, row % 8)[x]
     if (tileValue == 0) return undefined // Transparent pixel
-    return this.pallette == 0
+    return this.monochromePalette == 0
       ? this.pallette0.map[tileValue]
       : this.pallette1.map[tileValue]
   }

@@ -15,8 +15,8 @@ export class Emulator {
   constructor(cartridge: Cartridge) {
     this.memory = new Memory(cartridge)
     this.controller = new Controller(this.memory)
-    this.cpu = new CPU(this.memory, this.controller)
-    this.pictureProcessor = new PictureProcessor(this.cpu)
+    this.cpu = new CPU(this.memory, this.controller, cartridge.colourSupport)
+    this.pictureProcessor = new PictureProcessor(this.cpu, cartridge.colourSupport)
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
   }

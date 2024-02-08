@@ -63,7 +63,7 @@ export default class CPU {
   prefixedInstructions: { [code: number]: (cpu: CPU) => void } = {}
   prefixedCycleLengths: { [code: number]: number } = {}
 
-  constructor(memory: Memory, controller: Controller) {
+  constructor(memory: Memory, controller: Controller, colourMode: boolean) {
     this.memory = memory
     this.controller = controller
     memory.cpu = this
@@ -95,7 +95,7 @@ export default class CPU {
         this.instructions[code] = instruction.execute
         this.cycleLengths[code] = instruction.cycles
       } catch {
-        this.instructions[code] = nop
+        this.instructions[code] = nop.execute
         this.cycleLengths[code] = 4
       }
       try {
@@ -103,22 +103,36 @@ export default class CPU {
         this.prefixedInstructions[code] = instruction.execute
         this.prefixedCycleLengths[code] = instruction.cycles
       } catch {
-        this.instructions[code] = nop
+        this.instructions[code] = nop.execute
         this.cycleLengths[code] = 4
       }
     }
 
+
     // SKIP BOOTROM
-    this.registers.A.byte = 0x01
-    this.registers.F.byte = 0xb0
-    this.registers.B.byte = 0x00
-    this.registers.C.byte = 0x13
-    this.registers.D.byte = 0x00
-    this.registers.E.byte = 0xd8
-    this.registers.H.byte = 0x01
-    this.registers.L.byte = 0x4d
-    this.registers.SP.word = 0xfffe
-    this.registers.PC.word = 0x0100
+    if (!colourMode) {
+      this.registers.A.byte = 0x01
+      this.registers.F.byte = 0xb0
+      this.registers.B.byte = 0x00
+      this.registers.C.byte = 0x13
+      this.registers.D.byte = 0x00
+      this.registers.E.byte = 0xd8
+      this.registers.H.byte = 0x01
+      this.registers.L.byte = 0x4d
+      this.registers.SP.word = 0xfffe
+      this.registers.PC.word = 0x0100
+    } else {
+      this.registers.A.byte = 0x11
+      this.registers.F.byte = 0xb0
+      this.registers.B.byte = 0x00
+      this.registers.C.byte = 0x13
+      this.registers.D.byte = 0xFF
+      this.registers.E.byte = 0xd8
+      this.registers.H.byte = 0x00
+      this.registers.L.byte = 0x0D
+      this.registers.SP.word = 0xfffe
+      this.registers.PC.word = 0x0100
+    }
   }
 
   createGbDoctorLog() {

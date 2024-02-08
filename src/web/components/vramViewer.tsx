@@ -105,6 +105,40 @@ export function VramViewer({ ppu }: Props) {
         </div>
       </div>
       <div>
+        <h3>Colour palettes</h3>
+        Background palettes:
+        <ol>
+          {
+            ppu.cpu.memory.registers.backgroundPalettes.scaledColours.map((pallete, i) =>
+              <li> {i} : {pallete.map((colour, i) => (
+                <span
+                  className="pallete-block"
+                  style={{ backgroundColor: toColour(colour) }}
+                >
+                  {i}
+                </span>
+              ))} - <pre>{JSON.stringify(ppu.cpu.memory.registers.backgroundPalettes.rawColours[i])}</pre>
+              - <pre>{[...ppu.cpu.memory.registers.backgroundPalettes.data.slice(i * 8, (i + 1) * 8)].map(x => x.toString(2).padStart(8, "0")).join(",")}</pre>
+              </li>)
+          }
+        </ol>
+        Object palettes:
+        <ol>
+          {
+            ppu.cpu.memory.registers.objectPalettes.scaledColours.map((pallete, i) =>
+              <li> {i} : {pallete.map((colour, i) => (
+                <span
+                  className="pallete-block"
+                  style={{ backgroundColor: toColour(colour) }}
+                >
+                  {i}
+                </span>
+              ))} - <pre>{JSON.stringify(ppu.cpu.memory.registers.objectPalettes.rawColours[i])}</pre>
+              </li>)
+          }
+        </ol>
+      </div>
+      <div>
         <h3>Sprites</h3>
         <div className="flex-horizontally">
           <div>sprite 1-20</div>
