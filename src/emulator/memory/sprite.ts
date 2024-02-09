@@ -72,6 +72,18 @@ export class Sprite {
     column: number,
     spriteSize: number,
   ): number | undefined {
+    const tileValue = this.rawPixelAt(scanline, column, spriteSize)
+    if (tileValue == undefined) { return undefined }
+    return this.monochromePalette == 0
+      ? this.pallette0.map[tileValue]
+      : this.pallette1.map[tileValue]
+  }
+
+  rawPixelAt(
+    scanline: number,
+    column: number,
+    spriteSize: number,
+  ): number | undefined {
     const row = this.flipY
       ? spriteSize - 1 - this.scanlineIntersect(scanline)
       : this.scanlineIntersect(scanline)
@@ -86,8 +98,6 @@ export class Sprite {
     const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8)
     const tileValue = this.vram.tileset0(tileId, row % 8)[x]
     if (tileValue == 0) return undefined // Transparent pixel
-    return this.monochromePalette == 0
-      ? this.pallette0.map[tileValue]
-      : this.pallette1.map[tileValue]
+    return tileValue
   }
 }

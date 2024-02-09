@@ -54,7 +54,6 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
     this.windowX = registers.windowX
     this.windowY = registers.windowY
     this.scanlineNumber = registers.scanline
-    this.backgroundPallette = registers.backgroundPallete
 
     this.backgroundPalettes = registers.backgroundPalettes
     this.objectPalettes = registers.objectPalettes
@@ -138,11 +137,11 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
           (sprite) =>
             i - (sprite.x - 8) >= 0 &&
             i - (sprite.x - 8) < 8 &&
-            sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
+            sprite.rawPixelAt(scanline, i, this.lcdControl.objectSize) !=
               undefined,
         )
         if (sprite) {
-          pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
+          pixel = sprite.rawPixelAt(scanline, i, this.lcdControl.objectSize)
           paletteType = PaletteType.Object
           paletteId = sprite.colourPalette
         }
@@ -184,7 +183,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       }
 
       if (tilePixel) {
-        pixel = this.backgroundPallette.map[tilePixel]
+        pixel = tilePixel
         paletteType = PaletteType.Background
       }
 
@@ -194,11 +193,11 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
           (sprite) =>
             i - (sprite.x - 8) >= 0 &&
             i - (sprite.x - 8) < 8 &&
-            sprite.pixelAt(scanline, i, this.lcdControl.objectSize) !=
+            sprite.rawPixelAt(scanline, i, this.lcdControl.objectSize) !=
               undefined,
         )
         if (sprite) {
-          pixel = sprite.pixelAt(scanline, i, this.lcdControl.objectSize)
+          pixel = sprite.rawPixelAt(scanline, i, this.lcdControl.objectSize)
           paletteType = PaletteType.Object
           paletteId = sprite.colourPalette
         }
@@ -206,7 +205,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
 
       // If nothing else has rendered, use the lowest colour in the pallete
       if (pixel === undefined) {
-        pixel = this.backgroundPallette.map[0]
+        pixel = 0
         paletteType = PaletteType.Background
         paletteId = backgroundPaletteId
       }
