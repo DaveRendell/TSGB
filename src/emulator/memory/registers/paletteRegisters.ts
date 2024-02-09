@@ -28,17 +28,19 @@ export class PaletteRam {
         const colourId = (this.index >> 1) & 0x3
         const byteNumber = this.index & 1
         if (byteNumber == 0) {
-          // Update last 2 bits of green
-          this.rawColours[paletteId][colourId][1] &= 0b11100
-          this.rawColours[paletteId][colourId][1] |= (value & 0b11000000) >> 6
-          // Update blue
-          this.rawColours[paletteId][colourId][2] = (value & 0b00111110) >> 1
-        } else {
           // Update red
-          this.rawColours[paletteId][colourId][0] = (value & 0b11111000) >> 3
-          // Update first 3 bits of green
-          this.rawColours[paletteId][colourId][1] &= 0b11
-          this.rawColours[paletteId][colourId][1] |= (value & 0b00000111) << 2
+          this.rawColours[paletteId][colourId][0] = value & 0b00011111
+
+          // Update lower three bits of green
+          this.rawColours[paletteId][colourId][1] &= 0b11000
+          this.rawColours[paletteId][colourId][1] |= ((value & 0b11100000) >> 5)
+        } else {
+          // Update upper two bits of green
+          this.rawColours[paletteId][colourId][1] &= 0b00111
+          this.rawColours[paletteId][colourId][1] |= ((value & 0b00000011) << 3)
+
+          // Update blue
+          this.rawColours[paletteId][colourId][2] = (value & 0b01111100) >> 2
         }
         const red = this.rawColours[paletteId][colourId][0]
         const green = this.rawColours[paletteId][colourId][1]
