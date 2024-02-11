@@ -133,6 +133,7 @@ export default class PPU {
   printBackgroundLayer(
     canvas: HTMLCanvasElement,
     layer: "window" | "background",
+    focusedTileId: number
   ): void {
     const tilemapId =
       layer == "background"
@@ -170,6 +171,14 @@ export default class PPU {
         context.putImageData(tileData, x * 8, y * 8)
       }),
     )
+
+    const focusY = (focusedTileId >> 5) * 8
+    const focusX = (focusedTileId & 0x1F) * 8
+    context.beginPath()
+    context.lineWidth = 1
+    context.strokeStyle = "blue"
+    context.rect(focusX, focusY, 8, 8)
+    context.stroke() 
   }
 
   getTileData(

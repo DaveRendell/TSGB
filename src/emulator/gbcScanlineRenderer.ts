@@ -81,7 +81,9 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
     const getBackgroundTileRow = (offset: number): number[] => {
       const backgroundX = (scrollX + offset) & 0xff
       const tileMapNumber = (backgroundX >> 3) + ((backgroundY >> 3) << 5)
-      const attributes = this.vram.tileAttributes[tileMapNumber]
+      const attributes = this.lcdControl.backgroundTilemap == 0
+        ? this.vram.tileAttributes0[tileMapNumber]
+        : this.vram.tileAttributes1[tileMapNumber]
       backgroundPaletteId = attributes.palette
       const tileId =
         this.lcdControl.backgroundTilemap == 0
@@ -100,7 +102,9 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
     // Returns the 8 long row of the background tile at pixel offset given
     const getWindowTileRow = (offset: number): number[] => {
       const tileMapNumber = (offset >> 3) + ((this.windowLine >> 3) << 5)
-      const attributes = this.vram.tileAttributes[tileMapNumber]
+      const attributes = this.lcdControl.windowTilemap == 0
+        ? this.vram.tileAttributes0[tileMapNumber]
+        : this.vram.tileAttributes1[tileMapNumber]
       windowPaletteId = attributes.palette
       const tileId =
         this.lcdControl.windowTilemap == 0

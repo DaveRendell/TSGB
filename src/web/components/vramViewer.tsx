@@ -1,12 +1,14 @@
 import * as React from "react"
 import PPU, { Sprite } from "../debugPicture"
 import { valueDisplay } from "../../helpers/displayHexNumbers"
+import { Emulator } from "../../emulator/emulator"
 
 interface Props {
+  emulator: Emulator,
   ppu: PPU
 }
 
-export function VramViewer({ ppu }: Props) {
+export function VramViewer({ ppu, emulator }: Props) {
   const tileSet0Canvas = React.useRef<HTMLCanvasElement>(null)
   const tileSet1Canvas = React.useRef<HTMLCanvasElement>(null)
   const backgroundCanvas = React.useRef<HTMLCanvasElement>(null)
@@ -17,6 +19,12 @@ export function VramViewer({ ppu }: Props) {
   const [sY, setSY] = React.useState(0)
   const [wX, setWX] = React.useState(0)
   const [wY, setWY] = React.useState(0)
+
+  const [focusedMapTileId, setFocusedMapTileId] = React.useState(0)
+  const [focusedTileMap, setFocusedTileMap] = React.useState(0)
+  const attributes = focusedTileMap == 0
+    ? emulator.memory.vram.tileAttributes0[focusedMapTileId]
+    : emulator.memory.vram.tileAttributes1[focusedMapTileId]
 
   const update = () => {
     setSX(ppu.memory.registers.scrollX.byte)
@@ -30,7 +38,7 @@ export function VramViewer({ ppu }: Props) {
       ppu.printTileset1(tileSet1Canvas.current)
     }
     if (backgroundCanvas.current) {
-      ppu.printBackgroundLayer(backgroundCanvas.current, "background")
+      ppu.printBackgroundLayer(backgroundCanvas.current, "background", focusedMapTileId)
       const context = backgroundCanvas.current.getContext("2d")!
       context.beginPath()
       context.lineWidth = 1
@@ -40,9 +48,17 @@ export function VramViewer({ ppu }: Props) {
       context.rect(sX, sY - 256, 160, 144)
       context.rect(sX - 256, sY - 256, 160, 144)
       context.stroke()
+
+      backgroundCanvas.current.onclick = (e) => {
+        const x = e.offsetX >> 3
+        const y = e.offsetY >> 3
+        setFocusedTileMap(emulator.memory.registers.lcdControl.backgroundTilemap)
+        setFocusedMapTileId(x + 32 * y)
+        ppu.printBackgroundLayer(backgroundCanvas.current, "background", x + 32 * y)
+      }
     }
     if (windowCanvas.current) {
-      ppu.printBackgroundLayer(windowCanvas.current, "window")
+      ppu.printBackgroundLayer(windowCanvas.current, "window", 0)
       const context = windowCanvas.current.getContext("2d")!
       context.beginPath()
       context.lineWidth = 1
@@ -105,6 +121,10 @@ export function VramViewer({ ppu }: Props) {
         </div>
       </div>
       <div>
+        <h4>Tile</h4>
+        <code>{JSON.stringify(attributes)}</code>
+      </div>
+      <div>
         <h3>Colour palettes</h3>
         Background palettes:
         <ol>
@@ -117,8 +137,8 @@ export function VramViewer({ ppu }: Props) {
                 >
                   {i}
                 </span>
-              ))} - <pre>{JSON.stringify(ppu.cpu.memory.registers.backgroundPalettes.rawColours[i])}</pre>
-              - <pre>{[...ppu.cpu.memory.registers.backgroundPalettes.data.slice(i * 8, (i + 1) * 8)].map(x => x.toString(2).padStart(8, "0")).join(",")}</pre>
+              ))} - <code>{ppu.cpu.memory.registers.backgroundPalettes.rawColours[i]
+                .map(c => c.map(x => x.toString(16).padStart(2, "0"))).join(", ")}</code>
               </li>)
           }
         </ol>

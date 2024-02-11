@@ -13,7 +13,8 @@ export class VRAM {
   tiles0: Tile[] = []
   tiles1: Tile[] = []
 
-  tileAttributes: TileAttributes[] = []
+  tileAttributes0: TileAttributes[] = []
+  tileAttributes1: TileAttributes[] = []
 
   vramBankRegister: VramBankRegister
 
@@ -28,8 +29,9 @@ export class VRAM {
         this.tiles1[tile].push([])
         this.tiles1[tile][row] = new Array(8).fill(0)
       }
-      for (let t = 0; t < 0x600; t++) {
-        this.tileAttributes.push(new TileAttributes())
+      for (let t = 0; t < 0x400; t++) {
+        this.tileAttributes0.push(new TileAttributes())
+        this.tileAttributes1.push(new TileAttributes())
       }
     }
   }
@@ -66,7 +68,7 @@ export class VRAM {
             this.tiles1[tileNumber][rowNumber][7 - i] |= bit
           }
         } else {
-          const attributes = this.tileAttributes[address - 0x9800]
+          const attributes = this.tileAttributes0[address - 0x9800]
           attributes.priority = (value & 0x80) > 0
           attributes.yFlip = (value & 0x40) > 0
           attributes.xFlip = (value & 0x20) > 0

@@ -52,7 +52,7 @@ export default function GameView({ emulator, unload }: Props) {
     Settings: () => <Settings emulator={emulator} />,
     "Debug Graphics": () => (
       <>
-        <VramViewer ppu={new PPU(emulator.cpu)} />
+        <VramViewer ppu={new PPU(emulator.cpu)} emulator={emulator} />
       </>
     ),
     "Debug Sound": () => (
