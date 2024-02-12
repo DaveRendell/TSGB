@@ -19,6 +19,7 @@ import { PaletteRam } from "./paletteRegisters"
 import SerialRegisters from "./serialRegisters"
 import { DividerRegister, TimerControlRegister } from "./timerRegisters"
 import { VramBankRegister } from "./vramBankRegister"
+import { WramBankRegister } from "./wramBankRegister"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
 export class IoRegisters {
@@ -57,6 +58,7 @@ export class IoRegisters {
   backgroundPalettes = new PaletteRam()
   objectPalettes = new PaletteRam()
   vramBank = new VramBankRegister()
+  wramBank = new WramBankRegister()
 
   private data: { [address: number]: ByteRef } = []
 
@@ -127,11 +129,11 @@ export class IoRegisters {
     this.data[0xff6b] = this.objectPalettes.accessRegister
 
     this.data[0xff4f] = this.vramBank
+    this.data[0xFF70] = this.wramBank
   }
 
   at(address: number): ByteRef {
     if (address === 0xFF55) { console.log("VRAM DMA CALLED!") }
-    if (address === 0xFF4F) { console.log("VRAM Banking CALLED!") }
     if (address === 0xFF70) { console.log("WRAM Banking CALLED!") }
     return this.data[address] || new ConstantByteRef()
   }

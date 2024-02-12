@@ -7,6 +7,8 @@ import { VRAM } from "./vram"
 import { ByteRef, ConstantByteRef, GetSetByteRef } from "../refs/byteRef"
 import { CompositeWordRef, WordRef } from "../refs/wordRef"
 import { InterruptEnabledRegister } from "./registers/interruptRegisters"
+import { WRAM } from "./wram"
+import { EmulatorMode } from "../emulator"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
@@ -17,18 +19,19 @@ export default class Memory {
   bootRomLoaded = false
   cartridge: Cartridge
   vram = new VRAM(this.registers)
-  wram = new Uint8Array(0x2000)
+  wram: WRAM
   oam: OAM
   hram = new Uint8Array(0x7f)
   interruptsEnabled = new InterruptEnabledRegister()
 
   controller: Controller
 
-  constructor(cartridge: Cartridge) {
+  constructor(cartridge: Cartridge, mode: EmulatorMode) {
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)
     this.cartridge = cartridge
     this.oam = new OAM(this)
+    this.wram = new WRAM(mode, this.registers)
   }
 
   at(address: number): ByteRef {
@@ -49,10 +52,7 @@ export default class Memory {
 
     // WRAM
     if (address >= 0xc000 && address < 0xe000) {
-      return new GetSetByteRef(
-        () => this.wram[address - 0xc000],
-        (value) => this.wram[address - 0xc000] = value
-      )
+      return this.wram.at(address)
     }
 
     // Echo RAM
