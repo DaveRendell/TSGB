@@ -30,7 +30,7 @@ export default class PPU {
   }
 
   getTile(tileId: number): Tile {
-    return this.memory.vram.tiles0[tileId]
+    return this.memory.vram.tiles[0][tileId]
   }
 
   printTileSet(canvas: HTMLCanvasElement): void {

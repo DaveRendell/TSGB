@@ -91,8 +91,8 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
           : this.vram.tilemap1(tileMapNumber)
       const row = backgroundY & 0x7
       return this.lcdControl.tileDataArea == 1
-        ? this.vram.tileset0(tileId, row)
-        : this.vram.tileset1(tileId, row)
+        ? this.vram.tileset0(tileId, row, attributes.bank)
+        : this.vram.tileset1(tileId, row, attributes.bank)
     }
 
     const winY = scanline - this.windowY.byte
@@ -112,8 +112,8 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
           : this.vram.tilemap1(tileMapNumber)
       const row = this.windowLine & 0x7
       return this.lcdControl.tileDataArea == 1
-        ? this.vram.tileset0(tileId, row)
-        : this.vram.tileset1(tileId, row)
+        ? this.vram.tileset0(tileId, row, attributes.bank)
+        : this.vram.tileset1(tileId, row, attributes.bank)
     }
 
     let backgroundTileRow = getBackgroundTileRow(0)
@@ -172,7 +172,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       // Render background (excluding the lowest colour in the pallete)
       if (
         pixel === undefined &&
-        tilePixel == undefined &&
+        tilePixel === undefined &&
         this.lcdControl.backgroundWindowDisplay
       ) {
         tilePixel = backgroundTileRow[(scrollX + i) % 8]
@@ -186,7 +186,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
         backgroundTileRow = getBackgroundTileRow(i + 1)
       }
 
-      if (tilePixel) {
+      if (tilePixel !== undefined) {
         pixel = tilePixel
         paletteType = PaletteType.Background
       }

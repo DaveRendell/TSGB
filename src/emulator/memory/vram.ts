@@ -7,11 +7,9 @@ import { TileAttributes } from "./tileAttributes"
 type Tile = number[][]
 
 export class VRAM {
-  bank0: Uint8Array = new Uint8Array(0x2000)
-  bank1: Uint8Array = new Uint8Array(0x2000)
+  data = [new Uint8Array(0x2000), new Uint8Array(0x2000)]
 
-  tiles0: Tile[] = []
-  tiles1: Tile[] = []
+  tiles: [Tile[], Tile[]] = [[], []]
 
   tileAttributes0: TileAttributes[] = []
   tileAttributes1: TileAttributes[] = []
@@ -21,13 +19,13 @@ export class VRAM {
   constructor(registers: IoRegisters) {
     this.vramBankRegister = registers.vramBank
     for (let tile = 0; tile < 384; tile++) {
-      this.tiles0.push([])
-      this.tiles1.push([])
+      this.tiles[0].push([])
+      this.tiles[1].push([])
       for (let row = 0; row < 8; row++) {
-        this.tiles0[tile].push([])
-        this.tiles0[tile][row] = new Array(8).fill(0)
-        this.tiles1[tile].push([])
-        this.tiles1[tile][row] = new Array(8).fill(0)
+        this.tiles[0][tile].push([])
+        this.tiles[0][tile][row] = new Array(8).fill(0)
+        this.tiles[1][tile].push([])
+        this.tiles[1][tile][row] = new Array(8).fill(0)
       }
       for (let t = 0; t < 0x400; t++) {
         this.tileAttributes0.push(new TileAttributes())
@@ -41,31 +39,28 @@ export class VRAM {
     const tileNumber = adjustedAddress >> 4
     const rowNumber = (adjustedAddress & 0b1111) >> 1
     const read = () => {
-      return this.vramBankRegister.bank == 0
-        ? this.bank0[adjustedAddress]
-        : this.bank1[adjustedAddress]
+      return this.data[this.vramBankRegister.bank][adjustedAddress]
     }
     const write = (value: number) => {
+      this.data[this.vramBankRegister.bank][adjustedAddress] = value
       if (this.vramBankRegister.bank == 0) {
-        this.bank0[adjustedAddress] = value
         if (address < 0x9800) {
           for (let i = 0; i < 8; i++) {
             const bit = (value & 1) << adjustedAddress % 2
             value >>= 1
-            this.tiles0[tileNumber][rowNumber][7 - i] &=
+            this.tiles[0][tileNumber][rowNumber][7 - i] &=
               1 << (1 - (adjustedAddress % 2))
-            this.tiles0[tileNumber][rowNumber][7 - i] |= bit
+            this.tiles[0][tileNumber][rowNumber][7 - i] |= bit
           }
         }
       } else {
-        this.bank1[adjustedAddress] = value
         if (address < 0x9800) {
           for (let i = 0; i < 8; i++) {
             const bit = (value & 1) << adjustedAddress % 2
             value >>= 1
-            this.tiles1[tileNumber][rowNumber][7 - i] &=
+            this.tiles[1][tileNumber][rowNumber][7 - i] &=
               1 << (1 - (adjustedAddress % 2))
-            this.tiles1[tileNumber][rowNumber][7 - i] |= bit
+            this.tiles[1][tileNumber][rowNumber][7 - i] |= bit
           }
         } else {
           const attributes = this.tileAttributes0[address - 0x9800]
@@ -74,6 +69,7 @@ export class VRAM {
           attributes.xFlip = (value & 0x20) > 0
           attributes.bank = (value & 0x8) >> 3
           attributes.palette = value & 0x7
+          if (attributes.bank == 1) { console.log("bank 2 used") }
         }
       }
       
@@ -81,20 +77,24 @@ export class VRAM {
     return new GetSetByteRef(read, write)
   }
 
-  tileset0(tileNumber: number, rowNumber: number): number[] {
-    return this.tiles0[tileNumber][rowNumber]
+  tileset0(tileNumber: number, rowNumber: number, bank: number = 0): number[] {
+    return this.tiles[bank][tileNumber][rowNumber]
   }
 
-  tileset1(tileNumber: number, rowNumber: number): number[] {
+  tileset1(tileNumber: number, rowNumber: number, bank: number = 0): number[] {
     const adjustedTileNumber = 0x100 + from2sComplement(tileNumber)
-    return this.tiles0[adjustedTileNumber][rowNumber]
+    return this.tiles[bank][adjustedTileNumber][rowNumber]
   }
+
+  // tilemap(tilemapId: number, index: number): number {
+  //   return this.data[0][0x1800 + (tilemapId << 10) + index]
+  // }
 
   tilemap0(id: number): number {
-    return this.bank0[0x1800 + id]
+    return this.data[0][0x1800 + id]
   }
 
   tilemap1(id: number): number {
-    return this.bank0[0x1c00 + id]
+    return this.data[0][0x1c00 + id]
   }
 }
