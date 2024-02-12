@@ -130,7 +130,9 @@ export class IoRegisters {
   }
 
   at(address: number): ByteRef {
-    if (address === 0xFF55) { console.log("VRAM DMA CALLED!")}
+    if (address === 0xFF55) { console.log("VRAM DMA CALLED!") }
+    if (address === 0xFF4F) { console.log("VRAM Banking CALLED!") }
+    if (address === 0xFF70) { console.log("WRAM Banking CALLED!") }
     return this.data[address] || new ConstantByteRef()
   }
 }

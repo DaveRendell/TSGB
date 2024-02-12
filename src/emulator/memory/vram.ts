@@ -8,11 +8,8 @@ type Tile = number[][]
 
 export class VRAM {
   data = [new Uint8Array(0x2000), new Uint8Array(0x2000)]
-
   tiles: [Tile[], Tile[]] = [[], []]
-
-  tileAttributes0: TileAttributes[] = []
-  tileAttributes1: TileAttributes[] = []
+  tileAttributes: TileAttributes[] = []
 
   vramBankRegister: VramBankRegister
 
@@ -27,10 +24,9 @@ export class VRAM {
         this.tiles[1][tile].push([])
         this.tiles[1][tile][row] = new Array(8).fill(0)
       }
-      for (let t = 0; t < 0x400; t++) {
-        this.tileAttributes0.push(new TileAttributes())
-        this.tileAttributes1.push(new TileAttributes())
-      }
+    }
+    for (let t = 0; t < 0x800; t++) {
+      this.tileAttributes.push(new TileAttributes())
     }
   }
 
@@ -43,36 +39,24 @@ export class VRAM {
     }
     const write = (value: number) => {
       this.data[this.vramBankRegister.bank][adjustedAddress] = value
-      if (this.vramBankRegister.bank == 0) {
-        if (address < 0x9800) {
-          for (let i = 0; i < 8; i++) {
-            const bit = (value & 1) << adjustedAddress % 2
-            value >>= 1
-            this.tiles[0][tileNumber][rowNumber][7 - i] &=
-              1 << (1 - (adjustedAddress % 2))
-            this.tiles[0][tileNumber][rowNumber][7 - i] |= bit
-          }
+      if (address < 0x9800) {
+        for (let i = 0; i < 8; i++) {
+          const bit = (value & 1) << adjustedAddress % 2
+          value >>= 1
+          this.tiles[this.vramBankRegister.bank][tileNumber][rowNumber][7 - i] &=
+            1 << (1 - (adjustedAddress % 2))
+          this.tiles[this.vramBankRegister.bank][tileNumber][rowNumber][7 - i] |= bit
         }
       } else {
-        if (address < 0x9800) {
-          for (let i = 0; i < 8; i++) {
-            const bit = (value & 1) << adjustedAddress % 2
-            value >>= 1
-            this.tiles[1][tileNumber][rowNumber][7 - i] &=
-              1 << (1 - (adjustedAddress % 2))
-            this.tiles[1][tileNumber][rowNumber][7 - i] |= bit
-          }
-        } else {
-          const attributes = this.tileAttributes0[address - 0x9800]
+        if (this.vramBankRegister.bank == 1) {
+          const attributes = this.tileAttributes[address - 0x9800]
           attributes.priority = (value & 0x80) > 0
           attributes.yFlip = (value & 0x40) > 0
           attributes.xFlip = (value & 0x20) > 0
           attributes.bank = (value & 0x8) >> 3
           attributes.palette = value & 0x7
-          if (attributes.bank == 1) { console.log("bank 2 used") }
         }
       }
-      
     }
     return new GetSetByteRef(read, write)
   }

@@ -23,8 +23,8 @@ export function VramViewer({ ppu, emulator }: Props) {
   const [focusedMapTileId, setFocusedMapTileId] = React.useState(0)
   const [focusedTileMap, setFocusedTileMap] = React.useState(0)
   const attributes = focusedTileMap == 0
-    ? emulator.memory.vram.tileAttributes0[focusedMapTileId]
-    : emulator.memory.vram.tileAttributes1[focusedMapTileId]
+    ? emulator.memory.vram.tileAttributes[0][focusedMapTileId]
+    : emulator.memory.vram.tileAttributes[1][focusedMapTileId]
 
   const update = () => {
     setSX(ppu.memory.registers.scrollX.byte)
