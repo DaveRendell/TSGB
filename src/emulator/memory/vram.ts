@@ -9,6 +9,7 @@ type Tile = number[][]
 export class VRAM {
   data = [new Uint8Array(0x2000), new Uint8Array(0x2000)]
   tiles: [Tile[], Tile[]] = [[], []]
+  flippedTiles: [Tile[], Tile[]] = [[], []]
   tileAttributes: TileAttributes[] = []
 
   vramBankRegister: VramBankRegister
@@ -18,11 +19,17 @@ export class VRAM {
     for (let tile = 0; tile < 384; tile++) {
       this.tiles[0].push([])
       this.tiles[1].push([])
+      this.flippedTiles[0].push([])
+      this.flippedTiles[1].push([])
       for (let row = 0; row < 8; row++) {
         this.tiles[0][tile].push([])
         this.tiles[0][tile][row] = new Array(8).fill(0)
         this.tiles[1][tile].push([])
         this.tiles[1][tile][row] = new Array(8).fill(0)
+        this.flippedTiles[0][tile].push([])
+        this.flippedTiles[0][tile][row] = new Array(8).fill(0)
+        this.flippedTiles[1][tile].push([])
+        this.flippedTiles[1][tile][row] = new Array(8).fill(0)
       }
     }
     for (let t = 0; t < 0x800; t++) {
@@ -46,6 +53,9 @@ export class VRAM {
           this.tiles[this.vramBankRegister.bank][tileNumber][rowNumber][7 - i] &=
             1 << (1 - (adjustedAddress % 2))
           this.tiles[this.vramBankRegister.bank][tileNumber][rowNumber][7 - i] |= bit
+          this.flippedTiles[this.vramBankRegister.bank][tileNumber][rowNumber][i] &=
+            1 << (1 - (adjustedAddress % 2))
+          this.flippedTiles[this.vramBankRegister.bank][tileNumber][rowNumber][i] |= bit
         }
       } else {
         if (this.vramBankRegister.bank == 1) {
@@ -59,6 +69,26 @@ export class VRAM {
       }
     }
     return new GetSetByteRef(read, write)
+  }
+
+  tileset(
+    tileDataArea: number,
+    tileIndex: number,
+    bank: number,
+    xFlip: boolean,
+    yFlip: boolean,
+    rowIndex: number,
+  ): number[] {
+    const adjustedTileIndex = tileDataArea == 1
+      ? tileIndex
+      : 0x100 + from2sComplement(tileIndex)
+    
+    const adjustedRowIndex = yFlip ? 7 - rowIndex : rowIndex
+
+    if (xFlip) {
+      return this.flippedTiles[bank][adjustedTileIndex][adjustedRowIndex]
+    }
+    return this.tiles[bank][adjustedTileIndex][adjustedRowIndex]
   }
 
   tileset0(tileNumber: number, rowNumber: number, bank: number = 0): number[] {

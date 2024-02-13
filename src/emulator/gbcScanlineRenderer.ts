@@ -89,9 +89,14 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
           ? this.vram.tilemap0(tileMapNumber)
           : this.vram.tilemap1(tileMapNumber)
       const row = backgroundY & 0x7
-      return this.lcdControl.tileDataArea == 1
-        ? this.vram.tileset0(tileId, row, attributes.bank)
-        : this.vram.tileset1(tileId, row, attributes.bank)
+      return this.vram.tileset(
+        this.lcdControl.tileDataArea,
+        tileId,
+        attributes.bank,
+        attributes.xFlip,
+        attributes.yFlip,
+        row
+      )
     }
 
     const winY = scanline - this.windowY.byte
@@ -109,9 +114,14 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
           ? this.vram.tilemap0(tileMapNumber)
           : this.vram.tilemap1(tileMapNumber)
       const row = this.windowLine & 0x7
-      return this.lcdControl.tileDataArea == 1
-        ? this.vram.tileset0(tileId, row, attributes.bank)
-        : this.vram.tileset1(tileId, row, attributes.bank)
+      return this.vram.tileset(
+        this.lcdControl.tileDataArea,
+        tileId,
+        attributes.bank,
+        attributes.xFlip,
+        attributes.yFlip,
+        row
+      )
     }
 
     let backgroundTileRow = getBackgroundTileRow(0)
