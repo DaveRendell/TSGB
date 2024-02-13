@@ -1,4 +1,3 @@
-import { push } from "../../cpu/instructions/stack";
 import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
 
 export class PaletteRam {
@@ -46,9 +45,10 @@ export class PaletteRam {
         const green = this.rawColours[paletteId][colourId][1]
         const blue = this.rawColours[paletteId][colourId][2]
         
-        this.scaledColours[paletteId][colourId][0] = red << 3
-        this.scaledColours[paletteId][colourId][1] = green << 3
-        this.scaledColours[paletteId][colourId][2] = blue << 3
+        // Desaturate colours a bit for display
+        this.scaledColours[paletteId][colourId][0] = 0.8 * (red << 3) + 0.1 * (green << 3) + 0.1 * (blue << 3)
+        this.scaledColours[paletteId][colourId][1] = 0.8 * (green << 3) + 0.1 * (red << 3) + 0.1 * (blue << 3)
+        this.scaledColours[paletteId][colourId][2] = 0.8 * (blue << 3) + 0.1 * (red << 3) + 0.1 * (green << 3)
 
         if (this.autoIncrement) { this.index++ }
       }
