@@ -1,3 +1,4 @@
+import { Rtc } from "../../emulator/memory/cartridges/realTimeClock/rtc"
 import { StoredGame } from "./storedGame"
 
 export async function getGameList(): Promise<StoredGame[]> {
@@ -90,6 +91,32 @@ export const persistSave =
     })
 
     game.save = data
+
+    return new Promise((resolve, reject) => {
+      const request = store.put(game)
+      request.onerror = reject
+      request.onsuccess = () => resolve()
+    })
+  }
+
+  export const persistRtc =
+  (gameId: number) =>
+  async (rtc: Rtc): Promise<void> => {
+    
+    const db = await openDb()
+    const transaction = db.transaction(["games"], "readwrite")
+
+    const store = transaction.objectStore("games")
+
+    const game = await new Promise<StoredGame>((resolve, reject) => {
+      const request = store.get(gameId)
+      request.onerror = reject
+      request.onsuccess = () => {
+        resolve(request.result as StoredGame)
+      }
+    })
+
+    game.rtc = rtc
 
     return new Promise((resolve, reject) => {
       const request = store.put(game)

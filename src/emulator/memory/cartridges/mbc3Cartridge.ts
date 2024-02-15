@@ -1,5 +1,6 @@
 import { ByteRef, GetSetByteRef } from "../../refs/byteRef"
 import { Cartridge, StoreRam } from "./cartridge"
+import { Rtc, updateRtc } from "./realTimeClock/rtc"
 
 const RAM_WRITE_WAIT_MILLISECONDS = 500
 
@@ -10,8 +11,29 @@ export class Mbc3Cartridge extends Cartridge {
   bankNumber2 = 0
   bankingMode: "simple" | "advanced" = "simple"
 
-  constructor(data: Uint8Array, storeRam: StoreRam, loadedSave?: Uint8Array) {
+  rtc: Rtc
+  latchedRtc: Rtc = {
+    seconds: 0,
+    minutes: 0,
+    hours: 0,
+    days: 0,
+    halt: false,
+    carry: false,
+    savedAt: new Date()
+  }
+  latchRegister: number = 1
+  writeRtc: (rtc: Rtc) => void
+
+  constructor(
+    data: Uint8Array,
+    storeRam: StoreRam,
+    loadedSave: Uint8Array,
+    rtc: Rtc | undefined,
+    writeRtc: (rtc: Rtc) => void
+  ) {
     super(data, storeRam, loadedSave)
+    this.rtc = rtc || {...this.latchedRtc}
+    this.writeRtc = writeRtc
   }
 
   override rom(address: number): ByteRef {
@@ -42,7 +64,12 @@ export class Mbc3Cartridge extends Cartridge {
       }
     } else {
       // Latch clock - TODO
-      write = () => {}
+      write = (value) => {
+        if (this.latchRegister == 0 && value == 1) {
+          this.latchedRtc = updateRtc(this.rtc)
+        }
+        this.latchRegister = value
+      }
     }
 
     return new GetSetByteRef(read, write)
@@ -63,10 +90,47 @@ export class Mbc3Cartridge extends Cartridge {
   override ram(address: number): ByteRef {
     return new GetSetByteRef(
       () => {
-        const bankBase = this.bankNumber2 << 13
-        return this.ramData[address - 0xa000 + bankBase]
+        if (this.bankNumber2 <= 3) {
+          const bankBase = this.bankNumber2 << 13
+          return this.ramData[address - 0xa000 + bankBase]
+        } else if (this.bankNumber2 >= 8) {
+          switch (this.bankNumber2) {
+            case 0x8: return this.latchedRtc.seconds || 0
+            case 0x9: return this.latchedRtc.minutes || 0
+            case 0xa: return this.latchedRtc.hours || 0
+            case 0xb: return (this.latchedRtc.days & 0xff) || 0
+            case 0xc: return (this.latchedRtc.days >> 8)
+              + (this.latchedRtc.halt ? 0x40 : 0)
+              + (this.latchedRtc.carry ? 0x80 : 0)
+            default: return 0xff
+          }
+        }
       },
-      (value) => this.writeToRam(address, value),
+      (value) => {
+        if (this.bankNumber2 <= 3) {
+          this.writeToRam(address, value)
+        } else if (this.bankNumber2 >= 8) {
+          const newRtc = updateRtc(this.rtc)
+          switch (this.bankNumber2) {
+            case 0x8: newRtc.seconds = value; break
+            case 0x9: newRtc.minutes = value; break
+            case 0xa: newRtc.hours = value; break
+            case 0xb:
+              newRtc.days &= 0x1ff
+              newRtc.days |= value
+              break
+            case 0xc:
+              newRtc.days &= 0xFF
+              newRtc.days |= ((value & 1) << 8)
+              newRtc.halt = (value & 0x40) > 0
+              newRtc.carry = (value & 0x80) > 0
+              break
+          }
+          console.log("Writing to RTC", this.rtc, newRtc, this.bankNumber2.toString(16), value.toString(16).padStart(2, "0"))
+          this.rtc = newRtc
+          this.writeRtc(newRtc)
+        }
+      },
     )
   }
 }

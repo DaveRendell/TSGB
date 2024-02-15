@@ -1,4 +1,4 @@
-import { persistSave } from "../../../web/indexedDb/gameStore"
+import { persistRtc, persistSave } from "../../../web/indexedDb/gameStore"
 import { StoredGame } from "../../../web/indexedDb/storedGame"
 import { Cartridge } from "./cartridge"
 import { Mbc1Cartridge } from "./mbc1Cartridge"
@@ -24,7 +24,12 @@ export async function createCartridge(game: StoredGame): Promise<Cartridge> {
     case 0x11:
     case 0x12:
     case 0x13:
-      return new Mbc3Cartridge(game.data, persistSave(game.id), game.save)
+      return new Mbc3Cartridge(
+        game.data,
+        persistSave(game.id),
+        game.save,
+        game.rtc,
+        persistRtc(game.id))
     case 0x19:
     case 0x1a:
     case 0x1b:
