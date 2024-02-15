@@ -24,7 +24,7 @@ export class Emulator {
     } else {
       this.mode = EmulatorMode.DMG
     }
-    this.memory = new Memory(cartridge)
+    this.memory = new Memory(cartridge, this.mode)
     this.controller = new Controller(this.memory)
     this.cpu = new CPU(this.memory, this.controller, cartridge.colourSupport)
     this.pictureProcessor = new PictureProcessor(this.cpu, cartridge.colourSupport)
