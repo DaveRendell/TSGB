@@ -17,6 +17,7 @@ import {
 } from "./lcdRegisters"
 import { PaletteRam } from "./paletteRegisters"
 import SerialRegisters from "./serialRegisters"
+import { SpeedSwitchRegister } from "./speedSwitchRegister"
 import { DividerRegister, TimerControlRegister } from "./timerRegisters"
 import { VramBankRegister } from "./vramBankRegister"
 import { WramBankRegister } from "./wramBankRegister"
@@ -59,6 +60,7 @@ export class IoRegisters {
   objectPalettes = new PaletteRam()
   vramBank = new VramBankRegister()
   wramBank = new WramBankRegister()
+  speedSwitch = new SpeedSwitchRegister()
 
   private data: { [address: number]: ByteRef } = []
 
@@ -130,11 +132,10 @@ export class IoRegisters {
 
     this.data[0xff4f] = this.vramBank
     this.data[0xFF70] = this.wramBank
+    this.data[0xFF4D] = this.speedSwitch
   }
 
   at(address: number): ByteRef {
-    if (address === 0xFF55) { console.log("VRAM DMA CALLED!") }
-    if (address === 0xFF70) { console.log("WRAM Banking CALLED!") }
     return this.data[address] || new ConstantByteRef()
   }
 }

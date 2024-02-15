@@ -11,6 +11,7 @@ import { WordRef } from "../refs/wordRef"
 import PictureProcessor from "../pictureProcessor"
 import Timer from "../timer"
 import { addressDisplay } from "../../helpers/displayHexNumbers"
+import { SpeedSwitchRegister } from "../memory/registers/speedSwitchRegister"
 
 interface ClockCallback {
   updateClock(cycles: number): void

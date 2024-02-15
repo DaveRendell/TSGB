@@ -1,5 +1,6 @@
 import CPU from "../cpu/cpu"
 import Memory from "../memory/memoryMap"
+import { SpeedSwitchRegister } from "../memory/registers/speedSwitchRegister"
 import { NoiseChannel } from "./noiseChannel"
 import PulseChannel from "./pulseChannel"
 import WaveChannel from "./waveChannel"
@@ -19,6 +20,8 @@ export default class AudioProcessor {
   channel3: WaveChannel
   channel4: NoiseChannel
 
+  speedSwitchRegister: SpeedSwitchRegister
+
   constructor(cpu: CPU) {
     this.cpu = cpu
     this.memory = cpu.memory
@@ -33,6 +36,7 @@ export default class AudioProcessor {
         // console.log(volume, this.vinVolume.gain.value)
       }
     }
+    this.speedSwitchRegister = this.memory.registers.speedSwitch
     cpu.audioProcessor = this
     cpu.addClockCallback(this)
     this.audioContext.suspend()
@@ -65,10 +69,11 @@ export default class AudioProcessor {
   }
 
   updateClock(cycles: number) {
-    this.channel1.update(cycles)
-    this.channel2.update(cycles)
-    this.channel3.update(cycles)
-    this.channel4.update(cycles)
+    const adjustedCycles = this.speedSwitchRegister.doubleSpeed ? cycles >> 1 : cycles
+    this.channel1.update(adjustedCycles)
+    this.channel2.update(adjustedCycles)
+    this.channel3.update(adjustedCycles)
+    this.channel4.update(adjustedCycles)
   }
 
   startAudio() {

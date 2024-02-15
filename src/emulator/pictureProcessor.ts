@@ -8,6 +8,7 @@ import {
   LcdStatusRegister,
   PalletteRegister,
 } from "./memory/registers/lcdRegisters"
+import { SpeedSwitchRegister } from "./memory/registers/speedSwitchRegister"
 import { ByteRef } from "./refs/byteRef"
 import ScanlineRenderer from "./scanlineRenderer"
 
@@ -32,6 +33,8 @@ export default class PictureProcessor {
 
   newFrameDrawn = false
 
+  speedSwitchRegister: SpeedSwitchRegister
+
   colours = [
     [255, 255, 255],
     [192, 192, 192],
@@ -46,6 +49,7 @@ export default class PictureProcessor {
     this.lcdStatus = this.memory.registers.lcdStatus
     this.scanlineNumber = this.memory.registers.scanline
     this.coincidence = this.memory.registers.scanlineCoincidence
+    this.speedSwitchRegister = this.memory.registers.speedSwitch
 
     cpu.addClockCallback(this)
     cpu.pictureProcessor = this
@@ -66,7 +70,7 @@ export default class PictureProcessor {
       this.setMode("VBlank")
       return
     }
-    this.clockCount += cycle
+    this.clockCount += this.speedSwitchRegister.doubleSpeed ? cycle >> 1 : cycle
     switch (this.mode) {
       case "HBlank": // Mode 0
         if (this.clockCount >= 204) {

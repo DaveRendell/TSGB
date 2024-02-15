@@ -21,7 +21,12 @@ export const enableInterrupts: Instruction = {
 export const stop: Instruction = {
   execute: (cpu) => {
     cpu.isStopped = true
-    // TODO what does this actually do?
+    
+    if (cpu.memory.registers.speedSwitch.switchArmed) {
+      console.log("CPU switching speed!")
+      cpu.memory.registers.speedSwitch.doubleSpeed =
+        !cpu.memory.registers.speedSwitch.doubleSpeed
+    }
 
     cpu.memory.at(0xff04).byte = 0
   },
