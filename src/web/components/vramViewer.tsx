@@ -78,7 +78,7 @@ export function VramViewer({ ppu, emulator }: Props) {
   }, [])
 
   const toColour = (values: number[]): string =>
-    `#${values.map((x) => x.toString(16).padStart(2, "0")).join("")}ff`
+    `#${values.map((x) => Math.round(x).toString(16).padStart(2, "0")).join("")}ff`
 
   return (
     <section>
@@ -146,15 +146,16 @@ export function VramViewer({ ppu, emulator }: Props) {
         <ol>
           {
             ppu.cpu.memory.registers.objectPalettes.scaledColours.map((pallete, i) =>
-              <li> {i} : {pallete.map((colour, i) => (
-                <span
-                  className="pallete-block"
-                  style={{ backgroundColor: toColour(colour) }}
-                >
-                  {i}
-                </span>
-              ))} - <pre>{JSON.stringify(ppu.cpu.memory.registers.objectPalettes.rawColours[i])}</pre>
-              </li>)
+            <li> {i} : {pallete.map((colour, i) => (
+              <span
+                className="pallete-block"
+                style={{ backgroundColor: toColour(colour) }}
+              >
+                {i}
+              </span>
+            ))} - <code>{ppu.cpu.memory.registers.backgroundPalettes.rawColours[i]
+              .map(c => c.map(x => x.toString(16).padStart(2, "0"))).join(", ")}</code>
+            </li>)
           }
         </ol>
       </div>

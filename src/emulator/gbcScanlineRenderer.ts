@@ -160,24 +160,28 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       }
 
       let tilePixel: number | undefined = undefined
+      let tileWasWindow = false
 
       // Render window
       const winX = i - (this.windowX.byte - 7)
-      if (pixel === undefined && this.lcdControl.windowEnabled) {
-        if (winY >= 0 && winX >= 0) {
-          tilePixel = windowTileRow[winX % 8]
-          paletteId = windowPaletteId
-        }
-      }
       if (winX >= 0 && winY >= 0) {
-        windowTileCounter++
         if (windowTileCounter === 8) {
           windowTileCounter = 0
-          windowTileRow = getWindowTileRow(winX + 1)
+          windowTileRow = getWindowTileRow(winX)
         }
+        if (pixel === undefined && this.lcdControl.windowEnabled) {
+          tilePixel = windowTileRow[winX % 8]
+          paletteId = windowPaletteId
+          tileWasWindow = true
+        }
+        windowTileCounter++
       }
 
       // Render background (excluding the lowest colour in the pallete)
+      if (backgroundTileCounter === 8) {
+        backgroundTileCounter = 0
+        backgroundTileRow = getBackgroundTileRow(i)
+      }
       if (
         pixel === undefined &&
         tilePixel === undefined &&
@@ -189,12 +193,9 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
 
       // Get next background tile if needed
       backgroundTileCounter++
-      if (backgroundTileCounter === 8) {
-        backgroundTileCounter = 0
-        backgroundTileRow = getBackgroundTileRow(i + 1)
-      }
+      
 
-      if (tilePixel !== undefined) {
+      if (tilePixel !== undefined && tilePixel !== 0) {
         pixel = tilePixel
         paletteType = PaletteType.Background
       }
@@ -219,7 +220,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       if (pixel === undefined) {
         pixel = 0
         paletteType = PaletteType.Background
-        paletteId = backgroundPaletteId
+        paletteId = tileWasWindow ? windowPaletteId : backgroundPaletteId
       }
 
       const palette = paletteType === PaletteType.Background
