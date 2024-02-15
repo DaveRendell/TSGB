@@ -69,7 +69,7 @@ export default class Memory {
     }
 
     // Prohibited
-    if (address >= 0xFEA0 && address < 0xFEFF) {
+    if (address >= 0xFEA0 && address < 0xFf00) {
       return new ConstantByteRef(0xFF)
     }
 
@@ -86,7 +86,9 @@ export default class Memory {
       )
     }
 
-    return this.interruptsEnabled
+    if (address == 0xffff) {
+      return this.interruptsEnabled
+    }
   }
 
   atPointer(pointer: WordRef): ByteRef {
