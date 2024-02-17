@@ -1,3 +1,4 @@
+import { EmulatorMode } from "./emulator";
 import { OAM } from "./memory/oam";
 import { IoRegisters } from "./memory/registers/ioRegisters";
 import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
@@ -18,6 +19,7 @@ enum PaletteType {
  * Scanline renderer for displaying game swith colour palettes.
  */
 export default class GbcScanlineRenderer implements ScanlineRenderer {
+  mode: EmulatorMode
   canvas?: HTMLCanvasElement = undefined
   buffer: OffscreenCanvas
   bufferContext: OffscreenCanvasRenderingContext2D
@@ -44,7 +46,16 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
     [0, 0, 0],
   ]
 
+  backgroundPaletteId = 0
+  backgroundTileRow: number[] = []
+  backgroundTileCounter = 0
+
+  windowPaletteId = 0
+  windowTileRow: number[] = []
+  windowTileCounter = 0
+
   constructor(registers: IoRegisters, vram: VRAM, oam: OAM) {
+    this.mode = EmulatorMode.CGB
     this.vram = vram
     this.oam = oam
 
@@ -75,7 +86,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
     const scrollY = this.scrollY.byte
     const backgroundY = (scrollY + scanline) & 0xff
 
-    let backgroundPaletteId = 0
+    this.backgroundPaletteId = 0
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getBackgroundTileRow = (offset: number): number[] => {
@@ -83,7 +94,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       const tileMapNumber = (backgroundX >> 3) + ((backgroundY >> 3) << 5)
       const attributes = 
         this.vram.tileAttributes[(this.lcdControl.backgroundTilemap << 10) + tileMapNumber]
-      backgroundPaletteId = attributes.palette
+        this.backgroundPaletteId = attributes.palette
       const tileId =
         this.lcdControl.backgroundTilemap == 0
           ? this.vram.tilemap0(tileMapNumber)
@@ -101,14 +112,14 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
 
     const winY = scanline - this.windowY.byte
 
-    let windowPaletteId = 0
+    this.windowPaletteId = 0
 
     // Returns the 8 long row of the background tile at pixel offset given
     const getWindowTileRow = (offset: number): number[] => {
       const tileMapNumber = (offset >> 3) + ((this.windowLine >> 3) << 5)
       const attributes =
         this.vram.tileAttributes[(this.lcdControl.windowTilemap << 10) + tileMapNumber]
-      windowPaletteId = attributes.palette
+      this.windowPaletteId = attributes.palette
       const tileId =
         this.lcdControl.windowTilemap == 0
           ? this.vram.tilemap0(tileMapNumber)
@@ -124,13 +135,13 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       )
     }
 
-    let backgroundTileRow = getBackgroundTileRow(0)
-    let backgroundTileCounter = scrollX & 0x7
+    this.backgroundTileRow = getBackgroundTileRow(0)
+    this.backgroundTileCounter = scrollX & 0x7
 
-    let windowTileRow = getWindowTileRow(0)
-    let windowTileCounter = 0
+    this.windowTileRow = getWindowTileRow(0)
+    this.windowTileCounter = 0
 
-    const sprites = this.oam.spritesAtScanlineCGB()
+    const sprites = this.oam.spritesAtScanline(this.mode)
     const highPrioritySprites = sprites.filter((s) => !s.priority)
     const lowPrioritySprites = sprites.filter((s) => s.priority)
 
@@ -165,34 +176,34 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       // Render window
       const winX = i - (this.windowX.byte - 7)
       if (winX >= 0 && winY >= 0) {
-        if (windowTileCounter === 8) {
-          windowTileCounter = 0
-          windowTileRow = getWindowTileRow(winX)
+        if (this.windowTileCounter === 8) {
+          this.windowTileCounter = 0
+          this.windowTileRow = getWindowTileRow(winX)
         }
         if (pixel === undefined && this.lcdControl.windowEnabled) {
-          tilePixel = windowTileRow[winX % 8]
-          paletteId = windowPaletteId
+          tilePixel = this.windowTileRow[winX % 8]
+          paletteId = this.windowPaletteId
           tileWasWindow = true
         }
-        windowTileCounter++
+        this.windowTileCounter++
       }
 
       // Render background (excluding the lowest colour in the pallete)
-      if (backgroundTileCounter === 8) {
-        backgroundTileCounter = 0
-        backgroundTileRow = getBackgroundTileRow(i)
+      if (this.backgroundTileCounter === 8) {
+        this.backgroundTileCounter = 0
+        this.backgroundTileRow = getBackgroundTileRow(i)
       }
       if (
         pixel === undefined &&
         tilePixel === undefined &&
         this.lcdControl.backgroundWindowDisplay
       ) {
-        tilePixel = backgroundTileRow[(scrollX + i) % 8]
-        paletteId = backgroundPaletteId
+        tilePixel = this.backgroundTileRow[(scrollX + i) % 8]
+        paletteId = this.backgroundPaletteId
       }
 
       // Get next background tile if needed
-      backgroundTileCounter++
+      this.backgroundTileCounter++
       
 
       if (tilePixel !== undefined && tilePixel !== 0) {
@@ -220,7 +231,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
       if (pixel === undefined) {
         pixel = 0
         paletteType = PaletteType.Background
-        paletteId = tileWasWindow ? windowPaletteId : backgroundPaletteId
+        paletteId = tileWasWindow ? this.windowPaletteId : this.backgroundPaletteId
       }
 
       const palette = paletteType === PaletteType.Background
