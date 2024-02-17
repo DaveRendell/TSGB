@@ -1,5 +1,10 @@
 import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
 
+export enum ColourStyle {
+  Washed,
+  Raw,
+}
+
 export class PaletteRam {
   data = new Uint8Array(64)
   rawColours: number[][][] = []
@@ -10,6 +15,8 @@ export class PaletteRam {
 
   autoIncrement = false
   index: number
+
+  colourStyle = ColourStyle.Raw
 
   constructor() {
     this.indexRegister = new GetSetByteRef(
@@ -41,14 +48,7 @@ export class PaletteRam {
           // Update blue
           this.rawColours[paletteId][colourId][2] = (value & 0b01111100) >> 2
         }
-        const red = this.rawColours[paletteId][colourId][0]
-        const green = this.rawColours[paletteId][colourId][1]
-        const blue = this.rawColours[paletteId][colourId][2]
-        
-        // Desaturate colours a bit for display
-        this.scaledColours[paletteId][colourId][0] = 0.8 * (red << 3) + 0.1 * (green << 3) + 0.1 * (blue << 3)
-        this.scaledColours[paletteId][colourId][1] = 0.8 * (green << 3) + 0.1 * (red << 3) + 0.1 * (blue << 3)
-        this.scaledColours[paletteId][colourId][2] = 0.8 * (blue << 3) + 0.1 * (red << 3) + 0.1 * (green << 3)
+        this.updateColour(paletteId, colourId)
 
         if (this.autoIncrement) { this.index++ }
       }
@@ -63,6 +63,35 @@ export class PaletteRam {
           this.rawColours[palette][colour][i] = 0
           this.scaledColours[palette][colour][i] = 0
         }
+      }
+    }
+  }
+
+  updateColour(paletteId: number, colourId: number) {
+    const red = this.rawColours[paletteId][colourId][0]
+    const green = this.rawColours[paletteId][colourId][1]
+    const blue = this.rawColours[paletteId][colourId][2]
+
+    switch (this.colourStyle) {
+      case ColourStyle.Washed:
+        // Desaturate colours a bit for display
+        this.scaledColours[paletteId][colourId][0] = 0.8 * (red << 3) + 0.1 * (green << 3) + 0.1 * (blue << 3)
+        this.scaledColours[paletteId][colourId][1] = 0.8 * (green << 3) + 0.1 * (red << 3) + 0.1 * (blue << 3)
+        this.scaledColours[paletteId][colourId][2] = 0.8 * (blue << 3) + 0.1 * (red << 3) + 0.1 * (green << 3)
+        break
+      case ColourStyle.Raw:
+        console.log("RAW!")
+        this.scaledColours[paletteId][colourId][0] = (red << 3)
+        this.scaledColours[paletteId][colourId][1] = (green << 3)
+        this.scaledColours[paletteId][colourId][2] = (blue << 3)
+        break
+    }
+  }
+
+  updateAllColours() {
+    for (let paletteId = 0; paletteId < 8; paletteId++) {
+      for (let colourId = 0; colourId < 4; colourId++) {
+        this.updateColour(paletteId, colourId)
       }
     }
   }

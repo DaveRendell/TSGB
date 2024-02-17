@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Emulator } from "../../emulator/emulator"
+import { ColourStyle } from "../../emulator/memory/registers/paletteRegisters"
 
 interface Props {
   emulator: Emulator
@@ -68,6 +69,8 @@ export default function Settings({ emulator }: Props) {
   )
   const [chosenPresetId, setChosenPresetId] = React.useState(-1)
 
+  const [colourGrading, setColourGrading] = React.useState(emulator.memory.registers.backgroundPalettes.colourStyle)
+
   const updatePalette = (id: number, colour: number[]) => {
     emulator.pictureProcessor.scanlineRenderer.colours.splice(id, 1, colour)
     window.localStorage.setItem(
@@ -101,6 +104,15 @@ export default function Settings({ emulator }: Props) {
       updatePalette(2, palette[2])
       updatePalette(3, palette[3])
     }
+  }
+
+  const pickColourGrading =  (grading: ColourStyle) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    emulator.memory.registers.backgroundPalettes.colourStyle = grading
+    emulator.memory.registers.objectPalettes.colourStyle = grading
+    emulator.memory.registers.backgroundPalettes.updateAllColours()
+    emulator.memory.registers.objectPalettes.updateAllColours()
+    setColourGrading(grading)
   }
 
   return (
@@ -148,6 +160,14 @@ export default function Settings({ emulator }: Props) {
           value={monochromePalette3}
           onChange={(e) => updatePalette(3, colourToArray(e.target.value))}
         />
+      </div>
+      <div>
+        <h3>Colour grading</h3>
+        Pick the colour grading to apply to colour games<br/>
+        <input type="radio" id="cg_washed" name="colour_grading" value="WASHED" checked={colourGrading == ColourStyle.Washed} onChange={pickColourGrading(ColourStyle.Washed)} />
+        <label htmlFor="cg_washed">Washed out (resembles appearance on LCD display)</label><br/>
+        <input type="radio" id="cg_raw" name="colour_grading" value="RAW" checked={colourGrading == ColourStyle.Raw} onChange={pickColourGrading(ColourStyle.Raw)} />
+        <label htmlFor="cg_raw">Raw colours</label>
       </div>
     </section>
   )
