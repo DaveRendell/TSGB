@@ -167,7 +167,9 @@ export default function Settings({ emulator }: Props) {
         <input type="radio" id="cg_washed" name="colour_grading" value="WASHED" checked={colourGrading == ColourStyle.Washed} onChange={pickColourGrading(ColourStyle.Washed)} />
         <label htmlFor="cg_washed">Washed out (resembles appearance on LCD display)</label><br/>
         <input type="radio" id="cg_raw" name="colour_grading" value="RAW" checked={colourGrading == ColourStyle.Raw} onChange={pickColourGrading(ColourStyle.Raw)} />
-        <label htmlFor="cg_raw">Raw colours</label>
+        <label htmlFor="cg_raw">Raw colours</label><br/>
+        <input type="radio" id="cg_vapourwave" name="colour_grading" value="RAW" checked={colourGrading == ColourStyle.Vapourwave} onChange={pickColourGrading(ColourStyle.Vapourwave)} />
+        <label htmlFor="cg_vapourwave">Vapourwave</label><br/>
       </div>
     </section>
   )

@@ -3,6 +3,7 @@ import { ByteRef, GetSetByteRef } from "../../refs/byteRef";
 export enum ColourStyle {
   Washed,
   Raw,
+  Vapourwave,
 }
 
 export class PaletteRam {
@@ -16,7 +17,7 @@ export class PaletteRam {
   autoIncrement = false
   index: number
 
-  colourStyle = ColourStyle.Raw
+  colourStyle = ColourStyle.Washed
 
   constructor() {
     this.indexRegister = new GetSetByteRef(
@@ -75,15 +76,20 @@ export class PaletteRam {
     switch (this.colourStyle) {
       case ColourStyle.Washed:
         // Desaturate colours a bit for display
-        this.scaledColours[paletteId][colourId][0] = 0.8 * (red << 3) + 0.1 * (green << 3) + 0.1 * (blue << 3)
-        this.scaledColours[paletteId][colourId][1] = 0.8 * (green << 3) + 0.1 * (red << 3) + 0.1 * (blue << 3)
-        this.scaledColours[paletteId][colourId][2] = 0.8 * (blue << 3) + 0.1 * (red << 3) + 0.1 * (green << 3)
+        this.scaledColours[paletteId][colourId][0] = 0.7 * (red << 3) + 0.1 * (green << 3) + 0.1 * (blue << 3)
+        this.scaledColours[paletteId][colourId][1] = 0.7 * (green << 3) + 0.1 * (red << 3) + 0.1 * (blue << 3)
+        this.scaledColours[paletteId][colourId][2] = 0.7 * (blue << 3) + 0.1 * (red << 3) + 0.1 * (green << 3)
         break
       case ColourStyle.Raw:
         console.log("RAW!")
         this.scaledColours[paletteId][colourId][0] = (red << 3)
         this.scaledColours[paletteId][colourId][1] = (green << 3)
         this.scaledColours[paletteId][colourId][2] = (blue << 3)
+        break
+      case ColourStyle.Vapourwave:
+        this.scaledColours[paletteId][colourId][0] = 0.7 * (red << 3) + 0.2 * (green << 3) + 0.1 * (blue << 3)
+        this.scaledColours[paletteId][colourId][1] = 0.3 * (green << 3)
+        this.scaledColours[paletteId][colourId][2] = 0.7 * (blue << 3) + 0.1 * (red << 3) + 0.2 * (green << 3)
         break
     }
   }
