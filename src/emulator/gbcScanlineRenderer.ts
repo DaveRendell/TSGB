@@ -130,7 +130,7 @@ export default class GbcScanlineRenderer implements ScanlineRenderer {
     let windowTileRow = getWindowTileRow(0)
     let windowTileCounter = 0
 
-    const sprites = this.oam.spritesAtScanline()
+    const sprites = this.oam.spritesAtScanlineCGB()
     const highPrioritySprites = sprites.filter((s) => !s.priority)
     const lowPrioritySprites = sprites.filter((s) => s.priority)
 

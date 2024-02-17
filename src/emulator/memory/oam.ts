@@ -34,7 +34,18 @@ export class OAM {
         const intersect = sprite.scanlineIntersect(scanline)
         return intersect >= 0 && intersect < spriteSize
       })
-      .slice(0, 10)
       .sort((a, b) => a.x - b.x)
+      .slice(0, 10)
+  }
+
+  spritesAtScanlineCGB(): Sprite[] {
+    const scanline = this.scanline.byte
+    const spriteSize = this.lcdControl.objectSize
+    return this.sprites
+      .filter((sprite) => {
+        const intersect = sprite.scanlineIntersect(scanline)
+        return intersect >= 0 && intersect < spriteSize
+      })
+      .slice(0, 10)
   }
 }
