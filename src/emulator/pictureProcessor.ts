@@ -1,5 +1,6 @@
 import CPU from "./cpu/cpu"
 import DmgScanlineRenderer from "./dmgScanlineRenderer"
+import { EmulatorMode } from "./emulator"
 import GbcScanlineRenderer from "./gbcScanlineRenderer"
 import Memory from "./memory/memoryMap"
 import { Interrupt } from "./memory/registers/interruptRegisters"
@@ -42,7 +43,7 @@ export default class PictureProcessor {
     [0, 0, 0],
   ]
 
-  constructor(cpu: CPU, colourMode: boolean) {
+  constructor(cpu: CPU, mode: EmulatorMode) {
     this.memory = cpu.memory
 
     this.lcdControl = this.memory.registers.lcdControl
@@ -54,10 +55,10 @@ export default class PictureProcessor {
     cpu.addClockCallback(this)
     cpu.pictureProcessor = this
 
-    if (!colourMode) {
+    if (mode === EmulatorMode.DMG) {
       this.scanlineRenderer = new DmgScanlineRenderer(
         this.memory.registers, this.memory.vram, this.memory.oam)
-    } else {
+    } else if (mode === EmulatorMode.CGB) {
       this.scanlineRenderer = new GbcScanlineRenderer(
         this.memory.registers, this.memory.vram, this.memory.oam
       )

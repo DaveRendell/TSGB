@@ -18,16 +18,12 @@ export class Emulator {
   audioProcessor: AudioProcessor
   controller: Controller
 
-  constructor(cartridge: Cartridge) {
-    if (cartridge.colourSupport) {
-      this.mode = EmulatorMode.CGB
-    } else {
-      this.mode = EmulatorMode.DMG
-    }
+  constructor(cartridge: Cartridge, mode: EmulatorMode) {
+    this.mode = mode
     this.memory = new Memory(cartridge, this.mode)
     this.controller = new Controller(this.memory)
-    this.cpu = new CPU(this.memory, this.controller, cartridge.colourSupport)
-    this.pictureProcessor = new PictureProcessor(this.cpu, cartridge.colourSupport)
+    this.cpu = new CPU(this.memory, this.controller, mode)
+    this.pictureProcessor = new PictureProcessor(this.cpu, mode)
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
   }

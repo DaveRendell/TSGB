@@ -12,6 +12,7 @@ import PictureProcessor from "../pictureProcessor"
 import Timer from "../timer"
 import { addressDisplay } from "../../helpers/displayHexNumbers"
 import { SpeedSwitchRegister } from "../memory/registers/speedSwitchRegister"
+import { EmulatorMode } from "../emulator"
 
 interface ClockCallback {
   updateClock(cycles: number): void
@@ -64,7 +65,7 @@ export default class CPU {
   prefixedInstructions: { [code: number]: (cpu: CPU) => void } = {}
   prefixedCycleLengths: { [code: number]: number } = {}
 
-  constructor(memory: Memory, controller: Controller, colourMode: boolean) {
+  constructor(memory: Memory, controller: Controller, mode: EmulatorMode) {
     this.memory = memory
     this.controller = controller
     memory.cpu = this
@@ -111,7 +112,7 @@ export default class CPU {
 
 
     // SKIP BOOTROM
-    if (!colourMode) {
+    if (mode == EmulatorMode.DMG) {
       this.registers.A.byte = 0x01
       this.registers.F.byte = 0xb0
       this.registers.B.byte = 0x00
@@ -122,7 +123,7 @@ export default class CPU {
       this.registers.L.byte = 0x4d
       this.registers.SP.word = 0xfffe
       this.registers.PC.word = 0x0100
-    } else {
+    } else if (mode == EmulatorMode.CGB) {
       this.registers.A.byte = 0x11
       this.registers.F.byte = 0xb0
       this.registers.B.byte = 0x00

@@ -7,12 +7,14 @@ import { StoredGame } from "../indexedDb/storedGame"
 import { getGameList, addGame, deleteGame } from "../indexedDb/gameStore"
 import LibraryCard from "./libraryCard"
 import GameOptions from "./gameOptions"
+import { EmulatorMode } from "../../emulator/emulator"
 
 interface Props {
   setCartridge: (cartridge: Cartridge) => void
+  setMode: (mode: EmulatorMode) => void
 }
 
-export default function GameLoader({ setCartridge }: Props) {
+export default function GameLoader({ setCartridge, setMode }: Props) {
   const [storedGames, setStoredGames] = React.useState<StoredGame[] | null>(
     null,
   )
@@ -25,8 +27,19 @@ export default function GameLoader({ setCartridge }: Props) {
     getGameList().then(setStoredGames)
   }, [lastChange])
 
-  const loadGame = (game: StoredGame) => async () =>
-    setCartridge(await createCartridge(game))
+  const loadGame = (game: StoredGame, mode: EmulatorMode | undefined = undefined) => async () => {
+    const cartridge = await createCartridge(game)
+    setCartridge(cartridge)
+    if (mode === undefined) {
+      if (cartridge.colourSupport) {
+        setMode(EmulatorMode.CGB)
+      } else {
+        setMode(EmulatorMode.DMG)
+      }
+    } else {
+      setMode(mode)
+    }
+  }
 
   const closeOptions = () => setOptionsFocusGame(undefined)
 
@@ -34,7 +47,7 @@ export default function GameLoader({ setCartridge }: Props) {
     return (
       <GameOptions
         game={optionsFocusGame}
-        playGame={loadGame(optionsFocusGame)}
+        playGame={loadGame}
         closeOptions={closeOptions}
       />
     )

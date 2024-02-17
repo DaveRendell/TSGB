@@ -2,10 +2,11 @@ import * as React from "react"
 import { StoredGame } from "../indexedDb/storedGame"
 import { deleteGame, persistSave, updateGame } from "../indexedDb/gameStore"
 import "../gameOptions.css"
+import { EmulatorMode } from "../../emulator/emulator"
 
 interface Props {
   game: StoredGame
-  playGame: () => void
+  playGame: (game: StoredGame, mode: EmulatorMode | undefined) => () => Promise<void>
   closeOptions: () => void
 }
 
@@ -49,12 +50,32 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
     await updateGame(game)
   }
 
+  const colourSupportByte = game.data[0x143]
+  const colourSupport = (colourSupportByte & 0x80) > 0
+  const colourExclusive = (colourSupportByte & 0x40) > 0
+
   return (
     <section className="game-options floating-panel">
       <h2>{name}</h2>
       <div>
-        <button className="chunky-button action-button" onClick={playGame}>Play</button>
+        {
+          !colourSupport && <>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG)}>Play</button>
+          </>
+        }
+        {
+          (colourSupport && !colourExclusive) && <>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB)}>Play in Colour mode</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG)}>Play in Monochrome mode</button>
+          </>
+        }
+        {
+          (colourSupport && colourExclusive) && <>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB)}>Play</button>
+          </>
+        }
         <button className="chunky-button" onClick={closeOptions}>Back</button>
+        <br />
       </div>
       <br />
       <form onSubmit={updateName}>
@@ -82,6 +103,7 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <h3>Danger zone</h3>
       <button className="chunky-button danger-button" onClick={() => deleteGame(game.id)}>Delete Game</button>
       <button className="chunky-button danger-button" onClick={() => deleteSave()}>Delete Save</button>
+      <br />
     </section>
   )
 }
