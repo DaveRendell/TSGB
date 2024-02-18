@@ -18,7 +18,6 @@ export default class DmgScanlineRenderer extends BaseScanlineRenderer {
 
   constructor(registers: IoRegisters, vram: VRAM, oam: OAM) {
     super(registers, vram, oam)
-    console.log("YES")
     this.mode = EmulatorMode.DMG
 
     this.backgroundPalette = registers.backgroundPallete

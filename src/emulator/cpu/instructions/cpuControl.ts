@@ -1,3 +1,4 @@
+import { EmulatorMode } from "../../emulator"
 import { Instruction } from "../instructions/instruction"
 
 export const disableInterrupts: Instruction = {
@@ -22,7 +23,7 @@ export const stop: Instruction = {
   execute: (cpu) => {
     cpu.isStopped = true
     
-    if (cpu.memory.registers.speedSwitch.switchArmed) {
+    if (cpu.memory.registers.speedSwitch.switchArmed && cpu.mode === EmulatorMode.CGB) {
       console.log("CPU switching speed!")
       cpu.memory.registers.speedSwitch.doubleSpeed =
         !cpu.memory.registers.speedSwitch.doubleSpeed

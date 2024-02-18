@@ -32,6 +32,7 @@ export default class CPU {
   memory: Memory
   registers: CpuRegisters
   controller: Controller
+  mode: EmulatorMode
   cycleCount: number = 0
   interruptsEnabled = false
   pictureProcessor: PictureProcessor
@@ -66,6 +67,7 @@ export default class CPU {
   prefixedCycleLengths: { [code: number]: number } = {}
 
   constructor(memory: Memory, controller: Controller, mode: EmulatorMode) {
+    this.mode = mode
     this.memory = memory
     this.controller = controller
     memory.cpu = this
