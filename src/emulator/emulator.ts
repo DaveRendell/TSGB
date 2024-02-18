@@ -3,7 +3,7 @@ import Controller from "./controller"
 import CPU from "./cpu/cpu"
 import Memory from "./memory/memoryMap"
 import { Cartridge } from "./memory/cartridges/cartridge"
-import PictureProcessor from "./pictureProcessor"
+import PictureProcessor from "./graphics/pictureProcessor"
 
 export enum EmulatorMode {
   DMG,

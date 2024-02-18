@@ -1,13 +1,10 @@
 import BaseScanlineRenderer from "./baseScanlineRenderer";
-import { EmulatorMode } from "./emulator";
-import { OAM } from "./memory/oam";
-import { IoRegisters } from "./memory/registers/ioRegisters";
-import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
-import { PaletteRam } from "./memory/registers/paletteRegisters";
-import { Sprite } from "./memory/sprite";
-import { VRAM } from "./memory/vram";
-import { ByteRef } from "./refs/byteRef";
-import ScanlineRenderer from "./scanlineRenderer";
+import { EmulatorMode } from "../emulator";
+import { OAM } from "../memory/oam";
+import { IoRegisters } from "../memory/registers/ioRegisters";
+import { PaletteRam } from "../memory/registers/paletteRegisters";
+import { Sprite } from "../memory/sprite";
+import { VRAM } from "../memory/vram";
 
 const WIDTH = 160
 const HEIGHT = 144

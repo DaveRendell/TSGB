@@ -1,25 +1,15 @@
-import { EmulatorMode } from "./emulator";
-import { OAM } from "./memory/oam";
-import { IoRegisters } from "./memory/registers/ioRegisters";
-import { LcdControlRegister, LcdStatusRegister, PalletteRegister } from "./memory/registers/lcdRegisters";
-import { PaletteRam } from "./memory/registers/paletteRegisters";
-import { Sprite } from "./memory/sprite";
-import { VRAM } from "./memory/vram";
-import { ByteRef } from "./refs/byteRef";
-import ScanlineRenderer from "./scanlineRenderer";
+import { EmulatorMode } from "../emulator";
+import { OAM } from "../memory/oam";
+import { IoRegisters } from "../memory/registers/ioRegisters";
+import { LcdControlRegister } from "../memory/registers/lcdRegisters";
+import { Sprite } from "../memory/sprite";
+import { VRAM } from "../memory/vram";
+import { ByteRef } from "../refs/byteRef";
 
 const WIDTH = 160
 const HEIGHT = 144
 
-enum PaletteType {
-  Background,
-  Object
-}
-
-/**
- * Scanline renderer for displaying game swith colour palettes.
- */
-export default class BaseScanlineRenderer implements ScanlineRenderer {
+export default class BaseScanlineRenderer {
   mode: EmulatorMode
   canvas?: HTMLCanvasElement = undefined
   buffer: OffscreenCanvas

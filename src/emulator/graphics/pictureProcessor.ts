@@ -1,17 +1,16 @@
-import CPU from "./cpu/cpu"
+import CPU from "../cpu/cpu"
 import DmgScanlineRenderer from "./dmgScanlineRenderer"
-import { EmulatorMode } from "./emulator"
+import { EmulatorMode } from "../emulator"
 import GbcScanlineRenderer from "./gbcScanlineRenderer"
-import Memory from "./memory/memoryMap"
-import { Interrupt } from "./memory/registers/interruptRegisters"
+import Memory from "../memory/memoryMap"
+import { Interrupt } from "../memory/registers/interruptRegisters"
 import {
   LcdControlRegister,
   LcdStatusRegister,
-  PalletteRegister,
-} from "./memory/registers/lcdRegisters"
-import { SpeedSwitchRegister } from "./memory/registers/speedSwitchRegister"
-import { ByteRef } from "./refs/byteRef"
-import ScanlineRenderer from "./scanlineRenderer"
+} from "../memory/registers/lcdRegisters"
+import { SpeedSwitchRegister } from "../memory/registers/speedSwitchRegister"
+import { ByteRef } from "../refs/byteRef"
+import BaseScanlineRenderer from "./baseScanlineRenderer"
 
 const WIDTH = 160
 const HEIGHT = 144
@@ -22,7 +21,7 @@ type Mode = "HBlank" | "VBlank" | "Scanline OAM" | "Scanline VRAM"
 export default class PictureProcessor {
   memory: Memory
 
-  scanlineRenderer: ScanlineRenderer
+  scanlineRenderer: BaseScanlineRenderer
 
   lcdControl: LcdControlRegister
   lcdStatus: LcdStatusRegister

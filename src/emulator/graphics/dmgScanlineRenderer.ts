@@ -1,10 +1,10 @@
 import BaseScanlineRenderer from "./baseScanlineRenderer";
-import { EmulatorMode } from "./emulator";
-import { OAM } from "./memory/oam";
-import { IoRegisters } from "./memory/registers/ioRegisters";
-import { PalletteRegister } from "./memory/registers/lcdRegisters";
-import { Sprite } from "./memory/sprite";
-import { VRAM } from "./memory/vram";
+import { EmulatorMode } from "../emulator";
+import { OAM } from "../memory/oam";
+import { IoRegisters } from "../memory/registers/ioRegisters";
+import { PalletteRegister } from "../memory/registers/lcdRegisters";
+import { Sprite } from "../memory/sprite";
+import { VRAM } from "../memory/vram";
 
 
 /**

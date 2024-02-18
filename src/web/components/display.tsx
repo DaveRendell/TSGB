@@ -1,6 +1,6 @@
 import * as React from "react"
 import CPU from "../../emulator/cpu/cpu"
-import PictureProcessor from "../../emulator/pictureProcessor"
+import PictureProcessor from "../../emulator/graphics/pictureProcessor"
 
 interface Props {
   cpu: CPU
