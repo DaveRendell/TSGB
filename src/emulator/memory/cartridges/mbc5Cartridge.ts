@@ -19,7 +19,7 @@ export class Mbc5Cartridge extends Cartridge {
       if (address < 0x4000) {
         return this.romData[address]
       }
-      const adjustedAddress = address + (this.bankNumber1 - 1) * 0x4000
+      const adjustedAddress = address + ((this.bankNumber1 - 1) << 14)
       return this.romData[adjustedAddress]
     }
     let write: (value: number) => void
@@ -52,7 +52,7 @@ export class Mbc5Cartridge extends Cartridge {
   }
 
   private writeToRam(address: number, value: number) {
-    const bankBase = 0x2000 * this.bankNumber2
+    const bankBase = this.bankNumber2 << 13
     this.ramData[address - 0xa000 + bankBase] = value
     if (this.ramWriteTimeout) {
       clearTimeout(this.ramWriteTimeout)
@@ -66,7 +66,7 @@ export class Mbc5Cartridge extends Cartridge {
   override ram(address: number): ByteRef {
     return new GetSetByteRef(
       () => {
-        const bankBase = 0x2000 * this.bankNumber2
+        const bankBase = this.bankNumber2 << 13
         return this.ramData[address - 0xa000 + bankBase]
       },
       (value) => this.writeToRam(address, value),
