@@ -86,7 +86,7 @@ export default class BaseScanlineRenderer {
     throw new Error("Method not implemented")
   }
 
-  renderPixel(line: ImageData, offset: number, pixel: number) {
+  renderPixel(line: ImageData, offset: number, pixel: number): number[] {
     throw new Error("Method not implemented")
   }
 
@@ -192,7 +192,11 @@ export default class BaseScanlineRenderer {
         pixel = this.useTileColourZero()
       }
 
-      this.renderPixel(line, i, pixel)
+      const colour = this.renderPixel(line, i, pixel)
+      line.data[(i << 2) + 0] = colour[0]
+      line.data[(i << 2) + 1] = colour[1]
+      line.data[(i << 2) + 2] = colour[2]
+      line.data[(i << 2) + 3] = 255
     }
 
     // Finally, add the new line to the buffer image

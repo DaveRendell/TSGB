@@ -83,11 +83,7 @@ export default class DmgScanlineRenderer extends BaseScanlineRenderer {
     return 0
   }
 
-  renderPixel(line: ImageData, offset: number, pixel: number) {
-    const colour = this.colours[this.palette.map[pixel]]
-    line.data[4 * offset + 0] = colour[0]
-    line.data[4 * offset + 1] = colour[1]
-    line.data[4 * offset + 2] = colour[2]
-    line.data[4 * offset + 3] = 255
+  renderPixel(line: ImageData, offset: number, pixel: number): number[] {
+    return this.colours[this.palette.map[pixel]]
   }
 }

@@ -114,10 +114,6 @@ export default class GbcScanlineRenderer extends BaseScanlineRenderer {
     const palette = this.paletteType === PaletteType.Background
         ? this.backgroundPalettes.scaledColours[this.paletteId]
         : this.objectPalettes.scaledColours[this.paletteId]
-    const colour = palette[pixel]
-    line.data[4 * offset + 0] = colour[0]
-    line.data[4 * offset + 1] = colour[1]
-    line.data[4 * offset + 2] = colour[2]
-    line.data[4 * offset + 3] = 255
+    return palette[pixel]
   }
 }
