@@ -115,9 +115,60 @@ export default function Settings({ emulator }: Props) {
     setColourGrading(grading)
   }
 
+  const [isMuted, setIsMuted] = React.useState(emulator.audioProcessor.isMuted)
+  const [volume, setVolume] = React.useState(1.0)
+
+  const toggleMute = () => {
+    emulator.audioProcessor.isMuted = !emulator.audioProcessor.isMuted
+    setIsMuted(emulator.audioProcessor.isMuted)
+    if (emulator.audioProcessor.isMuted) {
+      emulator.audioProcessor.emulatorAudioControl.gain.setValueAtTime(
+        0,
+        emulator.audioProcessor.audioContext.currentTime
+      )
+    } else {
+      emulator.audioProcessor.emulatorAudioControl.gain.setValueAtTime(
+        volume,
+        emulator.audioProcessor.audioContext.currentTime
+      )
+    }
+  }
+
+  const updateVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVolume(parseFloat(e.target.value))
+    if (!emulator.audioProcessor.isMuted) {
+      emulator.audioProcessor.emulatorAudioControl.gain.setValueAtTime(
+        volume,
+        emulator.audioProcessor.audioContext.currentTime
+      )
+    }
+  }
+
   return (
     <section>
       <h2>Settings</h2>
+      <div>
+        <h3>Audio</h3>
+        <label htmlFor="mute">Mute</label>
+        <input
+          type="checkbox"
+          id="mute"
+          name="mute"
+          checked={isMuted}
+          onChange={() => toggleMute()}
+        /><br/>
+        <label htmlFor="volume">Volume</label>
+        <input
+          type="range"
+          id="volume"
+          name="volume"
+          min="0"
+          max="2"
+          step="0.05"
+          value={volume}
+          onChange={updateVolume}
+        />
+      </div>
       <div>
         <h3>Set monochrome palette</h3>
         <label htmlFor="preset-selector">Use preset</label>

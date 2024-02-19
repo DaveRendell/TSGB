@@ -11,6 +11,9 @@ export default class AudioProcessor {
   memory: Memory
   audioContext: AudioContext = new AudioContext({ sampleRate: 44100 })
 
+  emulatorAudioControl: GainNode
+  isMuted: boolean = false
+
   masterVolume: number = 0
   vinVolume: GainNode
   masterControl: GainNode
@@ -41,6 +44,8 @@ export default class AudioProcessor {
     cpu.addClockCallback(this)
     this.audioContext.suspend()
 
+    this.emulatorAudioControl = this.audioContext.createGain()
+
     this.masterControl = this.audioContext.createGain()
     this.vinVolume = this.audioContext.createGain()
 
@@ -65,7 +70,8 @@ export default class AudioProcessor {
       registers: this.memory.registers.channel4,
     })
     this.vinVolume.connect(this.masterControl)
-    this.masterControl.connect(this.audioContext.destination)
+    this.masterControl.connect(this.emulatorAudioControl)
+    this.emulatorAudioControl.connect(this.audioContext.destination)
   }
 
   updateClock(cycles: number) {
