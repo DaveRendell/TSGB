@@ -81,7 +81,6 @@ export class PaletteRam {
         this.scaledColours[paletteId][colourId][2] = 0.7 * (blue << 3) + 0.1 * (red << 3) + 0.1 * (green << 3)
         break
       case ColourStyle.Raw:
-        console.log("RAW!")
         this.scaledColours[paletteId][colourId][0] = (red << 3)
         this.scaledColours[paletteId][colourId][1] = (green << 3)
         this.scaledColours[paletteId][colourId][2] = (blue << 3)

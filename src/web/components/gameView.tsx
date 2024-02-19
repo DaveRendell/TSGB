@@ -8,7 +8,7 @@ import Joypad from "./joypad"
 import Tabs from "./tabs"
 import AudioDebug from "./audioDebug"
 import { Emulator } from "../../emulator/emulator"
-import Settings from "./settings"
+import Settings from "./settings/settings"
 import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
 
 interface Props {
