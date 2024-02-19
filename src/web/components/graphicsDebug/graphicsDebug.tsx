@@ -12,7 +12,7 @@ type GraphicsDebugTab =
 
 
 export function GraphicsDebug({ emulator }: Props) {
-  const [tab, setTab] = React.useState<GraphicsDebugTab>("Background")
+  const [tab, setTab] = React.useState<GraphicsDebugTab>("Tileset")
 
   const getTab = () => {
     switch(tab) {
