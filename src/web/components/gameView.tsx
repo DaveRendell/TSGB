@@ -10,6 +10,7 @@ import AudioDebug from "./audioDebug"
 import { Emulator } from "../../emulator/emulator"
 import Settings from "./settings/settings"
 import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
+import { GraphicsDebug } from "./graphicsDebug/graphicsDebug"
 
 interface Props {
   emulator: Emulator
@@ -55,6 +56,7 @@ export default function GameView({ emulator, unload }: Props) {
         <VramViewer ppu={new PPU(emulator.cpu)} emulator={emulator} />
       </>
     ),
+    "New Graphics": () => <GraphicsDebug emulator={emulator} />,
     "Debug Sound": () => (
       <AudioDebug audioProcessor={emulator.audioProcessor} />
     ),
