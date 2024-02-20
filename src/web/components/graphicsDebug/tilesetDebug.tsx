@@ -19,6 +19,7 @@ export function TilesetDebug({ vram, mode }: Props) {
   const [tilesetId, setTilesetId] = React.useState(0)
   const [bankId, setBankId] = React.useState(0)
   const [highlightedTileId, setHighlightedTileId] = React.useState<number | null>(null)
+  const requestRef = React.useRef<number>()
 
   const fillCanvas = () => {
     if (canvas.current) {
@@ -63,7 +64,7 @@ export function TilesetDebug({ vram, mode }: Props) {
         context.stroke()
       }
     }
-    requestAnimationFrame(fillCanvas)
+    requestRef.current = requestAnimationFrame(fillCanvas)
   }
 
   const onMouseOver = (e: React.MouseEvent) => {
@@ -75,6 +76,7 @@ export function TilesetDebug({ vram, mode }: Props) {
 
   React.useEffect(() => {
     fillCanvas()
+    return () => cancelAnimationFrame(requestRef.current)
   }, [canvas.current, tilesetId, bankId, highlightedTileId])
 
   return <div>
