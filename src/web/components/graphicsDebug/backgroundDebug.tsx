@@ -1,5 +1,7 @@
 import * as React from "react"
 import { Emulator, EmulatorMode } from "../../../emulator/emulator"
+import { PaletteDisplay } from "./paletteDisplay"
+import { TileAttributes } from "../../../emulator/memory/tileAttributes"
 
 interface Props {
   emulator: Emulator
@@ -10,8 +12,27 @@ export function BackgroundDebug({ emulator }: Props) {
   const requestRef = React.useRef<number>()
   const [highlightedTileId, setHighlightedTileId] = React.useState<number | null>(null)
 
-  const vram = emulator.memory.vram
   const lcdControl = emulator.memory.registers.lcdControl
+  const [tilemapId, setTilemapId] = React.useState(lcdControl.backgroundTilemap)
+  const [tilesetId, setTilesetId] = React.useState(lcdControl.tileDataArea)
+  const [isEnabled, setIsEnabled] = React.useState(lcdControl.backgroundWindowDisplay)
+  const [bgPalette, setBgPalette] = React.useState(
+    emulator.memory.registers.backgroundPallete.map.map(x =>
+      emulator.pictureProcessor.scanlineRenderer.colours[x]))
+  const [attributes, setAttributes] = React.useState<TileAttributes>(undefined)
+
+  React.useEffect(() => {
+    const ref = setInterval(() => {
+      setTilemapId(lcdControl.backgroundTilemap)
+      setTilesetId(lcdControl.tileDataArea)
+      setIsEnabled(lcdControl.backgroundWindowDisplay)
+      setBgPalette(emulator.memory.registers.backgroundPallete.map.map(x =>
+        emulator.pictureProcessor.scanlineRenderer.colours[x]))
+    }, 32)
+    return () => clearInterval(ref)
+  })
+
+  const vram = emulator.memory.vram
 
   const fillCanvas = () => {
     
@@ -89,11 +110,23 @@ export function BackgroundDebug({ emulator }: Props) {
     const tileRow = (e.clientY - rect.top) >> 4
     const tileCol = (e.clientX - rect.left) >> 4
     setHighlightedTileId((tileRow << 5) + tileCol)
+    setAttributes(vram.tileAttributes[(lcdControl.backgroundTilemap << 10) + (tileRow << 5) + tileCol])
   }
+
+  // QQ
+  /*
+  - bg palette if DMG
+  - highlighted tile id and attributes (if CGB)
+  */
 
   return (
     <div>
       <h3>Background layer</h3>
+      Tilemap: {tilemapId}<br/>
+      Tileset: {tilesetId}<br/>
+      Enabled: {isEnabled ? "True" : "False"}<br/>
+      {emulator.mode == EmulatorMode.DMG && <>Palette: <PaletteDisplay colours={bgPalette} /><br/></>}
+      <br/>
       <canvas
         className="background-debug-canvas"
         ref={canvas}
@@ -102,6 +135,25 @@ export function BackgroundDebug({ emulator }: Props) {
         onMouseMove={onMouseOver}
         onMouseLeave={() => setHighlightedTileId(null)}
       />
+      <div className="tilemap-info">
+        {
+        (highlightedTileId !== null) && <>
+          Tilemap ID: <code>0x{highlightedTileId.toString(16).padStart(3, "0")} ({highlightedTileId})</code><br/>
+          TileId: <code>0x{vram.tilemap(lcdControl.backgroundTilemap, highlightedTileId).toString(16).padStart(2, "0")} ({vram.tilemap(lcdControl.backgroundTilemap, highlightedTileId)})</code><br/>
+          { emulator.mode == EmulatorMode.CGB && <>
+            Flip X: {attributes.xFlip ? "True" : "False"}<br/>
+            Flip Y: {attributes.yFlip ? "True" : "False"}<br/>
+            Priority: {attributes.priority ? "True" : "False"}<br/>
+            Tile bank: {attributes.bank}<br/>
+            Palette: {attributes.palette} - <PaletteDisplay
+              colours={emulator.memory.registers.backgroundPalettes.scaledColours[attributes.palette]} /><br/>
+          </>
+          }
+        </>
+      }
+      </div>
+      
+
     </div>
   )
 }

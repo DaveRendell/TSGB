@@ -27,9 +27,11 @@ body {
 
 .pallete-block {
   display: inline-block;
-  width: 1em;
+  width: 1.5em;
+  height: 1.5em;
   text-align: center;
   margin-left: 0.5em;
+  vertical-align: middle;
 }
 
 .screen {
@@ -171,4 +173,10 @@ h1 {
   image-rendering: pixelated;
   width: 512px;
   height: 512px;
+}
+
+.tilemap-info {
+  display: inline-block;
+  margin-left: 0.5em;
+  vertical-align: top;
 }
