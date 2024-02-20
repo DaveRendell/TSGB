@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Emulator } from "../../../emulator/emulator"
 import { TilesetDebug } from "./tilesetDebug"
+import { BackgroundDebug } from "./backgroundDebug"
 
 interface Props {
   emulator: Emulator
@@ -19,7 +20,7 @@ export function GraphicsDebug({ emulator }: Props) {
       case "Tileset":
         return <TilesetDebug vram={emulator.memory.vram} mode={emulator.mode} />
       case "Background":
-        return <p>todo</p>
+        return <BackgroundDebug emulator={emulator} />
     }
   }
   

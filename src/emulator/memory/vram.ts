@@ -100,9 +100,9 @@ export class VRAM {
     return this.tiles[bank][adjustedTileNumber][rowNumber]
   }
 
-  // tilemap(tilemapId: number, index: number): number {
-  //   return this.data[0][0x1800 + (tilemapId << 10) + index]
-  // }
+  tilemap(tilemapId: number, index: number): number {
+    return this.data[0][0x1800 + (tilemapId << 10) + index]
+  }
 
   tilemap0(id: number): number {
     return this.data[0][0x1800 + id]

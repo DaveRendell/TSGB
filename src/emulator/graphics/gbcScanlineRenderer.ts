@@ -40,11 +40,8 @@ export default class GbcScanlineRenderer extends BaseScanlineRenderer {
     const tileMapNumber = (backgroundX >> 3) + ((backgroundY >> 3) << 5)
     const attributes = 
       this.vram.tileAttributes[(this.lcdControl.backgroundTilemap << 10) + tileMapNumber]
-      this.backgroundPaletteId = attributes.palette
-    const tileId =
-      this.lcdControl.backgroundTilemap == 0
-        ? this.vram.tilemap0(tileMapNumber)
-        : this.vram.tilemap1(tileMapNumber)
+    this.backgroundPaletteId = attributes.palette
+    const tileId = this.vram.tilemap(this.lcdControl.backgroundTilemap, tileMapNumber)
     const row = backgroundY & 0x7
     return this.vram.tileset(
       this.lcdControl.tileDataArea,
@@ -61,10 +58,7 @@ export default class GbcScanlineRenderer extends BaseScanlineRenderer {
     const attributes =
       this.vram.tileAttributes[(this.lcdControl.windowTilemap << 10) + tileMapNumber]
     this.windowPaletteId = attributes.palette
-    const tileId =
-      this.lcdControl.windowTilemap == 0
-        ? this.vram.tilemap0(tileMapNumber)
-        : this.vram.tilemap1(tileMapNumber)
+    const tileId = this.vram.tilemap(this.lcdControl.windowTilemap, tileMapNumber)
     const row = this.windowLine & 0x7
     return this.vram.tileset(
       this.lcdControl.tileDataArea,

@@ -54,7 +54,7 @@ export function TilesetDebug({ vram, mode }: Props) {
       if (highlightedTileId !== null) {
         context.beginPath()
         context.lineWidth = 1
-        context.strokeStyle = "red"
+        context.strokeStyle = "blue"
         context.rect(
           ((highlightedTileId % 16) << 3) - 1,
           (Math.floor(highlightedTileId / 16) << 3) - 1,

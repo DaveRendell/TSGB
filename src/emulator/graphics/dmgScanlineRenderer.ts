@@ -27,10 +27,7 @@ export default class DmgScanlineRenderer extends BaseScanlineRenderer {
   getBackgroundTileRow = (offset: number, backgroundY: number): number[] => {
     const backgroundX = (this.scrollX.byte + offset) & 0xff
     const tileMapNumber = (backgroundX >> 3) + ((backgroundY >> 3) << 5)
-    const tileId =
-      this.lcdControl.backgroundTilemap == 0
-        ? this.vram.tilemap0(tileMapNumber)
-        : this.vram.tilemap1(tileMapNumber)
+    const tileId = this.vram.tilemap(this.lcdControl.backgroundTilemap, tileMapNumber)
     const row = backgroundY & 0x7
     return this.vram.tileset(
       this.lcdControl.tileDataArea,
@@ -44,10 +41,7 @@ export default class DmgScanlineRenderer extends BaseScanlineRenderer {
 
   getWindowTileRow = (offset: number): number[] => {
     const tileMapNumber = (offset >> 3) + ((this.windowLine >> 3) << 5)
-    const tileId =
-      this.lcdControl.windowTilemap == 0
-        ? this.vram.tilemap0(tileMapNumber)
-        : this.vram.tilemap1(tileMapNumber)
+    const tileId = this.vram.tilemap(this.lcdControl.windowTilemap, tileMapNumber)
     const row = this.windowLine & 0x7
     return this.vram.tileset(
       this.lcdControl.tileDataArea,
