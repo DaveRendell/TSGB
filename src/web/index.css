@@ -37,6 +37,9 @@ body {
 .screen {
   display: block;
   margin: 0 auto;
+}
+
+.pixelated {
   image-rendering: pixelated;
 }
 

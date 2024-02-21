@@ -10,7 +10,7 @@ export function ColourGradingControl({ registers }: Props) {
   const [colourGrading, setColourGrading] = React.useState(registers.backgroundPalettes.colourStyle)
 
   const pickColourGrading =  (grading: ColourStyle) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault()
+    // e.preventDefault()
     registers.backgroundPalettes.colourStyle = grading
     registers.objectPalettes.colourStyle = grading
     registers.backgroundPalettes.updateAllColours()

@@ -4,6 +4,7 @@ import { ColourStyle } from "../../../emulator/memory/registers/paletteRegisters
 import { AudioControl } from "./audioControl"
 import { MonochromePalettePicker } from "./monochromePalettePicker"
 import { ColourGradingControl } from "./colourGradingControl"
+import { ScalingOptions } from "./scalingOptions"
 
 interface Props {
   emulator: Emulator
@@ -31,6 +32,7 @@ export default function Settings({ emulator }: Props) {
       { emulator.mode !== EmulatorMode.DMG &&
         <ColourGradingControl registers={emulator.memory.registers} />
       }
+      <ScalingOptions />
     </section>
   )
 }
