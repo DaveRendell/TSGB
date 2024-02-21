@@ -7,15 +7,15 @@ interface Props {
   emulator: Emulator
 }
 
-export function BackgroundDebug({ emulator }: Props) {
+export function WindowDebug({ emulator }: Props) {
   const canvas = React.useRef<HTMLCanvasElement>(null)
   const requestRef = React.useRef<number>()
   const [highlightedTileId, setHighlightedTileId] = React.useState<number | null>(null)
 
   const lcdControl = emulator.memory.registers.lcdControl
-  const [tilemapId, setTilemapId] = React.useState(lcdControl.backgroundTilemap)
+  const [tilemapId, setTilemapId] = React.useState(lcdControl.windowTilemap)
   const [tilesetId, setTilesetId] = React.useState(lcdControl.tileDataArea)
-  const [isEnabled, setIsEnabled] = React.useState(lcdControl.backgroundWindowDisplay)
+  const [isEnabled, setIsEnabled] = React.useState(lcdControl.backgroundWindowDisplay && lcdControl.windowEnabled)
   const [bgPalette, setBgPalette] = React.useState(
     emulator.memory.registers.backgroundPallete.map.map(x =>
       emulator.pictureProcessor.scanlineRenderer.colours[x]))
@@ -23,9 +23,9 @@ export function BackgroundDebug({ emulator }: Props) {
 
   React.useEffect(() => {
     const ref = setInterval(() => {
-      setTilemapId(lcdControl.backgroundTilemap)
+      setTilemapId(lcdControl.windowTilemap)
       setTilesetId(lcdControl.tileDataArea)
-      setIsEnabled(lcdControl.backgroundWindowDisplay)
+      setIsEnabled(lcdControl.backgroundWindowDisplay && lcdControl.windowEnabled)
       setBgPalette(emulator.memory.registers.backgroundPallete.map.map(x =>
         emulator.pictureProcessor.scanlineRenderer.colours[x]))
     }, 32)
@@ -42,8 +42,8 @@ export function BackgroundDebug({ emulator }: Props) {
       for (let tileRow = 0; tileRow < 32; tileRow++) {
         for (let tileCol = 0; tileCol < 32; tileCol++) {
           const tileMapIndex = (tileRow << 5) + tileCol
-          const tileId = vram.tilemap(lcdControl.backgroundTilemap, tileMapIndex)
-          const attributes = vram.tileAttributes[(lcdControl.backgroundTilemap << 10) + tileMapIndex]
+          const tileId = vram.tilemap(lcdControl.windowTilemap, tileMapIndex)
+          const attributes = vram.tileAttributes[(lcdControl.windowTilemap << 10) + tileMapIndex]
           for (let row = 0; row < 8; row++) {
             const y = (tileRow << 3) + row
             const rowData = vram.tileset(
@@ -73,15 +73,12 @@ export function BackgroundDebug({ emulator }: Props) {
       }
       context.putImageData(imageData, 0, 0)
       // Draw screen position
-      const sX = emulator.memory.registers.scrollX.byte
-      const sY = emulator.memory.registers.scrollY.byte
+      const wX = emulator.memory.registers.windowX.byte
+      const wY = emulator.memory.registers.windowY.byte
       context.beginPath()
       context.lineWidth = 1
       context.strokeStyle = "red"
-      context.rect(sX - 1, sY - 1, 162, 146)
-      context.rect(sX - 257, sY - 1, 162, 146)
-      context.rect(sX - 1, sY - 257, 162, 146)
-      context.rect(sX - 257, sY - 257, 162, 146)
+      context.rect(6 - wX, - (wY + 1), 162, 146)
       context.stroke()
       // Draw highlighted tile
       if (highlightedTileId !== null) {
@@ -110,11 +107,13 @@ export function BackgroundDebug({ emulator }: Props) {
     const tileRow = (e.clientY - rect.top) >> 4
     const tileCol = (e.clientX - rect.left) >> 4
     setHighlightedTileId((tileRow << 5) + tileCol)
-    setAttributes(vram.tileAttributes[(lcdControl.backgroundTilemap << 10) + (tileRow << 5) + tileCol])
+    setAttributes(vram.tileAttributes[(lcdControl.windowTilemap << 10) + (tileRow << 5) + tileCol])
   }
+
+
   return (
     <div>
-      <h3>Background layer</h3>
+      <h3>Window layer</h3>
       Tilemap: {tilemapId}<br/>
       Tileset: {tilesetId}<br/>
       Enabled: {isEnabled ? "True" : "False"}<br/>
@@ -132,7 +131,7 @@ export function BackgroundDebug({ emulator }: Props) {
         {
         (highlightedTileId !== null) && <>
           Tilemap ID: <code>0x{highlightedTileId.toString(16).padStart(2, "0")} ({highlightedTileId})</code><br/>
-          Tile ID: <code>0x{vram.tilemap(lcdControl.backgroundTilemap, highlightedTileId).toString(16).padStart(2, "0")} ({vram.tilemap(lcdControl.backgroundTilemap, highlightedTileId)})</code><br/>
+          Tile ID: <code>0x{vram.tilemap(lcdControl.windowTilemap, highlightedTileId).toString(16).padStart(2, "0")} ({vram.tilemap(lcdControl.backgroundTilemap, highlightedTileId)})</code><br/>
           { emulator.mode == EmulatorMode.CGB && <>
             Flip X: {attributes.xFlip ? "True" : "False"}<br/>
             Flip Y: {attributes.yFlip ? "True" : "False"}<br/>
