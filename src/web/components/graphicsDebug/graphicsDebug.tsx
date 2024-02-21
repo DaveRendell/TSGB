@@ -3,6 +3,7 @@ import { Emulator } from "../../../emulator/emulator"
 import { TilesetDebug } from "./tilesetDebug"
 import { BackgroundDebug } from "./backgroundDebug"
 import { WindowDebug } from "./windowDebug"
+import { SpriteDebug } from "./spriteDebug"
 
 interface Props {
   emulator: Emulator
@@ -12,6 +13,7 @@ type GraphicsDebugTab =
   "Tileset"
   | "Background"
   | "Window"
+  | "Sprites"
 
 
 export function GraphicsDebug({ emulator }: Props) {
@@ -25,6 +27,8 @@ export function GraphicsDebug({ emulator }: Props) {
         return <BackgroundDebug emulator={emulator} />
       case "Window":
         return <WindowDebug emulator={emulator} />
+      case "Sprites":
+        return <SpriteDebug emulator={emulator} />
     }
   }
   
@@ -34,6 +38,7 @@ export function GraphicsDebug({ emulator }: Props) {
       <option id="Tileset">Tileset</option>
       <option id="Background">Background</option>
       <option id="Window">Window</option>
+      <option id="Sprites">Sprites</option>
     </select>
     { getTab() }
   </section>)
