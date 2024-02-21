@@ -17,6 +17,23 @@ export default function JoypadButton({
   controller,
   isActive,
 }: Props) {
+  const button = React.useRef<HTMLButtonElement>(null)
+  const request = React.useRef<number>()
+  const updateCss = () => {
+    if (button.current) {
+      if (controller.isPressed[name]) {
+        button.current.classList.add("active")
+      } else {
+        button.current.classList.remove("active")
+      }
+    }
+    request.current = requestAnimationFrame(updateCss)
+  }
+  React.useEffect(() => {
+    updateCss()
+    return () => cancelAnimationFrame(request.current)
+  }, [controller])
+
   const press = () => {
     controller.handleHtmlButtonPress(name)
   }
@@ -31,6 +48,7 @@ export default function JoypadButton({
         onMouseUp={() => release()}
         onTouchStart={() => press()}
         onTouchEnd={() => release()}
+        ref={button}
       >
         {symbol}
       </button>

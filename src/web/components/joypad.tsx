@@ -17,9 +17,6 @@ export default function Joypad({ controller }: Props) {
     Left: false,
     Right: false,
   })
-  controller.updateUi = (isPressed) => {
-    setButtons(isPressed)
-  }
 
   return (
     <section className="joypad">
