@@ -1,4 +1,4 @@
-import { ByteRef, ConstantByteRef, GenericByteRef } from "../../refs/byteRef"
+import { ByteRef, ConstantByteRef, GenericByteRef, GetSetByteRef } from "../../refs/byteRef"
 import {
   AudioMasterControlRegister,
   MasterVolumeVinRegister,
@@ -51,8 +51,23 @@ export class IoRegisters {
   backgroundPallete = new PalletteRegister()
   objectPallete0 = new PalletteRegister()
   objectPallete1 = new PalletteRegister()
-  windowY = new GenericByteRef()
+
+  winY = 0
+  winX = 0
+  windowLineCounter = new GenericByteRef()
+  windowY = new GetSetByteRef(
+    () => this.winY,
+    (value) => {
+      if (this.winY != value) {
+        if (value < this.scanline.byte) {
+          this.windowLineCounter.byte = this.scanline.byte
+        }
+        this.winY = value
+      }
+    }
+  )
   windowX = new GenericByteRef()
+
 
   bootRom = new BootRomRegister()
 

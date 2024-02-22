@@ -42,9 +42,6 @@ export default class PictureProcessor {
     [0, 0, 0],
   ]
 
-  windowActiveThisFrame = false
-  windowActive = false
-
   constructor(cpu: CPU, mode: EmulatorMode) {
     this.memory = cpu.memory
 
@@ -79,28 +76,13 @@ export default class PictureProcessor {
         if (this.clockCount >= 204) {
           this.clockCount -= 204
           this.setScanline(this.scanlineNumber.byte + 1)
-
           if (
             this.lcdControl.windowEnabled &&
             this.scanlineNumber.byte > this.memory.registers.windowY.byte &&
             this.memory.registers.windowX.byte <= 166
           ) {
-            if (!this.windowActive) {
-              if (!this.windowActiveThisFrame) {
-                this.scanlineRenderer.windowLine =
-                  this.scanlineNumber.byte - this.memory.registers.windowY.byte
-              } else {
-                this.scanlineRenderer.windowLine += this.scanlineNumber.byte
-              }
-            } else {
-              this.scanlineRenderer.windowLine++
-            }
-            this.windowActiveThisFrame = true
-            this.windowActive = true
-          } else {
-            this.windowActive = false
+            this.memory.registers.windowLineCounter.byte++
           }
-
           if (this.scanlineNumber.byte === HEIGHT) {
             this.scanlineRenderer.renderScreen()
             this.setMode("VBlank")
@@ -116,9 +98,7 @@ export default class PictureProcessor {
           this.setScanline(this.scanlineNumber.byte + 1)
           if (this.scanlineNumber.byte > SCANLINES) {
             this.setScanline(0)
-            this.scanlineRenderer.windowLine = 0
-            this.windowActiveThisFrame = false
-            this.windowActive = false
+            this.memory.registers.windowLineCounter.byte = 0
             this.setMode("Scanline OAM")
           }
         }

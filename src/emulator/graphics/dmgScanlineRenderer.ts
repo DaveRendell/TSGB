@@ -40,9 +40,9 @@ export default class DmgScanlineRenderer extends BaseScanlineRenderer {
   }
 
   getWindowTileRow = (offset: number): number[] => {
-    const tileMapNumber = (offset >> 3) + ((this.windowLine >> 3) << 5)
+    const tileMapNumber = (offset >> 3) + ((this.windowLine.byte >> 3) << 5)
     const tileId = this.vram.tilemap(this.lcdControl.windowTilemap, tileMapNumber)
-    const row = this.windowLine & 0x7
+    const row = this.windowLine.byte & 0x7
     return this.vram.tileset(
       this.lcdControl.tileDataArea,
       tileId,

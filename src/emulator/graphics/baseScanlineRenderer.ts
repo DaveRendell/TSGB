@@ -24,7 +24,7 @@ export default class BaseScanlineRenderer {
   windowX: ByteRef
   windowY: ByteRef
   scanlineNumber: ByteRef
-  windowLine = 0
+  windowLine: ByteRef
 
   colours = [
     [255, 255, 255],
@@ -49,6 +49,7 @@ export default class BaseScanlineRenderer {
     this.windowX = registers.windowX
     this.windowY = registers.windowY
     this.scanlineNumber = registers.scanline
+    this.windowLine = registers.windowLineCounter
 
     this.buffer = new OffscreenCanvas(WIDTH, HEIGHT)
     this.bufferContext = this.buffer.getContext("2d")!
