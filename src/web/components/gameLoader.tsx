@@ -22,9 +22,10 @@ export default function GameLoader({ setCartridge, setMode }: Props) {
   const [optionsFocusGame, setOptionsFocusGame] = React.useState<
     StoredGame | undefined
   >(undefined)
+  const [error, setError] = React.useState<string>(undefined)
 
   React.useEffect(() => {
-    getGameList().then(setStoredGames)
+    getGameList().then(setStoredGames).catch(setError)
   }, [lastChange])
 
   const loadGame = (game: StoredGame, mode: EmulatorMode | undefined = undefined) => async () => {
@@ -74,6 +75,8 @@ export default function GameLoader({ setCartridge, setMode }: Props) {
           }}
         />
       </div>
+
+      { error && <p>{error}</p>}
       
       {storedGames === null ? (
         <>Fetching games...</>
