@@ -206,13 +206,13 @@ export default class CPU {
       id++
     }
 
-    this.interruptFlags.byte = this.interruptFlags.byte & ~(1 << id)
-
     return id as Interrupt
   }
 
   handleInterrupt(interrupt: Interrupt): void {
     this.isHalted = false
+
+    this.interruptFlags.byte = this.interruptFlags.byte & ~(1 << interrupt)
     // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
     // Push PC to stack and jump to handler address
     const handlerAddress = INTERRUPT_HANDLERS[interrupt]
@@ -264,7 +264,11 @@ export default class CPU {
 
       const interrupt = this.getInterrupt()
       if (interrupt !== null) {
-        this.handleInterrupt(interrupt)
+        if (this.isHalted && !this.interruptsEnabled) {
+          this.isHalted = false
+        } else {
+          this.handleInterrupt(interrupt)
+        }
       }
 
       if (this.pictureProcessor.newFrameDrawn) {
