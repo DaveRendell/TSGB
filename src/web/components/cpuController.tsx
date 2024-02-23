@@ -47,6 +47,9 @@ export default function CpuController({ cpu }: Props) {
       </button>
       Is halted: {cpu.isHalted.toString()}
       <h3>Registers</h3>
+      Interrupts enabled: {cpu.interruptsEnabled ? "True" : "False"}<br/>
+      Which Interrupts: {cpu.interruptEnableRegister.byte.toString(2).padStart(5, "0")}
+
       <div className="flex-horizontally">
         <div>
           <h4>8-bit registers</h4>

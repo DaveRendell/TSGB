@@ -51,7 +51,10 @@ export class PaletteRam {
         }
         this.updateColour(paletteId, colourId)
 
-        if (this.autoIncrement) { this.index++ }
+        if (this.autoIncrement) {
+          this.index++
+          this.index &= 0x3F
+        }
       }
     )
     for (let palette = 0; palette < 8; palette++) {

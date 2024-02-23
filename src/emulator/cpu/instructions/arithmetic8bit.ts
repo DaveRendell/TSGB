@@ -5,6 +5,8 @@ import { Instruction } from "./instruction"
 import {
   ByteLocation,
   WordLocation,
+  describeByteLocation,
+  describeWordLocation,
   from2sComplement,
   getByteRef,
   getWordRef,
@@ -141,7 +143,7 @@ export function aluOperation(
     },
     cycles: sourceName === ByteLocation.M ? 8 : 4,
     parameterBytes: 0,
-    description: () => `${operation} A,${sourceName}`,
+    description: (v) => `${operation} A,${describeByteLocation(sourceName)(v)}`,
   }
 }
 
@@ -169,7 +171,7 @@ export function increment8Bit(targetName: ByteLocation): Instruction {
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
-    description: () => `INC ${targetName}`,
+    description: (v) => `INC ${describeByteLocation(targetName)(v)}`,
   }
 }
 
@@ -185,7 +187,7 @@ export function decrement8Bit(targetName: ByteLocation): Instruction {
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
-    description: () => `DEC ${targetName}`,
+    description: (v) => `DEC ${describeByteLocation(targetName)(v)}`,
   }
 }
 
@@ -196,7 +198,7 @@ export function increment16Bit(register: WordLocation): Instruction {
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `INC ${register}`,
+    description: (v) => `INC ${describeWordLocation(register)(v)}`,
   }
 }
 
@@ -207,7 +209,7 @@ export function decrement16Bit(register: WordLocation): Instruction {
     },
     cycles: 8,
     parameterBytes: 0,
-    description: () => `DEC ${register}`,
+    description: (v) => `DEC ${describeWordLocation(register)(v)}`,
   }
 }
 

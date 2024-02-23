@@ -40,15 +40,18 @@ export default class Timer {
       this.divider.increment()
     }
 
-    const timerRollover = this.getTimerRollover()
-    if (this.timerCycles > timerRollover) {
-      this.timerCycles -= timerRollover
-      this.counter.byte++
-      if (this.counter.byte === 0) {
-        this.counter.byte = this.modulo.byte
-        this.interrupts.setInterrupt(Interrupt.Timer)
+    if (this.control.enabled) {
+      const timerRollover = this.getTimerRollover()
+      if (this.timerCycles > timerRollover) {
+        this.timerCycles -= timerRollover
+        this.counter.byte++
+        if (this.counter.byte === 0) {
+          this.counter.byte = this.modulo.byte
+          this.interrupts.setInterrupt(Interrupt.Timer)
+        }
       }
     }
+    
   }
 
   getTimerRollover(): number {

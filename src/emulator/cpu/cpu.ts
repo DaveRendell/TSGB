@@ -190,7 +190,7 @@ export default class CPU {
   }
 
   getInterrupt(): Interrupt | null {
-    if (!this.interruptsEnabled) {
+    if (!(this.interruptsEnabled || this.isHalted)) {
       return null
     }
     const activeInterrupts =
@@ -272,7 +272,10 @@ export default class CPU {
         break frameLoop
       }
     }
-    if (this.running && !this.breakpoints.has(address)) {
+    if (this.breakpoints.has(address)) {
+      this.running = false
+    }
+    if (this.running) {
       requestAnimationFrame((timestamp) => this.runFrame(timestamp))
     }
 

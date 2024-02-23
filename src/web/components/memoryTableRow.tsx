@@ -30,7 +30,9 @@ export default function MemoryTableRow({
   const updateDisplay = () => {
     setValue(memoryLocation.byte)
     toggle()
-    setInputValue(valueDisplay(memoryLocation.byte))
+    if (memoryLocation && memoryLocation.byte) {
+      setInputValue(valueDisplay(memoryLocation.byte))
+    }
   }
 
   React.useEffect(updateDisplay, [memoryLocation.byte, programCounter])
@@ -93,13 +95,13 @@ export default function MemoryTableRow({
         <code>{addressDisplay(address)}</code>
       </td>
       <td>
-        <code>{valueDisplay(value)}</code>
+        <code>{valueDisplay(value || -1)}</code>
       </td>
       <td>{value}</td>
       <td>
-        <code>{value.toString(2).padStart(8, "0")}</code>
+        <code>{value?.toString(2).padStart(8, "0")}</code>
       </td>
-      <td>{from2sComplement(value)}</td>
+      <td>{from2sComplement(value || -1)}</td>
       <td>
         <code>{isUnknown ? "ERROR?" : instructionDescription}</code>
       </td>

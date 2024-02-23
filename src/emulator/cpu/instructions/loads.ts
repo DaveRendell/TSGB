@@ -130,7 +130,7 @@ export const loadHlFromSpPlusN: Instruction = {
   },
   cycles: 12,
   parameterBytes: 1,
-  description: ([value]) => `LD HL,SP+${valueDisplay(value)}`,
+  description: ([value]) => `LD HL,SP+${from2sComplement(value)}`,
 }
 
 export const loadStackPointerToAddress: Instruction = {

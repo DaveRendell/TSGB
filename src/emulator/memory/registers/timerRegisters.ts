@@ -11,7 +11,7 @@ export class DividerRegister implements ByteRef {
   }
   set byte(_: number) {
     this._value = 0
-  } // TODO should reset on write, seperate increment method?
+  }
 
   increment() {
     this._value = (this._value + 1) & 0xff
