@@ -10,6 +10,15 @@ interface Props {
   registers: PulseChannelRegisters
 }
 
+const SAMPLE_DEPTH = 1024
+
+const DUTY_CYCLES = [
+  [1,1,1,1,1,1,1,0],
+  [0,1,1,1,1,1,1,0],
+  [0,1,1,1,1,0,0,0],
+  [1,0,0,0,0,0,0,1],
+]
+
 /**
  * Pulse audio channel that produces square waves. Used for channels 1 and 2
  */
@@ -20,7 +29,8 @@ export default class PulseChannel implements Channel {
   period = 0
   volume = 0
 
-  oscillator: OscillatorNode
+  buffer: AudioBuffer
+  bufferSource: AudioBufferSourceNode
   gain: GainNode
 
   // These two nodes are used by the debug UI to display waveforms / mute
@@ -37,9 +47,6 @@ export default class PulseChannel implements Channel {
   constructor({ audioContext, outputNode, registers }: Props) {
     this.audioContext = audioContext
 
-    this.oscillator = audioContext.createOscillator()
-    this.oscillator.type = "square"
-    this.oscillator.frequency.value = 440
 
     this.gain = audioContext.createGain()
     this.gain.gain.value = 0
@@ -48,12 +55,12 @@ export default class PulseChannel implements Channel {
     this.muteNode = audioContext.createGain()
     this.muteNode.gain.value = 1
 
-    this.oscillator.connect(this.muteNode)
+    
     this.muteNode.connect(this.gain)
     this.gain.connect(this.analyser)
     this.analyser.connect(outputNode)
 
-    this.oscillator.start()
+    this.createBufferSource()
 
     this.timer = new LengthTimer(() => this.stop())
     this.envelope = new VolumeEnvelope((increment) =>
@@ -81,6 +88,17 @@ export default class PulseChannel implements Channel {
     this.envelope.resetClock()
   }
 
+  createBufferSource() {
+    this.buffer = this.audioContext.createBuffer(1, SAMPLE_DEPTH << 3, 65536)
+    this.buffer.copyToChannel(generateBuffer(2), 0)
+    this.bufferSource = this.audioContext.createBufferSource()
+    this.bufferSource.buffer = this.buffer
+    this.bufferSource.loop = true
+
+    this.bufferSource.connect(this.muteNode)
+    this.bufferSource.start()
+  }
+
   stop() {
     this.playing = false
     this.setVolume(0)
@@ -97,10 +115,10 @@ export default class PulseChannel implements Channel {
 
   setPeriod(period: number) {
     this.period = period
-    const frequency = 131072 / (2048 - period)
-    this.oscillator.frequency.setValueAtTime(
-      frequency,
-      this.audioContext.currentTime,
+    const sampleRate = (131072 << 13) / (2048 - period)
+    this.bufferSource.playbackRate.setValueAtTime(
+      sampleRate / this.audioContext.sampleRate,
+      this.audioContext.currentTime
     )
     this.waveFormChanged()
   }
@@ -113,4 +131,17 @@ export default class PulseChannel implements Channel {
     )
     this.waveFormChanged()
   }
+}
+
+function generateBuffer(dutyCycleId: number): Float32Array {
+  const output = new Float32Array(8 * SAMPLE_DEPTH)
+  const dutyCycle = DUTY_CYCLES[dutyCycleId]
+  for (let i = 0; i < 8; i++) {
+    const bit = dutyCycle[i]
+    for (let j = 0; j < SAMPLE_DEPTH; j++) {
+      output[SAMPLE_DEPTH * i + j] = (bit << 1) - 1
+    }
+  }
+  
+  return output
 }
