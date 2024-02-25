@@ -132,6 +132,7 @@ export class PulseChannelRegisters {
       },
       set byte(value: number) {
         self.waveDuty = value >> 6
+        self.channel.setDutyCycle(self.waveDuty)
         self.lengthTimer = value & 0x37
         if (self.channel) {
           self.channel.timer.setTimer(value & 0x37)

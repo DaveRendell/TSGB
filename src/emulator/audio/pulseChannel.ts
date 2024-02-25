@@ -29,8 +29,9 @@ export default class PulseChannel implements Channel {
   period = 0
   volume = 0
 
-  buffer: AudioBuffer
+  currentCycle: number = 0
   bufferSource: AudioBufferSourceNode
+  bufferSources: AudioBufferSourceNode[]
   gain: GainNode
 
   // These two nodes are used by the debug UI to display waveforms / mute
@@ -60,14 +61,18 @@ export default class PulseChannel implements Channel {
     this.gain.connect(this.analyser)
     this.analyser.connect(outputNode)
 
-    this.buffer = this.audioContext.createBuffer(1, SAMPLE_DEPTH << 3, this.audioContext.sampleRate)
-    this.buffer.copyToChannel(generateBuffer(2), 0)
-    this.bufferSource = this.audioContext.createBufferSource()
-    this.bufferSource.buffer = this.buffer
-    this.bufferSource.loop = true
+    this.bufferSources = DUTY_CYCLES.map(dutyCycle => {
+      const buffer = this.audioContext.createBuffer(1, SAMPLE_DEPTH << 3, this.audioContext.sampleRate)
+      buffer.copyToChannel(generateBuffer(dutyCycle), 0)
+      const bufferSource = this.audioContext.createBufferSource()
+      bufferSource.buffer = buffer
+      bufferSource.loop = true
 
+      bufferSource.start()
+      return bufferSource
+    })
+    this.bufferSource = this.bufferSources[this.currentCycle]
     this.bufferSource.connect(this.muteNode)
-    this.bufferSource.start()
 
     this.timer = new LengthTimer(() => this.stop())
     this.envelope = new VolumeEnvelope((increment) =>
@@ -127,11 +132,18 @@ export default class PulseChannel implements Channel {
     )
     this.waveFormChanged()
   }
+
+  setDutyCycle(cycleId: number) {
+    if (cycleId == this.currentCycle) { return }
+    this.bufferSource.disconnect()
+    this.currentCycle = cycleId
+    this.bufferSource = this.bufferSources[this.currentCycle]
+    this.bufferSource.connect(this.muteNode)
+  }
 }
 
-function generateBuffer(dutyCycleId: number): Float32Array {
+function generateBuffer(dutyCycle: number[]): Float32Array {
   const output = new Float32Array(8 * SAMPLE_DEPTH)
-  const dutyCycle = DUTY_CYCLES[dutyCycleId]
   for (let i = 0; i < 8; i++) {
     const bit = dutyCycle[i]
     for (let j = 0; j < SAMPLE_DEPTH; j++) {
