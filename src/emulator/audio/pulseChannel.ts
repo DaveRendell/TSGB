@@ -60,7 +60,14 @@ export default class PulseChannel implements Channel {
     this.gain.connect(this.analyser)
     this.analyser.connect(outputNode)
 
-    this.createBufferSource()
+    this.buffer = this.audioContext.createBuffer(1, SAMPLE_DEPTH << 3, this.audioContext.sampleRate)
+    this.buffer.copyToChannel(generateBuffer(2), 0)
+    this.bufferSource = this.audioContext.createBufferSource()
+    this.bufferSource.buffer = this.buffer
+    this.bufferSource.loop = true
+
+    this.bufferSource.connect(this.muteNode)
+    this.bufferSource.start()
 
     this.timer = new LengthTimer(() => this.stop())
     this.envelope = new VolumeEnvelope((increment) =>
@@ -88,17 +95,6 @@ export default class PulseChannel implements Channel {
     this.envelope.resetClock()
   }
 
-  createBufferSource() {
-    this.buffer = this.audioContext.createBuffer(1, SAMPLE_DEPTH << 3, 65536)
-    this.buffer.copyToChannel(generateBuffer(2), 0)
-    this.bufferSource = this.audioContext.createBufferSource()
-    this.bufferSource.buffer = this.buffer
-    this.bufferSource.loop = true
-
-    this.bufferSource.connect(this.muteNode)
-    this.bufferSource.start()
-  }
-
   stop() {
     this.playing = false
     this.setVolume(0)
@@ -115,7 +111,7 @@ export default class PulseChannel implements Channel {
 
   setPeriod(period: number) {
     this.period = period
-    const sampleRate = (131072 << 13) / (2048 - period)
+    const sampleRate = (1048576 * SAMPLE_DEPTH) / (2048 - period)
     this.bufferSource.playbackRate.setValueAtTime(
       sampleRate / this.audioContext.sampleRate,
       this.audioContext.currentTime
@@ -142,6 +138,5 @@ function generateBuffer(dutyCycleId: number): Float32Array {
       output[SAMPLE_DEPTH * i + j] = (bit << 1) - 1
     }
   }
-  
   return output
 }
