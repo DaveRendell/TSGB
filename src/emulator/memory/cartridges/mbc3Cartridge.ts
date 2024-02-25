@@ -79,10 +79,13 @@ export class Mbc3Cartridge extends Cartridge {
     const bankBase = this.bankNumber2 << 13
     this.ramData[address - 0xa000 + bankBase] = value
     if (this.ramWriteTimeout) {
-      clearTimeout(this.ramWriteTimeout)
+      return
     }
     this.ramWriteTimeout = setTimeout(
-      () => this.storeRam(this.ramData),
+      () => {
+        this.storeRam(this.ramData)
+        this.ramWriteTimeout = undefined
+      },
       RAM_WRITE_WAIT_MILLISECONDS,
     )
   }

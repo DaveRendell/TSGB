@@ -58,7 +58,10 @@ export class Mbc5Cartridge extends Cartridge {
       clearTimeout(this.ramWriteTimeout)
     }
     this.ramWriteTimeout = setTimeout(
-      () => this.storeRam(this.ramData),
+      () => {
+        this.storeRam(this.ramData)
+        this.ramWriteTimeout = undefined
+      },
       RAM_WRITE_WAIT_MILLISECONDS,
     )
   }

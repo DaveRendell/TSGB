@@ -81,10 +81,13 @@ export class Mbc1Cartridge extends Cartridge {
           : address & 0x1fff
         this.ramData[ramAddress] = value
         if (this.ramWriteTimeout) {
-          clearTimeout(this.ramWriteTimeout)
+          return
         }
         this.ramWriteTimeout = setTimeout(
-          () => this.storeRam(this.ramData),
+          () => {
+            this.storeRam(this.ramData)
+            this.ramWriteTimeout = undefined
+          },
           RAM_WRITE_WAIT_MILLISECONDS,
         )
       },
