@@ -96,7 +96,6 @@ export const persistSave =
       const request = store.put(game)
       request.onerror = reject
       request.onsuccess = () => resolve()
-      console.log("Saved data")
     })
   }
 

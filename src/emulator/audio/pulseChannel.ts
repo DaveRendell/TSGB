@@ -114,7 +114,7 @@ export default class PulseChannel implements Channel {
     this.setPeriod(newPeriod)
   }
 
-  setPeriod(period: number) {
+  setPeriod(period: number = this.period) {
     this.period = period
     const sampleRate = (1048576 * SAMPLE_DEPTH) / (2048 - period)
     this.bufferSource.playbackRate.setValueAtTime(
@@ -139,6 +139,8 @@ export default class PulseChannel implements Channel {
     this.currentCycle = cycleId
     this.bufferSource = this.bufferSources[this.currentCycle]
     this.bufferSource.connect(this.muteNode)
+    this.setVolume()
+    this.setPeriod()
   }
 }
 

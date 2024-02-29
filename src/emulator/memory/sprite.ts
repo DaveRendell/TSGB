@@ -66,19 +66,7 @@ export class Sprite {
   scanlineIntersect(scanline: number): number {
     return scanline - (this.y - 16)
   }
-
-  pixelAt(
-    scanline: number,
-    column: number,
-    spriteSize: number,
-  ): number | undefined {
-    const tileValue = this.rawPixelAt(scanline, column, spriteSize)
-    if (tileValue == undefined) { return undefined }
-    return this.monochromePalette == 0
-      ? this.pallette0.map[tileValue]
-      : this.pallette1.map[tileValue]
-  }
-
+  
   rawPixelAt(
     scanline: number,
     column: number,
