@@ -10,7 +10,7 @@ interface Props {
   registers: PulseChannelRegisters
 }
 
-const SAMPLE_DEPTH = 1024
+const SAMPLE_DEPTH = 64
 
 const DUTY_CYCLES = [
   [1,1,1,1,1,1,1,0],
@@ -30,6 +30,7 @@ export default class PulseChannel implements Channel {
   volume = 0
 
   currentCycle: number = 0
+  buffers: AudioBuffer[]
   bufferSource: AudioBufferSourceNode
   bufferSources: AudioBufferSourceNode[]
   gain: GainNode
@@ -139,7 +140,6 @@ export default class PulseChannel implements Channel {
     this.currentCycle = cycleId
     this.bufferSource = this.bufferSources[this.currentCycle]
     this.bufferSource.connect(this.muteNode)
-    this.setVolume()
     this.setPeriod()
   }
 }
