@@ -16,14 +16,14 @@ export class JoypadRegister implements ByteRef {
 
   get byte() {
     const upperNibble =
-      (this.selectButtons ? 0x20 : 0) + (this.selectDpad ? 0x10 : 0)
+      0xc0 + (this.selectButtons ? 0x20 : 0) + (this.selectDpad ? 0x10 : 0)
     if (this.selectButtons) {
-      return (upperNibble << 4) + this.buttonNibble()
+      return upperNibble + this.buttonNibble()
     }
     if (this.selectDpad) {
-      return (upperNibble << 4) + this.dpadNibble()
+      return upperNibble + this.dpadNibble()
     }
-    return (upperNibble << 4) + 0xf
+    return upperNibble + 0xf
   }
   set byte(value: number) {
     this.selectButtons = (value & 0x10) > 0

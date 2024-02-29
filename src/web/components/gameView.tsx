@@ -9,6 +9,7 @@ import { Emulator } from "../../emulator/emulator"
 import Settings from "./settings/settings"
 import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
 import { GraphicsDebug } from "./graphicsDebug/graphicsDebug"
+import { Info } from "./info"
 
 interface Props {
   emulator: Emulator
@@ -38,17 +39,7 @@ export default function GameView({ emulator, unload }: Props) {
   const programCounter = emulator.cpu.registers.PC.word
 
   const tabs = {
-    Info: () => (
-      <p>
-        Title: {emulator.cpu.memory.cartridge?.title}
-        <br />
-        FPS: {emulator.cpu.fps.toPrecision(2)}
-        <br />
-        Frame time:{" "}
-        {(emulator.cpu.averageRecentFrameTime / 60).toPrecision(3)} /
-        16.7ms
-      </p>
-    ),
+    Info: () => <Info emulator={emulator} />,
     Settings: () => <Settings emulator={emulator} />,
     "Debug Graphics": () => <GraphicsDebug emulator={emulator} />,
     "Debug Sound": () => (

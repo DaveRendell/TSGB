@@ -11,7 +11,6 @@ import { WordRef } from "../refs/wordRef"
 import PictureProcessor from "../graphics/pictureProcessor"
 import Timer from "../timer"
 import { addressDisplay } from "../../helpers/displayHexNumbers"
-import { SpeedSwitchRegister } from "../memory/registers/speedSwitchRegister"
 import { EmulatorMode } from "../emulator"
 
 interface ClockCallback {
