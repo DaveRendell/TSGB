@@ -19,6 +19,7 @@ export default function GameView({ emulator, unload }: Props) {
   // Reload this component when execution of CPU is complete
   const [toggle, setToggle] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>(undefined)
+  const [showMenu, setShowMenu] = React.useState(false)
 
   React.useEffect(() => {
     emulator.cpu.run()
@@ -95,9 +96,16 @@ export default function GameView({ emulator, unload }: Props) {
       </div>
 
       {error && <p>Error: {error}</p>}
-      <Tabs
-        tabs={tabs}
-      />
+      <br/>
+      {showMenu 
+        ? <>
+          <button className="chunky-button action-button" onClick={() => setShowMenu(false)}>Hide Menu</button>
+          <Tabs tabs={tabs} />
+        </>
+        : <>
+          <button className="chunky-button action-button" onClick={() => setShowMenu(true)}>Show Menu</button>
+        </>}
+      
     </main>
   )
 }
