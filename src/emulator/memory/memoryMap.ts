@@ -57,10 +57,7 @@ export default class Memory {
 
     // Echo RAM
     if (address >= 0xe000 && address < 0xfe00) {
-      return new GetSetByteRef(
-        () => this.wram[address - 0xe000],
-        (value) => this.wram[address - 0xe000] = value
-      )
+      return this.wram.at(address - 0x2000)
     }
     
     // OAM
