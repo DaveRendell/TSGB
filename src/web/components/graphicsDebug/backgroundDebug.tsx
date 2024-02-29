@@ -59,7 +59,7 @@ export function BackgroundDebug({ emulator }: Props) {
               const pixelId = (y << 8) + x
               let colour: number[]
               if (emulator.mode === EmulatorMode.DMG) {
-                colour = emulator.pictureProcessor.scanlineRenderer.colours[rowData[col]]
+                colour = bgPalette[rowData[col]]
               } else {
                 colour = emulator.memory.registers.backgroundPalettes.scaledColours[attributes.palette][rowData[col]]
               }
