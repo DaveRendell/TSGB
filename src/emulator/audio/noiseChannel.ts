@@ -14,7 +14,7 @@ interface Props {
 }
 
 const SAMPLE_LENGTH = 2 << 17
-const SAMPLE_DEPTH = 32
+const SAMPLE_DEPTH = 64
 
 export class NoiseChannel implements Channel {
   audioContext: AudioContext
@@ -35,6 +35,8 @@ export class NoiseChannel implements Channel {
   timer: LengthTimer
   envelope: VolumeEnvelope
 
+  lsfr = (1 << 7) - 1
+
   waveFormChanged: () => void
 
   constructor({ audioContext, outputNode, registers }: Props) {
@@ -53,8 +55,8 @@ export class NoiseChannel implements Channel {
       audioContext.sampleRate,
     )
 
-    this.longBuffer.copyToChannel(generateLSFR(15), 0)
-    this.shortBuffer.copyToChannel(generateLSFR(7), 0)
+    this.longBuffer.copyToChannel(this.generateLSFR(15), 0)
+    this.shortBuffer.copyToChannel(this.generateLSFR(7), 0)
 
     this.gain = audioContext.createGain()
     this.gain.gain.value = 0
@@ -142,58 +144,20 @@ export class NoiseChannel implements Channel {
     )
     this.waveFormChanged()
   }
-}
 
-function createBuffer7(): Float32Array {
-  const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH)
-  let lsfr = 0
-  for (let i = 0; i < SAMPLE_LENGTH; i++) {
-    let shift = lsfr >> 1
-    const b0 = lsfr & 1
-    const b1 = shift & 1
-    const carry = 1 - (b0 ^ b1)
-    shift &= 0b0111_1111
-    shift |= carry << 7
-    lsfr = shift
-    const value = carry ? 1 : -1
-    for (let j = 0; j < SAMPLE_DEPTH; j++) {
-      values[i * SAMPLE_DEPTH + j] = value
+  generateLSFR(width: number): Float32Array {
+    const period = 1 << (width - 1)
+    this.lsfr = (1 << 7) - 1
+    const output = new Float32Array(period * SAMPLE_DEPTH)
+  
+    for (let i = 0; i < period; i++) {
+      let bit = (this.lsfr ^ (this.lsfr >> 1)) & 1
+      this.lsfr = (this.lsfr >> 1) | (bit << (width - 1))
+      for (let j = 0; j < SAMPLE_DEPTH; j++) {
+        output[SAMPLE_DEPTH * i + j] = bit * 2 - 1
+      }
     }
+  
+    return output
   }
-  return values
-}
-
-function createBuffer15(): Float32Array {
-  const values = new Float32Array(SAMPLE_DEPTH * SAMPLE_LENGTH)
-  let lsfr = 0
-  for (let i = 0; i < SAMPLE_LENGTH; i++) {
-    let shift = lsfr >> 1
-    const b0 = lsfr & 1
-    const b1 = shift & 1
-    const carry = 1 - (b0 ^ b1)
-    shift &= 0b0111_1111_1111_1111
-    shift |= carry << 15
-    lsfr = shift
-    const value = carry ? 1 : -1
-    for (let j = 0; j < SAMPLE_DEPTH; j++) {
-      values[i * SAMPLE_DEPTH + j] = value
-    }
-  }
-  return values
-}
-
-function generateLSFR(width: number): Float32Array {
-  const period = 1 << (width - 1)
-  let lsfr = (1 << 7) - 1
-  const output = new Float32Array(period * SAMPLE_DEPTH)
-
-  for (let i = 0; i < period; i++) {
-    let bit = (lsfr ^ (lsfr >> 1)) & 1
-    lsfr = (lsfr >> 1) | (bit << (width - 1))
-    for (let j = 0; j < SAMPLE_DEPTH; j++) {
-      output[SAMPLE_DEPTH * i + j] = bit * 2 - 1
-    }
-  }
-
-  return output
 }
