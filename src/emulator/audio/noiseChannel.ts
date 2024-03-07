@@ -24,9 +24,9 @@ export class NoiseChannel implements Channel {
   mode = 0
   playRate = 0
 
-  longBuffer: AudioBuffer
-  shortBuffer: AudioBuffer
-  bufferSource: AudioBufferSourceNode
+  sourceA: AudioBufferSourceNode
+  sourceB: AudioBufferSourceNode
+
   gain: GainNode
 
   analyser: AnalyserNode
@@ -44,20 +44,6 @@ export class NoiseChannel implements Channel {
 
     this.audioContext = audioContext
 
-    this.longBuffer = audioContext.createBuffer(
-      1,
-      SAMPLE_LENGTH,
-      audioContext.sampleRate,
-    )
-    this.shortBuffer = audioContext.createBuffer(
-      1,
-      SAMPLE_LENGTH,
-      audioContext.sampleRate,
-    )
-
-    this.longBuffer.copyToChannel(this.generateLSFR(15), 0)
-    this.shortBuffer.copyToChannel(this.generateLSFR(7), 0)
-
     this.gain = audioContext.createGain()
     this.gain.gain.value = 0
 
@@ -69,7 +55,9 @@ export class NoiseChannel implements Channel {
     this.muteNode.connect(this.analyser)
     this.analyser.connect(outputNode)
 
-    this.createBufferSource()
+    this.sourceA = this.audioContext.createBufferSource()
+    this.sourceB = this.audioContext.createBufferSource()
+
     this.setSampleRate(0.5, 0)
 
     this.waveFormChanged = () => {}
@@ -89,9 +77,9 @@ export class NoiseChannel implements Channel {
   }
 
   start() {
-    this.createBufferSource()
     this.playing = true
-    this.bufferSource.start()
+    this.lsfr = (1 << 7) - 1
+    this.createSourceA()
     this.setVolume()
     this.timer.resetClock()
     this.envelope.resetClock()
@@ -99,8 +87,6 @@ export class NoiseChannel implements Channel {
 
   stop() {
     this.playing = false
-    this.bufferSource.stop()
-    this.bufferSource.disconnect()
     this.setVolume(0)
   }
 
@@ -115,25 +101,14 @@ export class NoiseChannel implements Channel {
   setSampleRate(divider: number, shift: number) {
     const bitFreq = 262144 / (divider * (1 << shift))
     this.playRate = (SAMPLE_DEPTH * bitFreq) / this.audioContext.sampleRate
-    this.bufferSource.playbackRate.setValueAtTime(
+    this.sourceA.playbackRate.setValueAtTime(
       this.playRate,
       this.audioContext.currentTime,
     )
-  }
-
-  createBufferSource() {
-    if (this.playing) {
-      this.bufferSource.stop()
-    }
-    this.bufferSource = this.audioContext.createBufferSource()
-    this.bufferSource.playbackRate.value = this.playRate
-    if (this.mode == 0) {
-      this.bufferSource.buffer = this.longBuffer
-    } else {
-      this.bufferSource.buffer = this.shortBuffer
-    }
-    this.bufferSource.connect(this.gain)
-    this.bufferSource.loop = true
+    this.sourceB.playbackRate.setValueAtTime(
+      this.playRate,
+      this.audioContext.currentTime,
+    )
   }
 
   setVolume(volume: number = this.volume) {
@@ -147,7 +122,6 @@ export class NoiseChannel implements Channel {
 
   generateLSFR(width: number): Float32Array {
     const period = 1 << (width - 1)
-    this.lsfr = (1 << 7) - 1
     const output = new Float32Array(period * SAMPLE_DEPTH)
   
     for (let i = 0; i < period; i++) {
@@ -159,5 +133,36 @@ export class NoiseChannel implements Channel {
     }
   
     return output
+  }
+
+  createSourceA() {
+    if (this.playing) {
+      this.sourceA = this.createSource()
+      this.sourceA.onended = this.createSourceB
+      this.sourceA.start()
+    }
+  }
+
+  createSourceB() {
+    if (this.playing) {
+      this.sourceB = this.createSource()
+      this.sourceB.onended = this.createSourceA
+      this.sourceB.start()
+    }
+  }
+
+  createSource() {
+    const source = this.audioContext.createBufferSource()
+    source.playbackRate.value = this.playRate
+    const buffer = this.audioContext.createBuffer(
+      1,
+      SAMPLE_LENGTH,
+      this.audioContext.sampleRate
+    )
+    buffer.copyToChannel(this.generateLSFR(this.mode == 0 ? 15 : 7), 0)
+    source.buffer = buffer
+    source.connect(this.gain)
+    source.loop = false
+    return source
   }
 }
