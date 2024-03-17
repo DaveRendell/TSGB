@@ -116,6 +116,8 @@ export default class BaseScanlineRenderer {
     const highPrioritySprites = sprites.filter((s) => !s.priority)
     const lowPrioritySprites = sprites.filter((s) => s.priority)
 
+    let imageDataIndex = 0
+
     for (let i = 0; i < WIDTH; i++) {
       if (!this.lcdControl.enabled) {
         return
@@ -194,10 +196,10 @@ export default class BaseScanlineRenderer {
       }
 
       const colour = this.renderPixel(line, i, pixel)
-      line.data[(i << 2) + 0] = colour[0]
-      line.data[(i << 2) + 1] = colour[1]
-      line.data[(i << 2) + 2] = colour[2]
-      line.data[(i << 2) + 3] = 255
+      line.data[imageDataIndex++] = colour[0]
+      line.data[imageDataIndex++] = colour[1]
+      line.data[imageDataIndex++] = colour[2]
+      line.data[imageDataIndex++] = 255
     }
 
     // Finally, add the new line to the buffer image
