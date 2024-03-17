@@ -1,7 +1,7 @@
 import AudioProcessor from "../audio/audioProcessor"
 import Controller from "../controller"
 import { CpuRegisters } from "./cpuRegisters"
-import { Instruction, decodeInstruction } from "./instructions/instruction"
+import { decodeInstruction } from "./instructions/instruction"
 import { splitBytes } from "./instructions/instructionHelpers"
 import nop from "./instructions/nop"
 import Memory from "../memory/memoryMap"
@@ -167,25 +167,34 @@ export default class CPU {
     this.gbDoctorLog += `A:${A} F:${F} B:${B} C:${C} D:${D} E:${E} H:${H} L:${L} SP:${SP} PC:${PC} PCMEM:${PCMEM}\n`
   }
 
-  executeNextInstruction(): void {
-    // this.createGbDoctorLog()
+  executeInstruction(): void {
     if (this.isHalted) {
       this.incrementClock(4)
-      return
-    }
-
-    const code = this.nextByte.byte
-
-    if (code != 0xcb) {
-      this.instructions[code](this)
-      this.incrementClock(this.cycleLengths[code])
     } else {
-      const prefixedCode = this.nextByte.byte
-      this.prefixedInstructions[prefixedCode](this)
-      this.incrementClock(this.prefixedCycleLengths[prefixedCode])
+      const code = this.nextByte.byte
+
+      if (code != 0xcb) {
+        this.instructions[code](this)
+        this.incrementClock(this.cycleLengths[code])
+      } else {
+        const prefixedCode = this.nextByte.byte
+        this.prefixedInstructions[prefixedCode](this)
+        this.incrementClock(this.prefixedCycleLengths[prefixedCode])
+      }
+    }    
+
+    const interrupt = this.getInterrupt()
+    if (interrupt !== null) {
+      if (this.isHalted && !this.interruptsEnabled) {
+        this.isHalted = false
+      } else {
+        this.handleInterrupt(interrupt)
+      }
     }
 
-    this.onInstructionComplete()
+    if (this.breakpoints.has(this.registers.PC.word)) {
+      this.running = false
+    }
   }
 
   getInterrupt(): Interrupt | null {
@@ -212,7 +221,6 @@ export default class CPU {
     this.isHalted = false
 
     this.interruptFlags.byte = this.interruptFlags.byte & ~(1 << interrupt)
-    // console.log(`Handling ${interrupt} interrupt - calling ${INTERRUPT_HANDLERS[interrupt]}`)
     // Push PC to stack and jump to handler address
     const handlerAddress = INTERRUPT_HANDLERS[interrupt]
     const sp = this.registers.SP
@@ -252,32 +260,13 @@ export default class CPU {
     )
     this.fps = this.recentFrames.push(timestamp)
 
-    let address = 0
-
     this.controller.update()
 
-    // try {
-    frameLoop: while (!this.breakpoints.has(this.registers.PC.word)) {
-      this.executeNextInstruction()
-      address = this.registers.PC.word
-
-      const interrupt = this.getInterrupt()
-      if (interrupt !== null) {
-        if (this.isHalted && !this.interruptsEnabled) {
-          this.isHalted = false
-        } else {
-          this.handleInterrupt(interrupt)
-        }
-      }
-
-      if (this.pictureProcessor.newFrameDrawn) {
-        this.pictureProcessor.newFrameDrawn = false
-        break frameLoop
-      }
+    this.pictureProcessor.newFrameDrawn = false
+    while (!this.pictureProcessor.newFrameDrawn) {
+      this.executeInstruction()
     }
-    if (this.breakpoints.has(address)) {
-      this.running = false
-    }
+
     if (this.running) {
       requestAnimationFrame((timestamp) => this.runFrame(timestamp))
     }
@@ -290,11 +279,6 @@ export default class CPU {
       const [removed] = this.recentFrameTimes.splice(0, 1)
       this.averageRecentFrameTime -= removed
     }
-    // } catch (error) {
-    //   console.log(error.stack)
-    //   this.running = false
-    //   this.onError(error)
-    // }
   }
 
   addClockCallback(callback: ClockCallback): void {

@@ -26,7 +26,7 @@ export default function CpuController({ cpu }: Props) {
       <h2>CPU Controller</h2>
       FPS: {cpu.fps.toPrecision(2)}
       <br />
-      <button onClick={() => cpu.executeNextInstruction()}>
+      <button onClick={() => cpu.executeInstruction()}>
         Execute next instruction
       </button>
       <button onClick={() => cpu.run()}>Run until halt</button>
