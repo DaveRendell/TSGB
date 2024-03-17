@@ -25,6 +25,8 @@ const INTERRUPT_HANDLERS: Record<Interrupt, number> = {
   [Interrupt.Joypad]: 0x0060,
 }
 
+const FRAME_TIME_MS = 1000 / 60
+
 export default class CPU {
   running = false
 
@@ -243,7 +245,7 @@ export default class CPU {
   run() {
     this.running = true
     this.audioProcessor.startAudio()
-    requestAnimationFrame((timestamp) => this.runFrame(timestamp))
+    requestAnimationFrame((timestamp) => this.runBrowserFrame(timestamp))
   }
 
   pause() {
@@ -278,6 +280,36 @@ export default class CPU {
     if (this.recentFrameTimes.length > 60) {
       const [removed] = this.recentFrameTimes.splice(0, 1)
       this.averageRecentFrameTime -= removed
+    }
+  }
+
+  lastEmulatorFrame: number = 0
+
+  runBrowserFrame(timestamp: number): void {
+    this.controller.update()
+
+    const timeSinceLastEmulatorFrame = timestamp - this.lastEmulatorFrame
+
+    const percentageThroughEmulatorFrame = timeSinceLastEmulatorFrame / FRAME_TIME_MS
+
+    if (percentageThroughEmulatorFrame > 0.95) {
+      this.pictureProcessor.newFrameDrawn = false
+      while (!this.pictureProcessor.newFrameDrawn) {
+        this.executeInstruction()
+      }
+      // TODO performance tracking
+      this.lastEmulatorFrame = timestamp
+    } else {
+      console.log({ percentageThroughEmulatorFrame})
+      const targetScanline = percentageThroughEmulatorFrame * 144
+      const scanline = this.memory.registers.scanline
+      while (scanline.byte >= 144 || scanline.byte < targetScanline) {
+        this.executeInstruction()
+      }
+    }
+    
+    if (this.running) {
+      requestAnimationFrame((timestamp) => this.runBrowserFrame(timestamp))
     }
   }
 

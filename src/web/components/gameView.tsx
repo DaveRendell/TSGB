@@ -67,8 +67,8 @@ export default function GameView({ emulator, unload }: Props) {
       <div className="control-buttons floating-panel">
         <button className="chunky-button" onClick={() => emulator.cpu.run()}>Run</button>
         <button className="chunky-button" onClick={() => emulator.cpu.pause()}>Pause</button>
-        <button className="chunky-button" onClick={() => emulator.cpu.runFrame(Infinity)}>
-          Run frame
+        <button className="chunky-button" onClick={() => emulator.cpu.runBrowserFrame(Infinity)}>
+          Next frame
         </button>
         <button className="chunky-button"
           onClick={() => {

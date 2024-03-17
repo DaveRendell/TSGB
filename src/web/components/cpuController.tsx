@@ -30,7 +30,7 @@ export default function CpuController({ cpu }: Props) {
         Execute next instruction
       </button>
       <button onClick={() => cpu.run()}>Run until halt</button>
-      <button onClick={() => cpu.runFrame(Infinity)}>Run frame</button>
+      <button onClick={() => cpu.runBrowserFrame(Infinity)}>Run frame</button>
       <button onClick={() => cpu.pause()}>Pause</button>
       <button
         onClick={() => {
