@@ -29,7 +29,6 @@
   box-shadow: 0 0.25em black;
 }
 
-.joypad-button:active,
 .joypad-button.active {
   margin-top: 0.25em;
   box-shadow: 0 0;

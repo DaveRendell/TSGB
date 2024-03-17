@@ -300,7 +300,6 @@ export default class CPU {
       // TODO performance tracking
       this.lastEmulatorFrame = timestamp
     } else {
-      console.log({ percentageThroughEmulatorFrame})
       const targetScanline = percentageThroughEmulatorFrame * 144
       const scanline = this.memory.registers.scanline
       while (scanline.byte >= 144 || scanline.byte < targetScanline) {

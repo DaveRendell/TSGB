@@ -46,8 +46,20 @@ export default function JoypadButton({
         className={`joypad-button ${type} ${isActive ? "active" : ""}`}
         onMouseDown={() => press()}
         onMouseUp={() => release()}
-        onTouchStart={() => press()}
-        onTouchEnd={() => release()}
+        onTouchStart={(e) => {
+            e.preventDefault()
+            press()
+          }
+        }
+        onTouchEnd={() =>
+          release()
+        }
+        onMouseLeave={(e) => {
+          if (e.buttons & 0b1) { release() }
+        }}
+        onMouseEnter={(e) => {
+          if (e.buttons & 0b1) { press() }
+        }}
         ref={button}
       >
         {symbol}
