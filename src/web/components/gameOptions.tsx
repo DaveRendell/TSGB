@@ -50,6 +50,11 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
     await updateGame(game)
   }
 
+  const resetRTC = async () => {
+    game.rtc = undefined
+    await updateGame(game)
+  }
+
   const colourSupportByte = game.data[0x143]
   const colourSupport = (colourSupportByte & 0x80) > 0
   const colourExclusive = (colourSupportByte & 0x40) > 0
@@ -98,6 +103,8 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <br />
       <label htmlFor="set-boxart">Set boxart</label>
       <input id="set-boxart" type="file" onChange={updateBoxArt} />
+      <br />
+      <button className="chunky-button" onClick={resetRTC}>Reset RTC</button>
       <br />
       <br />
       <h3>Danger zone</h3>
