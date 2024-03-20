@@ -77,15 +77,15 @@ export default class Controller {
 
   keyMap: { [key: string]: Button } = {}
 
-  gamepadBindings: Record<Button, number> = {
-    A: 1,
-    B: 0,
-    Start: 9,
-    Select: 8,
-    Up: 12,
-    Down: 13,
-    Left: 14,
-    Right: 15,
+  gamepadBindings: Record<Button, number[]> = {
+    A: [1],
+    B: [0],
+    Start: [9],
+    Select: [8],
+    Up: [12],
+    Down: [13],
+    Left: [14],
+    Right: [15],
   }
 
   triggerInterrupt: () => void = () => {}
@@ -144,7 +144,9 @@ export default class Controller {
         this.keyboardPressed[button] ||
         this.htmlPressed[button] ||
         (this.gamepad &&
-          this.gamepad.buttons[this.gamepadBindings[button]].pressed)
+          this.gamepadBindings[button].some(gamepadButton =>
+            this.gamepad.buttons[gamepadButton].pressed
+          ))
       isPressed ? this.pressButton(button) : this.releaseButton(button)
     })
   }
