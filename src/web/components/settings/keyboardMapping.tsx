@@ -30,7 +30,7 @@ export default function KeyboardMapping({ emulator }: Props) {
           setKeyboardBindings({...emulator.controller.keyboardBindings})
         }
         // QQ Persist to localstorage
-
+        
         // Stop listening
         setListeningButton(undefined)
       } else {
@@ -39,8 +39,13 @@ export default function KeyboardMapping({ emulator }: Props) {
     })
   }, [])
 
-  const addKey = (button: Button, key: string) => {
+  const removeKey = (button: Button, key: string) => {
+    emulator.controller.keyboardBindings[button] =
+      emulator.controller.keyboardBindings[button].filter(k => k !== key)
+    emulator.controller.setKeyMap()
+    setKeyboardBindings({...emulator.controller.keyboardBindings})
   }
+
   return (
     <div>
       <h3>Keyboard controls</h3>
@@ -50,7 +55,7 @@ export default function KeyboardMapping({ emulator }: Props) {
           return <div key={button}>
             <dt>{button}</dt>
             <dd>
-              {keys.map(key => <span>{key} <button className="chunky-button">Remove</button></span>)}
+              {keys.map(key => <span>{key} <button className="chunky-button" onClick={() => removeKey(button, key)}>Remove</button></span>)}
               {
                 listeningButton === button
                   ? <>
@@ -58,8 +63,7 @@ export default function KeyboardMapping({ emulator }: Props) {
                     <button className="chunky-button action-button" onClick={() => setListeningButton(undefined)}>Cancel</button>
                   </>
                   : <button className="chunky-button action-button" onClick={() => setListeningButton(button)}>Add</button>
-              }
-              
+              }              
             </dd>
           </div>
         })}
