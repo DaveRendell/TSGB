@@ -1,4 +1,5 @@
 import { ByteRef, ConstantByteRef, GenericByteRef, GetSetByteRef } from "../../refs/byteRef"
+import Memory from "../memoryMap"
 import {
   AudioMasterControlRegister,
   MasterVolumeVinRegister,
@@ -77,11 +78,12 @@ export class IoRegisters {
   vramBank = new VramBankRegister()
   wramBank = new WramBankRegister()
   speedSwitch = new SpeedSwitchRegister()
-  vramDma = new VramDmaRegisters()
+  vramDma: VramDmaRegisters
 
   private data: { [address: number]: ByteRef } = []
 
-  constructor() {
+  constructor(memory: Memory) {
+    this.vramDma = new VramDmaRegisters(memory)
     this.data[0xff00] = this.joypad
     this.data[0xff01] = this.serialRegisters.serialDataRegister
     this.data[0xff02] = this.serialRegisters.serialControlRegister

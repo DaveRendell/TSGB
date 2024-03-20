@@ -14,7 +14,7 @@ import { EmulatorMode } from "../emulator"
 export default class Memory {
   cpu: CPU
 
-  registers: IoRegisters = new IoRegisters()
+  registers: IoRegisters = new IoRegisters(this)
 
   bootRomLoaded = false
   cartridge: Cartridge
