@@ -95,9 +95,14 @@ export default class Controller {
     this.joypadRegister = memory.registers.joypad
     this.interruptRegister = memory.registers.interrupts
 
-    const storedBindings = window.localStorage.getItem("keyboardBindings")
-    if (storedBindings) {
-      this.keyboardBindings = JSON.parse(storedBindings)
+    const storedKeyBindings = window.localStorage.getItem("keyboardBindings")
+    if (storedKeyBindings) {
+      this.keyboardBindings = JSON.parse(storedKeyBindings)
+    }
+
+    const storedPadBindings = window.localStorage.getItem("gamepadBindings")
+    if (storedPadBindings) {
+      this.gamepadBindings = JSON.parse(storedPadBindings)
     }
 
     this.setKeyMap()
