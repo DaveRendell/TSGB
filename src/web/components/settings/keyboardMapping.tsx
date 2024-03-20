@@ -29,7 +29,9 @@ export default function KeyboardMapping({ emulator }: Props) {
           emulator.controller.setKeyMap()
           setKeyboardBindings({...emulator.controller.keyboardBindings})
         }
-        // QQ Persist to localstorage
+        
+        // Persist to localstorage
+        window.localStorage.setItem("keyboardBindings", JSON.stringify(emulator.controller.keyboardBindings))
         
         // Stop listening
         setListeningButton(undefined)
