@@ -31,11 +31,6 @@ export default class Controller {
   interruptRegister: InterruptRegister
   gamepad?: Gamepad
 
-  constructor(memory: Memory) {
-    this.joypadRegister = memory.registers.joypad
-    this.interruptRegister = memory.registers.interrupts
-  }
-
   isPressed: Record<Button, boolean> = {
     A: false,
     B: false,
@@ -69,16 +64,18 @@ export default class Controller {
     Right: false,
   }
 
-  keyBindings: { [key: string]: Button } = {
-    KeyZ: "A",
-    KeyX: "B",
-    Enter: "Start",
-    Backspace: "Select",
-    ArrowUp: "Up",
-    ArrowDown: "Down",
-    ArrowLeft: "Left",
-    ArrowRight: "Right",
+  keyboardBindings: Record<Button, string[]> = {
+    "A": ["KeyZ", "KeyA"],
+    "B": ["KeyX"],
+    "Start": ["Enter"],
+    "Select": ["Backspace"],
+    "Up": ["ArrowUp"],
+    "Down": ["ArrowDown"],
+    "Left": ["ArrowLeft"],
+    "Right": ["ArrowRight"],
   }
+
+  keyMap: { [key: string]: Button } = {}
 
   gamepadBindings: Record<Button, number> = {
     A: 1,
@@ -93,6 +90,22 @@ export default class Controller {
 
   triggerInterrupt: () => void = () => {}
   updateUi: (isPressed: Record<Button, boolean>) => void = () => {}
+
+  constructor(memory: Memory) {
+    this.joypadRegister = memory.registers.joypad
+    this.interruptRegister = memory.registers.interrupts
+
+    this.setKeyMap()
+  }
+
+  setKeyMap() {
+    BUTTONS.forEach(button => {
+      const keys = this.keyboardBindings[button]
+      keys.forEach(key => {
+        this.keyMap[key] = button
+      })
+    })
+  }
 
   initialiseEvents() {
     document.addEventListener("keydown", (e) => this.handleKeyPress(e))
@@ -149,7 +162,7 @@ export default class Controller {
   }
 
   handleKeyPress(event: KeyboardEvent) {
-    const button = this.keyBindings[event.code]
+    const button = this.keyMap[event.code]
     if (button) {
       event.preventDefault()
       this.keyboardPressed[button] = true
@@ -157,7 +170,7 @@ export default class Controller {
   }
 
   handleKeyRelease(event: KeyboardEvent) {
-    const button = this.keyBindings[event.code]
+    const button = this.keyMap[event.code]
     if (button) {
       event.preventDefault()
       this.keyboardPressed[button] = false
