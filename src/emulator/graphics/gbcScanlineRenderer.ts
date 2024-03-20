@@ -54,7 +54,7 @@ export default class GbcScanlineRenderer extends BaseScanlineRenderer {
   }
 
   getWindowTileRow = (offset: number): number[] => {
-    const tileMapNumber = (offset >> 3) + ((this.windowLine.byte >> 3) << 5)
+    const tileMapNumber = Math.max((offset >> 3) + ((this.windowLine.byte >> 3) << 5), 0)
     const attributes =
       this.vram.tileAttributes[(this.lcdControl.windowTilemap << 10) + tileMapNumber]
     this.windowPaletteId = attributes.palette
