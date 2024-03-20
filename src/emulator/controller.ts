@@ -99,6 +99,7 @@ export default class Controller {
   }
 
   setKeyMap() {
+    this.keyMap = {}
     BUTTONS.forEach(button => {
       const keys = this.keyboardBindings[button]
       keys.forEach(key => {
