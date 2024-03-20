@@ -45,6 +45,12 @@ export default function GamepadMapping({ emulator }: Props) {
     return () => clearInterval(intervalRef.current)
   }, [])
 
+  const removeButton = (button: Button, padButton: number) => {
+    emulator.controller.gamepadBindings[button]
+      = emulator.controller.gamepadBindings[button].filter(k => k !== padButton)
+    setGamepadBindings({...emulator.controller.gamepadBindings})
+  }
+
   return (
     <div>
       <h3>Gamepad controls</h3>
@@ -59,7 +65,7 @@ export default function GamepadMapping({ emulator }: Props) {
           return <div key={button}>
             <dt>{button}</dt>
             <dd>
-              {keys.map(key => <span>Button {key} <button className="chunky-button" onClick={() => {}}>Remove</button></span>)}
+              {keys.map(padButton => <span>Button {padButton} <button className="chunky-button" onClick={() => removeButton(button, padButton)}>Remove</button></span>)}
               {
                 listeningButton === button
                   ? <>
