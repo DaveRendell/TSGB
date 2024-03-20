@@ -158,6 +158,10 @@ select {
   margin-left: 0.5em;
 }
 
+span + .chunky-button {
+  margin-left: 0.5em;
+}
+
 h1 {
   color: rgb(203, 213, 207);
   font-size: 64px;

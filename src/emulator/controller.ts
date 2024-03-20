@@ -15,7 +15,7 @@ export type Button =
   | "Left"
   | "Right"
 
-const BUTTONS: Button[] = [
+export const BUTTONS: Button[] = [
   "A",
   "B",
   "Start",
@@ -65,7 +65,7 @@ export default class Controller {
   }
 
   keyboardBindings: Record<Button, string[]> = {
-    "A": ["KeyZ", "KeyA"],
+    "A": ["KeyZ"],
     "B": ["KeyX"],
     "Start": ["Enter"],
     "Select": ["Backspace"],
