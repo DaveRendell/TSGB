@@ -109,7 +109,7 @@ export default class BaseScanlineRenderer {
     this.backgroundTileRow = this.getBackgroundTileRow(0, backgroundY)
     this.backgroundTileCounter = scrollX & 0x7
 
-    this.windowTileRow = this.getWindowTileRow(7 - this.windowX.byte)
+    this.windowTileRow = this.getWindowTileRow(0)
     this.windowTileCounter = (7 - this.windowX.byte) & 7
 
     const sprites = this.oam.spritesAtScanline(this.mode)
