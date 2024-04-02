@@ -11,6 +11,7 @@ export class Sprite {
   priority = false
   flipY = false
   flipX = false
+  bank = 0
   monochromePalette = 0
   colourPalette = 0
 
@@ -47,12 +48,14 @@ export class Sprite {
           (this.flipY ? 0x40 : 0) +
           (this.flipX ? 0x20 : 0) +
           (this.monochromePalette << 4) +
+          (this.bank << 3) +
           this.colourPalette,
         (value) => {
           this.priority = (value & 0x80) > 0
           this.flipY = (value & 0x40) > 0
           this.flipX = (value & 0x20) > 0
           this.monochromePalette = (value & 0x10) >> 4
+          this.bank = (value & 0x8) >> 3
           this.colourPalette = value & 0x7
         },
       ),
@@ -84,7 +87,7 @@ export class Sprite {
         : this.tile
 
     const x = this.flipX ? 7 - (column - (this.x - 8)) : column - (this.x - 8)
-    const tileValue = this.vram.tileset0(tileId, row % 8)[x]
+    const tileValue = this.vram.tileset0(tileId, row % 8, this.bank)[x]
     if (tileValue == 0) return undefined // Transparent pixel
     return tileValue
   }

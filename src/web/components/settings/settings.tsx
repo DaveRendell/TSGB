@@ -5,6 +5,8 @@ import { AudioControl } from "./audioControl"
 import { MonochromePalettePicker } from "./monochromePalettePicker"
 import { ColourGradingControl } from "./colourGradingControl"
 import { ScalingOptions } from "./scalingOptions"
+import KeyboardMapping from "./keyboardMapping"
+import GamepadMapping from "./gamepadMapping"
 
 interface Props {
   emulator: Emulator
@@ -33,6 +35,8 @@ export default function Settings({ emulator }: Props) {
         <ColourGradingControl registers={emulator.memory.registers} />
       }
       <ScalingOptions />
+      <KeyboardMapping emulator={emulator} />
+      <GamepadMapping emulator={emulator} />
     </section>
   )
 }

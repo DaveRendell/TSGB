@@ -1,4 +1,5 @@
 import { ByteRef, ConstantByteRef, GenericByteRef, GetSetByteRef } from "../../refs/byteRef"
+import Memory from "../memoryMap"
 import {
   AudioMasterControlRegister,
   MasterVolumeVinRegister,
@@ -20,6 +21,7 @@ import SerialRegisters from "./serialRegisters"
 import { SpeedSwitchRegister } from "./speedSwitchRegister"
 import { DividerRegister, TimerControlRegister } from "./timerRegisters"
 import { VramBankRegister } from "./vramBankRegister"
+import { VramDmaRegisters } from "./vramDmaRegisters"
 import { WramBankRegister } from "./wramBankRegister"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
@@ -76,10 +78,12 @@ export class IoRegisters {
   vramBank = new VramBankRegister()
   wramBank = new WramBankRegister()
   speedSwitch = new SpeedSwitchRegister()
+  vramDma: VramDmaRegisters
 
   private data: { [address: number]: ByteRef } = []
 
-  constructor() {
+  constructor(memory: Memory) {
+    this.vramDma = new VramDmaRegisters(memory)
     this.data[0xff00] = this.joypad
     this.data[0xff01] = this.serialRegisters.serialDataRegister
     this.data[0xff02] = this.serialRegisters.serialControlRegister
@@ -148,6 +152,12 @@ export class IoRegisters {
     this.data[0xff4f] = this.vramBank
     this.data[0xFF70] = this.wramBank
     this.data[0xFF4D] = this.speedSwitch
+
+    this.data[0xFF51] = this.vramDma.sourceHigh
+    this.data[0xFF52] = this.vramDma.sourceLow
+    this.data[0xFF53] = this.vramDma.destinationHigh
+    this.data[0xFF54] = this.vramDma.destinationLow
+    this.data[0xFF55] = this.vramDma.settings
   }
 
   at(address: number): ByteRef {

@@ -15,7 +15,7 @@ export type Button =
   | "Left"
   | "Right"
 
-const BUTTONS: Button[] = [
+export const BUTTONS: Button[] = [
   "A",
   "B",
   "Start",
@@ -30,11 +30,6 @@ export default class Controller {
   joypadRegister: JoypadRegister
   interruptRegister: InterruptRegister
   gamepad?: Gamepad
-
-  constructor(memory: Memory) {
-    this.joypadRegister = memory.registers.joypad
-    this.interruptRegister = memory.registers.interrupts
-  }
 
   isPressed: Record<Button, boolean> = {
     A: false,
@@ -69,30 +64,59 @@ export default class Controller {
     Right: false,
   }
 
-  keyBindings: { [key: string]: Button } = {
-    KeyZ: "A",
-    KeyX: "B",
-    Enter: "Start",
-    Backspace: "Select",
-    ArrowUp: "Up",
-    ArrowDown: "Down",
-    ArrowLeft: "Left",
-    ArrowRight: "Right",
+  keyboardBindings: Record<Button, string[]> = {
+    "A": ["KeyZ"],
+    "B": ["KeyX"],
+    "Start": ["Enter"],
+    "Select": ["Backspace"],
+    "Up": ["ArrowUp"],
+    "Down": ["ArrowDown"],
+    "Left": ["ArrowLeft"],
+    "Right": ["ArrowRight"],
   }
 
-  gamepadBindings: Record<Button, number> = {
-    A: 1,
-    B: 0,
-    Start: 9,
-    Select: 8,
-    Up: 12,
-    Down: 13,
-    Left: 14,
-    Right: 15,
+  keyMap: { [key: string]: Button } = {}
+
+  gamepadBindings: Record<Button, number[]> = {
+    A: [1],
+    B: [0],
+    Start: [9],
+    Select: [8],
+    Up: [12],
+    Down: [13],
+    Left: [14],
+    Right: [15],
   }
 
   triggerInterrupt: () => void = () => {}
   updateUi: (isPressed: Record<Button, boolean>) => void = () => {}
+
+  constructor(memory: Memory) {
+    this.joypadRegister = memory.registers.joypad
+    this.interruptRegister = memory.registers.interrupts
+
+    const storedKeyBindings = window.localStorage.getItem("keyboardBindings")
+    if (storedKeyBindings) {
+      this.keyboardBindings = JSON.parse(storedKeyBindings)
+    }
+
+    const storedPadBindings = window.localStorage.getItem("gamepadBindings")
+    if (storedPadBindings) {
+      this.gamepadBindings = JSON.parse(storedPadBindings)
+    }
+
+    this.setKeyMap()
+  }
+
+  setKeyMap() {
+    this.keyMap = {}
+    BUTTONS.forEach(button => {
+      const keys = this.keyboardBindings[button]
+      keys.forEach(key => {
+        this.keyMap[key] = button
+      })
+    })
+  }
 
   initialiseEvents() {
     document.addEventListener("keydown", (e) => this.handleKeyPress(e))
@@ -125,7 +149,9 @@ export default class Controller {
         this.keyboardPressed[button] ||
         this.htmlPressed[button] ||
         (this.gamepad &&
-          this.gamepad.buttons[this.gamepadBindings[button]].pressed)
+          this.gamepadBindings[button].some(gamepadButton =>
+            this.gamepad.buttons[gamepadButton].pressed
+          ))
       isPressed ? this.pressButton(button) : this.releaseButton(button)
     })
   }
@@ -149,7 +175,7 @@ export default class Controller {
   }
 
   handleKeyPress(event: KeyboardEvent) {
-    const button = this.keyBindings[event.code]
+    const button = this.keyMap[event.code]
     if (button) {
       event.preventDefault()
       this.keyboardPressed[button] = true
@@ -157,7 +183,7 @@ export default class Controller {
   }
 
   handleKeyRelease(event: KeyboardEvent) {
-    const button = this.keyBindings[event.code]
+    const button = this.keyMap[event.code]
     if (button) {
       event.preventDefault()
       this.keyboardPressed[button] = false
