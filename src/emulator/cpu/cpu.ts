@@ -297,7 +297,6 @@ export default class CPU {
       while (!this.pictureProcessor.newFrameDrawn) {
         this.executeInstruction()
       }
-      // TODO performance tracking
       this.lastEmulatorFrame = timestamp
     } else {
       const targetScanline = percentageThroughEmulatorFrame * 144

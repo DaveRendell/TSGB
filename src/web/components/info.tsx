@@ -40,12 +40,6 @@ export function Info({ emulator }: Props) {
   return (<section>
     Title: {emulator.cpu.memory.cartridge?.title}
     <br />
-    FPS: {emulator.cpu.fps.toPrecision(2)}
-    <br />
-    Frame time:{" "}
-    {(emulator.cpu.averageRecentFrameTime / 60).toPrecision(3)} /
-    16.7ms
-    <br />
     Game mode: {["DMG", "CGB"][emulator.mode]}
     <br />
     Cartridge type: {CART_TYPE[emulator.memory.cartridge.romData[0x147]]}
