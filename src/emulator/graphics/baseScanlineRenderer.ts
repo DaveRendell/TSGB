@@ -125,9 +125,11 @@ export default class BaseScanlineRenderer {
       let pixel: number | undefined
       this.pixelSetUp()
 
+      let spritePixel: number | undefined = undefined
+      let spritePriority = false
 
       // Render high priority sprites (that go above background)
-      if (pixel === undefined && this.lcdControl.objectsEnabled) {
+      if (spritePixel === undefined && this.lcdControl.objectsEnabled) {
         const sprite = highPrioritySprites.find(
           (sprite) =>
             i - (sprite.x - 8) >= 0 &&
@@ -136,11 +138,27 @@ export default class BaseScanlineRenderer {
               undefined,
         )
         if (sprite) {
-          pixel = this.setPixelFromSprite(sprite, scanline, i)
+          spritePixel = this.setPixelFromSprite(sprite, scanline, i)
+          spritePriority = true
+        }
+      }
+
+      // Render low priority sprites (that go below non zero background)
+      if (spritePixel === undefined && this.lcdControl.objectsEnabled) {
+        const sprite = lowPrioritySprites.find(
+          (sprite) =>
+            i - (sprite.x - 8) >= 0 &&
+            i - (sprite.x - 8) < 8 &&
+            sprite.rawPixelAt(scanline, i, this.lcdControl.objectSize) !=
+              undefined,
+        )
+        if (sprite) {
+          spritePixel = this.setPixelFromSprite(sprite, scanline, i)
         }
       }
 
       let tilePixel: number | undefined = undefined
+      let setTilePalette: () => void
 
       // Render window
       const winX = i - (this.windowX.byte - 7)
@@ -151,7 +169,7 @@ export default class BaseScanlineRenderer {
         }
         if (pixel === undefined && this.lcdControl.windowEnabled) {
           tilePixel = this.windowTileRow[winX % 8]
-          this.setWindowPalette()
+          setTilePalette = () => this.setWindowPalette()
         }
         this.windowTileCounter++
       }
@@ -167,7 +185,7 @@ export default class BaseScanlineRenderer {
         this.lcdControl.backgroundWindowDisplay
       ) {
         tilePixel = this.backgroundTileRow[(scrollX + i) % 8]
-        this.setBackgroundPalette()
+        setTilePalette = () => this.setBackgroundPalette()
       }
       this.backgroundTileCounter++
       
@@ -176,17 +194,17 @@ export default class BaseScanlineRenderer {
         pixel = tilePixel
       }
 
-      // Render low priority sprites (that go below non zero background)
-      if (pixel === undefined && this.lcdControl.objectsEnabled) {
-        const sprite = lowPrioritySprites.find(
-          (sprite) =>
-            i - (sprite.x - 8) >= 0 &&
-            i - (sprite.x - 8) < 8 &&
-            sprite.rawPixelAt(scanline, i, this.lcdControl.objectSize) !=
-              undefined,
-        )
-        if (sprite) {
-          pixel = this.setPixelFromSprite(sprite, scanline, i)
+      if (spritePriority) {
+        if (spritePixel) {
+          pixel = spritePixel
+        }
+      } else {
+        if (tilePixel !== undefined && tilePixel !== 0) {
+          pixel = tilePixel
+          setTilePalette()
+        }
+        else {
+          pixel = spritePixel
         }
       }
 
