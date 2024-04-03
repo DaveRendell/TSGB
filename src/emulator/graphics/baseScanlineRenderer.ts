@@ -162,7 +162,7 @@ export default class BaseScanlineRenderer {
 
       let tilePixel: number | undefined = undefined
       let tilePriority = false
-      let setTilePalette: () => void
+      let setTilePalette: () => void = () => {}
 
       // Render window
       const winX = i - (this.windowX.byte - 7)
@@ -171,7 +171,7 @@ export default class BaseScanlineRenderer {
           this.windowTileCounter = 0
           this.windowTileRow = this.getWindowTileRow(winX)
         }
-        if (pixel === undefined && this.lcdControl.windowEnabled) {
+        if (this.lcdControl.windowEnabled) {
           tilePixel = this.windowTileRow[winX % 8]
           setTilePalette = () => this.setWindowPalette()
           tilePriority = this.windowPriority
@@ -185,7 +185,6 @@ export default class BaseScanlineRenderer {
         this.backgroundTileRow = this.getBackgroundTileRow(i, backgroundY)
       }
       if (
-        pixel === undefined &&
         tilePixel === undefined &&
         this.lcdControl.backgroundWindowDisplay
       ) {
@@ -200,7 +199,7 @@ export default class BaseScanlineRenderer {
         pixel = tilePixel
       }
 
-      if (tilePriority) {
+      if (tilePriority && tilePixel !== undefined && tilePixel !== 0) {
         pixel = tilePixel
         setTilePalette()
       } else if (spritePriority) {
@@ -219,6 +218,7 @@ export default class BaseScanlineRenderer {
 
       // If nothing else has rendered, use the lowest colour in the pallete
       if (pixel === undefined) {
+        setTilePalette()
         pixel = this.useTileColourZero()
       }
 
