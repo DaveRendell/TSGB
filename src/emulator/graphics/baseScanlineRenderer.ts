@@ -186,7 +186,7 @@ export default class BaseScanlineRenderer {
       }
       if (
         tilePixel === undefined &&
-        this.lcdControl.backgroundWindowDisplay
+        (this.lcdControl.backgroundWindowDisplay || this.mode == EmulatorMode.CGB)
       ) {
         tilePixel = this.backgroundTileRow[(scrollX + i) % 8]
         setTilePalette = () => this.setBackgroundPalette()
@@ -199,22 +199,27 @@ export default class BaseScanlineRenderer {
         pixel = tilePixel
       }
 
-      if (tilePriority && tilePixel !== undefined && tilePixel !== 0) {
-        pixel = tilePixel
-        setTilePalette()
-      } else if (spritePriority) {
-        if (spritePixel) {
-          pixel = spritePixel
-        }
+      if (this.mode === EmulatorMode.CGB && !this.lcdControl.backgroundWindowDisplay && spritePixel !== undefined) {
+        pixel = spritePixel
       } else {
-        if (tilePixel !== undefined && tilePixel !== 0) {
+        if (tilePriority && tilePixel !== undefined && tilePixel !== 0) {
           pixel = tilePixel
           setTilePalette()
-        }
-        else {
-          pixel = spritePixel
+        } else if (spritePriority) {
+          if (spritePixel !== undefined) {
+            pixel = spritePixel
+          }
+        } else {
+          if (tilePixel !== undefined && tilePixel !== 0) {
+            pixel = tilePixel
+            setTilePalette()
+          }
+          else {
+            pixel = spritePixel
+          }
         }
       }
+      
 
       // If nothing else has rendered, use the lowest colour in the pallete
       if (pixel === undefined) {
