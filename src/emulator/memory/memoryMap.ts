@@ -9,6 +9,7 @@ import { CompositeWordRef, WordRef } from "../refs/wordRef"
 import { InterruptEnabledRegister } from "./registers/interruptRegisters"
 import { WRAM } from "./wram"
 import { EmulatorMode } from "../emulator"
+import DMA from "./dma"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
@@ -24,6 +25,8 @@ export default class Memory {
   hram = new Uint8Array(0x7f)
   interruptsEnabled = new InterruptEnabledRegister()
 
+  dma: DMA
+
   controller: Controller
 
   constructor(cartridge: Cartridge, mode: EmulatorMode) {
@@ -32,6 +35,7 @@ export default class Memory {
     this.cartridge = cartridge
     this.oam = new OAM(this)
     this.wram = new WRAM(mode, this.registers)
+    this.dma = new DMA(this)
   }
 
   at(address: number): ByteRef {

@@ -50,12 +50,20 @@ export class VramDmaRegisters {
       }
     )
     this.settings = new GetSetByteRef(
-      () => 0xff,
+      () => this.memory.dma.getRemainingVramDmaLength(),
       (value) => {
         // TODO: grab mode and only update on Hblanks in Hblank mode?
-        const length = ((value &= 0x7F) + 1) << 4
-        for (let i = 0; i < length; i++) {
-          this.memory.at(this.destinationAddress + i).byte = this.memory.at(this.sourceAddress + i).byte
+        const length = ((value & 0x7F) + 1) << 4
+        if ((value & 0x80) > 0) {
+          this.memory.dma.setHblankVramDma(
+            length,
+            this.sourceAddress,
+            this.destinationAddress
+          )
+        } else {
+          for (let i = 0; i < length; i++) {
+            this.memory.at(this.destinationAddress + i).byte = this.memory.at(this.sourceAddress + i).byte
+          }
         }
       }
     )

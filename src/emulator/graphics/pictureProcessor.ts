@@ -137,6 +137,7 @@ export default class PictureProcessor {
   setMode(mode: Mode) {
     switch (mode) {
       case "HBlank":
+        this.memory.dma.onHblank()
         if (this.lcdControl.enabled && this.lcdStatus.mode0InterruptEnabled) {
           this.memory.registers.interrupts.setInterrupt(Interrupt.LCD)
         }
