@@ -50,23 +50,34 @@ export class VramDmaRegisters {
       }
     )
     this.settings = new GetSetByteRef(
-      () => this.memory.dma.getRemainingVramDmaLength(),
+      () => this.memory.dma.getRemainingVramDmaLength() + (this.memory.dma.hblankVramDmaEnabled ? 0 : 0x80),
       (value) => {
-        // TODO: grab mode and only update on Hblanks in Hblank mode?
         const length = ((value & 0x7F) + 1) << 4
-        if ((value & 0x80) > 0) {
+        const bit7 = (value & 0x80) > 0
+
+        const dma = this.memory.dma
+
+        if (dma.hblankVramDmaEnabled) {
           this.memory.dma.setHblankVramDma(
+            bit7,
             length,
-            this.sourceAddress,
-            this.destinationAddress
           )
         } else {
-          for (let i = 0; i < length; i++) {
-            this.memory.at(this.destinationAddress + i).byte = this.memory.at(this.sourceAddress + i).byte
+          if (bit7) {
+            this.memory.dma.setHblankVramDma(
+              true,
+              length,
+            )
+          } else {
+            console.log("gdma time")
+            this.memory.cpu.incrementClock(4) // overhead
+            for (let i = 0; i < length; i++) {
+              this.memory.at(this.destinationAddress + i).byte = this.memory.at(this.sourceAddress + i).byte
+              this.memory.cpu.incrementClock(4)
+            }
           }
         }
       }
     )
   }
-
 }

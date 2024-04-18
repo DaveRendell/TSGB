@@ -1,36 +1,49 @@
 import Memory from "./memoryMap";
+import { VramDmaRegisters } from "./registers/vramDmaRegisters";
 
 export default class DMA {
   memory: Memory
+  register: VramDmaRegisters
 
+  hblankVramDmaEnabled = false
   hblankVramDmaLength = 0
-  hblankVramDmaSource: number
-  hblankVramDmaDestination: number
   
   constructor(memory: Memory) {
     this.memory = memory
+    this.register = memory.registers.vramDma
   }
 
   onHblank() {
-    if (this.hblankVramDmaLength > 0) {
+    if (this.hblankVramDmaEnabled && !this.memory.cpu.isHalted) {
       console.log("Doing vram transfer in hblank")
+      
+      this.memory.cpu.incrementClock(4) // overhead
+
       for (let i = 0; i < 0x10; i++) {
-        this.memory.at(this.hblankVramDmaDestination + i).byte
-          = this.memory.at(this.hblankVramDmaSource + i).byte
+        this.memory.at(this.register.destinationAddress + i).byte
+          = this.memory.at(this.register.sourceAddress + i).byte
+        this.memory.cpu.incrementClock(4)
       }
-      this.hblankVramDmaDestination += 0x10
-      this.hblankVramDmaSource += 0x10
+      this.register.destinationAddress += 0x10
+      this.register.destinationAddress &= 0x1ff0
+      this.register.destinationAddress += 0x8000
+      this.register.sourceAddress += 0x10
+      this.register.sourceAddress &= 0xfff0
       this.hblankVramDmaLength -= 0x10
+
+
+      if (this.hblankVramDmaLength <= 0) {
+        this.hblankVramDmaEnabled = false
+      }
     }
   }
 
-  setHblankVramDma(length: number, source: number, destination: number) {
+  setHblankVramDma(enabled: boolean, length: number) {
+    this.hblankVramDmaEnabled = enabled
     this.hblankVramDmaLength = length
-    this.hblankVramDmaSource = source
-    this.hblankVramDmaDestination = destination
   }
 
   getRemainingVramDmaLength() {
-    return (Math.floor(this.hblankVramDmaLength / 0x10) - 1) & 0xff
+    return ((this.hblankVramDmaLength << 4) - 1) & 0x7f
   }
 }
