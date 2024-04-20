@@ -183,7 +183,12 @@ export default class CPU {
         this.prefixedInstructions[prefixedCode](this)
         this.incrementClock(this.prefixedCycleLengths[prefixedCode])
       }
-    }    
+    }
+
+    if (this.breakpoints.has(this.registers.PC.word)) {
+      this.running = false
+      return
+    }
 
     const interrupt = this.getInterrupt()
     if (interrupt !== null) {
@@ -192,10 +197,6 @@ export default class CPU {
       } else {
         this.handleInterrupt(interrupt)
       }
-    }
-
-    if (this.breakpoints.has(this.registers.PC.word)) {
-      this.running = false
     }
   }
 
@@ -294,7 +295,7 @@ export default class CPU {
 
     if (percentageThroughEmulatorFrame > 0.95) {
       this.pictureProcessor.newFrameDrawn = false
-      while (!this.pictureProcessor.newFrameDrawn) {
+      while (!this.pictureProcessor.newFrameDrawn && this.running) {
         this.executeInstruction()
       }
       this.lastEmulatorFrame = timestamp

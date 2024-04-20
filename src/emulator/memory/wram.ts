@@ -31,9 +31,11 @@ export class WRAM {
           (value) => this.data[address - 0xc000] = value
         )
       } else {
+        const bankStart = this.wramBankRegister.bank << 12
+        const offsetAddress = address - 0xd000
         return new GetSetByteRef(
-          () => this.data[(this.wramBankRegister.bank << 12) + address - 0xc000],
-          (value) => this.data[(this.wramBankRegister.bank << 12) + address - 0xc000] = value
+          () => this.data[bankStart + offsetAddress],
+          (value) => this.data[bankStart + offsetAddress] = value
         )
       }
     }
