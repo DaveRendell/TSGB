@@ -1,4 +1,5 @@
 import { from2sComplement } from "../cpu/instructions/instructionHelpers"
+import { EmulatorMode } from "../emulator"
 import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 import { IoRegisters } from "./registers/ioRegisters"
 import { VramBankRegister } from "./registers/vramBankRegister"
@@ -7,6 +8,7 @@ import { TileAttributes } from "./tileAttributes"
 type Tile = number[][]
 
 export class VRAM {
+  mode: EmulatorMode
   data = [new Uint8Array(0x2000), new Uint8Array(0x2000)]
   tiles: [Tile[], Tile[]] = [[], []]
   flippedTiles: [Tile[], Tile[]] = [[], []]
@@ -14,7 +16,8 @@ export class VRAM {
 
   vramBankRegister: VramBankRegister
 
-  constructor(registers: IoRegisters) {
+  constructor(registers: IoRegisters, mode: EmulatorMode) {
+    this.mode = mode
     this.vramBankRegister = registers.vramBank
     for (let tile = 0; tile < 384; tile++) {
       this.tiles[0].push([])
@@ -92,12 +95,12 @@ export class VRAM {
   }
 
   tileset0(tileNumber: number, rowNumber: number, bank: number = 0): number[] {
-    return this.tiles[bank][tileNumber][rowNumber]
+    return this.tiles[this.mode === EmulatorMode.CGB ? bank : 0][tileNumber][rowNumber]
   }
 
   tileset1(tileNumber: number, rowNumber: number, bank: number = 0): number[] {
     const adjustedTileNumber = 0x100 + from2sComplement(tileNumber)
-    return this.tiles[bank][adjustedTileNumber][rowNumber]
+    return this.tiles[this.mode === EmulatorMode.CGB ? bank : 0][adjustedTileNumber][rowNumber]
   }
 
   tilemap(tilemapId: number, index: number): number {

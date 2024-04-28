@@ -19,7 +19,7 @@ export default class Memory {
 
   bootRomLoaded = false
   cartridge: Cartridge
-  vram = new VRAM(this.registers)
+  vram: VRAM
   wram: WRAM
   oam: OAM
   hram = new Uint8Array(0x7f)
@@ -30,6 +30,7 @@ export default class Memory {
   controller: Controller
 
   constructor(cartridge: Cartridge, mode: EmulatorMode) {
+    this.vram = new VRAM(this.registers, mode)
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)
     this.cartridge = cartridge
