@@ -23,6 +23,7 @@ export class Mbc3Cartridge extends Cartridge {
   }
   latchRegister: number = 1
   writeRtc: (rtc: Rtc) => void
+  rtcWriteTimeout: NodeJS.Timeout = undefined
 
   constructor(
     data: Uint8Array,
@@ -113,25 +114,35 @@ export class Mbc3Cartridge extends Cartridge {
         if (this.bankNumber2 <= 3) {
           this.writeToRam(address, value)
         } else if (this.bankNumber2 >= 8) {
-          const newRtc = updateRtc(this.rtc)
-          switch (this.bankNumber2) {
-            case 0x8: newRtc.seconds = value; break
-            case 0x9: newRtc.minutes = value; break
-            case 0xa: newRtc.hours = value; break
-            case 0xb:
-              newRtc.days &= 0x1ff
-              newRtc.days |= value
-              break
-            case 0xc:
-              newRtc.days &= 0xFF
-              newRtc.days |= ((value & 1) << 8)
-              newRtc.halt = (value & 0x40) > 0
-              newRtc.carry = (value & 0x80) > 0
-              break
+          if (this.rtcWriteTimeout) {
+            console.log("debounced")
+            return
           }
-          console.log("Writing to RTC", this.rtc, newRtc, this.bankNumber2.toString(16), value.toString(16).padStart(2, "0"))
-          this.rtc = newRtc
-          this.writeRtc(newRtc)
+          this.rtcWriteTimeout = setTimeout(
+            () => {
+              const newRtc = updateRtc(this.rtc)
+              switch (this.bankNumber2) {
+                case 0x8: newRtc.seconds = value; break
+                case 0x9: newRtc.minutes = value; break
+                case 0xa: newRtc.hours = value; break
+                case 0xb:
+                  newRtc.days &= 0x1ff
+                  newRtc.days |= value
+                  break
+                case 0xc:
+                  newRtc.days &= 0xFF
+                  newRtc.days |= ((value & 1) << 8)
+                  newRtc.halt = (value & 0x40) > 0
+                  newRtc.carry = (value & 0x80) > 0
+                  break
+              }
+              console.log("Writing to RTC", this.rtc, newRtc, this.bankNumber2.toString(16), value.toString(16).padStart(2, "0"))
+              this.rtc = newRtc
+              this.writeRtc(newRtc)
+              this.rtcWriteTimeout = undefined
+            },
+            2500
+          )
         }
       },
     )
