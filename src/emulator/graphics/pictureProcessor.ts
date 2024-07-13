@@ -66,17 +66,6 @@ export default class PictureProcessor {
 
   updateClock(cycle: number) {
     this.clockCount += this.speedSwitchRegister.doubleSpeed ? cycle >> 1 : cycle
-    if (!this.lcdControl.enabled) {
-      this.setMode("VBlank")
-      if (this.clockCount >= 456) {
-        this.clockCount -= 456
-        this.setScanline(this.scanlineNumber.byte + 1)
-        if (this.scanlineNumber.byte >= SCANLINES) {
-          this.setScanline(0)
-        }
-      }
-      return
-    }
     
     switch (this.mode) {
       case "HBlank": // Mode 0
@@ -91,7 +80,9 @@ export default class PictureProcessor {
             this.memory.registers.windowLineCounter.byte++
           }
           if (this.scanlineNumber.byte === HEIGHT) {
-            this.scanlineRenderer.renderScreen()
+            if (this.lcdControl.enabled) {
+              this.scanlineRenderer.renderScreen()
+            }
             this.setMode("VBlank")
             this.newFrameDrawn = true
           } else {
@@ -119,7 +110,9 @@ export default class PictureProcessor {
       case "Scanline VRAM": // Mode 3
         if (this.clockCount >= 172) {
           this.clockCount -= 172
-          this.scanlineRenderer.renderScanline()
+          if (this.lcdControl.enabled) {
+            this.scanlineRenderer.renderScanline()
+          }
           this.setMode("HBlank")
         }
         break

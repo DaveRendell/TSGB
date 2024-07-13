@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Emulator } from "../../../emulator/emulator"
 import { SpriteInfo } from "./spriteInfo"
+import { SpriteLayerDebug } from "./spriteLayerDebug"
 
 interface Props {
   emulator: Emulator
@@ -11,7 +12,8 @@ export function SpriteDebug({ emulator }: Props) {
     <div>
       <h3>Sprite debug</h3>
       Object Size: {emulator.memory.registers.lcdControl.objectSize}<br/>
-      Enabled: {emulator.memory.registers.lcdControl.enabled ? "True" : "False"}<br/>
+      Enabled: {emulator.memory.registers.lcdControl.objectsEnabled ? "True" : "False"}<br/>
+      <SpriteLayerDebug emulator={emulator} />
       <table>
         <thead>
           <tr>
