@@ -7,9 +7,10 @@ import GameLoader from "./gameLoader"
 export default function App() {
   const [cartridge, setCartridge] = React.useState<Cartridge | null>(null)
   const [mode, setMode] = React.useState<EmulatorMode | null>(null)
+  const [colouriseDmg, setColouriseDmg] = React.useState(false)
 
   if (cartridge && mode !== null) {
-    const emulator = new Emulator(cartridge, mode)
+    const emulator = new Emulator(cartridge, mode, colouriseDmg)
     const paletteString = window.localStorage.getItem("monochromePalette")
     if (paletteString) {
       const palette = JSON.parse(paletteString)
@@ -23,6 +24,10 @@ export default function App() {
 
   return <>
     <h1>TSGB</h1>
-    <GameLoader setCartridge={setCartridge} setMode={setMode} />
+    <GameLoader
+      setCartridge={setCartridge}
+      setMode={setMode}
+      setColouriseDmg={setColouriseDmg}
+    />
   </>
 }

@@ -12,9 +12,10 @@ import { EmulatorMode } from "../../emulator/emulator"
 interface Props {
   setCartridge: (cartridge: Cartridge) => void
   setMode: (mode: EmulatorMode) => void
+  setColouriseDmg: (colouriseDmg: boolean) => void
 }
 
-export default function GameLoader({ setCartridge, setMode }: Props) {
+export default function GameLoader({ setCartridge, setMode, setColouriseDmg }: Props) {
   const [storedGames, setStoredGames] = React.useState<StoredGame[] | null>(
     null,
   )
@@ -28,7 +29,11 @@ export default function GameLoader({ setCartridge, setMode }: Props) {
     getGameList().then(setStoredGames).catch(setError)
   }, [lastChange])
 
-  const loadGame = (game: StoredGame, mode: EmulatorMode | undefined = undefined) => async () => {
+  const loadGame = (
+    game: StoredGame,
+    mode: EmulatorMode | undefined = undefined,
+    colouriseDmg = false
+  ) => async () => {
     const cartridge = await createCartridge(game)
     setCartridge(cartridge)
     if (mode === undefined) {
@@ -40,6 +45,7 @@ export default function GameLoader({ setCartridge, setMode }: Props) {
     } else {
       setMode(mode)
     }
+    setColouriseDmg(colouriseDmg)
   }
 
   const closeOptions = () => setOptionsFocusGame(undefined)

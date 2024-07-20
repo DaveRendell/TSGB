@@ -6,7 +6,7 @@ import { EmulatorMode } from "../../emulator/emulator"
 
 interface Props {
   game: StoredGame
-  playGame: (game: StoredGame, mode: EmulatorMode | undefined) => () => Promise<void>
+  playGame: (game: StoredGame, mode: EmulatorMode | undefined, colouriseDmg: boolean) => () => Promise<void>
   closeOptions: () => void
 }
 
@@ -65,18 +65,19 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <div>
         {
           !colourSupport && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG)}>Play</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false)}>Play</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, true)}>Play (colourised)</button>
           </>
         }
         {
           (colourSupport && !colourExclusive) && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB)}>Play in Colour mode</button>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG)}>Play in Monochrome mode</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false)}>Play in Colour mode</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false)}>Play in Monochrome mode</button>
           </>
         }
         {
           (colourSupport && colourExclusive) && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB)}>Play</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false)}>Play</button>
           </>
         }
         <button className="chunky-button" onClick={closeOptions}>Back</button>
