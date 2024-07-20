@@ -20,7 +20,8 @@ export default defineConfig({
         "description": "An emulator for game for the Game Boy console",
         "start_url": "/TSGB/",
         "lang": "en-gb"
-      }
+      },
+    registerType: 'autoUpdate'
     })
   ],
   base: "/TSGB/",
