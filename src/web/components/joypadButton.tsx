@@ -2,18 +2,30 @@ import * as React from "react"
 import "../joypadButton.css"
 import Controller, { Button } from "../../emulator/controller"
 
+type Direction = "L" | "R" | "U" | "D"
 interface Props {
   name: Button
   type: string
-  symbol: string
+  symbol?: string
+  dpadDirection?: Direction
   controller: Controller
   isActive: boolean
+}
+
+function getSVGPoints(direction: Direction): string {
+  switch(direction) {
+    case "L": return "1,10 18,20 18,0"
+    case "R": return "18,10 1,20 1,0"
+    case "U": return "10,1 20,18 0,18"
+    case "D": return "10,18 20,1 0,1"
+  }
 }
 
 export default function JoypadButton({
   name,
   type,
   symbol,
+  dpadDirection,
   controller,
   isActive,
 }: Props) {
@@ -62,7 +74,11 @@ export default function JoypadButton({
         }}
         ref={button}
       >
-        {symbol}
+      { symbol
+        ? symbol
+        : dpadDirection
+        ? <svg height="20" width="20"><polygon points={getSVGPoints(dpadDirection)} style={{"fill": "grey"}} /></svg>
+        : <></> }
       </button>
     </div>
   )

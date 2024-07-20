@@ -22,28 +22,28 @@ export default function Joypad({ controller }: Props) {
     <section className="joypad">
       <JoypadButton
         name="Up"
-        symbol="▲"
+        dpadDirection="U"
         type="dpad-button"
         controller={controller}
         isActive={buttons["Up"]}
       />
       <JoypadButton
         name="Left"
-        symbol="◄"
+        dpadDirection="L"
         type="dpad-button"
         controller={controller}
         isActive={buttons["Left"]}
       />
       <JoypadButton
         name="Right"
-        symbol="►"
+        dpadDirection="R"
         type="dpad-button"
         controller={controller}
         isActive={buttons["Right"]}
       />
       <JoypadButton
         name="Down"
-        symbol="▼"
+        dpadDirection="D"
         type="dpad-button"
         controller={controller}
         isActive={buttons["Down"]}
