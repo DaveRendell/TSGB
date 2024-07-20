@@ -6,10 +6,12 @@
   color: darkred;
   font-size: 1.5em;
   vertical-align: top;
+  touch-action: none;
 }
 
 .joypad-button svg {
   vertical-align: middle;
+  pointer-events: none;
   margin-top: -3px;
 }
 

@@ -9,7 +9,9 @@ interface Props {
   symbol?: string
   dpadDirection?: Direction
   controller: Controller
+  buttonRef: React.MutableRefObject<HTMLButtonElement>
   isActive: boolean
+  handleTouchMove: (x: number, y: number) => void
 }
 
 function getSVGPoints(direction: Direction): string {
@@ -27,16 +29,17 @@ export default function JoypadButton({
   symbol,
   dpadDirection,
   controller,
+  buttonRef,
   isActive,
+  handleTouchMove,
 }: Props) {
-  const button = React.useRef<HTMLButtonElement>(null)
   const request = React.useRef<number>()
   const updateCss = () => {
-    if (button.current) {
+    if (buttonRef.current) {
       if (controller.isPressed[name]) {
-        button.current.classList.add("active")
+        buttonRef.current.classList.add("active")
       } else {
-        button.current.classList.remove("active")
+        buttonRef.current.classList.remove("active")
       }
     }
     request.current = requestAnimationFrame(updateCss)
@@ -66,13 +69,17 @@ export default function JoypadButton({
         onTouchEnd={() =>
           release()
         }
+        onTouchMove={(e) => {
+          const touch = e.touches[0]
+          handleTouchMove(touch.pageX, touch.pageY)
+        }}
         onMouseLeave={(e) => {
           if (e.buttons & 0b1) { release() }
         }}
         onMouseEnter={(e) => {
           if (e.buttons & 0b1) { press() }
         }}
-        ref={button}
+        ref={buttonRef}
       >
       { symbol
         ? symbol
