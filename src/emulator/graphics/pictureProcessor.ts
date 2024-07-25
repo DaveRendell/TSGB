@@ -99,11 +99,18 @@ export default class PictureProcessor {
       case "VBlank": // Mode 1
         if (this.clockCount >= 456) {
           this.clockCount -= 456
-          this.setScanline(this.scanlineNumber.byte + 1)
-          if (this.scanlineNumber.byte > SCANLINES) {
+          // The PPU has weird quirks around line 153 being sort of the same
+          // as line 0, see https://forums.nesdev.org/viewtopic.php?t=13727.
+          // This code hopefully handles those quirks
+          if (this.scanlineNumber.byte === 1) {
+            this.setScanline(0)
+            this.setMode("Scanline OAM")
+          } else {
+            this.setScanline(this.scanlineNumber.byte + 1)
+          }
+          if (this.scanlineNumber.byte === 153) {
             this.setScanline(0)
             this.memory.registers.windowLineCounter.byte = 0
-            this.setMode("Scanline OAM")
           }
         }
         break

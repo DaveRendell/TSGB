@@ -115,7 +115,6 @@ export class Mbc3Cartridge extends Cartridge {
           this.writeToRam(address, value)
         } else if (this.bankNumber2 >= 8) {
           if (this.rtcWriteTimeout) {
-            console.log("debounced")
             return
           }
           this.rtcWriteTimeout = setTimeout(
