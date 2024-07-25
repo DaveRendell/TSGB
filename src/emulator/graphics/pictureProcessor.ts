@@ -100,7 +100,7 @@ export default class PictureProcessor {
         if (this.clockCount >= 456) {
           this.clockCount -= 456
           this.setScanline(this.scanlineNumber.byte + 1)
-          if (this.scanlineNumber.byte >= SCANLINES) {
+          if (this.scanlineNumber.byte > SCANLINES) {
             this.setScanline(0)
             this.memory.registers.windowLineCounter.byte = 0
             this.setMode("Scanline OAM")
