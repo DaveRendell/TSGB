@@ -1,5 +1,6 @@
 import { ByteRef } from "../../refs/byteRef"
 import { DebugConnection } from "../../serialConnections/debugConnection"
+import { PrinterConnection } from "../../serialConnections/printerConnection"
 import { SerialConnection } from "../../serialConnections/serialConnection"
 import { Interrupt, InterruptRegister } from "./interruptRegisters"
 
@@ -16,7 +17,7 @@ export default class SerialRegisters {
   serialDataRegister: ByteRef
   serialControlRegister: ByteRef
 
-  serialConnection: SerialConnection = new DebugConnection()
+  serialConnection: SerialConnection = new PrinterConnection()
 
   constructor(interruptRegister: InterruptRegister) {
     this.interruptRegister = interruptRegister
