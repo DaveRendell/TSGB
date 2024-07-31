@@ -4,14 +4,14 @@ import { ByteRef, GetSetByteRef } from "../refs/byteRef"
 import { IoRegisters } from "./registers/ioRegisters"
 import { VramBankRegister } from "./registers/vramBankRegister"
 import { TileAttributes } from "./tileAttributes"
+import { TileStore } from "./tileStore"
 
 type Tile = number[][]
 
 export class VRAM {
   mode: EmulatorMode
   data = [new Uint8Array(0x2000), new Uint8Array(0x2000)]
-  tiles: [Tile[], Tile[]] = [[], []]
-  flippedTiles: [Tile[], Tile[]] = [[], []]
+  tileBanks = [new TileStore(0x180), new TileStore(0x180)]
   tileAttributes: TileAttributes[] = []
 
   vramBankRegister: VramBankRegister
@@ -19,22 +19,6 @@ export class VRAM {
   constructor(registers: IoRegisters, mode: EmulatorMode) {
     this.mode = mode
     this.vramBankRegister = registers.vramBank
-    for (let tile = 0; tile < 384; tile++) {
-      this.tiles[0].push([])
-      this.tiles[1].push([])
-      this.flippedTiles[0].push([])
-      this.flippedTiles[1].push([])
-      for (let row = 0; row < 8; row++) {
-        this.tiles[0][tile].push([])
-        this.tiles[0][tile][row] = new Array(8).fill(0)
-        this.tiles[1][tile].push([])
-        this.tiles[1][tile][row] = new Array(8).fill(0)
-        this.flippedTiles[0][tile].push([])
-        this.flippedTiles[0][tile][row] = new Array(8).fill(0)
-        this.flippedTiles[1][tile].push([])
-        this.flippedTiles[1][tile][row] = new Array(8).fill(0)
-      }
-    }
     for (let t = 0; t < 0x800; t++) {
       this.tileAttributes.push(new TileAttributes())
     }
@@ -50,16 +34,7 @@ export class VRAM {
     const write = (value: number) => {
       this.data[this.vramBankRegister.bank][adjustedAddress] = value
       if (address < 0x9800) {
-        for (let i = 0; i < 8; i++) {
-          const bit = (value & 1) << adjustedAddress % 2
-          value >>= 1
-          this.tiles[this.vramBankRegister.bank][tileNumber][rowNumber][7 - i] &=
-            1 << (1 - (adjustedAddress % 2))
-          this.tiles[this.vramBankRegister.bank][tileNumber][rowNumber][7 - i] |= bit
-          this.flippedTiles[this.vramBankRegister.bank][tileNumber][rowNumber][i] &=
-            1 << (1 - (adjustedAddress % 2))
-          this.flippedTiles[this.vramBankRegister.bank][tileNumber][rowNumber][i] |= bit
-        }
+        this.tileBanks[this.vramBankRegister.bank].writeByte(adjustedAddress, value)
       } else {
         if (this.vramBankRegister.bank == 1) {
           const attributes = this.tileAttributes[address - 0x9800]
@@ -86,21 +61,18 @@ export class VRAM {
       ? tileIndex
       : 0x100 + from2sComplement(tileIndex)
     
-    const adjustedRowIndex = yFlip ? 7 - rowIndex : rowIndex
-
-    if (xFlip) {
-      return this.flippedTiles[bank][adjustedTileIndex][adjustedRowIndex]
-    }
-    return this.tiles[bank][adjustedTileIndex][adjustedRowIndex]
+    return this.tileBanks[bank].readRow(adjustedTileIndex, rowIndex, xFlip, yFlip)
   }
 
   tileset0(tileNumber: number, rowNumber: number, bank: number = 0): number[] {
-    return this.tiles[this.mode === EmulatorMode.CGB ? bank : 0][tileNumber][rowNumber]
+    bank = this.mode === EmulatorMode.CGB ? bank : 0
+    return this.tileBanks[bank].readRow(tileNumber, rowNumber)
   }
 
   tileset1(tileNumber: number, rowNumber: number, bank: number = 0): number[] {
-    const adjustedTileNumber = 0x100 + from2sComplement(tileNumber)
-    return this.tiles[this.mode === EmulatorMode.CGB ? bank : 0][adjustedTileNumber][rowNumber]
+    tileNumber = 0x100 + from2sComplement(tileNumber)
+    bank = this.mode === EmulatorMode.CGB ? bank : 0
+    return this.tileBanks[bank].readRow(tileNumber, rowNumber)
   }
 
   tilemap(tilemapId: number, index: number): number {
