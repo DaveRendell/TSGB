@@ -17,7 +17,7 @@ export default class SerialRegisters {
   serialDataRegister: ByteRef
   serialControlRegister: ByteRef
 
-  serialConnection: SerialConnection = new PrinterConnection()
+  serialConnection: SerialConnection = new DebugConnection()
 
   constructor(interruptRegister: InterruptRegister) {
     this.interruptRegister = interruptRegister

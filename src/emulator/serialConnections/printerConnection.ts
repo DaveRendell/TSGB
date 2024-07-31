@@ -1,8 +1,23 @@
+import { TileStore } from "../memory/tileStore";
 import { SerialConnection } from "./serialConnection";
+
+const COLOURS = [
+  [255, 255, 255],
+  [192, 192, 192],
+  [96, 96, 96],
+  [0, 0, 0],
+]
 
 // https://gbdev.io/pandocs/Gameboy_Printer.html
 export class PrinterConnection implements SerialConnection {
   packetBuffer: number[] = []
+  tileBuffer: TileStore = new TileStore(512)
+  tileDataCursor = 0
+  rowCursor = 0
+
+  output = new OffscreenCanvas(160, 0)
+  renderRowCursor = 0
+  spurtCounter = 0
 
   // Status bits
   lowBattery = false
@@ -77,10 +92,14 @@ export class PrinterConnection implements SerialConnection {
   private initialise(): void {
     console.log("[PRINTER] Received command: INITIALISE")
 
+    this.tileBuffer.clearTiles()
+    this.tileDataCursor = 0
+
     this.unprocessedData = false
     this.packetError = false
     this.checksumError = false
     this.otherError = false
+    this.imageDataFull = false
   }
 
   private startPrinting(data: number[]): void {
@@ -90,13 +109,36 @@ export class PrinterConnection implements SerialConnection {
     this.unprocessedData = false
 
     const printer = this
-    setTimeout(() => {
-      printer.printing = false
-    }, 3000)
+
+    this.spurtCounter = 20
+    const rowsToPrint = this.tileDataCursor / (2 * 20)
+    const outputRow = () => {
+      if (printer.rowCursor < rowsToPrint) {
+        printer.renderRow()
+        const nextTimeout = --this.spurtCounter === 0 ? 500 : 1000 / 60
+        if (this.spurtCounter <= 0) { this.spurtCounter = 20 }
+        setTimeout(outputRow, nextTimeout)
+      } else {
+        this.printing = false
+        this.rowCursor = 0
+      }
+    }
+    setTimeout(outputRow, 1000 / 60)
   }
 
   private fillBuffer(data: number[], compressed: boolean): void {
     console.log("[PRINTER] Received command: FILL BUFFER")
+
+    if (compressed) {
+      console.log("[PRINTER] Error - compression not yet supported")
+    } else {
+      for (let i = 0; i < data.length; i++) {
+        this.tileBuffer.writeByte(this.tileDataCursor + i, data[i])
+      }
+      this.tileDataCursor += data.length
+    }
+
+    this.imageDataFull = this.tileDataCursor >= 8192
   }
 
   private nop(): void {
@@ -114,5 +156,41 @@ export class PrinterConnection implements SerialConnection {
       + (this.printing ? 0x02 : 0)
       + (this.checksumError ? 0x01 : 0)
     )
+  }
+
+  private renderRow(): void {
+    console.log("[PRINTER] Render row", this.renderRowCursor)
+    const context = this.output.getContext("2d")!
+    if (this.output.height > 0) {
+      const oldImageData = context.getImageData(0, 0, 160, this.output.height)
+      this.output.height++
+      context.putImageData(oldImageData, 0, 0)
+    } else {
+      this.output.height++
+    }
+
+    const imageData = context.createImageData(160, 1)
+
+    const tileRow = this.rowCursor >> 3
+
+    for (let i = 0; i < 160; i++) {
+      const tileCol = i >> 3
+      const tileId = (tileRow * 20) + tileCol
+      const row = this.tileBuffer.readRow(tileId, this.rowCursor & 0x7)
+      const pixel = row[i & 0x7]
+      // QQ palette
+      
+      const colour = COLOURS[pixel]
+
+      imageData.data[(i << 2) + 0] = colour[0]
+      imageData.data[(i << 2) + 1] = colour[1]
+      imageData.data[(i << 2) + 2] = colour[2]
+      imageData.data[(i << 2) + 3] = 0xff
+    }
+
+    context.putImageData(imageData, 0, this.renderRowCursor)
+
+    this.renderRowCursor++
+    this.rowCursor++
   }
 }

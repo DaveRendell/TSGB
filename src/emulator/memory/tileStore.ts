@@ -1,16 +1,13 @@
 type Tile = number[][]
 
 export class TileStore {
+  size: number
   tiles: Tile[]
   flippedTiles: Tile[]
 
   constructor(size: number) {
-    this.tiles = [...new Array(size)]
-      .map(() => [...new Array(8)]
-        .map(() =>[...new Array(8)].map(() => 0)))
-    this.flippedTiles = [...new Array(size)]
-      .map(() => [...new Array(8)]
-        .map(() => [...new Array(8)].map(() => 0)))
+    this.size = size
+    this.clearTiles()
   }
 
   writeByte(offsetAddress: number, value: number): void {
@@ -40,5 +37,14 @@ export class TileStore {
     rowNumber = yFlip ? 7 - rowNumber : rowNumber
 
     return (xFlip ? this.flippedTiles : this.tiles)[tileNumber][rowNumber]
+  }
+
+  clearTiles(): void {
+    this.tiles = [...new Array(this.size)]
+      .map(() => [...new Array(8)]
+        .map(() =>[...new Array(8)].map(() => 0)))
+    this.flippedTiles = [...new Array(this.size)]
+      .map(() => [...new Array(8)]
+        .map(() => [...new Array(8)].map(() => 0)))
   }
 }

@@ -10,6 +10,7 @@ import Settings from "./settings/settings"
 import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
 import { GraphicsDebug } from "./graphicsDebug/graphicsDebug"
 import { Info } from "./info"
+import SerialPort from "./serialPort"
 
 interface Props {
   emulator: Emulator
@@ -41,6 +42,7 @@ export default function GameView({ emulator, unload }: Props) {
   const tabs = {
     Info: () => <Info emulator={emulator} />,
     Settings: () => <Settings emulator={emulator} />,
+    "Serial Port": () => <SerialPort emulator={emulator} />,
     "Debug Graphics": () => <GraphicsDebug emulator={emulator} />,
     "Debug Sound": () => (
       <AudioDebug audioProcessor={emulator.audioProcessor} />

@@ -1,84 +1,59 @@
-// import * as React from "react"
-// import { Emulator } from "../../emulator/emulator"
-// import Peer, { DataConnection } from "peerjs"
+import * as React from "react"
+import { Emulator } from "../../emulator/emulator"
+import { SerialConnection } from "../../emulator/serialConnections/serialConnection"
+import { DebugConnection } from "../../emulator/serialConnections/debugConnection"
+import { PrinterConnection } from "../../emulator/serialConnections/printerConnection"
+import PrinterOutput from "./serialPort/printerOutput"
 
-// interface Props {
-//   emulator: Emulator
-// }
+interface Props {
+  emulator: Emulator
+}
 
-// export default function SerialPort({ emulator }: Props) {
-//   const [connectionId, setConnectionId] = React.useState<string>("")
-//   const [linkType, setLinkType] = React.useState("not-connected")
-//   const [peer, setPeer] = React.useState<Peer | undefined>(undefined)
-//   const [connection, setConnection] = React.useState<DataConnection | undefined>(undefined)
+type ConnectionType = "not-connected" | "printer"
 
-//   React.useEffect(() => {
-//     if (linkType === "link-cable") {
-//       const peer = new Peer()
-//       const serialRegisters = emulator.memory.registers.serialRegisters
+function createConnection(connectionType: ConnectionType): SerialConnection {
+  switch(connectionType) {
+    case "not-connected": return new DebugConnection()
+    case "printer": return new PrinterConnection()
+  }
+}
+export default function SerialPort({ emulator }: Props) {
+  const [linkType, setLinkType] = React.useState<ConnectionType>("not-connected")
 
-//       peer.addListener("connection", (connection) => {
-//         serialRegisters.sendByte = (byte: number) =>
-//           connection.send(byte.toString(16))
-//         connection.on("data", (data) =>
-//           serialRegisters.onReceiveByte(parseInt("0x" + data)))
-//         setConnection(connection)
-//       })
+  const handleChange = (id: ConnectionType) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    if (e.target.value == "on") {
+      setLinkType(id)
+      emulator.memory.registers.serialRegisters.serialConnection = createConnection(id)
+    }
+  }
 
-//       setPeer(peer)
-//       return () => { peer.disconnect() }
-//     }
-//   }, [linkType])
+  return (
+    <section>
+      <input
+        type="radio"
+        id="not-connected"
+        checked={linkType == "not-connected"}
+        onChange={handleChange("not-connected")}
+      />
+      <label htmlFor="not-connected">Not connected</label>
+      <br/>
+      <input
+        type="radio"
+        id="printer"
+        checked={linkType == "printer"}
+        onChange={handleChange("printer")}
+      />
+      <label htmlFor="printer">Printer</label>
 
-//   const handleChange = (id: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-//     e.preventDefault()
-//     if (e.target.value == "on") { setLinkType(id) }
-//   }
+      <br/>
 
-//   const connect = () => {
-//     if (peer) {
-//       const serialRegisters = emulator.memory.registers.serialRegisters
+      {
+        linkType === "printer" && <PrinterOutput
+          printer={emulator.memory.registers.serialRegisters.serialConnection as PrinterConnection}
+        />
+      }
 
-//       const connection = peer.connect(connectionId)
-
-//       serialRegisters.sendByte = (byte: number) =>
-//         connection.send(byte.toString(16))
-//       connection.on("data", (data) =>
-//         serialRegisters.onReceiveByte(parseInt("0x" + data)))
-//       setConnection(connection)
-//     }
-//   }
-
-//   return (
-//     <section>
-//       <input
-//         type="radio"
-//         id="not-connected"
-//         checked={linkType == "not-connected"}
-//         onChange={handleChange("not-connected")}
-//       />
-//       <label htmlFor="not-connected">Not connected</label>
-//       <br/>
-//       <input
-//         type="radio"
-//         id="link-cable"
-//         checked={linkType == "link-cable"}
-//         onChange={handleChange("link-cable")}
-//       />
-//       <label htmlFor="link-cable">Link cable</label>
-
-//       { linkType === "link-cable" && <>
-//           {connection ? "Connected" : ""}
-//           { peer
-//             ? <>
-//               <input type="text" value={connectionId} onChange={e => {e.preventDefault(); setConnectionId(e.target.value)}} />
-//               <button onClick={connect}>Link</button>
-//               <br/>Your ID: {peer.id}
-//             </>
-//             : <>Connecting to server...</>}
-          
-//         </>
-//       }
-//     </section>
-//   )
-// }
+    </section>
+  )
+}
