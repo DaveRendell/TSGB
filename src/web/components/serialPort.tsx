@@ -4,17 +4,19 @@ import { SerialConnection } from "../../emulator/serialConnections/serialConnect
 import { DebugConnection } from "../../emulator/serialConnections/debugConnection"
 import { PrinterConnection } from "../../emulator/serialConnections/printerConnection"
 import PrinterOutput from "./serialPort/printerOutput"
+import { MonGen1MirrorConnection } from "../../emulator/serialConnections/monGen1MirrorConnection"
 
 interface Props {
   emulator: Emulator
 }
 
-type ConnectionType = "not-connected" | "printer"
+type ConnectionType = "not-connected" | "printer" | "gen1-mirror"
 
 function createConnection(connectionType: ConnectionType): SerialConnection {
   switch(connectionType) {
     case "not-connected": return new DebugConnection()
     case "printer": return new PrinterConnection()
+    case "gen1-mirror": return new MonGen1MirrorConnection()
   }
 }
 export default function SerialPort({ emulator }: Props) {
@@ -45,6 +47,13 @@ export default function SerialPort({ emulator }: Props) {
         onChange={handleChange("printer")}
       />
       <label htmlFor="printer">Printer</label>
+      <input
+        type="radio"
+        id="gen1-mirror"
+        checked={linkType == "gen1-mirror"}
+        onChange={handleChange("gen1-mirror")}
+      />
+      <label htmlFor="gen1-mirror">Pokemon Generation I mirror link</label>
 
       <br/>
 
