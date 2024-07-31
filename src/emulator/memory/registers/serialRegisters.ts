@@ -37,7 +37,9 @@ export default class SerialRegisters {
         if (self.transferEnabled) {
           self.data = self.serialConnection.onReceiveByteFromConsole(self.data)
           self.transferEnabled = false
-          self.interruptRegister.setInterrupt(Interrupt.Serial)
+          if (self.serialConnection.isConnected) {
+            self.interruptRegister.setInterrupt(Interrupt.Serial)
+          }
         }
       }
     }

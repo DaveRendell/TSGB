@@ -193,4 +193,6 @@ export class PrinterConnection implements SerialConnection {
     this.renderRowCursor++
     this.rowCursor++
   }
+
+  isConnected: boolean = true
 }
