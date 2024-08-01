@@ -1,3 +1,4 @@
+import { Emulator } from "../emulator";
 import { SerialConnection } from "./serialConnection";
 
 // Heavily inspired by code from https://github.com/mwpenny/gbplay/blob/master/tools/pokered-mock-trade/trader.py
@@ -28,9 +29,18 @@ const TRADE_CONFIRMED = 0x62
 
 const TRAINER_DATA_SIZE = 424
 
+
 export class MonGen1MirrorConnection implements SerialConnection {
   isConnected: boolean = true
   isPrimary = false
+
+  transferredData: string[] = []
+  byteToSend = 0x00
+
+  emulator: Emulator
+  constructor(emulator: Emulator) {
+    this.emulator = emulator
+  }
 
   state: State = "NOT_CONNECTED"
 
@@ -72,29 +82,30 @@ export class MonGen1MirrorConnection implements SerialConnection {
         if (byte !== TERMINATOR) {
           this.setState("SENDING_RANDOM_SEED")
         }
-        console.log("Waiting for random seed", byte.toString(16).padStart(2, "0"))
         return byte
 
       case "SENDING_RANDOM_SEED":
         if (byte === TERMINATOR) {
           this.setState("WAITING_FOR_TRAINER_DATA")
         }
-        console.log("receiving random seed", byte.toString(16).padStart(2, "0"))
         return byte
 
       case "WAITING_FOR_TRAINER_DATA":
         if (byte !== TERMINATOR) {
           this.transferCounter = 1
+          this.transferredData.push(byte.toString(16).padStart(2, "0"))
           this.setState("SENDING_TRAINER_DATA")
-          return byte
+          this.byteToSend = byte
         }
         return TERMINATOR
 
       case "SENDING_TRAINER_DATA":
         if (this.transferCounter < 424) {
-          console.log("trainer data send", byte.toString(16).padStart(2, "0"), String.fromCharCode(byte - 0x80 + 65), String.fromCharCode(byte - 0xa0 + 97))
+          this.transferredData.push(byte.toString(16).padStart(2, "0"))
           this.transferCounter++
-          return byte // Hopefully results in mirrored data?
+          const lastByte = this.byteToSend
+          this.byteToSend = byte
+          return lastByte // Hopefully results in mirrored data?
         }
         
         if (this.transferCounter >= 424) {
@@ -122,12 +133,32 @@ export class MonGen1MirrorConnection implements SerialConnection {
           this.setState("TRADE_INITIATED")
           return 0x00
         }
+
+        // NOTE: This line hides that we're actually exchanging a 200 byte long
+        // "patch list" that prevents the exchanged data being entirely messed 
+        // up. Should probably add as explicit step for non mirrored trading.
+        return byte  
         break
 
       case "TRADE_INITIATED":
         if (byte != 0) {
           return PARTY_SELECT_OFFSET + this.monToSend
         }
+
+        // DEBUG
+        const localPlayerData: string[] = []
+        const opposingPlayerData: string[] = []
+        for (let pointer = 0xD158; pointer <= 0xD2F6; pointer++) {
+          localPlayerData.push(this.emulator.memory.at(pointer).byte.toString(16).padStart(2, "0"))
+        }
+        for (let pointer = 0xD89C; pointer <= 0xDA2F; pointer++) {
+          opposingPlayerData.push(this.emulator.memory.at(pointer).byte.toString(16).padStart(2, "0"))
+        }
+        console.log({
+          localPlayerData,
+          opposingPlayerData,
+          transferredData: this.transferredData,
+        })
         this.setState("TRADE_CONFIRMED")
         break
 
