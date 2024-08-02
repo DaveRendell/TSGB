@@ -195,4 +195,6 @@ export class PrinterConnection implements SerialConnection {
   }
 
   isConnected: boolean = true
+
+  updateClock(cycles: number): void {}
 }

@@ -26,7 +26,7 @@ export class Emulator {
     this.serialPort = { type: "debug", connection: new DebugConnection() }
     this.memory = new Memory(cartridge, this.mode, this.serialPort)
     this.controller = new Controller(this.memory)
-    this.cpu = new CPU(this.memory, this.controller, mode)
+    this.cpu = new CPU(this.memory, this.controller, this.serialPort, mode)
     this.pictureProcessor = new PictureProcessor(this.cpu, mode, colouriseDmg)
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()

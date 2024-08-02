@@ -187,4 +187,6 @@ export class MonGen1MirrorConnection implements SerialConnection {
     console.log("Setting state to", state)
     this.state = state
   }
+
+  updateClock(cycles: number): void {}
 }

@@ -6,4 +6,5 @@ export class DebugConnection implements SerialConnection {
     return 0xFF
   }
   isConnected: boolean = false
+  updateClock(cycles: number): void {}
 }

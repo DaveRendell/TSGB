@@ -12,6 +12,8 @@ import PictureProcessor from "../graphics/pictureProcessor"
 import Timer from "../timer"
 import { addressDisplay } from "../../helpers/displayHexNumbers"
 import { EmulatorMode } from "../emulator"
+import { SerialPort } from "../serialConnections/serialPort"
+import { SerialConnection } from "../serialConnections/serialConnection"
 
 interface ClockCallback {
   updateClock(cycles: number): void
@@ -38,6 +40,7 @@ export default class CPU {
   interruptsEnabled = false
   pictureProcessor: PictureProcessor
   audioProcessor: AudioProcessor
+  serialPort: SerialPort
   recentFrames: number[] = []
   recentFrameTimes: number[] = []
   averageRecentFrameTime = 0
@@ -67,7 +70,7 @@ export default class CPU {
   prefixedInstructions: { [code: number]: (cpu: CPU) => void } = {}
   prefixedCycleLengths: { [code: number]: number } = {}
 
-  constructor(memory: Memory, controller: Controller, mode: EmulatorMode) {
+  constructor(memory: Memory, controller: Controller, serialPort: SerialPort, mode: EmulatorMode) {
     this.mode = mode
     this.memory = memory
     this.controller = controller
@@ -75,6 +78,7 @@ export default class CPU {
     this.registers = new CpuRegisters()
     this.timer = new Timer(memory)
     this.addClockCallback(this.timer)
+    this.serialPort = serialPort
 
     this.interruptEnableRegister = memory.at(0xffff)
     this.interruptFlags = memory.at(0xff0f)
@@ -241,6 +245,7 @@ export default class CPU {
   incrementClock(cycles: number) {
     this.cycleCount += cycles
     this.clockCallbacks.forEach((callback) => callback.updateClock(cycles))
+    this.serialPort.connection.updateClock(cycles)
   }
 
   run() {

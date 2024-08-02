@@ -46,4 +46,17 @@ export default class SerialRegisters {
       }
     }
   }
+
+  // called when this console is the secondary console, and the primary is
+  // starting a transfer
+  pushFromExternal(externalByte: number): number {
+    if (this.isPrimary) {
+      // If we're primary, don't let the other console push
+      return externalByte
+    }
+    const previousDataValue = this.data
+    this.data = externalByte
+    this.interruptRegister.setInterrupt(Interrupt.Serial)
+    return previousDataValue
+  }
 }
