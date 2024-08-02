@@ -6,6 +6,7 @@ import { DebugConnection } from "../../emulator/serialConnections/debugConnectio
 import { PrinterConnection } from "../../emulator/serialConnections/printerConnection"
 import PrinterOutput from "./serialPort/printerOutput"
 import { MonGen1MirrorConnection } from "../../emulator/serialConnections/monGen1MirrorConnection"
+import TetrisConnection from "../../emulator/serialConnections/tetris/tetrisConnection"
 
 interface Props {
   emulator: Emulator
@@ -18,6 +19,7 @@ function createConnection(connectionType: ConnectionType, emulator: Emulator): S
     case "debug": return new DebugConnection()
     case "printer": return new PrinterConnection()
     case "gen-1-mirror": return new MonGen1MirrorConnection(emulator)
+    case "tetris": return new TetrisConnection()
   }
 }
 export default function SerialPort({ emulator }: Props) {
@@ -58,6 +60,14 @@ export default function SerialPort({ emulator }: Props) {
         onChange={handleChange("gen-1-mirror")}
       />
       <label htmlFor="gen1-mirror">Pokemon Generation I mirror link</label>
+      <br/>
+      <input
+        type="radio"
+        id="tetris"
+        checked={linkType == "tetris"}
+        onChange={handleChange("tetris")}
+      />
+      <label htmlFor="tetris">Tetris online multiplayer link</label>
       <br/>
 
       <br/>
