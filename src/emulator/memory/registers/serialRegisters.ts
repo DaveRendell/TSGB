@@ -2,6 +2,7 @@ import { ByteRef } from "../../refs/byteRef"
 import { DebugConnection } from "../../serialConnections/debugConnection"
 import { PrinterConnection } from "../../serialConnections/printerConnection"
 import { SerialConnection } from "../../serialConnections/serialConnection"
+import { SerialPort } from "../../serialConnections/serialPort"
 import { Interrupt, InterruptRegister } from "./interruptRegisters"
 
 
@@ -17,9 +18,10 @@ export default class SerialRegisters {
   serialDataRegister: ByteRef
   serialControlRegister: ByteRef
 
-  serialConnection: SerialConnection = new DebugConnection()
+  serialPort: SerialPort
 
-  constructor(interruptRegister: InterruptRegister) {
+  constructor(serialPort: SerialPort, interruptRegister: InterruptRegister) {
+    this.serialPort = serialPort
     this.interruptRegister = interruptRegister
     this.sendByte = () => {}
     const self = this
@@ -35,9 +37,9 @@ export default class SerialRegisters {
         self.transferEnabled = (value & 0x80) > 0
         self.isPrimary = (value & 1) > 0
         if (self.transferEnabled) {
-          self.data = self.serialConnection.onReceiveByteFromConsole(self.data)
+          self.data = self.serialPort.connection.onReceiveByteFromConsole(self.data)
           self.transferEnabled = false
-          if (self.serialConnection.isConnected) {
+          if (self.serialPort.connection.isConnected) {
             self.interruptRegister.setInterrupt(Interrupt.Serial)
           }
         }

@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Emulator } from "../../emulator/emulator"
 import { SerialConnection } from "../../emulator/serialConnections/serialConnection"
+import { SerialPort as SerialPortType } from "../../emulator/serialConnections/serialPort"
 import { DebugConnection } from "../../emulator/serialConnections/debugConnection"
 import { PrinterConnection } from "../../emulator/serialConnections/printerConnection"
 import PrinterOutput from "./serialPort/printerOutput"
@@ -10,23 +11,25 @@ interface Props {
   emulator: Emulator
 }
 
-type ConnectionType = "not-connected" | "printer" | "gen1-mirror"
+type ConnectionType = SerialPortType["type"]
 
 function createConnection(connectionType: ConnectionType, emulator: Emulator): SerialConnection {
   switch(connectionType) {
-    case "not-connected": return new DebugConnection()
+    case "debug": return new DebugConnection()
     case "printer": return new PrinterConnection()
-    case "gen1-mirror": return new MonGen1MirrorConnection(emulator)
+    case "gen-1-mirror": return new MonGen1MirrorConnection(emulator)
   }
 }
 export default function SerialPort({ emulator }: Props) {
-  const [linkType, setLinkType] = React.useState<ConnectionType>("not-connected")
+  const [linkType, setLinkType] = React.useState<ConnectionType>(emulator.serialPort.type)
 
   const handleChange = (id: ConnectionType) => (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (e.target.value == "on") {
       setLinkType(id)
-      emulator.memory.registers.serialRegisters.serialConnection = createConnection(id, emulator)
+
+      emulator.serialPort.type = id
+      emulator.serialPort.connection = createConnection(id, emulator)
     }
   }
 
@@ -35,8 +38,8 @@ export default function SerialPort({ emulator }: Props) {
       <input
         type="radio"
         id="not-connected"
-        checked={linkType == "not-connected"}
-        onChange={handleChange("not-connected")}
+        checked={linkType == "debug"}
+        onChange={handleChange("debug")}
       />
       <label htmlFor="not-connected">Not connected</label>
       <br/>
@@ -51,8 +54,8 @@ export default function SerialPort({ emulator }: Props) {
       <input
         type="radio"
         id="gen1-mirror"
-        checked={linkType == "gen1-mirror"}
-        onChange={handleChange("gen1-mirror")}
+        checked={linkType == "gen-1-mirror"}
+        onChange={handleChange("gen-1-mirror")}
       />
       <label htmlFor="gen1-mirror">Pokemon Generation I mirror link</label>
       <br/>
@@ -60,8 +63,8 @@ export default function SerialPort({ emulator }: Props) {
       <br/>
 
       {
-        linkType === "printer" && <PrinterOutput
-          printer={emulator.memory.registers.serialRegisters.serialConnection as PrinterConnection}
+        emulator.serialPort.type === "printer" && <PrinterOutput
+          printer={emulator.serialPort.connection}
         />
       }
 

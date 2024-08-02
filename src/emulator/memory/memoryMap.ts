@@ -10,12 +10,13 @@ import { InterruptEnabledRegister } from "./registers/interruptRegisters"
 import { WRAM } from "./wram"
 import { EmulatorMode } from "../emulator"
 import DMA from "./dma"
+import { SerialPort } from "../serialConnections/serialPort"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
   cpu: CPU
 
-  registers: IoRegisters = new IoRegisters(this)
+  registers: IoRegisters
 
   bootRomLoaded = false
   cartridge: Cartridge
@@ -29,7 +30,8 @@ export default class Memory {
 
   controller: Controller
 
-  constructor(cartridge: Cartridge, mode: EmulatorMode) {
+  constructor(cartridge: Cartridge, mode: EmulatorMode, serialPort: SerialPort) {
+    this.registers = new IoRegisters(this, serialPort)
     this.vram = new VRAM(this.registers, mode)
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)
