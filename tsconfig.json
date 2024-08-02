@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ES6",
     "jsx": "react",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "moduleResolution": "node"
   },
   "exclude": [
     "node_modules",

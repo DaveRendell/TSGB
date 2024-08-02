@@ -7,6 +7,7 @@ import { PrinterConnection } from "../../emulator/serialConnections/printerConne
 import PrinterOutput from "./serialPort/printerOutput"
 import { MonGen1MirrorConnection } from "../../emulator/serialConnections/monGen1MirrorConnection"
 import TetrisConnection from "../../emulator/serialConnections/tetris/tetrisConnection"
+import OnlineConnectionForm from "./serialPort/onlineConnectionForm"
 
 interface Props {
   emulator: Emulator
@@ -75,6 +76,12 @@ export default function SerialPort({ emulator }: Props) {
       {
         emulator.serialPort.type === "printer" && <PrinterOutput
           printer={emulator.serialPort.connection}
+        />
+      }
+
+      {
+        emulator.serialPort.type === "tetris" && <OnlineConnectionForm
+          serialConnection={emulator.serialPort.connection}
         />
       }
 
