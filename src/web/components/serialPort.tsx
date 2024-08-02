@@ -15,12 +15,12 @@ interface Props {
 
 type ConnectionType = SerialPortType["type"]
 
-function createConnection(connectionType: ConnectionType, emulator: Emulator): SerialConnection {
+function createConnection(connectionType: ConnectionType, emulator: Emulator) {
   switch(connectionType) {
     case "debug": return new DebugConnection()
     case "printer": return new PrinterConnection()
     case "gen-1-mirror": return new MonGen1MirrorConnection(emulator)
-    case "tetris": return new TetrisConnection()
+    case "tetris": return new TetrisConnection(emulator.memory.registers.serialRegisters)
   }
 }
 export default function SerialPort({ emulator }: Props) {

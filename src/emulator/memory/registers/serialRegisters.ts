@@ -37,14 +37,18 @@ export default class SerialRegisters {
         self.transferEnabled = (value & 0x80) > 0
         self.isPrimary = (value & 1) > 0
         if (self.transferEnabled) {
-          self.data = self.serialPort.connection.onReceiveByteFromConsole(self.data)
-          self.transferEnabled = false
-          if (self.serialPort.connection.isConnected) {
-            self.interruptRegister.setInterrupt(Interrupt.Serial)
-          }
+          self.serialPort.connection.onReceiveByteFromConsole(self.data, (byte) => {
+            self.responseFromSecondary(byte)
+          })
         }
       }
     }
+  }
+
+  responseFromSecondary(byte: number): void {
+    this.data = byte
+    this.transferEnabled = false
+    this.interruptRegister.setInterrupt(Interrupt.Serial)
   }
 
   // called when this console is the secondary console, and the primary is

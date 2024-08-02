@@ -1,6 +1,7 @@
 import Peer, { DataConnection } from "peerjs"
 import StateMachine from "../../helpers/stateMachine"
 import { SerialConnection } from "./serialConnection"
+import SerialRegisters from "../memory/registers/serialRegisters"
 
 
 interface DisconnectedState {
@@ -17,22 +18,33 @@ type ConnectionState = DisconnectedState | ConnectedState
 export default class OnlineConnection extends StateMachine<ConnectionState> implements SerialConnection  {
   isConnected: boolean = false;
   peer: Peer
+  serialRegisters: SerialRegisters
   connectedCallback: () => void = () => {}
 
-  constructor() {
-    super({ name: "disconnected" })
+  constructor(serialRegisters: SerialRegisters) {
+    super(
+      { name: "disconnected" },
+      { logPrefix: "ONLINE", logStateChanges: true }
+    )
+    this.serialRegisters = serialRegisters
     this.peer = new Peer()
     this.peer.on("connection", (connection) => {
+      const self = this
+      connection.on("data", (data) => self.receiveMessage(data))
       this.state = { name: "connected", connection }
       this.connectedCallback()
     })
   }
 
-  onReceiveByteFromConsole(_byte: number): number {
+  onReceiveByteFromConsole(_byte: number, respond: (byte: number) => void): number {
     throw new Error("Method not implemented.");
   }
 
   updateClock(cycles: number): void {
+    throw new Error("Method not implemented.");
+  }
+
+  receiveMessage(message: any): void{
     throw new Error("Method not implemented.");
   }
 
@@ -42,6 +54,8 @@ export default class OnlineConnection extends StateMachine<ConnectionState> impl
     return new Promise((resolve, reject) => {
       connection.on("open", () => {
         this.state = { name: "connected", connection }
+        const self = this
+        connection.on("data", (data) => self.receiveMessage(data))
         resolve()
       })
       connection.on("error", reject)

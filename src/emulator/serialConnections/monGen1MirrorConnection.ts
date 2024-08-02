@@ -47,48 +47,57 @@ export class MonGen1MirrorConnection implements SerialConnection {
   transferCounter = 0
   monToSend = 0
 
-  onReceiveByteFromConsole(byte: number): number {
+  onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
     switch (this.state) {
       case "NOT_CONNECTED":
         if (byte === CONNECTED) {
           this.setState("WAITING_FOR_LINK_TYPE")
-          return CONNECTED
+          respond(CONNECTED)
+          return
         }
-        if (this.isPrimary) { return PRIMARY } else { return SECONDARY }
+        if (this.isPrimary) { respond(PRIMARY) } else { respond(SECONDARY) }
+        return
 
       case "WAITING_FOR_LINK_TYPE":
         switch (byte) {
           case CONNECTED:
-            return CONNECTED
+            respond(CONNECTED)
+            return
           case SELECT_TRADE:
             this.setState("SELECTED_TRADE")
-            return CONNECTED
+            respond(CONNECTED)
+            return
           case SELECT_BATTLE:
             console.log("[LINK]: Error - battles not supported")
             this.setState("NOT_CONNECTED")
-            return CONNECTED
+            respond(CONNECTED)
+            return
           case SELECT_CANCEL:
             this.setState("NOT_CONNECTED")
-            return CONNECTED
+            respond(CONNECTED)
+            return
         }
 
       case "SELECTED_TRADE":
         if (byte === TERMINATOR) {
           this.setState("WAITING_FOR_RANDOM_SEED")
         }
-        return byte
+        respond(byte)
+        return
 
       case "WAITING_FOR_RANDOM_SEED":
         if (byte !== TERMINATOR) {
           this.setState("SENDING_RANDOM_SEED")
         }
-        return byte
+        respond(byte)
+        return
 
       case "SENDING_RANDOM_SEED":
         if (byte === TERMINATOR) {
           this.setState("WAITING_FOR_TRAINER_DATA")
         }
-        return byte
+        respond(byte)
+        return
 
       case "WAITING_FOR_TRAINER_DATA":
         if (byte !== TERMINATOR) {
@@ -97,7 +106,8 @@ export class MonGen1MirrorConnection implements SerialConnection {
           this.setState("SENDING_TRAINER_DATA")
           this.byteToSend = byte
         }
-        return TERMINATOR
+        respond(TERMINATOR)
+        return
 
       case "SENDING_TRAINER_DATA":
         if (this.transferCounter < 424) {
@@ -105,13 +115,15 @@ export class MonGen1MirrorConnection implements SerialConnection {
           this.transferCounter++
           const lastByte = this.byteToSend
           this.byteToSend = byte
-          return lastByte // Hopefully results in mirrored data?
+          respond(lastByte) // Hopefully results in mirrored data?
+          return
         }
         
         if (this.transferCounter >= 424) {
           this.setState("WAITING_FOR_TRADE")
           this.transferCounter = 0
-          return TERMINATOR
+          respond(TERMINATOR)
+          return
         }
 
         // console.log({
@@ -123,7 +135,8 @@ export class MonGen1MirrorConnection implements SerialConnection {
       case "WAITING_FOR_TRADE":
         if (byte === TRADE_MENU_CLOSED) {
           this.setState("SELECTED_TRADE")
-          return 0x00
+          respond(0x00)
+          return
         }
 
         if (byte >= PARTY_SELECT_OFFSET && byte < PARTY_SELECT_OFFSET + 5) {
@@ -131,18 +144,20 @@ export class MonGen1MirrorConnection implements SerialConnection {
 
           // For mirroring just return the same result
           this.setState("TRADE_INITIATED")
-          return 0x00
+          respond(0x00)
+          return
         }
 
         // NOTE: This line hides that we're actually exchanging a 200 byte long
         // "patch list" that prevents the exchanged data being entirely messed 
         // up. Should probably add as explicit step for non mirrored trading.
-        return byte  
-        break
+        respond(byte)  
+        return
 
       case "TRADE_INITIATED":
         if (byte != 0) {
-          return PARTY_SELECT_OFFSET + this.monToSend
+          respond(PARTY_SELECT_OFFSET + this.monToSend)
+          return
         }
 
         // DEBUG
@@ -165,7 +180,8 @@ export class MonGen1MirrorConnection implements SerialConnection {
       case "TRADE_CONFIRMED":
         if (byte === TRADE_CANCELLED) {
           this.setState("TRADE_CANCELLED")
-          return 0x00
+          respond(0x00)
+          return
         }
         if (byte === TRADE_CONFIRMED) {
           // Back to room for more trading
@@ -180,7 +196,8 @@ export class MonGen1MirrorConnection implements SerialConnection {
         break
     }
 
-    return 0x00
+    respond(0x00)
+    return
   }
 
   private setState(state: State) {

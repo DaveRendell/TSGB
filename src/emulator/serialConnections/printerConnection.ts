@@ -29,20 +29,23 @@ export class PrinterConnection implements SerialConnection {
   printing = false
   checksumError = false
 
-  onReceiveByteFromConsole(byte: number): number {
+  onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
     this.packetBuffer.push(byte)
 
     if (!this.bufferIsValid()) {
       console.log("[PRINTER]: Invalid packet", [...this.packetBuffer])
       this.packetBuffer = []
     } else if (this.packetBuffer.length === 9) {
-      return 0x81 // Magic keep alive signal
+      respond(0x81) // Magic keep alive signal
+      return
     } else if (this.bufferIsFinished()) {
       this.executeCommand()
-      return this.statusByte()
+      respond(this.statusByte())
+      return
     }
 
-    return 0x00
+    respond(0x00)
+    return
   }
 
   private bufferIsValid(): boolean {
