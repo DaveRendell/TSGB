@@ -15,7 +15,10 @@ const DIFFICULTY_CHOICE_END = 0x05
 const DIFFICULTY_CHOICE_CONFIRM = 0x60
 const DIFFICULTY_CHOICE_RESPONSE = 0x55
 
+const DATA_FINISHED = 0x30
+
 const CLOCKS_30_MS = 30 * 4194304 / 1000
+const CLOCKS_500_MS = 500 * 4194304 / 1000
 
 
 export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
@@ -77,11 +80,66 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         if (byte !== this.gameState.state.localSelection) {
           this.gameState.state.localSelection = byte
           this.sendMessage({
-            type: "difficultly-selection",
+            type: "difficulty-selection",
             selection: byte,
           })
         }
         respond(this.gameState.state.remoteSelection)
+        return
+      }
+
+      if (byte === DIFFICULTY_CHOICE_CONFIRM) {
+        this.gameState.state = {
+          name: "primary-data-handshake",
+          started: false
+        }
+
+        this.sendMessage({ type: "difficulty-confirmation" })
+
+        respond(DIFFICULTY_CHOICE_RESPONSE)
+        return
+      }
+    }
+
+    if (this.gameState.state.name === "primary-data-handshake") {
+      if (byte === NEGOTIATION_REQUEST_BYTE) {
+        this.gameState.state.started = true
+        this.clockTimer = CLOCKS_30_MS
+      }
+    }
+
+    if (this.gameState.state.name === "primary-sending-line-data") {
+      if (byte === NEGOTIATION_REQUEST_BYTE) {
+        console.log("Finished line data", this.gameState.state.dataBuffer.map(valueDisplay))
+        this.sendMessage({
+          type: "line-data",
+          data: this.gameState.state.dataBuffer
+        })
+
+        this.gameState.state.finished = true
+        this.clockTimer = CLOCKS_30_MS
+        return
+      } else {
+        this.gameState.state.dataBuffer.push(byte)
+        respond(0x00)
+        return
+      }
+    }
+
+    if (this.gameState.state.name === "primary-sending-piece-data") {
+      if (byte === DATA_FINISHED) {
+        console.log("Finished piece data", this.gameState.state.dataBuffer.map(valueDisplay))
+        this.sendMessage({
+          type: "piece-data",
+          data: this.gameState.state.dataBuffer
+        })
+
+        this.gameState.state.finished = true
+        this.clockTimer = CLOCKS_500_MS
+        return
+      } else {
+        this.gameState.state.dataBuffer.push(byte)
+        respond(0x00)
         return
       }
     }
@@ -100,6 +158,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.clockTimer = CLOCKS_30_MS
         }
         return
+
       case "secondary-music-selection":
         if (message.type === "music-selection-update") {
           this.gameState.state.currentSelection = message.selection
@@ -114,16 +173,52 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           }
         }
         return
+
       case "primary-difficulty-selection":
-        if (message.type === "difficultly-selection") {
+        if (message.type === "difficulty-selection") {
           this.gameState.state.remoteSelection = message.selection
         }
         return
+
       case "secondary-difficulty-selection":
-        if (message.type === "difficultly-selection") {
+        if (message.type === "difficulty-selection") {
           this.gameState.state.remoteSelection = message.selection
         }
+        if (message.type === "difficulty-confirmation") {
+          this.serialRegisters.pushFromExternal(DIFFICULTY_CHOICE_CONFIRM)
+          this.gameState.state = {
+            name: "secondary-waiting-for-line-data"
+          }
+        }
         return
+
+      case "secondary-waiting-for-line-data":
+        if (message.type === "line-data") {
+          this.gameState.state = {
+            name: "secondary-receiving-line-data",
+            dataBuffer: [NEGOTIATION_REQUEST_BYTE, ...message.data],
+            pieceData: []
+          }
+          this.clockTimer = CLOCKS_30_MS
+        }
+        
+        return
+
+      case "secondary-receiving-line-data":
+        if (message.type === "piece-data") { // arrived early! (Should we queue?)
+          this.gameState.state.pieceData = message.data
+        }
+
+      case "secondary-waiting-for-piece-data":
+        if (message.type === "piece-data") {
+          this.gameState.state = {
+            name: "secondary-receiving-piece-data",
+            dataBuffer: [NEGOTIATION_REQUEST_BYTE, ...message.data]
+          }
+          this.clockTimer = CLOCKS_30_MS
+        }
+        return
+      
     }
 
     console.error(`Incorrect message type ${message.type} in state ${this.gameState.state.name}`)
@@ -152,9 +247,76 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         if (selection !== this.gameState.state.localSelection) {
           this.gameState.state.localSelection = selection
           this.sendMessage({
-            type: "difficultly-selection",
+            type: "difficulty-selection",
             selection,
           })
+        }
+      }
+
+      if (this.gameState.state.name === "primary-data-handshake") {
+        if (this.gameState.state.started) {
+          this.serialRegisters.responseFromSecondary(NEGOTIATION_RESPONSE_BYTE)
+          this.gameState.state = {
+            name: "primary-sending-line-data",
+            dataBuffer: [],
+            finished: false,
+          }
+        }
+      }
+
+      if (this.gameState.state.name === "primary-sending-line-data") {
+        if (this.gameState.state.finished) {
+          this.serialRegisters.responseFromSecondary(NEGOTIATION_RESPONSE_BYTE)
+          this.gameState.state = {
+            name: "primary-sending-piece-data",
+            dataBuffer: [],
+            finished: false,
+          }
+        }
+      }
+
+      if (this.gameState.state.name === "secondary-receiving-line-data") {
+        this.clockTimer = CLOCKS_30_MS
+        const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
+        this.serialRegisters.pushFromExternal(nextByte)
+        if  (this.gameState.state.dataBuffer.length == 0) {
+          this.serialRegisters.pushFromExternal(NEGOTIATION_REQUEST_BYTE)
+          if (this.gameState.state.pieceData.length > 0) {
+            this.gameState.state = {
+              name: "secondary-receiving-piece-data",
+              dataBuffer: [
+                NEGOTIATION_REQUEST_BYTE,
+                ...this.gameState.state.pieceData,
+                0x30, 0x00, 0x02, 0x02, 0x20, // Magic bytes to start the game
+              ]
+            }
+          } else {
+            this.gameState.state = {
+              name: "secondary-waiting-for-piece-data"
+            }
+          }
+          
+        }
+      }
+
+      if (this.gameState.state.name === "primary-sending-piece-data") {
+        if (this.gameState.state.finished) {
+          this.serialRegisters.responseFromSecondary(NEGOTIATION_RESPONSE_BYTE)
+          this.gameState.state = {
+            name: "primary-in-game",
+          }
+        }
+      }
+
+      if (this.gameState.state.name === "secondary-receiving-piece-data") {
+        this.clockTimer = CLOCKS_30_MS
+        const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
+        this.serialRegisters.pushFromExternal(nextByte)
+        if  (this.gameState.state.dataBuffer.length == 0) {
+          this.serialRegisters.pushFromExternal(NEGOTIATION_REQUEST_BYTE)
+          this.gameState.state = {
+            name: "secondary-in-game"
+          }
         }
       }
     }    
