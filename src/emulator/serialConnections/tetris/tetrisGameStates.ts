@@ -49,13 +49,15 @@ interface SecondaryWaitingForLineData {
 
 interface SecondaryReceivingLineData {
   name: "secondary-receiving-line-data",
-  dataBuffer: number[]
+  dataBuffer: number[],
+  pieceData: number[],
 }
 
 interface PrimarySendingPieceData {
   name: "primary-sending-piece-data",
   dataBuffer: number[],
-  finished: boolean
+  finished: boolean,
+  handshakeCounter: number
 }
 
 interface SecondaryWaitingForPieceData {

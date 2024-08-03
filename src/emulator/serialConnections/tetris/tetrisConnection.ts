@@ -127,6 +127,17 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
     }
 
     if (this.gameState.state.name === "primary-sending-piece-data") {
+      if (this.gameState.state.finished) {
+          console.log("handshaking", byte, this.gameState.state)
+          respond([
+            0x30, 0x00, 0x44, 0x44,
+          ][this.gameState.state.handshakeCounter++] || 0x44)
+          if (this.gameState.state.handshakeCounter === 4) {
+            this.clockTimer = CLOCKS_500_MS
+          }
+          return
+      }
+
       if (byte === DATA_FINISHED) {
         console.log("Finished piece data", this.gameState.state.dataBuffer.map(valueDisplay))
         this.sendMessage({
@@ -135,13 +146,18 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         })
 
         this.gameState.state.finished = true
-        this.clockTimer = CLOCKS_500_MS
+        respond(0x56)
+        
         return
       } else {
         this.gameState.state.dataBuffer.push(byte)
         respond(0x00)
         return
       }
+    }
+
+    if (this.gameState.state.name === "primary-in-game") {
+      respond(0x00)
     }
 
     console.log(`[TETRIS DEBUG] Uncaught byte ${valueDisplay(byte)} (state: ${this.gameState.state.name})`)
@@ -271,6 +287,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
             name: "primary-sending-piece-data",
             dataBuffer: [],
             finished: false,
+            handshakeCounter: 0,
           }
         }
       }
@@ -282,6 +299,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         if  (this.gameState.state.dataBuffer.length == 0) {
           this.serialRegisters.pushFromExternal(NEGOTIATION_REQUEST_BYTE)
           if (this.gameState.state.pieceData.length > 0) {
+            this.clockTimer = CLOCKS_30_MS
             this.gameState.state = {
               name: "secondary-receiving-piece-data",
               dataBuffer: [
