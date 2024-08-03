@@ -15,7 +15,7 @@ interface ConnectedState {
 
 type ConnectionState = DisconnectedState | ConnectedState
 
-export default class OnlineConnection extends StateMachine<ConnectionState> implements SerialConnection  {
+export default class OnlineConnection<MessageType> extends StateMachine<ConnectionState> implements SerialConnection {
   isConnected: boolean = false;
   peer: Peer
   serialRegisters: SerialRegisters
@@ -36,12 +36,20 @@ export default class OnlineConnection extends StateMachine<ConnectionState> impl
     })
   }
 
-  onReceiveByteFromConsole(_byte: number, respond: (byte: number) => void): number {
+  onReceiveByteFromConsole(_byte: number, respond: (byte: number) => void): void {
     throw new Error("Method not implemented.");
   }
 
   updateClock(cycles: number): void {
     throw new Error("Method not implemented.");
+  }
+
+  sendMessage(message: MessageType): void {
+    if (this.state.name === "disconnected") {
+      throw new Error("Attempted to send message while disconnected")
+    }
+    console.log("[ONLINE] Sending message", message)
+    this.state.connection.send(message)
   }
 
   receiveMessage(message: any): void{

@@ -7,11 +7,14 @@ import { TetrisMessage } from "./tetrisMessages";
 
 const NEGOTIATION_REQUEST_BYTE = 0x29
 const NEGOTIATION_RESPONSE_BYTE = 0x55
+const MUSIC_CHOICE_START = 0x1C
+const MUSIC_CHOICE_END = 0x1F
+const MUSIC_CHOICE_CONFIRM = 0x50
 
 const CLOCKS_30_MS = 30 * 4194304 / 1000
 
 
-export default class TetrisConnection extends OnlineConnection {
+export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
 
   clockTimer: number = 0
 
@@ -24,52 +27,77 @@ export default class TetrisConnection extends OnlineConnection {
     super(serialRegisters)
   }
 
-  override onReceiveByteFromConsole(byte: number, ): number {
-    console.log("byte received:", byte)
-    if (this.state.name === "disconnected") { return 0xFF }
-
+  override onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
+    if (this.state.name === "disconnected") {
+      respond(0xFF)
+      return
+    }
     if (this.gameState.state.name == "negotiation") {
       if (byte === NEGOTIATION_REQUEST_BYTE) {
         if (!this.gameState.state.negotiationRequested) {
           this.gameState.state.negotiationRequested = true
           this.clockTimer = CLOCKS_30_MS
-          const message: TetrisMessage = { type: "negotiation" }
-          console.log("[TETRIS] Sending message", message)
-          this.state.connection.send(message)
+          this.sendMessage({ type: "negotiation" })
         }
-        return NEGOTIATION_RESPONSE_BYTE
+        respond(NEGOTIATION_RESPONSE_BYTE)
       }
-        
-
-      if (byte >= 0x1C && byte <= 0x1F) {
-        console.log("YAYYY")
-        this.gameState.state = {
-          name: "primary-music-selection",
-          currentSelection: byte
-        }
-        return 0x00
-      }
+      return
     }
 
     if (this.gameState.state.name === "primary-music-selection") {
-      return 0x00
+      if (byte >= MUSIC_CHOICE_START && byte <= MUSIC_CHOICE_END) {
+        if (byte !== this.gameState.state.currentSelection) {
+          this.gameState.state.currentSelection = byte
+          this.sendMessage({
+            type: "music-selection-update",
+            selection: byte
+          })
+        }
+        
+        respond(0x00)
+        return
+      }
+
+      if (byte === MUSIC_CHOICE_CONFIRM) {
+        this.sendMessage({ type: "music-confirmation" })
+        this.gameState.state = {
+          name: "primary-difficulty-selection",
+          localSelection: 0,
+          remoteSelection: 0
+        }
+      }
     }
 
     console.log(`[TETRIS DEBUG] Uncaught byte ${valueDisplay(byte)} (state: ${this.gameState.state.name})`)
-
-    return byte
+    return
   }
 
   override receiveMessage(message: TetrisMessage): void {
     console.log("[TETRIS] Received message", message)
-    if (this.gameState.state.name === "negotiation") {
-      if (message.type === "negotiation") {
-        this.serialRegisters.pushFromExternal(NEGOTIATION_REQUEST_BYTE)
-        this.gameState.state = { name: "secondary-music-selection", currentSelection: 0x1C }
-        this.clockTimer = CLOCKS_30_MS
-      }
-      console.error(`Incorrect message type ${message.type} in state ${this.gameState.state.name}`)
+    switch(this.gameState.state.name) {
+      case "negotiation":
+        if (message.type === "negotiation") {
+          this.serialRegisters.pushFromExternal(NEGOTIATION_REQUEST_BYTE)
+          this.gameState.state = { name: "secondary-music-selection", currentSelection: 0x1C }
+          this.clockTimer = CLOCKS_30_MS
+        }
+        return
+      case "secondary-music-selection":
+        if (message.type === "music-selection-update") {
+          this.gameState.state.currentSelection = message.selection
+        }
+        if (message.type === "music-confirmation") {
+          this.serialRegisters.pushFromExternal(MUSIC_CHOICE_CONFIRM)
+          this.gameState.state = {
+            name: "secondary-difficulty-selection",
+            localSelection: 0,
+            remoteSelection: 0
+          }
+        }
+        return
     }
+
+    console.error(`Incorrect message type ${message.type} in state ${this.gameState.state.name}`)
   }
 
   override updateClock(cycles: number): void {
