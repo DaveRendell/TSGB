@@ -10,6 +10,10 @@ const NEGOTIATION_RESPONSE_BYTE = 0x55
 const MUSIC_CHOICE_START = 0x1C
 const MUSIC_CHOICE_END = 0x1F
 const MUSIC_CHOICE_CONFIRM = 0x50
+const DIFFICULTY_CHOICE_START = 0x00
+const DIFFICULTY_CHOICE_END = 0x05
+const DIFFICULTY_CHOICE_CONFIRM = 0x60
+const DIFFICULTY_CHOICE_RESPONSE = 0x55
 
 const CLOCKS_30_MS = 30 * 4194304 / 1000
 
@@ -68,6 +72,20 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
       }
     }
 
+    if (this.gameState.state.name === "primary-difficulty-selection") {
+      if (byte >= DIFFICULTY_CHOICE_START && byte <= DIFFICULTY_CHOICE_END) {
+        if (byte !== this.gameState.state.localSelection) {
+          this.gameState.state.localSelection = byte
+          this.sendMessage({
+            type: "difficultly-selection",
+            selection: byte,
+          })
+        }
+        respond(this.gameState.state.remoteSelection)
+        return
+      }
+    }
+
     console.log(`[TETRIS DEBUG] Uncaught byte ${valueDisplay(byte)} (state: ${this.gameState.state.name})`)
     return
   }
@@ -88,11 +106,22 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         }
         if (message.type === "music-confirmation") {
           this.serialRegisters.pushFromExternal(MUSIC_CHOICE_CONFIRM)
+          this.clockTimer = CLOCKS_30_MS
           this.gameState.state = {
             name: "secondary-difficulty-selection",
             localSelection: 0,
             remoteSelection: 0
           }
+        }
+        return
+      case "primary-difficulty-selection":
+        if (message.type === "difficultly-selection") {
+          this.gameState.state.remoteSelection = message.selection
+        }
+        return
+      case "secondary-difficulty-selection":
+        if (message.type === "difficultly-selection") {
+          this.gameState.state.remoteSelection = message.selection
         }
         return
     }
@@ -101,22 +130,33 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
   }
 
   override updateClock(cycles: number): void {
-    if (this.gameState.state.name === "negotiation") {
-      if (this.gameState.state.negotiationRequested) {
-        this.clockTimer -= cycles
-        if (this.clockTimer <= 0) {
+    if (this.clockTimer <= 0) { return }
+
+    this.clockTimer -= cycles
+    if (this.clockTimer <= 0) {
+      if (this.gameState.state.name === "negotiation") {
+        if (this.gameState.state.negotiationRequested) {
           this.serialRegisters.responseFromSecondary(NEGOTIATION_RESPONSE_BYTE)
           this.gameState.state = { name: "primary-music-selection", currentSelection: 0x1C }
         }
       }
-    }
-
-    if (this.gameState.state.name === "secondary-music-selection") {
-      this.clockTimer -= cycles
-      if (this.clockTimer <= 0) {
+  
+      if (this.gameState.state.name === "secondary-music-selection") {
         this.clockTimer += CLOCKS_30_MS
         this.serialRegisters.pushFromExternal(this.gameState.state.currentSelection)
       }
-    }
+
+      if (this.gameState.state.name === "secondary-difficulty-selection") {
+        this.clockTimer += CLOCKS_30_MS
+        const selection = this.serialRegisters.pushFromExternal(this.gameState.state.remoteSelection)
+        if (selection !== this.gameState.state.localSelection) {
+          this.gameState.state.localSelection = selection
+          this.sendMessage({
+            type: "difficultly-selection",
+            selection,
+          })
+        }
+      }
+    }    
   }
 }
