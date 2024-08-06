@@ -43,6 +43,10 @@ export default class SuperEmulator {
     const name = commandName(commandCode)
     console.log(`[SUPER] Received command ${valueDisplay(commandCode)} - ${name} with data [${data.map(x => valueDisplay(x)).join(",")}]`)
   }
+
+  receiveVramTransfer(data: number[]): void {
+    // BIG TODO
+  }
 }
 
 function commandName(commandCode: number): string {

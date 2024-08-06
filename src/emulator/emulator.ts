@@ -33,7 +33,7 @@ export class Emulator {
     this.memory = new Memory(cartridge, this.mode, this.serialPort, this.superEmulator)
     this.controller = new Controller(this.memory)
     this.cpu = new CPU(this.memory, this.controller, this.serialPort, mode)
-    this.pictureProcessor = new PictureProcessor(this.cpu, mode, colouriseDmg)
+    this.pictureProcessor = new PictureProcessor(this.cpu, mode, colouriseDmg, this.superEmulator)
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
   }

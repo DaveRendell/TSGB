@@ -12,6 +12,8 @@ import { SpeedSwitchRegister } from "../memory/registers/speedSwitchRegister"
 import { ByteRef } from "../refs/byteRef"
 import BaseScanlineRenderer from "./baseScanlineRenderer"
 import DmgColourScanlineRenderer from "./dmgColourScanlineRenderer"
+import SuperEmulator from "../super/superEmulator"
+import SgbScanlineRenderer from "./sgbScanlineRenderer"
 
 const WIDTH = 160
 const HEIGHT = 144
@@ -43,7 +45,7 @@ export default class PictureProcessor {
     [0, 0, 0],
   ]
 
-  constructor(cpu: CPU, mode: EmulatorMode, colouriseDmg: boolean = false) {
+  constructor(cpu: CPU, mode: EmulatorMode, colouriseDmg: boolean = false, superEmulator?: SuperEmulator) {
     this.memory = cpu.memory
 
     this.lcdControl = this.memory.registers.lcdControl
@@ -68,8 +70,8 @@ export default class PictureProcessor {
         this.memory.registers, this.memory.vram, this.memory.oam
       )
     } else if (mode === EmulatorMode.SGB) {
-      this.scanlineRenderer = new DmgScanlineRenderer(
-        this.memory.registers, this.memory.vram, this.memory.oam)
+      this.scanlineRenderer = new SgbScanlineRenderer(
+        this.memory.registers, this.memory.vram, this.memory.oam, superEmulator)
     }
   }
 
