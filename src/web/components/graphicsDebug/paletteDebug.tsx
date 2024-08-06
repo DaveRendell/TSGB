@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function PaletteDebug({ registers, mode, colours }: Props) {
-  if (mode == EmulatorMode.DMG) {
+  if (mode !== EmulatorMode.CGB) {
     return <div>
       <h3>Palettes</h3>
       <table>

@@ -80,6 +80,11 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
             <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false)}>Play</button>
           </>
         }
+        {
+          <>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.SGB, false)}>Play (Super Mode)</button>
+          </>
+        }
         <button className="chunky-button" onClick={closeOptions}>Back</button>
         <br />
       </div>

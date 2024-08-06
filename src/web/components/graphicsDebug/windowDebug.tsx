@@ -58,7 +58,7 @@ export function WindowDebug({ emulator }: Props) {
               const x = (tileCol << 3) + col
               const pixelId = (y << 8) + x
               let colour: number[]
-              if (emulator.mode === EmulatorMode.DMG) {
+              if (emulator.mode !== EmulatorMode.CGB) {
                 colour = emulator.pictureProcessor.scanlineRenderer.colours[rowData[col]]
               } else {
                 colour = emulator.memory.registers.backgroundPalettes.scaledColours[attributes.palette][rowData[col]]
@@ -117,7 +117,7 @@ export function WindowDebug({ emulator }: Props) {
       Tilemap: {tilemapId}<br/>
       Tileset: {tilesetId}<br/>
       Enabled: {isEnabled ? "True" : "False"}<br/>
-      {emulator.mode == EmulatorMode.DMG && <>Palette: <PaletteDisplay colours={bgPalette} /><br/></>}
+      {emulator.mode !== EmulatorMode.CGB && <>Palette: <PaletteDisplay colours={bgPalette} /><br/></>}
       <br/>
       <canvas
         className="background-debug-canvas"

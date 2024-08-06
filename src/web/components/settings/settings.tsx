@@ -28,7 +28,7 @@ export default function Settings({ emulator }: Props) {
     <section>
       <h2>Settings</h2>
       <AudioControl audioProcessor={emulator.audioProcessor} />
-      { emulator.mode === EmulatorMode.DMG &&
+      { emulator.mode !== EmulatorMode.CGB &&
         <MonochromePalettePicker pictureProcessor={emulator.pictureProcessor} />
       }
       { emulator.mode !== EmulatorMode.DMG &&

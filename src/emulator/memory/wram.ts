@@ -10,7 +10,7 @@ export class WRAM {
 
   constructor(mode: EmulatorMode, registers: IoRegisters) {
     this.mode = mode
-    if (mode === EmulatorMode.DMG) {
+    if (mode !== EmulatorMode.CGB) {
       this.data = new Uint8Array(0x2000)
     } else {
       this.data = new Uint8Array(0x8000)
@@ -19,7 +19,7 @@ export class WRAM {
   }
 
   at(address: number) {
-    if (this.mode === EmulatorMode.DMG) {
+    if (this.mode !== EmulatorMode.CGB) {
       return new GetSetByteRef(
         () => this.data[address - 0xc000],
         (value) => this.data[address - 0xc000] = value

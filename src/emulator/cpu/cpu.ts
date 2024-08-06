@@ -141,6 +141,17 @@ export default class CPU {
       this.registers.L.byte = 0x0D
       this.registers.SP.word = 0xfffe
       this.registers.PC.word = 0x0100
+    } else if (mode == EmulatorMode.SGB) {
+      this.registers.A.byte = 0x01
+      this.registers.F.byte = 0xb0
+      this.registers.B.byte = 0x00
+      this.registers.C.byte = 0x14
+      this.registers.D.byte = 0x00
+      this.registers.E.byte = 0x00
+      this.registers.H.byte = 0xC0
+      this.registers.L.byte = 0x60
+      this.registers.SP.word = 0xfffe
+      this.registers.PC.word = 0x0100
     }
   }
 
