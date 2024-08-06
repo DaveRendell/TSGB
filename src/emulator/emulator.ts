@@ -10,6 +10,7 @@ import { DebugConnection } from "./serialConnections/debugConnection"
 export enum EmulatorMode {
   DMG,
   CGB,
+  SGB,
 }
 
 export class Emulator {

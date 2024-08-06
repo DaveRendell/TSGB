@@ -36,7 +36,7 @@ export function SpriteInfo({ sprite, index, spriteSize, mode, palettes, colours 
             const monoPalette = [sprite.pallette0, sprite.pallette1][sprite.monochromePalette]
             const colourPalette = palettes.scaledColours[sprite.colourPalette]
             let colour: number[]
-            if (mode == EmulatorMode.DMG) {
+            if (mode !== EmulatorMode.CGB) {
               colour = colours[monoPalette.map[pixel]]
             } else {
               colour = colourPalette[pixel]
@@ -82,7 +82,7 @@ export function SpriteInfo({ sprite, index, spriteSize, mode, palettes, colours 
       <td>{sprite.priority ? "Low": "High"}</td>
       <td>{sprite.flipX ? "True" : "False"}</td>
       <td>{sprite.flipY ? "True" : "False"}</td>
-      {mode === EmulatorMode.DMG
+      {mode !== EmulatorMode.CGB
         ? <>{sprite.monochromePalette} - <PaletteDisplay colours={monoPalette.map.map(c => colours[c])}/></>
         : <>{sprite.colourPalette} - <PaletteDisplay colours={colourPalette} /></>}
     </tr>
