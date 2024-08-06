@@ -1,11 +1,19 @@
 import { valueDisplay } from "../../helpers/displayHexNumbers"
+import SgbScanlineRenderer from "../graphics/sgbScanlineRenderer"
+
+type VramTransferType =
+  "palette"
 
 export default class SuperEmulator {
+  scanlineRenderer: SgbScanlineRenderer
 
-  // Receiving data
+  // Receiving packet data
   packetsLeftInCommand = 0
   packetCommandCode = 0
   packetDataBuffer: number[] = []
+
+  // Receiving VRAM transfer
+  vramTransferType: VramTransferType = "palette"
 
   constructor() {
 
@@ -42,9 +50,17 @@ export default class SuperEmulator {
   processCommand(commandCode: number, data: number[]): void {
     const name = commandName(commandCode)
     console.log(`[SUPER] Received command ${valueDisplay(commandCode)} - ${name} with data [${data.map(x => valueDisplay(x)).join(",")}]`)
+
+    switch(commandCode) {
+      case 0x0B:
+        this.scanlineRenderer.vramTransferRequested = true
+        this.vramTransferType = "palette"
+        break
+    }
   }
 
   receiveVramTransfer(data: number[]): void {
+    console.log("Received VRAM transfer", data)
     // BIG TODO
   }
 }

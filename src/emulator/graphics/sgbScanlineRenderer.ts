@@ -18,13 +18,16 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
   palette: PalletteRegister
 
   superEmulator?: SuperEmulator
-  superVramTransferRequested = false
-  superVramTransferBuffer: number[] = []
+  
+  vramTransferRequested = false
+  vramTransferInProgress = false
+  vramTransferBuffer: number[] = []
 
   constructor(registers: IoRegisters, vram: VRAM, oam: OAM, superEmulator: SuperEmulator) {
     super(registers, vram, oam)
     this.mode = EmulatorMode.DMG
     this.superEmulator = superEmulator
+    superEmulator.scanlineRenderer = this
 
     this.backgroundPalette = registers.backgroundPallete
     this.objectPalettes = [registers.objectPallete0, registers.objectPallete1]
@@ -84,6 +87,9 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
   }
 
   renderPixel(line: ImageData, offset: number, pixel: number): number[] {
+    if (this.vramTransferInProgress) {
+      this.vramTransferBuffer.push(pixel)
+    }
     return this.colours[this.palette.map[pixel]]
   }
 
@@ -91,10 +97,17 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
     if (this.canvas && this.lcdControl.enabled) {
       const screenContext = this.canvas.getContext("2d")!
       screenContext.drawImage(this.buffer, 0, 0)
-      if (this.superVramTransferRequested) {
-        this.superEmulator.receiveVramTransfer(this.superVramTransferBuffer)
-        this.superVramTransferBuffer = []
-      }
+    }
+
+    if (this.vramTransferInProgress) {
+      this.superEmulator.receiveVramTransfer(this.vramTransferBuffer)
+      this.vramTransferBuffer = []
+      this.vramTransferInProgress = false
+    }
+    
+    if (this.vramTransferRequested) {
+      this.vramTransferRequested = false
+      this.vramTransferInProgress = true
     }
   }
 }
