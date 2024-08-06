@@ -22,6 +22,7 @@ export class JoypadRegister implements ByteRef {
   selectDpad = true
 
   // SGB transfer variables
+  receivingData = false
   byteToSend: number = 0
   bitCounter: number = 0
   byteBuffer: number[] = []
@@ -36,7 +37,6 @@ export class JoypadRegister implements ByteRef {
       0xc0 + (this.selectButtons ? 0x20 : 0) + (this.selectDpad ? 0x10 : 0)
 
     if (this.selectButtons && this.selectDpad && this.mode === EmulatorMode.SGB) {
-      console.log(this.multiplayerNibble)
       return upperNibble + this.multiplayerNibble
     }
 
@@ -73,28 +73,32 @@ export class JoypadRegister implements ByteRef {
         this.byteToSend = 0
         this.bitCounter = 0
         this.byteBuffer = []
+        this.receivingData = true
       }
 
-      if (bit4 && !bit5) {
+      if (this.receivingData && bit4 && !bit5) {
         // 1 bit received
         this.byteToSend |= (1 << this.bitCounter++)
+        
+        if (this.byteBuffer.length === 16) {
+          // We're not really receiving data, shut it off
+          this.byteBuffer = []
+        }
       }
 
-      if (!bit4 && bit5) {
+      if (this.receivingData && !bit4 && bit5) {
         // 0 bit received
-        this.bitCounter++
-      }
-      if (this.bitCounter === 8) {
-        // TODO send byte to SGB emulation 
-        console.log("SGB byte received:", valueDisplay(this.byteToSend))
-        this.byteBuffer.push(this.byteToSend)
-        this.byteToSend = 0
-        this.bitCounter = 0
-
         if (this.byteBuffer.length === 16) {
           this.superEmulator.receivePacket(this.byteBuffer)
           this.byteBuffer = []
         }
+        this.bitCounter++
+      }
+      if (this.bitCounter === 8) {
+        // TODO send byte to SGB emulation
+        this.byteBuffer.push(this.byteToSend)
+        this.byteToSend = 0
+        this.bitCounter = 0
       }
     }
   }
