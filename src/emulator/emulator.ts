@@ -6,6 +6,7 @@ import { Cartridge } from "./memory/cartridges/cartridge"
 import PictureProcessor from "./graphics/pictureProcessor"
 import { SerialPort } from "./serialConnections/serialPort"
 import { DebugConnection } from "./serialConnections/debugConnection"
+import SuperEmulator from "./super/superEmulator"
 
 export enum EmulatorMode {
   DMG,
@@ -21,11 +22,15 @@ export class Emulator {
   audioProcessor: AudioProcessor
   controller: Controller
   serialPort: SerialPort
+  superEmulator?: SuperEmulator
 
   constructor(cartridge: Cartridge, mode: EmulatorMode, colouriseDmg: boolean = false) {
     this.mode = mode
     this.serialPort = { type: "debug", connection: new DebugConnection() }
-    this.memory = new Memory(cartridge, this.mode, this.serialPort)
+    if (this.mode === EmulatorMode.SGB) {
+      this.superEmulator = new SuperEmulator()
+    }
+    this.memory = new Memory(cartridge, this.mode, this.serialPort, this.superEmulator)
     this.controller = new Controller(this.memory)
     this.cpu = new CPU(this.memory, this.controller, this.serialPort, mode)
     this.pictureProcessor = new PictureProcessor(this.cpu, mode, colouriseDmg)
