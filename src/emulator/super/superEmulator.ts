@@ -79,10 +79,7 @@ export default class SuperEmulator {
           const paletteByteOffset = paletteId << 3
           this.palettes[i].setFromBytes(
             this.storedPalettes.slice(paletteByteOffset, paletteByteOffset + 8))
-          paletteIds.push(
-            wordFromBytes(
-              data[(i << 1) + 1],
-              data[(i << 1) + 0]))
+          paletteIds.push(paletteId)
         }
 
         const flags = data[8]
@@ -120,6 +117,7 @@ export default class SuperEmulator {
     
     switch(this.vramTransferType) {
       case "palette":
+        this.storedPalettes = bytes
         console.log("[SUPER] Stored VRAM transfer in Palettes")
     }
   }

@@ -5,12 +5,13 @@ import Display from "./display"
 import Joypad from "./joypad"
 import Tabs from "./tabs"
 import AudioDebug from "./audioDebug"
-import { Emulator } from "../../emulator/emulator"
+import { Emulator, EmulatorMode } from "../../emulator/emulator"
 import Settings from "./settings/settings"
 import PkmnGen1Dashboard from "../gameDashboards/pkmnGen1Dashboard"
 import { GraphicsDebug } from "./graphicsDebug/graphicsDebug"
 import { Info } from "./info"
 import SerialPort from "./serialPort"
+import SuperDebug from "./superDebug/superDebug"
 
 interface Props {
   emulator: Emulator
@@ -57,6 +58,10 @@ export default function GameView({ emulator, unload }: Props) {
         />
       </>
     ),
+  }
+
+  if (emulator.mode === EmulatorMode.SGB) {
+    tabs["Debug Super"] = () => <SuperDebug emulator={emulator} />
   }
 
   if (emulator.memory.cartridge.title.includes("POKEMON RED")
