@@ -1,5 +1,6 @@
 import { valueDisplay } from "../../helpers/displayHexNumbers"
 import SgbScanlineRenderer from "../graphics/sgbScanlineRenderer"
+import SuperPalette from "./superPalette"
 
 type VramTransferType =
   "palette"
@@ -14,6 +15,17 @@ export default class SuperEmulator {
 
   // Receiving VRAM transfer
   vramTransferType: VramTransferType = "palette"
+
+  // Palettes in Super RAM as raw bytes
+  storedPalettes: number[] = []
+
+  // Display palettes
+  palettes: SuperPalette[] = [
+    new SuperPalette(),
+    new SuperPalette(),
+    new SuperPalette(),
+    new SuperPalette(),
+  ]
 
   constructor() {
 
@@ -47,21 +59,69 @@ export default class SuperEmulator {
     }
   }
 
+  // https://gbdev.io/pandocs/SGB_Command_Summary.html
   processCommand(commandCode: number, data: number[]): void {
     const name = commandName(commandCode)
     console.log(`[SUPER] Received command ${valueDisplay(commandCode)} - ${name} with data [${data.map(x => valueDisplay(x)).join(",")}]`)
 
     switch(commandCode) {
-      case 0x0B:
+      case 0x0B: // PAL_TRN
         this.scanlineRenderer.vramTransferRequested = true
         this.vramTransferType = "palette"
+        break
+      
+      case 0x0A: // PAL_SET
+        let paletteIds = []
+        for (let i = 0; i < 4; i++) {
+          const paletteId = wordFromBytes(
+            data[(i << 1) + 1],
+            data[(i << 1) + 0])
+          const paletteByteOffset = paletteId << 3
+          this.palettes[i].setFromBytes(
+            this.storedPalettes.slice(paletteByteOffset, paletteByteOffset + 8))
+          paletteIds.push(
+            wordFromBytes(
+              data[(i << 1) + 1],
+              data[(i << 1) + 0]))
+        }
+
+        const flags = data[8]
+        const applyAtf = (flags & 0x80) > 0
+        const cancelMask = (flags & 0x40) > 0
+        const atfId = flags & 0x3F
+        console.log("PAL_SET parsed", {
+          paletteIds,
+          flags: flags.toString(2),
+          applyAtf,
+          cancelMask,
+          atfId,
+        })
+        
         break
     }
   }
 
   receiveVramTransfer(data: number[]): void {
-    console.log("Received VRAM transfer", data)
-    // BIG TODO
+    const bytes = []
+    let cursor = 0
+    for (let i = 0; i < 2048; i++) {
+      let byte1 = 0
+      let byte2 = 0
+      for (let j = 0; j < 8; j++) {
+        const pixel = data[cursor++]
+        byte1 |= ((pixel & 1) << j)
+        byte2 |= ((pixel >> 1) << j)
+      }
+      bytes.push(byte1)
+      bytes.push(byte2)
+    }
+
+    console.log("[SUPER] Decoded bytes from VRAM transfer", bytes)
+    
+    switch(this.vramTransferType) {
+      case "palette":
+        console.log("[SUPER] Stored VRAM transfer in Palettes")
+    }
   }
 }
 
@@ -107,4 +167,8 @@ function commandName(commandCode: number): string {
 
     default: return "UNKNOWN_COMMAND_" + valueDisplay(commandCode)
   }
+}
+
+function wordFromBytes(h: number, l: number): number {
+  return (h << 8) + l
 }
