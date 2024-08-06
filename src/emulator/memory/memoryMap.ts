@@ -11,6 +11,7 @@ import { WRAM } from "./wram"
 import { EmulatorMode } from "../emulator"
 import DMA from "./dma"
 import { SerialPort } from "../serialConnections/serialPort"
+import SuperEmulator from "../super/superEmulator"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
@@ -30,8 +31,8 @@ export default class Memory {
 
   controller: Controller
 
-  constructor(cartridge: Cartridge, mode: EmulatorMode, serialPort: SerialPort) {
-    this.registers = new IoRegisters(this, serialPort)
+  constructor(cartridge: Cartridge, mode: EmulatorMode, serialPort: SerialPort, superEmulator?: SuperEmulator) {
+    this.registers = new IoRegisters(this, serialPort, mode, superEmulator)
     this.vram = new VRAM(this.registers, mode)
     this.registers.dmaTransfer.startTransfer = (address) =>
       this.dmaTransfer(address)

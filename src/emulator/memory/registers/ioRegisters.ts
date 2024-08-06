@@ -1,5 +1,7 @@
+import { EmulatorMode } from "../../emulator"
 import { ByteRef, ConstantByteRef, GenericByteRef, GetSetByteRef } from "../../refs/byteRef"
 import { SerialPort } from "../../serialConnections/serialPort"
+import SuperEmulator from "../../super/superEmulator"
 import Memory from "../memoryMap"
 import {
   AudioMasterControlRegister,
@@ -27,7 +29,7 @@ import { WramBankRegister } from "./wramBankRegister"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html#io-ranges
 export class IoRegisters {
-  joypad = new JoypadRegister()
+  joypad: JoypadRegister
 
   divider = new DividerRegister()
   timerCounter = new GenericByteRef()
@@ -83,9 +85,10 @@ export class IoRegisters {
 
   private data: { [address: number]: ByteRef } = []
 
-  constructor(memory: Memory, serialPort: SerialPort) {
+  constructor(memory: Memory, serialPort: SerialPort, mode: EmulatorMode, superEmulator?: SuperEmulator) {
     this.vramDma = new VramDmaRegisters(memory)
     this.serialRegisters = new SerialRegisters(serialPort, this.interrupts)
+    this.joypad = new JoypadRegister(mode, superEmulator)
     this.data[0xff00] = this.joypad
     this.data[0xff01] = this.serialRegisters.serialDataRegister
     this.data[0xff02] = this.serialRegisters.serialControlRegister
