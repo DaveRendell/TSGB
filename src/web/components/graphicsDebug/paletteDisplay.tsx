@@ -15,7 +15,7 @@ export function PaletteDisplay({ colours, values }: Props) {
     ></span>)}
     {values && <> - <code>{values.map(value =>
       value.map(x =>
-      x.toString(16).padStart(2, "0")).join(",")).map(s => `(${s})`).join(" ")}
+      x).join(",")).map(s => `(${s})`).join(" ")}
       </code></>}
   </span>
 }

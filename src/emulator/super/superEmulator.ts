@@ -17,14 +17,14 @@ export default class SuperEmulator {
   vramTransferType: VramTransferType = "palette"
 
   // Palettes in Super RAM as raw bytes
-  storedPalettes: number[] = []
+  storedPalettes: SuperPalette[] = []
 
   // Display palettes
   palettes: SuperPalette[] = [
-    new SuperPalette(),
-    new SuperPalette(),
-    new SuperPalette(),
-    new SuperPalette(),
+    new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
+    new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
+    new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
+    new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
   ]
 
   constructor() {
@@ -76,9 +76,7 @@ export default class SuperEmulator {
           const paletteId = wordFromBytes(
             data[(i << 1) + 1],
             data[(i << 1) + 0])
-          const paletteByteOffset = paletteId << 3
-          this.palettes[i].setFromBytes(
-            this.storedPalettes.slice(paletteByteOffset, paletteByteOffset + 8))
+          this.palettes[i] = this.storedPalettes[paletteId]
           paletteIds.push(paletteId)
         }
 
@@ -99,28 +97,44 @@ export default class SuperEmulator {
   }
 
   receiveVramTransfer(data: number[]): void {
-    const bytes = []
-    let cursor = 0
-    for (let i = 0; i < 2048; i++) {
-      let byte1 = 0
-      let byte2 = 0
-      for (let j = 0; j < 8; j++) {
-        const pixel = data[cursor++]
-        byte1 |= ((pixel & 1) << j)
-        byte2 |= ((pixel >> 1) << j)
-      }
-      bytes.push(byte1)
-      bytes.push(byte2)
-    }
+    const bytes = vramDataFromPixelData(data)
 
     console.log("[SUPER] Decoded bytes from VRAM transfer", bytes)
     
     switch(this.vramTransferType) {
       case "palette":
-        this.storedPalettes = bytes
+        this.storedPalettes = []
+        for (let i = 0; i < 512; i++) {
+          this.storedPalettes.push(new SuperPalette(bytes.slice(i << 3, (i + 1) << 3)))
+        }
         console.log("[SUPER] Stored VRAM transfer in Palettes")
     }
   }
+}
+
+function vramDataFromPixelData(data: number[]): number[] {
+  const bytes = []
+
+  // Run through pixel data tile by tile, row by row.
+  // Two bytes per row, bit planes are interleaved.
+  for (let tileId = 0; tileId < 0xFF; tileId++) {
+    const tileX = tileId % 20
+    const tileY = (tileId - tileX) / 20
+    for (let row = 0; row < 8; row++) {
+      let byte1 = 0
+      let byte2 = 0
+      const scanlineNumber = (tileY << 3) + row
+      let cursor = (scanlineNumber * 160) + (tileX << 3)
+      for (let i = 0; i < 8; i++) {
+        const pixel = data[cursor++]
+        byte1 |= ((pixel & 1) << (7 - i))
+        byte2 |= ((pixel >> 1) << (7 - i))
+      }
+      bytes.push(byte1)
+      bytes.push(byte2)
+    }
+  }
+  return bytes
 }
 
 function commandName(commandCode: number): string {

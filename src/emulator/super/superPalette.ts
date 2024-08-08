@@ -6,7 +6,7 @@ export default class SuperPalette {
     [0, 0, 0],
   ]
 
-  setFromBytes(bytes: number[]): void {
+  constructor(bytes: number[]) {
     for (let colourId = 0; colourId < 4; colourId++) {
       const byte1 = bytes[(colourId << 1) + 0]
       const byte2 = bytes[(colourId << 1) + 1]
@@ -16,7 +16,7 @@ export default class SuperPalette {
         ((byte1 & 0b11100000) >> 5)
         + ((byte2 & 0b00000011) << 3)
       ) << 3)
-      const blue = (byte2 & 0b01111100) >> 2
+      const blue = ((byte2 & 0b01111100) >> 2) << 3
 
       this.colours[colourId] = [red, green, blue]
     }
