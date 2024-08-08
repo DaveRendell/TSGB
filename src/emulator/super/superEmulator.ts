@@ -1,5 +1,6 @@
 import { valueDisplay } from "../../helpers/displayHexNumbers"
 import SgbScanlineRenderer from "../graphics/sgbScanlineRenderer"
+import AttributeFile from "./attributeFile"
 import SuperPalette from "./superPalette"
 
 type VramTransferType =
@@ -16,16 +17,21 @@ export default class SuperEmulator {
   // Receiving VRAM transfer
   vramTransferType: VramTransferType = "palette"
 
-  // Palettes in Super RAM as raw bytes
+  // 512 Palettes in Super RAM
   storedPalettes: SuperPalette[] = []
 
+  // 45 Attribute files in Super RAM
+  storedAttributeFiles: AttributeFile[] = []
+
   // Display palettes
-  palettes: SuperPalette[] = [
+  palettes: SuperPalette[] = [ // TODO defaults
     new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
     new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
     new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
     new SuperPalette([0, 0, 0, 0, 0, 0, 0, 0]),
   ]
+  // Currently displayed screen attributes
+  attributes: AttributeFile = new AttributeFile()
 
   constructor() {
 
