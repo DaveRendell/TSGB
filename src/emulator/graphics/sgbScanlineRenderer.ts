@@ -90,7 +90,11 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
     if (this.vramTransferInProgress) {
       this.vramTransferBuffer.push(pixel)
     }
-    return this.colours[this.palette.map[pixel]]
+    const paletteId = this.superEmulator.attributes.data
+      [this.scanlineNumber.byte >> 3]
+      [offset >> 3]
+    const colour = this.superEmulator.palettes[paletteId].colours
+    return colour[this.palette.map[pixel]]
   }
 
   override renderScreen(): void {

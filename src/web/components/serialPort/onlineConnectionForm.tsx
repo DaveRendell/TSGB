@@ -1,9 +1,10 @@
 import * as React from "react"
 
 import OnlineConnection from "../../../emulator/serialConnections/onlineConnection";
+import { TetrisMessage } from "../../../emulator/serialConnections/tetris/tetrisMessages";
 
 interface Props {
-  serialConnection: OnlineConnection
+  serialConnection: OnlineConnection<TetrisMessage>
 }
 
 export default function OnlineConnectionForm({ serialConnection }: Props) {
