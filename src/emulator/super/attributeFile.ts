@@ -36,7 +36,7 @@ export default class AttributeFile {
     x1: number, y1: number, x2: number, y2: number,
     paletteId: number
   ) : void {
-    for (let y = y1 + 1; y < y2; y++) {
+    for (let y = y1; y <= y2; y++) {
       this.data[y][x1] = paletteId
       this.data[y][x2] = paletteId
     }
