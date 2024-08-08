@@ -1,6 +1,8 @@
 import { valueDisplay } from "../../helpers/displayHexNumbers"
 import SgbScanlineRenderer from "../graphics/sgbScanlineRenderer"
 import AttributeFile from "./attributeFile"
+import paletteSet from "./commands/paletteSet"
+import paletteTransfer from "./commands/paletteTransfer"
 import SuperPalette from "./superPalette"
 
 type VramTransferType =
@@ -67,39 +69,15 @@ export default class SuperEmulator {
 
   // https://gbdev.io/pandocs/SGB_Command_Summary.html
   processCommand(commandCode: number, data: number[]): void {
-    const name = commandName(commandCode)
-    console.log(`[SUPER] Received command ${valueDisplay(commandCode)} - ${name} with data [${data.map(x => valueDisplay(x)).join(",")}]`)
-
     switch(commandCode) {
       case 0x0B: // PAL_TRN
-        this.scanlineRenderer.vramTransferRequested = true
-        this.vramTransferType = "palette"
-        break
+        return paletteTransfer(this)
       
       case 0x0A: // PAL_SET
-        let paletteIds = []
-        for (let i = 0; i < 4; i++) {
-          const paletteId = wordFromBytes(
-            data[(i << 1) + 1],
-            data[(i << 1) + 0])
-          this.palettes[i] = this.storedPalettes[paletteId]
-          paletteIds.push(paletteId)
-        }
-
-        const flags = data[8]
-        const applyAtf = (flags & 0x80) > 0
-        const cancelMask = (flags & 0x40) > 0
-        const atfId = flags & 0x3F
-        console.log("PAL_SET parsed", {
-          paletteIds,
-          flags: flags.toString(2),
-          applyAtf,
-          cancelMask,
-          atfId,
-        })
-        
-        break
+        return paletteSet(this, data)
     }
+
+    console.log(`[SUPER] Received unsupported command ${valueDisplay(commandCode)} - ${commandName(commandCode)} with data [${data.map(x => valueDisplay(x)).join(",")}]`)
   }
 
   receiveVramTransfer(data: number[]): void {
@@ -185,8 +163,4 @@ function commandName(commandCode: number): string {
 
     default: return "UNKNOWN_COMMAND_" + valueDisplay(commandCode)
   }
-}
-
-function wordFromBytes(h: number, l: number): number {
-  return (h << 8) + l
 }
