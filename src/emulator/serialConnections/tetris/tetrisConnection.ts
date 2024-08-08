@@ -212,7 +212,10 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         if (message.type === "line-data") {
           this.gameState.state = {
             name: "secondary-receiving-line-data",
-            dataBuffer: [NEGOTIATION_REQUEST_BYTE, ...message.data],
+            dataBuffer: [
+              NEGOTIATION_REQUEST_BYTE,
+              ...message.data
+            ],
             pieceData: []
           }
           this.clockTimer = CLOCKS_30_MS
@@ -221,7 +224,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         return
 
       case "secondary-receiving-line-data":
-        if (message.type === "piece-data") { // arrived early! (Should we queue?)
+        if (message.type === "piece-data") { // arrived early!
           this.gameState.state.pieceData = message.data
         }
 
@@ -229,7 +232,11 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         if (message.type === "piece-data") {
           this.gameState.state = {
             name: "secondary-receiving-piece-data",
-            dataBuffer: [NEGOTIATION_REQUEST_BYTE, ...message.data]
+            dataBuffer: [
+              NEGOTIATION_REQUEST_BYTE,
+              ...message.data, 
+              0x30, 0x00, 0x02, 0x02, 0x20, // Magic bytes to start the game
+            ]
           }
           this.clockTimer = CLOCKS_30_MS
         }
@@ -297,7 +304,6 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
         this.serialRegisters.pushFromExternal(nextByte)
         if  (this.gameState.state.dataBuffer.length == 0) {
-          this.serialRegisters.pushFromExternal(NEGOTIATION_REQUEST_BYTE)
           if (this.gameState.state.pieceData.length > 0) {
             this.clockTimer = CLOCKS_30_MS
             this.gameState.state = {
@@ -331,7 +337,6 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
         this.serialRegisters.pushFromExternal(nextByte)
         if  (this.gameState.state.dataBuffer.length == 0) {
-          this.serialRegisters.pushFromExternal(NEGOTIATION_REQUEST_BYTE)
           this.gameState.state = {
             name: "secondary-in-game"
           }
