@@ -43,29 +43,17 @@ interface PrimarySendingLineData {
   finished: boolean
 }
 
-interface SecondaryWaitingForLineData {
-  name: "secondary-waiting-for-line-data"
-}
-
-interface SecondaryReceivingLineData {
-  name: "secondary-receiving-line-data",
-  dataBuffer: number[],
-  pieceData: number[],
-}
-
 interface PrimarySendingPieceData {
   name: "primary-sending-piece-data",
   dataBuffer: number[],
+  lineData: number[],
   finished: boolean,
   handshakeCounter: number
 }
 
-interface SecondaryWaitingForPieceData {
-  name: "secondary-waiting-for-piece-data"
-}
 
-interface SecondaryReceivingPieceData {
-  name: "secondary-receiving-piece-data",
+interface SecondaryReceivingRoundData {
+  name: "secondary-receiving-round-data",
   dataBuffer: number[]
 }
 
@@ -83,10 +71,7 @@ type GameStates =
   | PrimaryInGame
   | SecondaryMusicSelectionState
   | SecondaryDifficultySelectionState
-  | SecondaryWaitingForLineData
-  | SecondaryReceivingLineData
-  | SecondaryWaitingForPieceData
-  | SecondaryReceivingPieceData
+  | SecondaryReceivingRoundData
   | SecondaryInGame
 
 export default GameStates

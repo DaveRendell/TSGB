@@ -25,16 +25,10 @@ interface DifficultyConfirmationMessage {
   type: "difficulty-confirmation"
 }
 
-// Random line data sent by primary before match starts to ensure same lines show up
-interface LineDataMessage {
-  type: "line-data",
-  data: number[]
-}
-
-// Random piece data sent by primary before match starts to ensure same pieces show up
-interface PieceDataMessage {
-  type: "piece-data",
-  data: number[]
+interface RoundDataMessage {
+  type: "round-data",
+  lineData: number[],
+  pieceData: number[],
 }
 
 export type TetrisMessage =
@@ -43,8 +37,7 @@ export type TetrisMessage =
   | MusicConfirmationMessage
   | DifficultySelectionMessage
   | DifficultyConfirmationMessage
-  | LineDataMessage
-  | PieceDataMessage
+  | RoundDataMessage
 
 export function parseMessage(message: any): TetrisMessage {
   if (
@@ -85,32 +78,23 @@ export function parseMessage(message: any): TetrisMessage {
     return { type: "difficulty-confirmation" }
   }
 
-  if (message.type === "line-data") {
+  if (message.type === "round-data") {
     if (
-      "data" in message
-      && typeof message.data === "object"
-      && Array.isArray(message.data)
-      && message.data.length > 0
-      && typeof message.data[0] === "number"
+      "lineData" in message
+      && typeof message.lineData === "object"
+      && Array.isArray(message.lineData)
+      && message.lineData.length > 0
+      && typeof message.lineData[0] === "number"
+      && "pieceData" in message
+      && typeof message.pieceData === "object"
+      && Array.isArray(message.pieceData)
+      && message.pieceData.length > 0
+      && typeof message.pieceData[0] === "number"
     ) {
       return {
-        type: "line-data",
-        data: message.data
-      }
-    }
-  }
-
-  if (message.type === "piece-data") {
-    if (
-      "data" in message
-      && typeof message.data === "object"
-      && Array.isArray(message.data)
-      && message.data.length > 0
-      && typeof message.data[0] === "number"
-    ) {
-      return {
-        type: "piece-data",
-        data: message.data
+        type: "round-data",
+        lineData: message.lineData,
+        pieceData: message.pieceData,
       }
     }
   }
