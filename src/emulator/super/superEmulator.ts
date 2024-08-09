@@ -73,7 +73,6 @@ export default class SuperEmulator {
   processCommand(commandCode: number, data: number[]): void {
     switch(commandCode) {
       case 0x00: // PAL01
-      console.log(data)
         return palettePair(0, 1)(this, data)
 
       case 0x01: // PAL23

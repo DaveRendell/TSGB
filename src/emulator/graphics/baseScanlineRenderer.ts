@@ -113,7 +113,7 @@ export default class BaseScanlineRenderer {
     this.backgroundTileCounter = scrollX & 0x7
 
     this.windowTileRow = this.getWindowTileRow(0)
-    this.windowTileCounter = (7 - this.windowX.byte) & 7
+    this.windowTileCounter = (7 - this.windowX.byte) >= 0 ? (7 - this.windowX.byte) & 7 : 0
 
     const sprites = this.oam.spritesAtScanline(this.mode)
     const highPrioritySprites = sprites.filter((s) => !s.priority)
