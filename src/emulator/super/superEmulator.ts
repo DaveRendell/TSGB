@@ -2,6 +2,7 @@ import { valueDisplay } from "../../helpers/displayHexNumbers"
 import SgbScanlineRenderer from "../graphics/sgbScanlineRenderer"
 import AttributeFile from "./attributeFile"
 import attributeBlock from "./commands/attributeBlock"
+import palettePair from "./commands/palettePair"
 import paletteSet from "./commands/paletteSet"
 import paletteTransfer from "./commands/paletteTransfer"
 import SuperPalette from "./superPalette"
@@ -71,6 +72,19 @@ export default class SuperEmulator {
   // https://gbdev.io/pandocs/SGB_Command_Summary.html
   processCommand(commandCode: number, data: number[]): void {
     switch(commandCode) {
+      case 0x00: // PAL01
+      console.log(data)
+        return palettePair(0, 1)(this, data)
+
+      case 0x01: // PAL23
+        return palettePair(2, 3)(this, data)
+
+      case 0x02: // PAL03
+        return palettePair(0, 3)(this, data)
+
+      case 0x03: // PAL12
+        return palettePair(1, 2)(this, data)
+
       case 0x04: // ATTR_BLK
         return attributeBlock(this, data)
         
