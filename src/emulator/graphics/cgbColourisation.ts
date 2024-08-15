@@ -199,10 +199,10 @@ export function getPaletteForCartridge(
     const paletteSetId = paletteInfo & 0x1F
     const flags = paletteInfo >> 5
 
-    return getPallete(paletteSetId, flags)
+    return getPalette(paletteSetId, flags)
 }
 
-function getPallete(paletteSetId: number, flags: number): number[][] {
+export function getPalette(paletteSetId: number, flags: number): number[][] {
   const paletteSet = PALETTE_SETS[paletteSetId]
 
     const obp0 = paletteSet[

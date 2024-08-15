@@ -7,6 +7,7 @@ import { ColourGradingControl } from "./colourGradingControl"
 import { ScalingOptions } from "./scalingOptions"
 import KeyboardMapping from "./keyboardMapping"
 import GamepadMapping from "./gamepadMapping"
+import { ColourisationPalettes } from "./colourisationPalettes"
 
 interface Props {
   emulator: Emulator
@@ -30,6 +31,9 @@ export default function Settings({ emulator }: Props) {
       <AudioControl audioProcessor={emulator.audioProcessor} />
       { emulator.mode !== EmulatorMode.CGB &&
         <MonochromePalettePicker pictureProcessor={emulator.pictureProcessor} />
+      }
+      { emulator.colouriseDmg &&
+        <ColourisationPalettes emulator={emulator} />
       }
       { (emulator.mode !== EmulatorMode.DMG || emulator.colouriseDmg) &&
         <ColourGradingControl registers={emulator.memory.registers} />

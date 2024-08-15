@@ -24,6 +24,8 @@ export default class DmgColourScanlineRenderer extends BaseScanlineRenderer {
 
   bcColours: number[][]
 
+  colourisationOption: number | "default" = "default"
+
   constructor(registers: IoRegisters, vram: VRAM, oam: OAM, cartridge: Cartridge) {
     super(registers, vram, oam)
     this.mode = EmulatorMode.DMG
@@ -34,6 +36,10 @@ export default class DmgColourScanlineRenderer extends BaseScanlineRenderer {
     this.backgroundPaletteRam = registers.backgroundPalettes
     this.objectPaletteRam = registers.objectPalettes
 
+    this.setDefaultPalettes(cartridge)
+  }
+
+  setDefaultPalettes(cartridge: Cartridge) {
     const title = cartridge.title
     const oldLicenseeCode = cartridge.romData[0x014b]
     const newLicenceeCode = String.fromCharCode(...cartridge.romData.slice(0x0144, 0x0146))
@@ -44,7 +50,9 @@ export default class DmgColourScanlineRenderer extends BaseScanlineRenderer {
 
   setPalettesFromBytes(bgp: number[], obp0: number[], obp1: number[]): void {
     this.backgroundPaletteRam.autoIncrement = true
-    this.objectPaletteRam.autoIncrement = true;
+    this.objectPaletteRam.autoIncrement = true
+    this.backgroundPaletteRam.index = 0
+    this.objectPaletteRam.index = 0
     bgp.forEach(colour => {
       this.backgroundPaletteRam.accessRegister.byte = colour & 0xFF
       this.backgroundPaletteRam.accessRegister.byte = colour >> 8
