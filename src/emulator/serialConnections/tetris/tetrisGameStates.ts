@@ -52,8 +52,19 @@ interface PrimarySendingPieceData {
 }
 
 
-interface SecondaryReceivingRoundData {
-  name: "secondary-receiving-round-data",
+interface SecondaryReceivingRoundLines {
+  name: "secondary-receiving-round-lines",
+  dataBuffer: number[]
+  piecesData: number[]
+}
+
+interface SecondaryReceivingRoundPieces {
+  name: "secondary-receiving-round-pieces"
+  dataBuffer: number[]
+}
+
+interface SecondaryReceivingMagicBytes {
+  name: "secondary-receiving-magic-bytes"
   dataBuffer: number[]
 }
 
@@ -71,7 +82,9 @@ type GameStates =
   | PrimaryInGame
   | SecondaryMusicSelectionState
   | SecondaryDifficultySelectionState
-  | SecondaryReceivingRoundData
+  | SecondaryReceivingRoundLines
+  | SecondaryReceivingRoundPieces
+  | SecondaryReceivingMagicBytes
   | SecondaryInGame
 
 export default GameStates

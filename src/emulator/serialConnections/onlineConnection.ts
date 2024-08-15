@@ -20,17 +20,19 @@ export default class OnlineConnection<MessageType> extends StateMachine<Connecti
   peer: Peer
   serialRegisters: SerialRegisters
   connectedCallback: () => void = () => {}
+  parseMessage: (raw: any) => MessageType
 
-  constructor(serialRegisters: SerialRegisters) {
+  constructor(serialRegisters: SerialRegisters, parseMessage: (raw: any) => MessageType) {
     super(
       { name: "disconnected" },
       { logPrefix: "ONLINE", logStateChanges: true }
     )
+    this.parseMessage = parseMessage
     this.serialRegisters = serialRegisters
     this.peer = new Peer()
     this.peer.on("connection", (connection) => {
       const self = this
-      connection.on("data", (data) => self.receiveMessage(data))
+      connection.on("data", (data) => self.receiveMessage(parseMessage(data)))
       this.state = { name: "connected", connection }
       this.connectedCallback()
     })
@@ -52,7 +54,7 @@ export default class OnlineConnection<MessageType> extends StateMachine<Connecti
     this.state.connection.send(message)
   }
 
-  receiveMessage(message: any): void{
+  receiveMessage(message: MessageType): void{
     throw new Error("Method not implemented.");
   }
 
@@ -63,7 +65,7 @@ export default class OnlineConnection<MessageType> extends StateMachine<Connecti
       connection.on("open", () => {
         this.state = { name: "connected", connection }
         const self = this
-        connection.on("data", (data) => self.receiveMessage(data))
+        connection.on("data", (data) => self.receiveMessage(this.parseMessage(data)))
         resolve()
       })
       connection.on("error", reject)

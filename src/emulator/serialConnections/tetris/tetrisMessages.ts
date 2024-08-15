@@ -36,13 +36,12 @@ export type TetrisMessage =
   | MusicSelectionUpdateMessage
   | MusicConfirmationMessage
   | DifficultySelectionMessage
-  | DifficultyConfirmationMessage
   | RoundDataMessage
 
 export function parseMessage(message: any): TetrisMessage {
   if (
     typeof message !== "object"
-    || "type" in message
+    || !("type" in message)
     || typeof message.type !== "string"
   ) {
     throw new Error("Unknown message type")
@@ -72,10 +71,6 @@ export function parseMessage(message: any): TetrisMessage {
         selection: message.selection,
       }
     }
-  }
-
-  if (message.type === "difficulty-confirmation") {
-    return { type: "difficulty-confirmation" }
   }
 
   if (message.type === "round-data") {
