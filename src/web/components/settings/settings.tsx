@@ -31,7 +31,7 @@ export default function Settings({ emulator }: Props) {
       { emulator.mode !== EmulatorMode.CGB &&
         <MonochromePalettePicker pictureProcessor={emulator.pictureProcessor} />
       }
-      { emulator.mode !== EmulatorMode.DMG &&
+      { (emulator.mode !== EmulatorMode.DMG || emulator.colouriseDmg) &&
         <ColourGradingControl registers={emulator.memory.registers} />
       }
       <ScalingOptions />

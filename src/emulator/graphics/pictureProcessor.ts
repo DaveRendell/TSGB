@@ -60,7 +60,7 @@ export default class PictureProcessor {
     if (mode === EmulatorMode.DMG) {
       if (colouriseDmg) {
         this.scanlineRenderer = new DmgColourScanlineRenderer(
-          this.memory.registers, this.memory.vram, this.memory.oam)
+          this.memory.registers, this.memory.vram, this.memory.oam, this.memory.cartridge)
       } else {
         this.scanlineRenderer = new DmgScanlineRenderer(
           this.memory.registers, this.memory.vram, this.memory.oam)

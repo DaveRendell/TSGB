@@ -23,6 +23,7 @@ export class Emulator {
   controller: Controller
   serialPort: SerialPort
   superEmulator?: SuperEmulator
+  colouriseDmg: boolean
 
   constructor(cartridge: Cartridge, mode: EmulatorMode, colouriseDmg: boolean = false) {
     this.mode = mode
@@ -36,5 +37,6 @@ export class Emulator {
     this.pictureProcessor = new PictureProcessor(this.cpu, mode, colouriseDmg, this.superEmulator)
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
+    this.colouriseDmg = colouriseDmg
   }
 }

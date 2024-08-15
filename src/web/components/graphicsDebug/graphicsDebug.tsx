@@ -32,7 +32,12 @@ export function GraphicsDebug({ emulator }: Props) {
       case "Sprites":
         return <SpriteDebug emulator={emulator} />
       case "Palettes":
-        return <PaletteDebug registers={emulator.memory.registers} mode={emulator.mode} colours={emulator.pictureProcessor.scanlineRenderer.colours} />
+        return <PaletteDebug
+          registers={emulator.memory.registers}
+          mode={emulator.mode}
+          colours={emulator.pictureProcessor.scanlineRenderer.colours}
+          colouriseDmg={emulator.colouriseDmg}
+        />
     }
   }
   

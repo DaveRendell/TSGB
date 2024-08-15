@@ -5,6 +5,9 @@ import { IoRegisters } from "../memory/registers/ioRegisters";
 import { PalletteRegister } from "../memory/registers/lcdRegisters";
 import { Sprite } from "../memory/sprite";
 import { VRAM } from "../memory/vram";
+import { Cartridge } from "../memory/cartridges/cartridge";
+import { getPaletteForCartridge } from "./cgbColourisation";
+import { PaletteRam } from "../memory/registers/paletteRegisters";
 
 
 /**
@@ -16,35 +19,40 @@ export default class DmgColourScanlineRenderer extends BaseScanlineRenderer {
 
   palette: PalletteRegister
 
-  backgroundColours = [
-    [0xFF, 0xFF, 0xFF],
-    [0xFF, 0x84, 0x84],
-    [0x94, 0x3A, 0x3A],
-    [0x00, 0x00, 0x00],
-  ]
+  backgroundPaletteRam: PaletteRam
+  objectPaletteRam: PaletteRam
 
-  object0Colours = [
-    [0xFF, 0xFF, 0xFF],
-    [0x7B, 0xFF, 0x31],
-    [0x00, 0x84, 0x00],
-    [0x00, 0x00, 0x00],
-  ]
+  bcColours: number[][]
 
-  object1Colours = [
-    [0xFF, 0xFF, 0xFF],
-    [0xFF, 0x84, 0x84],
-    [0x94, 0x3A, 0x3A],
-    [0x00, 0x00, 0x00],
-  ]
-
-  bcColours = this.backgroundColours
-
-  constructor(registers: IoRegisters, vram: VRAM, oam: OAM) {
+  constructor(registers: IoRegisters, vram: VRAM, oam: OAM, cartridge: Cartridge) {
     super(registers, vram, oam)
     this.mode = EmulatorMode.DMG
 
     this.backgroundPalette = registers.backgroundPallete
     this.objectPalettes = [registers.objectPallete0, registers.objectPallete1]
+
+    this.backgroundPaletteRam = registers.backgroundPalettes
+    this.objectPaletteRam = registers.objectPalettes
+
+    const title = cartridge.title
+    const oldLicenseeCode = cartridge.romData[0x014b]
+    const newLicenceeCode = String.fromCharCode(...cartridge.romData.slice(0x0144, 0x0146))
+    const [bgp, obp0, obp1] = getPaletteForCartridge(title, oldLicenseeCode, newLicenceeCode)
+    
+    this.setPalettesFromBytes(bgp, obp0, obp1)
+  }
+
+  setPalettesFromBytes(bgp: number[], obp0: number[], obp1: number[]): void {
+    this.backgroundPaletteRam.autoIncrement = true
+    this.objectPaletteRam.autoIncrement = true;
+    bgp.forEach(colour => {
+      this.backgroundPaletteRam.accessRegister.byte = colour & 0xFF
+      this.backgroundPaletteRam.accessRegister.byte = colour >> 8
+    });
+    ([...obp0, ...obp1]).forEach(colour => {
+      this.objectPaletteRam.accessRegister.byte = colour & 0xFF
+      this.objectPaletteRam.accessRegister.byte = colour >> 8
+    })
   }
 
   getBackgroundTileRow = (offset: number, backgroundY: number): number[] => {
@@ -85,24 +93,24 @@ export default class DmgColourScanlineRenderer extends BaseScanlineRenderer {
   setPixelFromSprite(sprite: Sprite, scanline: number, offset: number): number {
     this.palette = this.objectPalettes[sprite.monochromePalette]
     sprite.monochromePalette === 0
-      ? this.bcColours = this.object0Colours
-      : this.bcColours = this.object1Colours
+      ? this.bcColours = this.objectPaletteRam.scaledColours[0]
+      : this.bcColours = this.objectPaletteRam.scaledColours[1]
     return sprite.rawPixelAt(scanline, offset, this.lcdControl.objectSize)
   }
 
   setBackgroundPalette() {
     this.palette = this.backgroundPalette
-    this.bcColours = this.backgroundColours
+    this.bcColours = this.backgroundPaletteRam.scaledColours[0]
   }
 
   setWindowPalette() {
     this.palette = this.backgroundPalette
-    this.bcColours = this.backgroundColours
+    this.bcColours = this.backgroundPaletteRam.scaledColours[0]
   }
 
   useTileColourZero(): number {
     this.palette = this.backgroundPalette
-    this.bcColours = this.backgroundColours
+    this.bcColours = this.backgroundPaletteRam.scaledColours[0]
     return 0
   }
 

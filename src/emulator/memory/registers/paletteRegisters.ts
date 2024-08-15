@@ -15,7 +15,7 @@ export class PaletteRam {
   accessRegister: ByteRef
 
   autoIncrement = false
-  index: number
+  index: number = 0
 
   colourStyle = ColourStyle.Washed
 
