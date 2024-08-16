@@ -15,6 +15,7 @@ interface DataSet {
   y2: number
 }
 
+// https://gbdev.io/pandocs/SGB_Command_Attribute.html#sgb-command-04--attr_blk
 export default function attributeBlock(superEmulator: SuperEmulator, data: number[]) {
   const dataSetCount = data[0]
 

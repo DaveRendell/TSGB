@@ -2,6 +2,8 @@ import { valueDisplay } from "../../helpers/displayHexNumbers"
 import SgbScanlineRenderer from "../graphics/sgbScanlineRenderer"
 import AttributeFile from "./attributeFile"
 import attributeBlock from "./commands/attributeBlock"
+import attributeDivide from "./commands/attributeDivide"
+import attributeLine from "./commands/attributeLine"
 import palettePair from "./commands/palettePair"
 import paletteSet from "./commands/paletteSet"
 import paletteTransfer from "./commands/paletteTransfer"
@@ -86,6 +88,12 @@ export default class SuperEmulator {
 
       case 0x04: // ATTR_BLK
         return attributeBlock(this, data)
+
+      case 0x05: // ATTR_LIN
+        return attributeLine(this, data)
+
+      case 0x06: // ATTR_DIV
+        return attributeDivide(this, data)
         
       case 0x0B: // PAL_TRN
         return paletteTransfer(this)

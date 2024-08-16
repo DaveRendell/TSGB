@@ -46,4 +46,48 @@ export default class AttributeFile {
       this.data[y2][x] = paletteId
     }
   }
+
+  setHorizontalLine(yDivide: number, paletteId: number) {
+    for (let x = 0; x < 20; x++) {
+      this.data[yDivide][x] = paletteId
+    }
+  }
+
+  setVerticalLine(xDivide: number, paletteId: number) {
+    for (let y = 0; y < 18; y++) {
+      this.data[y][xDivide]
+    }
+  }
+
+  setDivideVerticalLeft(xDivide: number, paletteId: number) {
+    for (let y = 0; y < 18; y++) {
+      for (let x = 0; x < xDivide; x++) {
+        this.data[y][x] = paletteId
+      }
+    }
+  }
+
+  setDivideVerticalRight(xDivide: number, paletteId: number) {
+    for (let y = 0; y < 18; y++) {
+      for (let x = xDivide + 1; x < 20; x++) {
+        this.data[y][x] = paletteId
+      }
+    }
+  }
+
+  setDivideHorizontalAbove(yDivide: number, paletteId: number) {
+    for (let y = 0; y < yDivide; y++) {
+      for (let x = 0; x < 20; x++) {
+        this.data[y][x] = paletteId
+      }
+    }
+  }
+
+  setDivideHorizontalBelow(yDivide: number, paletteId: number) {
+    for (let y = yDivide + 1; y < 18; y++) {
+      for (let x = 0; x < 20; x++) {
+        this.data[y][x] = paletteId
+      }
+    }
+  }
 }
