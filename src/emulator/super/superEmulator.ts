@@ -5,6 +5,7 @@ import attributeBlock from "./commands/attributeBlock"
 import attributeCharacters from "./commands/attributeCharacters"
 import attributeDivide from "./commands/attributeDivide"
 import attributeLine from "./commands/attributeLine"
+import attributeTransfer from "./commands/attributeTransfer"
 import palettePair from "./commands/palettePair"
 import paletteSet from "./commands/paletteSet"
 import paletteTransfer from "./commands/paletteTransfer"
@@ -12,6 +13,7 @@ import SuperPalette from "./superPalette"
 
 type VramTransferType =
   "palette"
+  | "attribute"
 
 export default class SuperEmulator {
   scanlineRenderer: SgbScanlineRenderer
@@ -28,7 +30,7 @@ export default class SuperEmulator {
   storedPalettes: SuperPalette[] = []
 
   // 45 Attribute files in Super RAM
-  storedAttributeFiles: AttributeFile[] = []
+  storedAttributeFiles: number[][][]
 
   // Display palettes
   palettes: SuperPalette[] = [ // TODO defaults
@@ -104,6 +106,9 @@ export default class SuperEmulator {
       
       case 0x0A: // PAL_SET
         return paletteSet(this, data)
+
+      case 0x15: // ATTR_TRN
+        return attributeTransfer(this)
     }
 
     console.log(`[SUPER] Received unsupported command ${valueDisplay(commandCode)} - ${commandName(commandCode)} with data [${data.map(x => valueDisplay(x)).join(",")}]`)
@@ -121,6 +126,23 @@ export default class SuperEmulator {
           this.storedPalettes.push(new SuperPalette(bytes.slice(i << 3, (i + 1) << 3)))
         }
         console.log("[SUPER] Stored VRAM transfer in Palettes")
+      
+      case "attribute":
+        this.storedAttributeFiles = []
+        for (let fileId = 0; fileId < 45; fileId++) {
+          const file: number[][] = []
+          for (let row = 0; row < 18; row++) {
+            file.push(
+              data.slice(90 * fileId + 5 * row).slice(0, 5).flatMap(byte => [
+                (byte >> 6) & 0x3,
+                (byte >> 4) & 0x3,
+                (byte >> 2) & 0x3,
+                (byte >> 0) & 0x3,
+              ])
+            )
+          }
+          this.storedAttributeFiles.push(file)
+        }
     }
   }
 }
