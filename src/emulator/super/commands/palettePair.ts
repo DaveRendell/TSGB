@@ -9,7 +9,7 @@ export default function palettePair(paletteId0, paletteId1) {
       ...data.slice(0, 2),
       ...data.slice(8, 15)
     ])
-    console.log(`PAL${paletteId0}${paletteId1} received`, {
+    console.log(`[SUPER] PAL${paletteId0}${paletteId1} received`, {
       [paletteId0]: palette0.colours,
       [paletteId1]: palette1.colours
     })

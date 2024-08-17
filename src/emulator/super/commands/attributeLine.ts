@@ -16,7 +16,7 @@ export default function attributeLine(superEmulator: SuperEmulator, data: number
     paletteId: (byte >> 4) & 0x3
   }))
 
-  console.log("ATTR_LIN command recieved", { dataSets })
+  console.log("[SUPER] ATTR_LIN command recieved", { dataSets })
 
   dataSets.forEach(dataSet => {
     if (dataSet.dimension === "horizontal") {

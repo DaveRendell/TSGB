@@ -32,7 +32,7 @@ export default function attributeBlock(superEmulator: SuperEmulator, data: numbe
     )
   }
 
-  console.log("ATTR_BLK command received", { dataSets })
+  console.log("[SUPER] ATTR_BLK command received", { dataSets })
 
   dataSets.forEach(dataSet => {
     if (dataSet.setInterior) {

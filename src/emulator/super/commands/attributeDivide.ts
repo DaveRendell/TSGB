@@ -11,7 +11,7 @@ export default function attributeDivide(superEmulator: SuperEmulator, data: numb
 
   const coordinate = data[1]
 
-  console.log("ATTR_DIV received", { positivePalette, negativePalette, dividerPalette, dimension, coordinate })
+  console.log("[SUPER] ATTR_DIV received", { positivePalette, negativePalette, dividerPalette, dimension, coordinate })
 
   if (dimension === "horizontal") {
     superEmulator.attributes.setDivideHorizontalAbove(coordinate, negativePalette)

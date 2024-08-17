@@ -90,4 +90,18 @@ export default class AttributeFile {
       }
     }
   }
+
+  setCharacters(
+    x: number,
+    y: number,
+    direction: 1 | -1,
+    paletteIds: number[]
+  ) {
+    paletteIds.forEach(paletteId => {
+      this.data[y][x] = paletteId
+      x += direction
+      if (x < 0) { x = 19; y-- }
+      if (x >= 20) { x = 0; y++ }
+    })
+  }
 }
