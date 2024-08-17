@@ -24,4 +24,8 @@ export default function paletteSet(
 
   paletteIds.forEach((id, i) =>
     superEmulator.palettes[i] = superEmulator.storedPalettes[id])
+
+  if (applyAtf) {
+    superEmulator.attributes.data = superEmulator.storedAttributeFiles[atfId]
+  }
 }
