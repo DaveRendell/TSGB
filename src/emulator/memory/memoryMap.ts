@@ -12,6 +12,7 @@ import { EmulatorMode } from "../emulator"
 import DMA from "./dma"
 import { SerialPort } from "../serialConnections/serialPort"
 import SuperEmulator from "../super/superEmulator"
+import MemoryRegion from "./memoryRegions"
 
 // Reference: https://gbdev.io/pandocs/Memory_Map.html
 export default class Memory {
@@ -30,6 +31,9 @@ export default class Memory {
   dma: DMA
 
   controller: Controller
+
+  // Debug
+  symbols: Map<number, Map<number, number>> = new Map()
 
   constructor(cartridge: Cartridge, mode: EmulatorMode, serialPort: SerialPort, superEmulator?: SuperEmulator) {
     this.registers = new IoRegisters(this, serialPort, mode, superEmulator)
@@ -127,5 +131,54 @@ export default class Memory {
     for (let i = 0; i < 0xa0; i++) {
       this.at(0xfe00 + i).byte = this.at(address + i).byte
     }
+  }
+
+  getRegion(address: number): MemoryRegion {
+    let bank = 0
+    if (address >= 0x0000 && address < 0x8000) { // ROM banks
+      return { name: "ROM", bank: this.cartridge.romBank(address) }
+    }
+
+    if (address >= 0x8000 && address < 0xA000) { // VRAM
+      return { name: "VRAM", bank: this.registers.vramBank.bank }
+    }
+
+    if (address >= 0xA000 && address < 0xC000) { // SRAM
+      return { name: "SRAM", bank: this.cartridge.ramBank(address) }
+    }
+
+    if (address >= 0xC000 && address < 0xD000) { // WRAM bank 0
+      return { name: "WRAM", bank: 0 }
+    }
+
+    if (address >= 0xD000 && address < 0xE000) { // WRAM banked section
+      return { name: "WRAM", bank: this.registers.wramBank.bank }
+    }
+
+    if (address >= 0xE000 && address < 0xF000) { // Echo RAM bank 0
+      return { name: "Echo - WRAM", bank: 0 }
+    }
+
+    if (address >= 0xF000 && address < 0xFE00) { // Echo RAM banked section
+      return { name: "Echo - WRAM", bank: this.registers.wramBank.bank }
+    }
+
+    if (address >= 0xFE00 && address < 0xFEA0) { // OAM
+      return { name: "OAM" }
+    }
+
+    if (address >= 0xFEA0 && address < 0xFF00) { // Forbidden
+      return { name: "Forbidden" }
+    }
+
+    if (address >= 0xFF00 && address < 0xFF80) { // IO Registers
+      return { name: "I/O Registers" }
+    }
+
+    if (address >= 0xFF80 && address < 0xFFFE) { // HRAM
+      return { name: "HRAM" }
+    }
+
+    return { name: "I/O Registers" } // Interrupt enabled register at 0xFFFF
   }
 }

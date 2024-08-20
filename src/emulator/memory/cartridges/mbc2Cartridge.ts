@@ -52,4 +52,13 @@ export class Mbc2Cartridge extends Cartridge {
       (value) => this.onchipRam[0xA000 + (address & 0x01FF)] = (value & 0x0F)
     )
   }
+  
+  override romBank(address: number): number {
+    if (address < 0x4000) { return 0 }
+    return this.bankNumber
+  }
+
+  override ramBank(_address: number): number {
+    return 0
+  }
 }

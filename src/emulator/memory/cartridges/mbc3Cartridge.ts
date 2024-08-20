@@ -146,4 +146,13 @@ export class Mbc3Cartridge extends Cartridge {
       },
     )
   }
+
+  override romBank(address: number): number {
+    if (address < 0x4000) { return 0 }
+    return this.bankNumber1
+  }
+
+  override ramBank(_address: number): number {
+    return this.bankNumber2
+  }
 }

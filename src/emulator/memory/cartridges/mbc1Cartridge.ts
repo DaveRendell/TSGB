@@ -93,4 +93,19 @@ export class Mbc1Cartridge extends Cartridge {
       },
     )
   }
+
+  override romBank(address: number): number {
+    if (address < 0x4000) {
+      if (!this.advancedMode) { return 0 }
+      return (this.bankNumber2 << 5) & (this.romBanks - 1)
+    }
+    return ((this.bankNumber2 << 5) + this.bankNumber1) & (this.romBanks - 1)
+  }
+
+  override ramBank(_address: number): number {
+    if (this.advancedMode) {
+      return this.bankNumber2 & (this.ramBanks - 1)
+    }
+    return 0
+  }
 }

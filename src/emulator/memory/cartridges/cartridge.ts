@@ -67,4 +67,7 @@ export class Cartridge {
       },
     )
   }
+
+  romBank(address: number): number { return 0 }
+  ramBank(address: number): number { return 0 }
 }

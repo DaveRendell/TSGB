@@ -75,4 +75,13 @@ export class Mbc5Cartridge extends Cartridge {
       (value) => this.writeToRam(address, value),
     )
   }
+
+  override romBank(address: number): number {
+    if (address < 0x4000) { return 0 }
+    return this.bankNumber1
+  }
+
+  override ramBank(_address: number): number {
+    return this.bankNumber2
+  }
 }
