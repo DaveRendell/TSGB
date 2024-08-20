@@ -1,9 +1,7 @@
 import * as React from "react"
-import Memory from "../../emulator/memory/memoryMap"
-import { addressDisplay } from "../../helpers/displayHexNumbers"
+import Memory from "../../../emulator/memory/memoryMap"
+import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import MemoryTableRow from "./memoryTableRow"
-import { cpuUsage } from "process"
-
 interface Props {
   memory: Memory
   programCounter: number

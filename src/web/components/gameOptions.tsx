@@ -45,6 +45,15 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
     await updateGame(game)
   }
 
+  const updateMap = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    if (e.target.files && e.target.files[0]) {
+      const mapFile = e.target.files[0]
+      game.mapFile = mapFile
+      await updateGame(game)
+    }
+  }
+
   const deleteSave = async () => {
     game.save = undefined
     await updateGame(game)
@@ -109,6 +118,9 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <br />
       <label htmlFor="set-boxart">Set boxart</label>
       <input id="set-boxart" type="file" onChange={updateBoxArt} />
+      <br />
+      <label htmlFor="set-map">Set map file for debugging</label>
+      <input id="set-map" type="file" onChange={updateMap} />
       <br />
       <button className="chunky-button" onClick={resetRTC}>Reset RTC</button>
       <br />

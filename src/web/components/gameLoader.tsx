@@ -8,14 +8,17 @@ import { getGameList, addGame, deleteGame } from "../indexedDb/gameStore"
 import LibraryCard from "./libraryCard"
 import GameOptions from "./gameOptions"
 import { EmulatorMode } from "../../emulator/emulator"
+import parseMap from "../../emulator/debug/parseMap"
+import { DebugMap } from "../../emulator/debug/types"
 
 interface Props {
   setCartridge: (cartridge: Cartridge) => void
   setMode: (mode: EmulatorMode) => void
   setColouriseDmg: (colouriseDmg: boolean) => void
+  setDebugMap: (map: DebugMap) => void
 }
 
-export default function GameLoader({ setCartridge, setMode, setColouriseDmg }: Props) {
+export default function GameLoader({ setCartridge, setMode, setColouriseDmg, setDebugMap }: Props) {
   const [storedGames, setStoredGames] = React.useState<StoredGame[] | null>(
     null,
   )
@@ -46,6 +49,11 @@ export default function GameLoader({ setCartridge, setMode, setColouriseDmg }: P
       setMode(mode)
     }
     setColouriseDmg(colouriseDmg)
+    if (game.mapFile) {
+      const debugMap = await parseMap(game.mapFile)
+      console.log("DEBUG MAP", debugMap)
+      setDebugMap(debugMap)
+    }
   }
 
   const closeOptions = () => setOptionsFocusGame(undefined)

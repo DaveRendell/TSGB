@@ -1,11 +1,8 @@
-export default interface DebugMap {
-  
-}
+import { MemoryRegion } from "./types"
 
-interface Bank {
-  number: number
-  sections: Section[]
-}
+export type DebugMap = Record<MemoryRegion, Bank[]>
+
+type Bank = Section[]
 
 interface Section {
   name: string

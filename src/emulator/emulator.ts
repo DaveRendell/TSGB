@@ -7,6 +7,7 @@ import PictureProcessor from "./graphics/pictureProcessor"
 import { SerialPort } from "./serialConnections/serialPort"
 import { DebugConnection } from "./serialConnections/debugConnection"
 import SuperEmulator from "./super/superEmulator"
+import { DebugMap } from "./debug/types"
 
 export enum EmulatorMode {
   DMG,
@@ -24,8 +25,14 @@ export class Emulator {
   serialPort: SerialPort
   superEmulator?: SuperEmulator
   colouriseDmg: boolean
+  debugMap: DebugMap
 
-  constructor(cartridge: Cartridge, mode: EmulatorMode, colouriseDmg: boolean = false) {
+  constructor(
+    cartridge: Cartridge,
+    mode: EmulatorMode,
+    colouriseDmg: boolean = false,
+    debugMap: DebugMap | undefined = undefined
+  ) {
     this.mode = mode
     this.serialPort = { type: "debug", connection: new DebugConnection() }
     if (this.mode === EmulatorMode.SGB) {
@@ -38,5 +45,6 @@ export class Emulator {
     this.audioProcessor = new AudioProcessor(this.cpu)
     this.controller.initialiseEvents()
     this.colouriseDmg = colouriseDmg
+    this.debugMap = debugMap
   }
 }

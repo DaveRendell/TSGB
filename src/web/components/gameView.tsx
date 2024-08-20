@@ -1,5 +1,5 @@
 import * as React from "react"
-import MemoryExplorer from "./memoryExplorer"
+import MemoryExplorer from "./memoryDebug/memoryExplorer"
 import CpuController from "./cpuController"
 import Display from "./display"
 import Joypad from "./joypad"

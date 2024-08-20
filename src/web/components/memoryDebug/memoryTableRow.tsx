@@ -1,11 +1,11 @@
 import * as React from "react"
-import Memory from "../../emulator/memory/memoryMap"
-import { addressDisplay, valueDisplay } from "../../helpers/displayHexNumbers"
-import { from2sComplement } from "../../emulator/cpu/instructions/instructionHelpers"
+import Memory from "../../../emulator/memory/memoryMap"
+import { addressDisplay, valueDisplay } from "../../../helpers/displayHexNumbers"
+import { from2sComplement } from "../../../emulator/cpu/instructions/instructionHelpers"
 import {
   Instruction,
   decodeInstruction,
-} from "../../emulator/cpu/instructions/instruction"
+} from "../../../emulator/cpu/instructions/instruction"
 
 interface Props {
   address: number

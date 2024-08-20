@@ -7,4 +7,5 @@ export interface StoredGame {
   save?: Uint8Array
   boxart?: File
   rtc?: Rtc | undefined
+  mapFile?: File
 }
