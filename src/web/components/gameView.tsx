@@ -51,11 +51,7 @@ export default function GameView({ emulator, unload }: Props) {
     "Debug Memory": () => (
       <>
         <CpuController cpu={emulator.cpu} />
-        <MemoryExplorer
-          memory={emulator.cpu.memory}
-          programCounter={programCounter}
-          breakpoints={emulator.cpu.breakpoints}
-        />
+        <MemoryExplorer emulator={emulator} />
       </>
     ),
   }

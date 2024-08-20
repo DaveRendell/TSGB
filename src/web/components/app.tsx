@@ -20,7 +20,13 @@ export default function App() {
     }
     return <>
       <h1>TSGB</h1>
-      <GameView emulator={emulator} unload={() => setCartridge(null)} />
+      <GameView emulator={emulator} unload={
+        () => {
+            setCartridge(null)
+            setDebugMap(null)
+          }
+        } 
+        />
     </>
   }
 

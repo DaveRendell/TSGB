@@ -6,23 +6,26 @@ import {
   Instruction,
   decodeInstruction,
 } from "../../../emulator/cpu/instructions/instruction"
+import { Emulator } from "../../../emulator/emulator"
+import findSection from "../../../emulator/debug/findSection"
 
 interface Props {
   address: number
-  memory: Memory
-  programCounter: number
-  breakpoints: Set<number>
-  toggle: () => void
+  emulator: Emulator
+  toggle: () => void,
+  isFirstRow: boolean,
   key: number
 }
 
 export default function MemoryTableRow({
   address,
-  memory,
-  programCounter,
-  breakpoints,
+  emulator,
   toggle,
+  isFirstRow,
 }: Props) {
+  const memory = emulator.memory
+  const programCounter = emulator.cpu.registers.PC.word
+  const breakpoints = emulator.cpu.breakpoints
   const memoryLocation = memory.at(address)
   const [value, setValue] = React.useState(0)
   const [inputValue, setInputValue] = React.useState("")
@@ -81,6 +84,31 @@ export default function MemoryTableRow({
       (!instructionMinusTwo || instructionMinusTwo.parameterBytes < 2)
   }
 
+  const rowRegion = memory.getRegion(address)
+
+  const region = `${rowRegion.name.toUpperCase()}:${rowRegion.bank}`
+
+  let sectionString = ""
+  let symbolString = ""
+  if (emulator.debugMap) {
+    const section = findSection(emulator.debugMap, address, memory)
+    if (section) {
+      sectionString =
+        isFirstRow 
+          ? section.start === address
+            ? section.name
+            : `${section.name}+${address - section.start}`
+          : section.start === address
+            ? section.name
+            : ""
+      
+      const symbol = section.symbols.find(symbol => symbol.address === address)
+      if (symbol) {
+        symbolString = symbol.name
+      }
+    }
+  }
+
   return (
     <tr>
       <td>{programCounter === address ? "PC ->" : ""}</td>
@@ -92,29 +120,22 @@ export default function MemoryTableRow({
         />
       </td>
       <td>
+        {region}
+      </td>
+      <td>
         <code>{addressDisplay(address)}</code>
       </td>
       <td>
-        <code>{valueDisplay(value || -1)}</code>
+        <code>{valueDisplay(value)}</code>
       </td>
-      <td>{value}</td>
-      <td>
-        <code>{value?.toString(2).padStart(8, "0")}</code>
-      </td>
-      <td>{from2sComplement(value || -1)}</td>
       <td>
         <code>{isUnknown ? "ERROR?" : instructionDescription}</code>
       </td>
       <td>
-        <input
-          className="narrow"
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
+        {sectionString}
       </td>
       <td>
-        <button onClick={update}>Update</button>
+        {symbolString}
       </td>
     </tr>
   )

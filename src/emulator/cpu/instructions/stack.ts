@@ -116,7 +116,7 @@ export function push(registerName: WordLocation): Instruction {
     },
     cycles: 16,
     parameterBytes: 0,
-    description: () => `PUSH ${describeWordLocation(registerName)}`,
+    description: () => `PUSH ${describeWordLocation(registerName)([])}`,
   }
 }
 
@@ -133,6 +133,6 @@ export function pop(registerName: WordLocation): Instruction {
     },
     cycles: 12,
     parameterBytes: 0,
-    description: () => `POP ${describeWordLocation(registerName)}`,
+    description: () => `POP ${describeWordLocation(registerName)([])}`,
   }
 }

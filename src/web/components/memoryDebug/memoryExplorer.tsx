@@ -2,17 +2,16 @@ import * as React from "react"
 import Memory from "../../../emulator/memory/memoryMap"
 import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import MemoryTableRow from "./memoryTableRow"
+import { Emulator } from "../../../emulator/emulator"
 interface Props {
-  memory: Memory
-  programCounter: number
-  breakpoints: Set<number>
+  emulator: Emulator
 }
 
-export default function MemoryExplorer({
-  memory,
-  programCounter,
-  breakpoints,
-}: Props) {
+export default function MemoryExplorer({ emulator }: Props) {
+  const memory = emulator.memory
+  const programCounter = emulator.cpu.registers.PC.word
+  const breakpoints = emulator.cpu.breakpoints
+
   const [toggle, setToggle] = React.useState(false)
   const [baseAddress, setBaseAddress] = React.useState(0x0000)
   const [length, setLength] = React.useState(25)
@@ -78,24 +77,22 @@ export default function MemoryExplorer({
           <tr>
             <th></th>
             <th>Break</th>
+            <th>Region</th>
             <th>Address</th>
             <th>Hex</th>
-            <th>Dec</th>
-            <th>Binary</th>
-            <th>Signed</th>
             <th>Command</th>
-            <th>Update</th>
+            <th>Section</th>
+            <th>Symbol</th>
           </tr>
         </thead>
         <tbody>
-          {addresses.map((address) => (
+          {addresses.map((address, i) => (
             <MemoryTableRow
               key={address}
               address={address}
-              memory={memory}
-              programCounter={programCounter}
-              breakpoints={breakpoints}
+              emulator={emulator}
               toggle={() => setToggle(!toggle)}
+              isFirstRow={i === 0}
             />
           ))}
         </tbody>
