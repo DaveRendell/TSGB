@@ -66,13 +66,9 @@ export const jpHl: Instruction = {
 export function rst(address: number): Instruction {
   return {
     execute(cpu) {
-      const sp = cpu.registers.SP
       const pc = cpu.registers.PC
 
-      const [h, l] = splitBytes(pc.word)
-
-      cpu.memory.at(--sp.word).byte = h
-      cpu.memory.at(--sp.word).byte = l
+      cpu.pushCallToStack(pc.word)
 
       pc.word = address
     },

@@ -38,8 +38,6 @@ export default function GameView({ emulator, unload }: Props) {
   // emulator.cpu.onInstructionComplete = () => { setToggle(!toggle) }
   emulator.cpu.onError = (e) => setError(e.message)
 
-  const programCounter = emulator.cpu.registers.PC.word
-
   const tabs = {
     Info: () => <Info emulator={emulator} />,
     Settings: () => <Settings emulator={emulator} />,

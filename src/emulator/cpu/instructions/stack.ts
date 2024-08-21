@@ -12,14 +12,10 @@ import { CONDITIONS, CONDITION_NAMES } from "./jumps"
 
 export const call: Instruction = {
   execute: (cpu) => {
-    const sp = cpu.registers.SP
     const pc = cpu.registers.PC
     const address = cpu.nextWord.word
 
-    const [h, l] = splitBytes(pc.word)
-
-    cpu.memory.at(--sp.word).byte = h
-    cpu.memory.at(--sp.word).byte = l
+    cpu.pushCallToStack(pc.word)
 
     pc.word = address
   },
@@ -33,13 +29,9 @@ export function callF(condition: JumpCondition): Instruction {
     execute(cpu) {
       const address = cpu.nextWord.word
       if (CONDITIONS[condition](cpu)) {
-        const sp = cpu.registers.SP
         const pc = cpu.registers.PC
 
-        const [h, l] = splitBytes(pc.word)
-
-        cpu.memory.at(--sp.word).byte = h
-        cpu.memory.at(--sp.word).byte = l
+        cpu.pushCallToStack(pc.word)
 
         pc.word = address
       }
@@ -55,13 +47,9 @@ export function callF(condition: JumpCondition): Instruction {
 
 export const ret: Instruction = {
   execute: (cpu) => {
-    const sp = cpu.registers.SP
     const pc = cpu.registers.PC
 
-    const l = cpu.memory.at(sp.word++).byte
-    const h = cpu.memory.at(sp.word++).byte
-
-    pc.word = combineBytes(h, l)
+    pc.word = cpu.popCallFromStack()
   },
   cycles: 16,
   parameterBytes: 0,
@@ -70,13 +58,9 @@ export const ret: Instruction = {
 
 export const reti: Instruction = {
   execute(cpu) {
-    const sp = cpu.registers.SP
     const pc = cpu.registers.PC
 
-    const l = cpu.memory.at(sp.word++).byte
-    const h = cpu.memory.at(sp.word++).byte
-
-    pc.word = combineBytes(h, l)
+    pc.word = cpu.popCallFromStack()
     cpu.interruptsEnabled = true
   },
   cycles: 16,
@@ -88,13 +72,9 @@ export function retF(condition: JumpCondition): Instruction {
   return {
     execute(cpu) {
       if (CONDITIONS[condition](cpu)) {
-        const sp = cpu.registers.SP
         const pc = cpu.registers.PC
 
-        const l = cpu.memory.at(sp.word++).byte
-        const h = cpu.memory.at(sp.word++).byte
-
-        pc.word = combineBytes(h, l)
+        pc.word = cpu.popCallFromStack()
       }
     },
     cycles: 20,
@@ -106,13 +86,9 @@ export function retF(condition: JumpCondition): Instruction {
 export function push(registerName: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      const sp = cpu.registers.SP
       const register = getWordRef(registerName, cpu)
 
-      const [h, l] = splitBytes(register.word)
-
-      cpu.memory.at(--sp.word).byte = h
-      cpu.memory.at(--sp.word).byte = l
+      cpu.pushToStack(register.word)
     },
     cycles: 16,
     parameterBytes: 0,
@@ -123,13 +99,9 @@ export function push(registerName: WordLocation): Instruction {
 export function pop(registerName: WordLocation): Instruction {
   return {
     execute: (cpu) => {
-      const sp = cpu.registers.SP
       const register = getWordRef(registerName, cpu)
 
-      const l = cpu.memory.at(sp.word++).byte
-      const h = cpu.memory.at(sp.word++).byte
-
-      register.word = combineBytes(h, l)
+      register.word = cpu.popFromStack()
     },
     cycles: 12,
     parameterBytes: 0,

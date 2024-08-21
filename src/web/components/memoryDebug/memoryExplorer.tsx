@@ -3,6 +3,7 @@ import Memory from "../../../emulator/memory/memoryMap"
 import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import MemoryTableRow from "./memoryTableRow"
 import { Emulator } from "../../../emulator/emulator"
+import Stack from "./stack"
 interface Props {
   emulator: Emulator
 }
@@ -29,7 +30,7 @@ export default function MemoryExplorer({ emulator }: Props) {
   }
 
   const addBreakpoint = (address: number): void => {
-    memory.cpu.breakpoints.add(address)
+    emulator.cpu.breakpoints.add(address)
   }
 
   const addresses = Array.from({ length }, (_, i) => baseAddress + i)
@@ -37,6 +38,7 @@ export default function MemoryExplorer({ emulator }: Props) {
   return (
     <section>
       <h2>Memory Explorer</h2>
+      <Stack emulator={emulator} />
       { breakpoints.size > 0 && <p>
           Breakpoints:
           <ul>

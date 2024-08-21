@@ -241,12 +241,8 @@ export default class CPU {
     this.interruptFlags.byte = this.interruptFlags.byte & ~(1 << interrupt)
     // Push PC to stack and jump to handler address
     const handlerAddress = INTERRUPT_HANDLERS[interrupt]
-    const sp = this.registers.SP
     const pc = this.registers.PC
-    const [h, l] = splitBytes(pc.word)
-
-    this.memory.at(--sp.word).byte = h
-    this.memory.at(--sp.word).byte = l
+    this.pushCallToStack(pc.word)
     pc.word = handlerAddress
 
     this.incrementClock(20)
@@ -343,5 +339,27 @@ export default class CPU {
     }
 
     return stack.map(addressDisplay).join("\n")
+  }
+
+  debugCallStack: number[] = [] // Just used for debugging, not program execution
+
+  pushCallToStack(word: number): void {
+    this.debugCallStack.push(word)
+    this.pushToStack(word)
+  }
+
+  pushToStack(word: number): void {
+    this.memory.at(--this.registers.SP.word).byte = word >> 8
+    this.memory.at(--this.registers.SP.word).byte = word & 0xFF
+  }
+
+  popCallFromStack(): number {
+    this.debugCallStack.pop()
+    return this.popFromStack()
+  }
+
+  popFromStack(): number {
+    return this.memory.at(this.registers.SP.word++).byte
+      + (this.memory.at(this.registers.SP.word++).byte << 8)
   }
 }
