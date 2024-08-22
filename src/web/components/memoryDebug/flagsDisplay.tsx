@@ -23,7 +23,7 @@ export default function FlagsDisplay({ flagsRegister }: Props) {
     })
   }, [flagsRegister])
 
-  return <>
+  return <div>
     <h3>Flags</h3>
     <table>
       <tbody>
@@ -61,5 +61,5 @@ export default function FlagsDisplay({ flagsRegister }: Props) {
         </tr>
       </tbody>
     </table>
-  </>
+  </div>
 }

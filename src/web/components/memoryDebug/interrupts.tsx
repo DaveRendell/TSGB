@@ -54,7 +54,7 @@ export default function Interrupts({ emulator }: Props) {
 
   useAnimationFrame(() => setState(currentState()), [emulator])
 
-  return <>
+  return <div>
     <h3>Interrupts</h3>
     Interrupts enabled: <input
       type="checkbox"
@@ -91,5 +91,5 @@ export default function Interrupts({ emulator }: Props) {
         )}
       </tbody>
     </table>
-  </>
+  </div>
 }

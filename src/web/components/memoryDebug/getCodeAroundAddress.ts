@@ -20,12 +20,30 @@ export default function getCodeAroundAddress(
   linesAbove: number,
   linesBelow: number,
 ): Line[] {
-  const lines: Line[] = [getLine(address, emulator)]
+  const startLine = getLine(address, emulator)
+  const lines: Line[] = [startLine]
 
-  // TODO, get lines above and below
+  let current = startLine
+  let cursor = address + current.bytes.length
+
+  while (lines.length <= linesBelow) {
+    current = getLine(cursor, emulator)
+    lines.push(current)
+    cursor += current.bytes.length
+  }
 
   return lines
 }
+
+/*
+  A - non params
+  B - one param
+
+  A C - > previous command is A?
+  B A C -> Oh no, it's B
+  B B A C -> Oh, actually it was A...
+  B B B A C -> Oh god there's no way of knowing...
+*/
 
 function getLine(
   address: number,
@@ -35,7 +53,7 @@ function getLine(
   const nextValue = emulator.memory.at((address + 1) & 0xFFFF).byte
   const instruction = decodeInstruction(emulator.cpu, value, nextValue)
 
-  const byteCount = instruction.parameterBytes + (value === 0xCB ? 1 : 0)
+  const byteCount = instruction.parameterBytes + (value === 0xCB ? 2 : 1)
   const bytes = [...new Array(byteCount)]
     .map((_, i) => emulator.memory.at(address + i).byte)
   const parameters = bytes.slice(value === 0xCB ? 2 : 1) 
