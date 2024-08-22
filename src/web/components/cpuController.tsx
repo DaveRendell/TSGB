@@ -49,48 +49,6 @@ export default function CpuController({ cpu }: Props) {
       <h3>Registers</h3>
       Interrupts enabled: {cpu.interruptsEnabled ? "True" : "False"}<br/>
       Which Interrupts: {cpu.interruptEnableRegister.byte.toString(2).padStart(5, "0")}
-
-      <div className="flex-horizontally">
-        <div>
-          <h4>8-bit registers</h4>
-          <table>
-            <tbody>
-              {REGISTERS_8_BIT.map((reg) => (
-                <tr key={reg}>
-                  <td>{reg}</td>
-                  <td>{valueDisplay(cpu.registers[reg].byte)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div>
-          <h4>16-bit registers</h4>
-          <table>
-            <tbody>
-              {REGISTERS_16_BIT.map((reg) => (
-                <tr key={reg}>
-                  <td>{reg}</td>
-                  <td>{addressDisplay(cpu.registers[reg].word)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div>
-          <h4>Flags</h4>
-          <table>
-            <tbody>
-              {FLAGS.map((reg) => (
-                <tr key={reg}>
-                  <td>{reg}</td>
-                  <td>{cpu.registers.F[reg].read}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </section>
   )
 }

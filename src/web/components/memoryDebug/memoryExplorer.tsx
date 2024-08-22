@@ -4,6 +4,7 @@ import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import MemoryTableRow from "./memoryTableRow"
 import { Emulator } from "../../../emulator/emulator"
 import Stack from "./stack"
+import Registers from "./registers"
 interface Props {
   emulator: Emulator
 }
@@ -38,6 +39,7 @@ export default function MemoryExplorer({ emulator }: Props) {
   return (
     <section>
       <h2>Memory Explorer</h2>
+      <Registers emulator={emulator} />
       <Stack emulator={emulator} />
       { breakpoints.size > 0 && <p>
           Breakpoints:

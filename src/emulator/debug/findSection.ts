@@ -10,6 +10,8 @@ export default function findSection(
 
   const sections = debugMap[region.name][region.bank]
 
+  if (!sections) { return undefined }
+
   return sections.find(section =>
     section.start <= address && section.end >= address
   )
