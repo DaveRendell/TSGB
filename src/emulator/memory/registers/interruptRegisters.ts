@@ -11,7 +11,7 @@ export enum Interrupt {
 }
 
 export class InterruptRegister implements ByteRef {
-  private requested: Record<Interrupt, boolean> = [
+  requested: Record<Interrupt, boolean> = [
     false,
     false,
     false,
