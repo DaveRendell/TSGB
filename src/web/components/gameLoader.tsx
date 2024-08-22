@@ -7,18 +7,15 @@ import { StoredGame } from "../indexedDb/storedGame"
 import { getGameList, addGame, deleteGame } from "../indexedDb/gameStore"
 import LibraryCard from "./libraryCard"
 import GameOptions from "./gameOptions"
-import { EmulatorMode } from "../../emulator/emulator"
+import { Emulator, EmulatorMode } from "../../emulator/emulator"
 import parseMap from "../../emulator/debug/parseMap"
 import { DebugMap } from "../../emulator/debug/types"
 
 interface Props {
-  setCartridge: (cartridge: Cartridge) => void
-  setMode: (mode: EmulatorMode) => void
-  setColouriseDmg: (colouriseDmg: boolean) => void
-  setDebugMap: (map: DebugMap) => void
+  setEmulator: (emulator: Emulator) => void
 }
 
-export default function GameLoader({ setCartridge, setMode, setColouriseDmg, setDebugMap }: Props) {
+export default function GameLoader({ setEmulator }: Props) {
   const [storedGames, setStoredGames] = React.useState<StoredGame[] | null>(
     null,
   )
@@ -38,22 +35,13 @@ export default function GameLoader({ setCartridge, setMode, setColouriseDmg, set
     colouriseDmg = false
   ) => async () => {
     const cartridge = await createCartridge(game)
-    setCartridge(cartridge)
-    if (mode === undefined) {
-      if (cartridge.colourSupport) {
-        setMode(EmulatorMode.CGB)
-      } else {
-        setMode(EmulatorMode.DMG)
-      }
-    } else {
-      setMode(mode)
-    }
-    setColouriseDmg(colouriseDmg)
-    if (game.mapFile) {
-      const debugMap = await parseMap(game.mapFile)
-      console.log("DEBUG MAP", debugMap)
-      setDebugMap(debugMap)
-    }
+    mode ??= cartridge.colourSupport
+        ? EmulatorMode.CGB
+        : EmulatorMode.DMG
+    const debugMap: DebugMap = game.mapFile
+      ? await parseMap(game.mapFile)
+      : undefined
+    setEmulator(new Emulator(cartridge, mode, colouriseDmg, debugMap))
   }
 
   const closeOptions = () => setOptionsFocusGame(undefined)

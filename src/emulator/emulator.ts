@@ -46,5 +46,11 @@ export class Emulator {
     this.controller.initialiseEvents()
     this.colouriseDmg = colouriseDmg
     this.debugMap = debugMap
+
+    const paletteString = window.localStorage.getItem("monochromePalette")
+    if (paletteString) {
+      const palette = JSON.parse(paletteString)
+      this.pictureProcessor.scanlineRenderer.colours = palette
+    }
   }
 }
