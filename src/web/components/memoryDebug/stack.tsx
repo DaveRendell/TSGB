@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Emulator } from "../../../emulator/emulator"
 import findSymbol from "../../../emulator/debug/findSymbol"
+import findSection from "../../../emulator/debug/findSection"
 
 interface Props {
   emulator: Emulator
@@ -16,7 +17,11 @@ export default function Stack({ emulator }: Props) {
     const symbol = findSymbol(emulator.debugMap, address, emulator.memory)
 
     if (!symbol) {
-      return formattedAddress
+      const section = findSection(emulator.debugMap, address, emulator.memory)
+      if (!section) {
+        return formattedAddress
+      }
+      return `${section.name}+${address - section.start} ${formattedAddress}`
     }
 
     if (symbol.address === address) {
@@ -26,10 +31,13 @@ export default function Stack({ emulator }: Props) {
     return `${symbol.name}+${address - symbol.address} ${formattedAddress}`
   }
 
+  const stack = [...emulator.cpu.debugCallStack].reverse()
+
   return <>
     <h3>Call stack</h3>
     <ol>
-      {emulator.cpu.debugCallStack.map(address =>
+      <li>PC: {getLabelForAddress(emulator.cpu.registers.PC.word)}</li>
+      {stack.map(address =>
         <li>{getLabelForAddress(address)}</li>
       )}
     </ol>
