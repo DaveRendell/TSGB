@@ -5,6 +5,7 @@ import MemoryTableRow from "./memoryTableRow"
 import { Emulator } from "../../../emulator/emulator"
 import Stack from "./stack"
 import Registers from "./registers"
+import FlagsDisplay from "./flagsDisplay"
 interface Props {
   emulator: Emulator
 }
@@ -40,6 +41,7 @@ export default function MemoryExplorer({ emulator }: Props) {
     <section>
       <h2>Memory Explorer</h2>
       <Registers emulator={emulator} />
+      <FlagsDisplay flagsRegister={emulator.cpu.registers.F} />
       <Stack emulator={emulator} />
       { breakpoints.size > 0 && <p>
           Breakpoints:
