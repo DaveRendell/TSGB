@@ -2,6 +2,7 @@ import * as React from "react"
 import { Emulator } from "../../../emulator/emulator"
 import findSymbol from "../../../emulator/debug/findSymbol"
 import findSection from "../../../emulator/debug/findSection"
+import useAnimationFrame from "../../hooks/useAnimationFrame"
 
 interface Props {
   emulator: Emulator
@@ -31,7 +32,11 @@ export default function Stack({ emulator }: Props) {
     return `${symbol.name}+${address - symbol.address} ${formattedAddress}`
   }
 
-  const stack = [...emulator.cpu.debugCallStack].reverse()
+  const [stack, setStack] = React.useState([...emulator.cpu.debugCallStack].reverse())
+
+  useAnimationFrame(() => {
+    setStack([...emulator.cpu.debugCallStack].reverse())
+  }, [emulator])
 
   return <>
     <h3>Call stack</h3>
