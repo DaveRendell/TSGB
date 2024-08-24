@@ -118,7 +118,7 @@ export default function MemoryExplorer({ emulator }: Props) {
       <CodeDisplay
         emulator={emulator}
         focus={emulator.cpu.registers.PC.word}
-        linesAbove={0}
+        linesAbove={10}
         linesBelow={20}
       />
     </section>

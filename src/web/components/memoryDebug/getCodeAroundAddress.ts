@@ -32,18 +32,14 @@ export default function getCodeAroundAddress(
     cursor += current.bytes.length
   }
 
-  return lines
+  const possibleLinesAbove = getPossibleLinesAbove(address, emulator, linesAbove)
+
+  // Return the longest sequence of lines above found
+  const previousLines = possibleLinesAbove.length === 0
+    ? []
+    : possibleLinesAbove.sort((a, b) => b.length - a.length)[0]
+  return [...previousLines, ...lines]
 }
-
-/*
-  A - non params
-  B - one param
-
-  A C - > previous command is A?
-  B A C -> Oh no, it's B
-  B B A C -> Oh, actually it was A...
-  B B B A C -> Oh god there's no way of knowing...
-*/
 
 function getLine(
   address: number,
@@ -64,4 +60,43 @@ function getLine(
     bytes,
     asCode
   }
+}
+
+/**
+ * Finds possible list of instructions above an address. Impossible to verify
+ * for certain they're correct via static analysis, but hopefully gives a
+ * fairly accurate result.
+ */
+function getPossibleLinesAbove(
+  address: number,
+  emulator: Emulator,
+  lines: number
+): Line[][] {
+  // Break recursion
+  if (lines === 0) { return [] }
+
+  // Instructions have byte length 1, 2, or 3. Find which of the three bytes
+  // preceding the address could be the previous isntruction
+  const candidateLines: Line[] = ([1, 2, 3])
+    .map(offset => {
+      const previousAddress = address - offset
+      const line = getLine(previousAddress, emulator)
+      return { offset, line }
+    })
+    .filter(({ offset, line}) => instructionLength(line, emulator) === offset)
+    .map(({ line }) => line)
+
+  // For each potential previous byte, recurse backwards to get previous lines
+  return [...candidateLines.flatMap(line =>
+    getPossibleLinesAbove(line.address, emulator, lines - 1)
+      .map(previousLines =>
+        [...previousLines, line]
+      )
+  ), ...candidateLines.map(line => [line])]
+}
+
+// TODO replace parameter bytes on instruction to just store this.
+function instructionLength(line: Line, emulator: Emulator): number {
+  const instruction = decodeInstruction(emulator.cpu, line.bytes[0], line.bytes[1])
+  return instruction.parameterBytes + (line.bytes[0] === 0xCB ? 2 : 1)
 }
