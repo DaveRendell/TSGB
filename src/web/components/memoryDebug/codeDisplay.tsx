@@ -2,6 +2,7 @@ import * as React from "react"
 import { Emulator } from "../../../emulator/emulator"
 import getCodeAroundAddress, { Line } from "./getCodeAroundAddress"
 import { addressDisplay } from "../../../helpers/displayHexNumbers"
+import "./codeDisplay.css"
 
 interface Props {
   focus: number,
@@ -25,13 +26,20 @@ export default function CodeDisplay({ focus, linesAbove, linesBelow, emulator }:
 
   const rowClass = (line: Line) => emulator.cpu.registers.PC.word === line.address
     ? "pc-line"
-    : ""
+    : emulator.cpu.breakpoints.has(line.address)
+      ? "breakpoint-line"
+      : ""
 
-  return <table>
+  const breakpointClass = (line: Line) =>
+    emulator.cpu.breakpoints.has(line.address)
+      ? "breakpoint breakpoint-active"
+      : "breakpoint"
+
+  return <table className="code-display">
     <tbody>
       {lines.map(line =>
         <tr className={rowClass(line)}>
-          <td>
+          <td className={breakpointClass(line)}>
             <input type="checkbox"
               checked={breakpoints.has(line.address)}
               onChange={() => toggleBreakpoint(line)}

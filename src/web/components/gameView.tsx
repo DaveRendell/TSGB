@@ -46,12 +46,7 @@ export default function GameView({ emulator, unload }: Props) {
     "Debug Sound": () => (
       <AudioDebug audioProcessor={emulator.audioProcessor} />
     ),
-    "Debug Memory": () => (
-      <>
-        <CpuController cpu={emulator.cpu} />
-        <MemoryExplorer emulator={emulator} />
-      </>
-    ),
+    "Debug Memory": () => <MemoryExplorer emulator={emulator} />,
   }
 
   if (emulator.mode === EmulatorMode.SGB) {

@@ -6,6 +6,7 @@ export default function findSection(
   address: number,
   memory: Memory,
 ): Section | undefined{
+  if (!debugMap) { return undefined }
   const region = memory.getRegion(address)
 
   const sections = debugMap[region.name][region.bank]

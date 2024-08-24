@@ -52,10 +52,10 @@ const getParameterBytes = (location: ByteLocation): number => {
 
 const commandName = (hlRegisterAction: "none" | "increment" | "decrement") =>
   hlRegisterAction === "increment"
-    ? "LDI"
+    ? "ldi"
     : hlRegisterAction === "decrement"
-      ? "LDD"
-      : "LD"
+      ? "ldd"
+      : "ld"
 
 const getPointerAction = (
   hlRegisterAction: "none" | "increment" | "decrement",
@@ -95,7 +95,7 @@ export function load8Bit(
       ``,
     length,
     toCode(bytes, emulator) {
-      return `${commandName(hlRegisterAction)} ${describeByteLocation(sourceName, emulator)(bytes.slice(1))}`
+      return `${commandName(hlRegisterAction)} ${describeByteLocation(destinationName, emulator)(bytes.slice(1))} ${describeByteLocation(sourceName, emulator)(bytes.slice(1))}`
     }
   }
 }

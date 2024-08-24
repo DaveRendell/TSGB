@@ -1,4 +1,4 @@
-import { decodeInstruction } from "../../../emulator/cpu/instructions/instruction";
+import { decodeInstruction, Instruction } from "../../../emulator/cpu/instructions/instruction";
 import { Section } from "../../../emulator/debug/types";
 import { Emulator } from "../../../emulator/emulator";
 
@@ -47,7 +47,17 @@ function getLine(
 ): Line {
   const value = emulator.memory.at(address).byte
   const nextValue = emulator.memory.at((address + 1) & 0xFFFF).byte
-  const instruction = decodeInstruction(emulator.cpu, value, nextValue)
+  let instruction: Instruction
+  try {
+    instruction = decodeInstruction(emulator.cpu, value, nextValue)
+  } catch (e) {
+    return {
+      address,
+      bytes: [value],
+      asCode: ""
+    }
+  }
+  
 
   const bytes = [...new Array(instruction.length)]
     .map((_, i) => emulator.memory.at(address + i).byte)
