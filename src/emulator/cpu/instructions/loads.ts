@@ -13,6 +13,8 @@ import {
   getWordRef,
   describeWordLocation,
   WordLocation,
+  describePointer,
+  describePointerFromBytes,
 } from "./instructionHelpers"
 import CPU from "../cpu"
 
@@ -90,10 +92,11 @@ export function load8Bit(
     cycles,
     parameterBytes,
     description: (values) =>
-      `${commandName(hlRegisterAction)} ${describeByteLocation(destinationName)(
-        values,
-      )},${describeByteLocation(sourceName)(values)}`,
+      ``,
     length,
+    toCode(bytes, emulator) {
+      return `${commandName(hlRegisterAction)} ${describeByteLocation(sourceName, emulator)(bytes.slice(1))}`
+    }
   }
 }
 
@@ -112,6 +115,9 @@ export function loadImmediate16BitRegister(
         combineBytes(h, l),
       )}`,
     length: 3,
+    toCode(bytes, emulator) {
+      return `ld ${describeWordLocation(register)([]), describePointerFromBytes(bytes, emulator)}`
+    }
   }
 }
 
@@ -135,6 +141,11 @@ export const loadHlFromSpPlusN: Instruction = {
   parameterBytes: 1,
   description: ([value]) => `LD HL,SP+${from2sComplement(value)}`,
   length: 2,
+  toCode(bytes) {
+    const offset = from2sComplement(bytes[1])
+    const sign = offset >= 0 ? "+" : "-"
+    return `ld hl, sp ${sign} ${offset}`
+  },
 }
 
 export const loadStackPointerToAddress: Instruction = {
@@ -146,6 +157,9 @@ export const loadStackPointerToAddress: Instruction = {
   parameterBytes: 2,
   description: ([l, h]) => `LD (${addressDisplay(combineBytes(h, l))}),SP`,
   length: 3,
+  toCode(bytes, emulator) {
+    return `ld [${describePointerFromBytes(bytes, emulator)}], sp`
+  },
 }
 
 export const loadStackPointerFromHL: Instruction = {
@@ -156,4 +170,7 @@ export const loadStackPointerFromHL: Instruction = {
   parameterBytes: 0,
   description: () => "LD SP,HL",
   length: 1,
+  toCode() {
+    return "ld sp, hl"
+  }
 }

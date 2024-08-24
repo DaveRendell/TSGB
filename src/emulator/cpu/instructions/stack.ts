@@ -4,6 +4,7 @@ import { Instruction } from "./instruction"
 import {
   WordLocation,
   combineBytes,
+  describePointerFromBytes,
   describeWordLocation,
   getWordRef,
   splitBytes,
@@ -23,6 +24,9 @@ export const call: Instruction = {
   parameterBytes: 2,
   description: ([l, h]) => `CALL ${addressDisplay(combineBytes(h, l))}`,
   length: 3,
+  toCode(bytes, emulator) {
+    return `call ${describePointerFromBytes(bytes, emulator)}`
+  }
 }
 
 export function callF(condition: JumpCondition): Instruction {
@@ -44,6 +48,9 @@ export function callF(condition: JumpCondition): Instruction {
         combineBytes(h, l),
       )}`,
     length: 3,
+    toCode(bytes, emulator) {
+      return `call ${CONDITION_NAMES[condition]},${describePointerFromBytes(bytes, emulator)}`
+    }
   }
 }
 
@@ -57,6 +64,9 @@ export const ret: Instruction = {
   parameterBytes: 0,
   description: () => "RET",
   length: 1,
+  toCode() {
+    return "ret"
+  }
 }
 
 export const reti: Instruction = {
@@ -70,6 +80,9 @@ export const reti: Instruction = {
   parameterBytes: 0,
   description: () => "RETI",
   length: 1,
+  toCode() {
+    return "reti"
+  }
 }
 
 export function retF(condition: JumpCondition): Instruction {
@@ -85,6 +98,9 @@ export function retF(condition: JumpCondition): Instruction {
     parameterBytes: 0,
     description: () => `RET ${CONDITION_NAMES[condition]}`,
     length: 1,
+    toCode() {
+      return `ret ${CONDITION_NAMES[condition]}`
+    }
   }
 }
 
@@ -99,6 +115,9 @@ export function push(registerName: WordLocation): Instruction {
     parameterBytes: 0,
     description: () => `PUSH ${describeWordLocation(registerName)([])}`,
     length: 1,
+    toCode() {
+      return `push ${describeWordLocation(registerName)([])}`
+    }
   }
 }
 
@@ -113,5 +132,8 @@ export function pop(registerName: WordLocation): Instruction {
     parameterBytes: 0,
     description: () => `POP ${describeWordLocation(registerName)([])}`,
     length: 1,
+    toCode() {
+      return `pop ${describeWordLocation(registerName)([])}`
+    }
   }
 }

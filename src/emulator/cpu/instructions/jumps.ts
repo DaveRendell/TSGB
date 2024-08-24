@@ -1,9 +1,12 @@
 import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import { JumpCondition } from "../../../types"
+import describeAddress from "../../../web/components/memoryDebug/describeAddress"
 import CPU from "../cpu"
 import { Instruction } from "./instruction"
 import {
   combineBytes,
+  describePointer,
+  describePointerFromBytes,
   from2sComplement,
   splitBytes,
 } from "./instructionHelpers"
@@ -17,10 +20,10 @@ export const CONDITIONS: Record<JumpCondition, (cpu: CPU) => boolean> = {
 }
 
 export const CONDITION_NAMES: Record<JumpCondition, string> = {
-  "Not-Zero": "NZ",
-  Zero: "Z",
-  "Not-Carry": "NC",
-  Carry: "C",
+  "Not-Zero": "nz",
+  Zero: "z",
+  "Not-Carry": "nc",
+  Carry: "c",
   None: "",
 }
 
@@ -37,6 +40,9 @@ export function jumpRelative(condition: JumpCondition): Instruction {
     description: ([value]) =>
       `JR${CONDITION_NAMES[condition]} ${from2sComplement(value)}`,
     length: 2,
+    toCode(bytes, emulator, address) {
+      return `jr${CONDITION_NAMES[condition]} ${describePointer(address + from2sComplement(bytes[1]), emulator)}`
+    },
   }
 }
 
@@ -52,8 +58,10 @@ export function jump(condition: JumpCondition): Instruction {
     parameterBytes: 2,
     description: ([l, h]) =>
       `JP${CONDITION_NAMES[condition]} ${addressDisplay(combineBytes(h, l))}`,
-    
-  length: 3,
+    length: 3,
+    toCode(bytes, emulator) {
+      return `jp${CONDITION_NAMES[condition]} ${describePointerFromBytes(bytes, emulator)}`
+    },
   }
 }
 
@@ -65,6 +73,9 @@ export const jpHl: Instruction = {
   parameterBytes: 0,
   description: () => "JP HL",
   length: 1,
+  toCode() {
+    return "jp hl"
+  }
 }
 
 export function rst(address: number): Instruction {
@@ -80,5 +91,8 @@ export function rst(address: number): Instruction {
     parameterBytes: 0,
     description: () => `RST ${addressDisplay(address)}`,
     length: 1,
+    toCode(_, emulator) {
+      return `rst ${describePointer(address, emulator)}`
+    }
   }
 }

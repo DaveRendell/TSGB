@@ -44,6 +44,7 @@ import {
   testBit,
 } from "./prefixInstructions"
 import { call, callF, pop, push, ret, retF, reti } from "./stack"
+import { Emulator } from "../../emulator"
 
 export interface Instruction {
   execute: (cpu: CPU) => void
@@ -51,11 +52,8 @@ export interface Instruction {
   parameterBytes: number
   description: (parameters: number[]) => string
   length: number,
+  toCode(bytes: number[], emulator: Emulator, address: number): string
 }
-
-// Prefixed 0x80 = 10000000
-
-
 
 const REGISTERS_8: ByteLocation[] = [
   ByteLocation.B,
@@ -68,14 +66,14 @@ const REGISTERS_8: ByteLocation[] = [
   ByteLocation.A,
 ]
 const ALU_OPERATIONS: AluOperation[] = [
-  "ADD",
-  "ADC",
-  "SUB",
-  "SBC",
-  "AND",
-  "XOR",
-  "OR",
-  "CP",
+  "add",
+  "adc",
+  "sub",
+  "sbc",
+  "and",
+  "xor",
+  "or",
+  "cp",
 ]
 const JUMP_CONDITION: JumpCondition[] = [
   "Not-Zero",

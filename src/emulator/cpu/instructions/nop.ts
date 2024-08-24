@@ -6,6 +6,9 @@ const nop: Instruction = {
   parameterBytes: 0,
   description: () => "NOP",
   length: 1,
+  toCode() {
+    return "nop"
+  }
 }
 
 export default nop

@@ -15,6 +15,9 @@ export const testBit = (bit: number, sourceName: ByteLocation): Instruction => {
     parameterBytes: 0,
     description: () => `BIT ${bit},${sourceName}`,
     length: 2,
+    toCode() {
+      return `bit ${bit}, ${sourceName}`
+    },
   }
 }
 
@@ -31,6 +34,9 @@ export const resetBit = (
     parameterBytes: 0,
     description: () => `RES ${bit},${sourceName}`,
     length: 2,
+    toCode() {
+      return `res ${bit}, ${sourceName}`
+    },
   }
 }
 
@@ -44,6 +50,9 @@ export const setBit = (bit: number, sourceName: ByteLocation): Instruction => {
     parameterBytes: 0,
     description: () => `SET ${bit},${sourceName}`,
     length: 2,
+    toCode() {
+      return `set ${bit}, ${sourceName}`
+    },
   }
 }
 
@@ -66,6 +75,9 @@ export const swap = (sourceName: ByteLocation): Instruction => {
     parameterBytes: 0,
     description: () => `SWAP ${sourceName}`,
     length: 2,
+    toCode() {
+      return `swap ${sourceName}`
+    }
   }
 }
 
@@ -87,6 +99,9 @@ export const shiftRightLogical = (sourceName: ByteLocation): Instruction => {
     parameterBytes: 0,
     description: () => `SRL ${sourceName}`,
     length: 2,
+    toCode() {
+      return `srl ${sourceName}`
+    }
   }
 }
 
@@ -109,6 +124,9 @@ export function shiftLeftArithmetic(sourceName: ByteLocation): Instruction {
     parameterBytes: 0,
     description: () => `SRA ${sourceName}`,
     length: 2,
+    toCode() {
+      return `sla ${sourceName}`
+    }
   }
 }
 
@@ -131,5 +149,8 @@ export function shiftRightArithmetic(sourceName: ByteLocation): Instruction {
     parameterBytes: 0,
     description: () => `SRA ${sourceName}`,
     length: 2,
+    toCode() {
+      return `sra ${sourceName}`
+    }
   }
 }

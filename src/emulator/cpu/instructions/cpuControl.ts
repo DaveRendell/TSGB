@@ -9,6 +9,9 @@ export const disableInterrupts: Instruction = {
   parameterBytes: 0,
   description: () => "DI",
   length: 1,
+  toCode() {
+    return "di"
+  }
 }
 
 export const enableInterrupts: Instruction = {
@@ -19,6 +22,9 @@ export const enableInterrupts: Instruction = {
   parameterBytes: 0,
   description: () => "EI",
   length: 1,
+  toCode() {
+    return "ei"
+  }
 }
 
 export const stop: Instruction = {
@@ -37,6 +43,9 @@ export const stop: Instruction = {
   parameterBytes: 0,
   description: () => "STOP",
   length: 1,
+  toCode() {
+    return "stop"
+  }
 }
 
 export const scf: Instruction = {
@@ -49,6 +58,9 @@ export const scf: Instruction = {
   parameterBytes: 0,
   description: () => "SCF",
   length: 1,
+  toCode() {
+    return "scf"
+  }
 }
 
 export const ccf: Instruction = {
@@ -61,4 +73,7 @@ export const ccf: Instruction = {
   parameterBytes: 0,
   description: () => "CCF",
   length: 1,
+  toCode() {
+    return "ccf"
+  }
 }

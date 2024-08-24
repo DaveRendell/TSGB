@@ -8,6 +8,9 @@ const halt: Instruction = {
   parameterBytes: 0,
   description: () => "HALT",
   length: 1,
+  toCode() {
+    return "halt"
+  }
 }
 
 export default halt

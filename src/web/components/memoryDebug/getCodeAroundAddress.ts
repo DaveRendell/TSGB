@@ -52,8 +52,7 @@ function getLine(
   const bytes = [...new Array(instruction.length)]
     .map((_, i) => emulator.memory.at(address + i).byte)
   
-  const parameters = bytes.slice(value === 0xCB ? 2 : 1) 
-  const asCode = instruction.description(parameters)
+  const asCode = instruction.toCode(bytes, emulator, address)
 
   return {
     address,

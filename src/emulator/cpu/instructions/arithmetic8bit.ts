@@ -16,7 +16,7 @@ const splitToNibbles = (value: number) => [(value >> 4) & 0xf, value & 0xf]
 const combineNibbles = (h: number, l: number) => (h << 4) + l
 
 const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
-  ADD: (cpu, value) => {
+  add: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.byte)
@@ -33,7 +33,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = lR > 0xf
     cpu.registers.F.carry = rWrapped != r
   },
-  ADC: (cpu, value) => {
+  adc: (cpu, value) => {
     const a = cpu.registers.A
     const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
@@ -51,7 +51,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = lR > 0xf
     cpu.registers.F.carry = rWrapped != r
   },
-  SUB: (cpu, value) => {
+  sub: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.byte)
@@ -68,7 +68,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = lR < 0
     cpu.registers.F.carry = rWrapped != r
   },
-  SBC: (cpu, value) => {
+  sbc: (cpu, value) => {
     const a = cpu.registers.A
     const carry = cpu.registers.F.carry ? 1 : 0
     const [h, l] = splitToNibbles(value)
@@ -86,7 +86,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = lR < 0
     cpu.registers.F.carry = rWrapped != r
   },
-  AND: (cpu, value) => {
+  and: (cpu, value) => {
     const a = cpu.registers.A
 
     a.byte &= value
@@ -96,7 +96,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = true
     cpu.registers.F.carry = false
   },
-  XOR: (cpu, value) => {
+  xor: (cpu, value) => {
     const a = cpu.registers.A
 
     a.byte ^= value
@@ -106,7 +106,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = false
     cpu.registers.F.carry = false
   },
-  OR: (cpu, value) => {
+  or: (cpu, value) => {
     const a = cpu.registers.A
 
     a.byte |= value
@@ -116,7 +116,7 @@ const OPERATIONS: Record<AluOperation, (cpu: CPU, value: number) => void> = {
     cpu.registers.F.halfCarry = false
     cpu.registers.F.carry = false
   },
-  CP: (cpu, value) => {
+  cp: (cpu, value) => {
     const a = cpu.registers.A
     const [h, l] = splitToNibbles(value)
     const [hA, lA] = splitToNibbles(a.byte)
@@ -143,8 +143,11 @@ export function aluOperation(
     },
     cycles: sourceName === ByteLocation.M ? 8 : 4,
     parameterBytes: 0,
-    description: (v) => `${operation} A,${describeByteLocation(sourceName)(v)}`,
+    description: (v) => ``,
     length: 1,
+    toCode(bytes, emulator) {
+      return `${operation} a,${describeByteLocation(sourceName, emulator)(bytes.slice(1))}`
+    }
   }
 }
 
@@ -158,6 +161,9 @@ export function aluOperationImmediate(operation: AluOperation): Instruction {
     parameterBytes: 1,
     description: ([value]) => `${operation} A,${valueDisplay(value)}`,
     length: 2,
+    toCode(bytes) {
+      return `${operation} A,${valueDisplay(bytes[1])}`
+    }
   }
 }
 
@@ -173,8 +179,11 @@ export function increment8Bit(targetName: ByteLocation): Instruction {
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
-    description: (v) => `INC ${describeByteLocation(targetName)(v)}`,
+    description: (v) => ``,
     length: 1,
+    toCode(bytes, emulator) {
+      return `inc ${describeByteLocation(targetName, emulator)(bytes.slice(1))}`
+    }
   }
 }
 
@@ -190,8 +199,11 @@ export function decrement8Bit(targetName: ByteLocation): Instruction {
     },
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
-    description: (v) => `DEC ${describeByteLocation(targetName)(v)}`,
-    length: 1
+    description: (v) => ``,
+    length: 1,
+    toCode(bytes, emulator) {
+      return `dec ${describeByteLocation(targetName, emulator)(bytes.slice(1))}`
+    }
   }
 }
 
@@ -204,6 +216,9 @@ export function increment16Bit(register: WordLocation): Instruction {
     parameterBytes: 0,
     description: (v) => `INC ${describeWordLocation(register)(v)}`,
     length: 1,
+    toCode(bytes, emulator) {
+      return `inc ${describeWordLocation(register)(bytes.slice(1))}`
+    }
   }
 }
 
@@ -216,6 +231,9 @@ export function decrement16Bit(register: WordLocation): Instruction {
     parameterBytes: 0,
     description: (v) => `DEC ${describeWordLocation(register)(v)}`,
     length: 1,
+    toCode(bytes) {
+      return `dec ${describeWordLocation(register)(bytes.slice(1))}`
+    }
   }
 }
 
@@ -225,7 +243,7 @@ export function rotateLeft(
   isPrefixed: boolean,
   setZero = true,
 ): Instruction {
-  const commandName = throughCarry ? "RL" : "RLC"
+  const commandName = throughCarry ? "rl" : "rlc"
   return {
     execute: (cpu) => {
       const register = getByteRef(registerName, cpu)
@@ -242,7 +260,10 @@ export function rotateLeft(
     cycles: isPrefixed ? (registerName === ByteLocation.M ? 12 : 8) : 4,
     parameterBytes: 0,
     description: () => `${commandName} ${registerName}`,
-    length: isPrefixed ? 2 : 1
+    length: isPrefixed ? 2 : 1,
+    toCode() {
+      return `${commandName} ${registerName}`
+    },
   }
 }
 
@@ -270,6 +291,9 @@ export function rotateRight(
     parameterBytes: 0,
     description: () => `${commandName} ${registerName}`,
     length: isPrefixed ? 2 : 1,
+    toCode() {
+      return `${commandName} ${registerName}`
+    },
   }
 }
 
@@ -284,6 +308,9 @@ export const cpl: Instruction = {
   parameterBytes: 0,
   description: () => "CPL",
   length: 1,
+  toCode() {
+    return "cpl"
+  },
 }
 
 export const addToHL = (register: WordLocation): Instruction => {
@@ -309,6 +336,9 @@ export const addToHL = (register: WordLocation): Instruction => {
     parameterBytes: 0,
     description: () => `ADD HL,${register}`,
     length: 1,
+    toCode(bytes, emulator) {
+      return `add hl, ${register}`
+    },
   }
 }
 
@@ -334,6 +364,9 @@ export const addImmediateToSP: Instruction = {
   parameterBytes: 1,
   description: ([value]) => `ADD SP,${valueDisplay(value)}`,
   length: 2,
+  toCode(bytes) {
+    return `add sp, ${valueDisplay(bytes[1])}`
+  }
 }
 
 export const daa: Instruction = {
@@ -366,4 +399,7 @@ export const daa: Instruction = {
   parameterBytes: 0,
   description: () => "DAA",
   length: 1,
+  toCode() {
+    return "daa"
+  }
 }

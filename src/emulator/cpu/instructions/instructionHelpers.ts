@@ -5,6 +5,8 @@ import {
 import CPU from "../cpu"
 import { ByteRef, ConstantByteRef } from "../../refs/byteRef"
 import { CompositeWordRef, WordRef } from "../../refs/wordRef"
+import { Emulator } from "../../emulator"
+import findSymbol from "../../debug/findSymbol"
 
 export enum ByteLocation {
   A,
@@ -61,38 +63,39 @@ export const getByteRef = (name: ByteLocation, cpu: CPU): ByteRef => {
 
 export const describeByteLocation = (
   location: ByteLocation,
+  emulator: Emulator,
 ): ((values: number[]) => string) => {
   switch (location) {
     case ByteLocation.A:
-      return () => "A"
+      return () => "a"
     case ByteLocation.F:
-      return () => "F"
+      return () => "f"
     case ByteLocation.B:
-      return () => "B"
+      return () => "b"
     case ByteLocation.C:
-      return () => "C"
+      return () => "c"
     case ByteLocation.D:
-      return () => "D"
+      return () => "d"
     case ByteLocation.E:
-      return () => "E"
+      return () => "e"
     case ByteLocation.H:
-      return () => "H"
+      return () => "h"
     case ByteLocation.L:
-      return () => "L"
+      return () => "l"
     case ByteLocation.N:
       return ([value]) => valueDisplay(value)
     case ByteLocation.M:
-      return () => "M"
+      return () => "[hl]"
     case ByteLocation.FF_N:
-      return ([value]) => `(${addressDisplay(0xff00 + value)})`
+      return ([value]) => `[${describePointer(0xff00 + value, emulator)}]`
     case ByteLocation.FF_C:
-      return () => "(FF,C)"
+      return () => `[$00ff + c]`
     case ByteLocation.BC:
-      return () => "(BC)"
+      return () => "[bc]"
     case ByteLocation.DE:
-      return () => "(DE)"
+      return () => "[de]"
     case ByteLocation.NN:
-      return ([l, h]) => `(${addressDisplay((h << 8) + l)})`
+      return ([l, h]) => `[${describePointer((h << 8) + l, emulator)}]`
   }
 }
 
@@ -153,3 +156,14 @@ export const splitBytes = (input: number) => [
   (input & 0xff00) >> 8,
   input & 0x00ff,
 ]
+
+export const describePointer = (address: number, emulator: Emulator): string => {
+  const symbol = findSymbol(emulator.debugMap, address, emulator.memory)
+  if (symbol && symbol.address === address) { return symbol.name }
+  return valueDisplay(address)
+}
+
+export const describePointerFromBytes = (bytes: number[], emulator: Emulator): string => {
+  const address = combineBytes(bytes[2], bytes[1])
+  return describePointer(address, emulator)
+}
