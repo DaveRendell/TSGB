@@ -22,6 +22,7 @@ export const call: Instruction = {
   cycles: 24,
   parameterBytes: 2,
   description: ([l, h]) => `CALL ${addressDisplay(combineBytes(h, l))}`,
+  length: 3,
 }
 
 export function callF(condition: JumpCondition): Instruction {
@@ -42,6 +43,7 @@ export function callF(condition: JumpCondition): Instruction {
       `CALL ${CONDITION_NAMES[condition]},${addressDisplay(
         combineBytes(h, l),
       )}`,
+    length: 3,
   }
 }
 
@@ -54,6 +56,7 @@ export const ret: Instruction = {
   cycles: 16,
   parameterBytes: 0,
   description: () => "RET",
+  length: 1,
 }
 
 export const reti: Instruction = {
@@ -66,6 +69,7 @@ export const reti: Instruction = {
   cycles: 16,
   parameterBytes: 0,
   description: () => "RETI",
+  length: 1,
 }
 
 export function retF(condition: JumpCondition): Instruction {
@@ -80,6 +84,7 @@ export function retF(condition: JumpCondition): Instruction {
     cycles: 20,
     parameterBytes: 0,
     description: () => `RET ${CONDITION_NAMES[condition]}`,
+    length: 1,
   }
 }
 
@@ -93,6 +98,7 @@ export function push(registerName: WordLocation): Instruction {
     cycles: 16,
     parameterBytes: 0,
     description: () => `PUSH ${describeWordLocation(registerName)([])}`,
+    length: 1,
   }
 }
 
@@ -106,5 +112,6 @@ export function pop(registerName: WordLocation): Instruction {
     cycles: 12,
     parameterBytes: 0,
     description: () => `POP ${describeWordLocation(registerName)([])}`,
+    length: 1,
   }
 }

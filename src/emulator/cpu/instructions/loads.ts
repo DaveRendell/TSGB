@@ -74,6 +74,7 @@ export function load8Bit(
 
   const parameterBytes =
     getParameterBytes(sourceName) + getParameterBytes(destinationName)
+  const length = 1 + parameterBytes
 
   const pointerAction = getPointerAction(hlRegisterAction)
 
@@ -92,6 +93,7 @@ export function load8Bit(
       `${commandName(hlRegisterAction)} ${describeByteLocation(destinationName)(
         values,
       )},${describeByteLocation(sourceName)(values)}`,
+    length,
   }
 }
 
@@ -109,6 +111,7 @@ export function loadImmediate16BitRegister(
       `LD ${describeWordLocation(register)([])},${addressDisplay(
         combineBytes(h, l),
       )}`,
+    length: 3,
   }
 }
 
@@ -131,6 +134,7 @@ export const loadHlFromSpPlusN: Instruction = {
   cycles: 12,
   parameterBytes: 1,
   description: ([value]) => `LD HL,SP+${from2sComplement(value)}`,
+  length: 2,
 }
 
 export const loadStackPointerToAddress: Instruction = {
@@ -141,6 +145,7 @@ export const loadStackPointerToAddress: Instruction = {
   cycles: 20,
   parameterBytes: 2,
   description: ([l, h]) => `LD (${addressDisplay(combineBytes(h, l))}),SP`,
+  length: 3,
 }
 
 export const loadStackPointerFromHL: Instruction = {
@@ -150,4 +155,5 @@ export const loadStackPointerFromHL: Instruction = {
   cycles: 8,
   parameterBytes: 0,
   description: () => "LD SP,HL",
+  length: 1,
 }

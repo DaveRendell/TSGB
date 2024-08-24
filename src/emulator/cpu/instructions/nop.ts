@@ -5,6 +5,7 @@ const nop: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "NOP",
+  length: 1,
 }
 
 export default nop

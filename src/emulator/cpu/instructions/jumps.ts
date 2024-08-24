@@ -36,6 +36,7 @@ export function jumpRelative(condition: JumpCondition): Instruction {
     parameterBytes: 1,
     description: ([value]) =>
       `JR${CONDITION_NAMES[condition]} ${from2sComplement(value)}`,
+    length: 2,
   }
 }
 
@@ -51,6 +52,8 @@ export function jump(condition: JumpCondition): Instruction {
     parameterBytes: 2,
     description: ([l, h]) =>
       `JP${CONDITION_NAMES[condition]} ${addressDisplay(combineBytes(h, l))}`,
+    
+  length: 3,
   }
 }
 
@@ -61,6 +64,7 @@ export const jpHl: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "JP HL",
+  length: 1,
 }
 
 export function rst(address: number): Instruction {
@@ -75,5 +79,6 @@ export function rst(address: number): Instruction {
     cycles: 16,
     parameterBytes: 0,
     description: () => `RST ${addressDisplay(address)}`,
+    length: 1,
   }
 }

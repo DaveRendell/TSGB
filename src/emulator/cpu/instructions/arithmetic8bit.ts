@@ -144,6 +144,7 @@ export function aluOperation(
     cycles: sourceName === ByteLocation.M ? 8 : 4,
     parameterBytes: 0,
     description: (v) => `${operation} A,${describeByteLocation(sourceName)(v)}`,
+    length: 1,
   }
 }
 
@@ -156,6 +157,7 @@ export function aluOperationImmediate(operation: AluOperation): Instruction {
     cycles: 8,
     parameterBytes: 1,
     description: ([value]) => `${operation} A,${valueDisplay(value)}`,
+    length: 2,
   }
 }
 
@@ -172,6 +174,7 @@ export function increment8Bit(targetName: ByteLocation): Instruction {
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
     description: (v) => `INC ${describeByteLocation(targetName)(v)}`,
+    length: 1,
   }
 }
 
@@ -188,6 +191,7 @@ export function decrement8Bit(targetName: ByteLocation): Instruction {
     cycles: targetName === ByteLocation.M ? 12 : 4,
     parameterBytes: 0,
     description: (v) => `DEC ${describeByteLocation(targetName)(v)}`,
+    length: 1
   }
 }
 
@@ -199,6 +203,7 @@ export function increment16Bit(register: WordLocation): Instruction {
     cycles: 8,
     parameterBytes: 0,
     description: (v) => `INC ${describeWordLocation(register)(v)}`,
+    length: 1,
   }
 }
 
@@ -210,6 +215,7 @@ export function decrement16Bit(register: WordLocation): Instruction {
     cycles: 8,
     parameterBytes: 0,
     description: (v) => `DEC ${describeWordLocation(register)(v)}`,
+    length: 1,
   }
 }
 
@@ -236,6 +242,7 @@ export function rotateLeft(
     cycles: isPrefixed ? (registerName === ByteLocation.M ? 12 : 8) : 4,
     parameterBytes: 0,
     description: () => `${commandName} ${registerName}`,
+    length: isPrefixed ? 2 : 1
   }
 }
 
@@ -262,6 +269,7 @@ export function rotateRight(
     cycles: isPrefixed ? (registerName === ByteLocation.M ? 12 : 8) : 4,
     parameterBytes: 0,
     description: () => `${commandName} ${registerName}`,
+    length: isPrefixed ? 2 : 1,
   }
 }
 
@@ -275,6 +283,7 @@ export const cpl: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "CPL",
+  length: 1,
 }
 
 export const addToHL = (register: WordLocation): Instruction => {
@@ -299,6 +308,7 @@ export const addToHL = (register: WordLocation): Instruction => {
     cycles: 8,
     parameterBytes: 0,
     description: () => `ADD HL,${register}`,
+    length: 1,
   }
 }
 
@@ -323,6 +333,7 @@ export const addImmediateToSP: Instruction = {
   cycles: 16,
   parameterBytes: 1,
   description: ([value]) => `ADD SP,${valueDisplay(value)}`,
+  length: 2,
 }
 
 export const daa: Instruction = {
@@ -354,4 +365,5 @@ export const daa: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "DAA",
+  length: 1,
 }

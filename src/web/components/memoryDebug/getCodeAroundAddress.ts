@@ -49,9 +49,9 @@ function getLine(
   const nextValue = emulator.memory.at((address + 1) & 0xFFFF).byte
   const instruction = decodeInstruction(emulator.cpu, value, nextValue)
 
-  const byteCount = instruction.parameterBytes + (value === 0xCB ? 2 : 1)
-  const bytes = [...new Array(byteCount)]
+  const bytes = [...new Array(instruction.length)]
     .map((_, i) => emulator.memory.at(address + i).byte)
+  
   const parameters = bytes.slice(value === 0xCB ? 2 : 1) 
   const asCode = instruction.description(parameters)
 
@@ -83,7 +83,7 @@ function getPossibleLinesAbove(
       const line = getLine(previousAddress, emulator)
       return { offset, line }
     })
-    .filter(({ offset, line}) => instructionLength(line, emulator) === offset)
+    .filter(({ offset, line}) => line.bytes.length === offset)
     .map(({ line }) => line)
 
   // For each potential previous byte, recurse backwards to get previous lines
@@ -93,10 +93,4 @@ function getPossibleLinesAbove(
         [...previousLines, line]
       )
   ), ...candidateLines.map(line => [line])]
-}
-
-// TODO replace parameter bytes on instruction to just store this.
-function instructionLength(line: Line, emulator: Emulator): number {
-  const instruction = decodeInstruction(emulator.cpu, line.bytes[0], line.bytes[1])
-  return instruction.parameterBytes + (line.bytes[0] === 0xCB ? 2 : 1)
 }

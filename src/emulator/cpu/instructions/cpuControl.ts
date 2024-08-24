@@ -8,6 +8,7 @@ export const disableInterrupts: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "DI",
+  length: 1,
 }
 
 export const enableInterrupts: Instruction = {
@@ -17,6 +18,7 @@ export const enableInterrupts: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "EI",
+  length: 1,
 }
 
 export const stop: Instruction = {
@@ -34,6 +36,7 @@ export const stop: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "STOP",
+  length: 1,
 }
 
 export const scf: Instruction = {
@@ -45,6 +48,7 @@ export const scf: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "SCF",
+  length: 1,
 }
 
 export const ccf: Instruction = {
@@ -56,4 +60,5 @@ export const ccf: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "CCF",
+  length: 1,
 }

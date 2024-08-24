@@ -50,6 +50,7 @@ export interface Instruction {
   cycles: number
   parameterBytes: number
   description: (parameters: number[]) => string
+  length: number,
 }
 
 // Prefixed 0x80 = 10000000

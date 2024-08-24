@@ -14,6 +14,7 @@ export const testBit = (bit: number, sourceName: ByteLocation): Instruction => {
     cycles: sourceName === ByteLocation.M ? 12 : 8,
     parameterBytes: 0,
     description: () => `BIT ${bit},${sourceName}`,
+    length: 2,
   }
 }
 
@@ -29,6 +30,7 @@ export const resetBit = (
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `RES ${bit},${sourceName}`,
+    length: 2,
   }
 }
 
@@ -41,6 +43,7 @@ export const setBit = (bit: number, sourceName: ByteLocation): Instruction => {
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `SET ${bit},${sourceName}`,
+    length: 2,
   }
 }
 
@@ -62,6 +65,7 @@ export const swap = (sourceName: ByteLocation): Instruction => {
     cycles: sourceName === ByteLocation.M ? 12 : 8,
     parameterBytes: 0,
     description: () => `SWAP ${sourceName}`,
+    length: 2,
   }
 }
 
@@ -82,6 +86,7 @@ export const shiftRightLogical = (sourceName: ByteLocation): Instruction => {
     cycles: 8,
     parameterBytes: 0,
     description: () => `SRL ${sourceName}`,
+    length: 2,
   }
 }
 
@@ -103,6 +108,7 @@ export function shiftLeftArithmetic(sourceName: ByteLocation): Instruction {
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `SRA ${sourceName}`,
+    length: 2,
   }
 }
 
@@ -124,5 +130,6 @@ export function shiftRightArithmetic(sourceName: ByteLocation): Instruction {
     cycles: sourceName === ByteLocation.M ? 16 : 8,
     parameterBytes: 0,
     description: () => `SRA ${sourceName}`,
+    length: 2,
   }
 }

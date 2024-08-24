@@ -7,6 +7,7 @@ const halt: Instruction = {
   cycles: 4,
   parameterBytes: 0,
   description: () => "HALT",
+  length: 1,
 }
 
 export default halt
