@@ -2,7 +2,7 @@ import { decodeInstruction } from "../../../emulator/cpu/instructions/instructio
 import { Section } from "../../../emulator/debug/types";
 import { Emulator } from "../../../emulator/emulator";
 
-interface Line {
+export interface Line {
   address: number,
   bytes: number[],
   asCode: string,
