@@ -3,6 +3,7 @@ import { Emulator } from "../../../emulator/emulator"
 import getCodeAroundAddress, { Line } from "./getCodeAroundAddress"
 import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import "./codeDisplay.css"
+import { updateGame } from "../../indexedDb/gameStore"
 
 interface Props {
   focus: number,
@@ -18,9 +19,20 @@ export default function CodeDisplay({ focus, linesAbove, linesBelow, emulator }:
   const breakpoints = emulator.cpu.breakpoints
   const toggleBreakpoint = (line: Line) => {
     if (breakpoints.has(line.address)) {
+      if (emulator.storedGame.breakpoints) {
+        emulator.storedGame.breakpoints = emulator.storedGame.breakpoints
+          .filter(([_bank, address]) => address !== line.address)
+        updateGame(emulator.storedGame)
+      }
       breakpoints.delete(line.address)
     } else {
       breakpoints.add(line.address)
+      if (emulator.storedGame.breakpoints) {
+        emulator.storedGame.breakpoints.push([0, line.address])
+      } else {
+        emulator.storedGame.breakpoints = [[0, line.address]]
+      }
+      updateGame(emulator.storedGame)
     }
   }
 

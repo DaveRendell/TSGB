@@ -8,4 +8,5 @@ export interface StoredGame {
   boxart?: File
   rtc?: Rtc | undefined
   mapFile?: File
+  breakpoints?: number[][]
 }

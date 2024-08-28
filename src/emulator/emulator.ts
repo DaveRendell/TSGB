@@ -8,6 +8,7 @@ import { SerialPort } from "./serialConnections/serialPort"
 import { DebugConnection } from "./serialConnections/debugConnection"
 import SuperEmulator from "./super/superEmulator"
 import { DebugMap } from "./debug/types"
+import { StoredGame } from "../web/indexedDb/storedGame"
 
 export enum EmulatorMode {
   DMG,
@@ -26,12 +27,14 @@ export class Emulator {
   superEmulator?: SuperEmulator
   colouriseDmg: boolean
   debugMap: DebugMap
+  storedGame: StoredGame
 
   constructor(
     cartridge: Cartridge,
     mode: EmulatorMode,
     colouriseDmg: boolean = false,
-    debugMap: DebugMap | undefined = undefined
+    debugMap: DebugMap | undefined = undefined,
+    storedGame: StoredGame
   ) {
     this.mode = mode
     this.serialPort = { type: "debug", connection: new DebugConnection() }
@@ -46,6 +49,11 @@ export class Emulator {
     this.controller.initialiseEvents()
     this.colouriseDmg = colouriseDmg
     this.debugMap = debugMap
+    this.storedGame = storedGame
+
+    if (storedGame.breakpoints) {
+      this.cpu.breakpoints = new Set(storedGame.breakpoints.map(([_bank, address]) => address))
+    }
 
     const paletteString = window.localStorage.getItem("monochromePalette")
     if (paletteString) {

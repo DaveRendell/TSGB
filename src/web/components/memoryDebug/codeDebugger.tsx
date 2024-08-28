@@ -7,6 +7,8 @@ import FlagsDisplay from "./flagsDisplay"
 import Interrupts from "./interrupts"
 import CodeDisplay from "./codeDisplay"
 import CpuController from "../cpuController"
+import { updateGame } from "../../indexedDb/gameStore"
+
 interface Props {
   emulator: Emulator
 }
@@ -19,6 +21,10 @@ export default function CodeDebugger({ emulator }: Props) {
 
 
   const addBreakpoint = (address: number): void => {
+    emulator.storedGame.breakpoints
+      ? emulator.storedGame.breakpoints.push([0, address])
+      : emulator.storedGame.breakpoints = [[0, address]]
+    updateGame(emulator.storedGame)
     emulator.cpu.breakpoints.add(address)
   }
 
