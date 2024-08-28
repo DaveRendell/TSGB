@@ -1,3 +1,4 @@
+import { PalletteRegister } from "../memory/registers/lcdRegisters";
 import { TileStore } from "../memory/tileStore";
 import { SerialConnection } from "./serialConnection";
 
@@ -16,6 +17,7 @@ export class PrinterConnection implements SerialConnection {
   rowCursor = 0
 
   output = new OffscreenCanvas(160, 0)
+  previousOutputs: OffscreenCanvas[] = []
   renderRowCursor = 0
   spurtCounter = 0
 
@@ -108,6 +110,12 @@ export class PrinterConnection implements SerialConnection {
   private startPrinting(data: number[]): void {
     console.log("[PRINTER] Received command: START PRINTING")
 
+    const sheets = data[0]
+    const preMargin = data[1] >> 4
+    const postMargin = data[1] & 0xF
+    const palette = data[2]
+    const exposure = data[3]
+
     this.printing = true
     this.unprocessedData = false
 
@@ -117,7 +125,7 @@ export class PrinterConnection implements SerialConnection {
     const rowsToPrint = this.tileDataCursor / (2 * 20)
     const outputRow = () => {
       if (printer.rowCursor < rowsToPrint) {
-        printer.renderRow()
+        printer.renderRow(palette)
         const nextTimeout = --this.spurtCounter === 0 ? 500 : 1000 / 60
         if (this.spurtCounter <= 0) { this.spurtCounter = 20 }
         setTimeout(outputRow, nextTimeout)
@@ -161,8 +169,11 @@ export class PrinterConnection implements SerialConnection {
     )
   }
 
-  private renderRow(): void {
+  private renderRow(palette: number): void {
     console.log("[PRINTER] Render row", this.renderRowCursor)
+    const paletteRegister = new PalletteRegister()
+    paletteRegister.byte = palette
+
     const context = this.output.getContext("2d")!
     if (this.output.height > 0) {
       const oldImageData = context.getImageData(0, 0, 160, this.output.height)
@@ -180,8 +191,7 @@ export class PrinterConnection implements SerialConnection {
       const tileCol = i >> 3
       const tileId = (tileRow * 20) + tileCol
       const row = this.tileBuffer.readRow(tileId, this.rowCursor & 0x7)
-      const pixel = row[i & 0x7]
-      // QQ palette
+      const pixel = paletteRegister.map[row[i & 0x7]]
       
       const colour = COLOURS[pixel]
 
