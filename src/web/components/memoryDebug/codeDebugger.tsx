@@ -1,7 +1,5 @@
 import * as React from "react"
-import Memory from "../../../emulator/memory/memoryMap"
 import { addressDisplay } from "../../../helpers/displayHexNumbers"
-import MemoryTableRow from "./memoryTableRow"
 import { Emulator } from "../../../emulator/emulator"
 import Stack from "./stack"
 import Registers from "./registers"
@@ -13,7 +11,7 @@ interface Props {
   emulator: Emulator
 }
 
-export default function MemoryExplorer({ emulator }: Props) {
+export default function CodeDebugger({ emulator }: Props) {
   const memory = emulator.memory
   const breakpoints = emulator.cpu.breakpoints
 
@@ -32,7 +30,7 @@ export default function MemoryExplorer({ emulator }: Props) {
 
   return (
     <section>
-      <h2>Memory</h2>
+      <h2>Code debugger</h2>
       <div className="flex-horizontally">
         <CodeDisplay
           emulator={emulator}
@@ -51,7 +49,7 @@ export default function MemoryExplorer({ emulator }: Props) {
               <ul>
                 {[...breakpoints].map(address =>
                   <li>
-                    <a onClick={() => setBaseAddress(Math.max(0, address - 4))}>{addressDisplay(address)} <button onClick={() => memory.cpu.breakpoints.delete(address)}>X</button></a>
+                    {addressDisplay(address)} <button onClick={() => memory.cpu.breakpoints.delete(address)}>X</button>
                   </li>)}
               </ul>
             </p>}

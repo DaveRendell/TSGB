@@ -1,6 +1,5 @@
 import * as React from "react"
-import MemoryExplorer from "./memoryDebug/memoryExplorer"
-import CpuController from "./cpuController"
+import CodeDebugger from "./memoryDebug/codeDebugger"
 import Display from "./display"
 import Joypad from "./joypad"
 import Tabs from "./tabs"
@@ -46,7 +45,7 @@ export default function GameView({ emulator, unload }: Props) {
     "Debug Sound": () => (
       <AudioDebug audioProcessor={emulator.audioProcessor} />
     ),
-    "Debug Memory": () => <MemoryExplorer emulator={emulator} />,
+    "Debug Code": () => <CodeDebugger emulator={emulator} />,
   }
 
   if (emulator.mode === EmulatorMode.SGB) {
