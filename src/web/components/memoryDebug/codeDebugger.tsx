@@ -19,6 +19,15 @@ export default function CodeDebugger({ emulator }: Props) {
 
   const [newBreakpointInput, setNewBreakpointInput] = React.useState("")
 
+  // Enable breakpoints when this tab is open
+  React.useEffect(() => {
+    emulator.cpu.debuggingEnabled = true
+    console.log("Setting debuggingEnabled", emulator.cpu.debuggingEnabled)
+    return () => {
+      emulator.cpu.debuggingEnabled = false
+      console.log("Disabling debuggingEnabled", emulator.cpu.debuggingEnabled)
+    }
+  }, [emulator])
 
   const addBreakpoint = (address: number): void => {
     emulator.storedGame.breakpoints

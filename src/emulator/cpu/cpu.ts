@@ -50,6 +50,7 @@ export default class CPU {
   isHalted = false
   isStopped = false
   debugMode = false
+  debuggingEnabled = false
   breakpoints: Set<number> = new Set()
 
   onInstructionComplete: () => void = () => {}
@@ -200,11 +201,6 @@ export default class CPU {
       }
     }
 
-    if (this.breakpoints.has(this.registers.PC.word)) {
-      this.running = false
-      return
-    }
-
     const interrupt = this.getInterrupt()
     if (interrupt !== null) {
       if (this.isHalted && !this.interruptsEnabled) {
@@ -212,6 +208,11 @@ export default class CPU {
       } else {
         this.handleInterrupt(interrupt)
       }
+    }
+
+    if (this.debuggingEnabled && this.breakpoints.has(this.registers.PC.word)) {
+      this.running = false
+      return
     }
   }
 

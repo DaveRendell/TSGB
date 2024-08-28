@@ -8,25 +8,14 @@ interface Props {
 }
 
 export default function Registers({ emulator }: Props) {
-  const [internalRegisters, setInternalRegisters] = React.useState([
+  const internalRegisters = [
     ["AF", emulator.cpu.registers.AF.word],
     ["BC", emulator.cpu.registers.BC.word],
     ["DE", emulator.cpu.registers.DE.word],
     ["HL", emulator.cpu.registers.HL.word],
     ["PC", emulator.cpu.registers.PC.word],
     ["SP", emulator.cpu.registers.SP.word],
-  ] as const)
-
-  useAnimationFrame(() => {
-    setInternalRegisters([
-      ["AF", emulator.cpu.registers.AF.word],
-      ["BC", emulator.cpu.registers.BC.word],
-      ["DE", emulator.cpu.registers.DE.word],
-      ["HL", emulator.cpu.registers.HL.word],
-      ["PC", emulator.cpu.registers.PC.word],
-      ["SP", emulator.cpu.registers.SP.word],
-    ] as const)
-  }, [emulator])
+  ] as const
 
   const displayValue = (value: number) =>
     "0x" + value.toString(16).padStart(4, "0")

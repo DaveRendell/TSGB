@@ -52,7 +52,10 @@ export class Emulator {
     this.storedGame = storedGame
 
     if (storedGame.breakpoints) {
+      console.log("Found breakpoints", storedGame.breakpoints)
       this.cpu.breakpoints = new Set(storedGame.breakpoints.map(([_bank, address]) => address))
+    } else {
+      console.log("No breakpoints :(")
     }
 
     const paletteString = window.localStorage.getItem("monochromePalette")
