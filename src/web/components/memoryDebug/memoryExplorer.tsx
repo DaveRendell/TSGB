@@ -15,30 +15,20 @@ interface Props {
 
 export default function MemoryExplorer({ emulator }: Props) {
   const memory = emulator.memory
-  const programCounter = emulator.cpu.registers.PC.word
   const breakpoints = emulator.cpu.breakpoints
-
-  const [toggle, setToggle] = React.useState(false)
-  const [baseAddress, setBaseAddress] = React.useState(0x0000)
-  const [length, setLength] = React.useState(25)
-
-  const [baseAddressInput, setBaseAddressInput] = React.useState(
-    addressDisplay(baseAddress),
-  )
-  const [lengthInput, setLengthInput] = React.useState(length)
 
   const [newBreakpointInput, setNewBreakpointInput] = React.useState("")
 
-  const update = () => {
-    setLength(lengthInput)
-    setBaseAddress(parseInt(baseAddressInput))
-  }
 
   const addBreakpoint = (address: number): void => {
     emulator.cpu.breakpoints.add(address)
   }
 
-  const addresses = Array.from({ length }, (_, i) => baseAddress + i)
+  if (emulator.cpu.running) {
+    return <section>
+      Pause emulation to debug game code
+    </section>
+  }
 
   return (
     <section>
