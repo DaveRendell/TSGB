@@ -38,8 +38,8 @@ export default function Stack({ emulator }: Props) {
     <h3>Call stack</h3>
     <ol>
       <li>PC: {getLabelForAddress(emulator.cpu.registers.PC.word)}</li>
-      {stack.slice(0, 9).map(address =>
-        <li>{getLabelForAddress(address)}</li>
+      {stack.slice(0, 9).map((address, i) =>
+        <li key={i}>{getLabelForAddress(address)}</li>
       )}
     </ol>
     {stack.length > 9 && <span>{stack.length - 9} entries hidden</span>}

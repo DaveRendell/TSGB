@@ -1,5 +1,6 @@
 import * as React from "react"
 import { PrinterConnection } from "../../../emulator/serialConnections/printerConnection"
+import useAnimationFrame from "../../hooks/useAnimationFrame"
 
 interface Props {
   printer: PrinterConnection
@@ -8,11 +9,11 @@ interface Props {
 export default function PrinterOutput({ printer }: Props) {
   const printerDisplay = React.useRef<HTMLCanvasElement>(null)
 
-  React.useEffect(() => {
+  useAnimationFrame(() => {
     if (printerDisplay.current) {
       const drawPrinterOutput = () => {
         const output = printer.output
-        printerDisplay.current.height = output.height
+        printerDisplay.current && (printerDisplay.current.height = output.height)
 
         if (output.height > 0) {
           const context = printerDisplay.current.getContext("2d")!
@@ -25,9 +26,7 @@ export default function PrinterOutput({ printer }: Props) {
       }
       requestAnimationFrame(drawPrinterOutput)
     }
-  }, [printerDisplay.current])
-
-  
+  }, [printer, printerDisplay.current])  
 
   return <>
     Output:<br/>

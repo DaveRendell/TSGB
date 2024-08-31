@@ -19,7 +19,8 @@ interface State {
 }
 
 export default function Interrupts({ emulator }: Props) {
-  const currentState: () => State = () => ({
+
+  const state: State = {
     enabled: emulator.cpu.interruptsEnabled,
     interrupts: [
       {
@@ -48,11 +49,7 @@ export default function Interrupts({ emulator }: Props) {
         requested: emulator.memory.registers.interrupts.requested[InterruptEnum.Joypad]
       },
     ]
-  })
-
-  const [state, setState] = React.useState(currentState())
-
-  useAnimationFrame(() => setState(currentState()), [emulator])
+  }
 
   return <div>
     <h3>Interrupts</h3>

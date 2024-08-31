@@ -7,21 +7,12 @@ interface Props {
 }
 
 export default function FlagsDisplay({ flagsRegister }: Props) {
-  const [currentValue, setCurrentValue] = React.useState({
+  const currentValue = {
     zero: flagsRegister.zero,
     operation: flagsRegister.operation,
     halfCarry: flagsRegister.halfCarry,
     carry: flagsRegister.carry,
-  })
-
-  useAnimationFrame(() => {
-    setCurrentValue({
-      zero: flagsRegister.zero,
-      operation: flagsRegister.operation,
-      halfCarry: flagsRegister.halfCarry,
-      carry: flagsRegister.carry,
-    })
-  }, [flagsRegister])
+  }
 
   return <div>
     <h3>Flags</h3>

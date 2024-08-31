@@ -9,6 +9,8 @@ const COLOURS = [
   [0, 0, 0],
 ]
 
+const CLOCKS_1_MS = 5 * 4194304 / 1000
+
 // https://gbdev.io/pandocs/Gameboy_Printer.html
 export class PrinterConnection implements SerialConnection {
   packetBuffer: number[] = []
@@ -17,7 +19,6 @@ export class PrinterConnection implements SerialConnection {
   rowCursor = 0
 
   output = new OffscreenCanvas(160, 0)
-  previousOutputs: OffscreenCanvas[] = []
   renderRowCursor = 0
   spurtCounter = 0
 
@@ -31,6 +32,9 @@ export class PrinterConnection implements SerialConnection {
   printing = false
   checksumError = false
 
+  timer = 0
+  timerAction: () => void = () => {}
+
   onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
     this.packetBuffer.push(byte)
 
@@ -38,11 +42,15 @@ export class PrinterConnection implements SerialConnection {
       console.log("[PRINTER]: Invalid packet", [...this.packetBuffer])
       this.packetBuffer = []
     } else if (this.packetBuffer.length === 9) {
-      respond(0x81) // Magic keep alive signal
+      this.timer = CLOCKS_1_MS
+      this.timerAction = () => respond(0x81) // Magic keep alive signal
       return
     } else if (this.bufferIsFinished()) {
       this.executeCommand()
-      respond(this.statusByte())
+
+      const status = this.statusByte()
+      this.timer = CLOCKS_1_MS
+      this.timerAction = () => respond(status)
       return
     }
 
@@ -108,13 +116,17 @@ export class PrinterConnection implements SerialConnection {
   }
 
   private startPrinting(data: number[]): void {
-    console.log("[PRINTER] Received command: START PRINTING")
 
     const sheets = data[0]
     const preMargin = data[1] >> 4
     const postMargin = data[1] & 0xF
     const palette = data[2]
     const exposure = data[3]
+
+    console.log(
+      "[PRINTER] Received command: START PRINTING",
+      {sheets, preMargin, postMargin, palette, exposure}
+    )
 
     this.printing = true
     this.unprocessedData = false
@@ -141,19 +153,38 @@ export class PrinterConnection implements SerialConnection {
     console.log("[PRINTER] Received command: FILL BUFFER")
 
     if (compressed) {
-      console.log("[PRINTER] Error - compression not yet supported")
+      // See info here: https://shonumi.github.io/articles/art2.html
+      let cursor = 0
+      while (cursor < data.length) {
+        const header = data[cursor++]
+        const compressedRun = (header & 0x80) > 0
+        if (compressedRun) {
+          const length = (header & 0x7F) + 2
+          const byte = data[cursor++]
+
+          for (let i = 0; i < length; i++) {
+            this.tileBuffer.writeByte(this.tileDataCursor++, byte)
+          }
+        } else {
+          const length = (header & 0x7F) + 1
+          
+          for (let i = 0; i < length; i++) {
+            this.tileBuffer.writeByte(this.tileDataCursor++, data[cursor++])
+          }
+        }
+      }
     } else {
       for (let i = 0; i < data.length; i++) {
-        this.tileBuffer.writeByte(this.tileDataCursor + i, data[i])
+        this.tileBuffer.writeByte(this.tileDataCursor++, data[i])
       }
-      this.tileDataCursor += data.length
     }
 
+    this.unprocessedData = true
     this.imageDataFull = this.tileDataCursor >= 8192
   }
 
   private nop(): void {
-    console.log("[PRINTER] Received command: NOP")
+    console.log("[PRINTER] Received command: NOP", this.statusByte().toString(16))
   }
 
   private statusByte(): number {
@@ -170,7 +201,6 @@ export class PrinterConnection implements SerialConnection {
   }
 
   private renderRow(palette: number): void {
-    console.log("[PRINTER] Render row", this.renderRowCursor)
     const paletteRegister = new PalletteRegister()
     paletteRegister.byte = palette
 
@@ -209,5 +239,13 @@ export class PrinterConnection implements SerialConnection {
 
   isConnected: boolean = true
 
-  updateClock(cycles: number): void {}
+  updateClock(cycles: number): void {
+    if (this.timer > 0) {
+      this.timer -= cycles
+      if (this.timer <= 0) {
+        this.timerAction()
+        this.timer = 0
+      }
+    }
+  }
 }
