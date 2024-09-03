@@ -39,6 +39,8 @@ export class PrinterConnection implements SerialConnection {
   timerAction: () => void = () => {}
   resetTime = 0 // Reinits the printer if no packets received in timeout
 
+  displayCanvas: HTMLCanvasElement | undefined = undefined
+
   onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
     this.packetBuffer.push(byte)
 
@@ -243,6 +245,12 @@ export class PrinterConnection implements SerialConnection {
 
     this.renderRowCursor++
     this.rowCursor++
+
+    if (this.displayCanvas) {
+      this.displayCanvas.height = this.output.height
+      const displayContext = this.displayCanvas.getContext("2d")!
+      displayContext.putImageData(context.getImageData(0, 0, 160, this.output.height), 0, 0)
+    }
   }
 
   isConnected: boolean = true
@@ -256,7 +264,7 @@ export class PrinterConnection implements SerialConnection {
       }
     }
 
-    if (this.resetTime > 0) {
+    if (this.resetTime > 0 && !this.printing) {
       this.resetTime -= cycles
       if (this.resetTime <= 0) {
         console.log("[PRINTER] Packet timeout hit, reinitialising")
