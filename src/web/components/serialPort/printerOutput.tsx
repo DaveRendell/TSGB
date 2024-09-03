@@ -9,8 +9,9 @@ export default function PrinterOutput({ printer }: Props) {
   const printerDisplay = React.useRef<HTMLCanvasElement>(null)
 
   React.useEffect(() => {
-    console.log("Setting displayCanvas to ", printerDisplay.current)
     printer.displayCanvas = printerDisplay.current
+    printer.updateDisplay()
+    
     return () => {
       printer.displayCanvas = undefined
     }

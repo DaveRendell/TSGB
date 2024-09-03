@@ -246,7 +246,12 @@ export class PrinterConnection implements SerialConnection {
     this.renderRowCursor++
     this.rowCursor++
 
-    if (this.displayCanvas) {
+    this.updateDisplay()
+  }
+
+  updateDisplay() {
+    if (this.displayCanvas && this.output.height > 0) {
+      const context = this.output.getContext("2d")!
       this.displayCanvas.height = this.output.height
       const displayContext = this.displayCanvas.getContext("2d")!
       displayContext.putImageData(context.getImageData(0, 0, 160, this.output.height), 0, 0)
