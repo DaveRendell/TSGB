@@ -9,7 +9,8 @@ const COLOURS = [
   [0, 0, 0],
 ]
 
-const CLOCKS_1_MS = 5 * 4194304 / 1000
+const CLOCKS_1_MS = 1 * 4194304 / 1000
+const CLOCKS_500_MS = 500 * 4194304 / 1000
 
 // https://gbdev.io/pandocs/Gameboy_Printer.html
 export class PrinterConnection implements SerialConnection {
@@ -21,6 +22,8 @@ export class PrinterConnection implements SerialConnection {
   output = new OffscreenCanvas(160, 0)
   renderRowCursor = 0
   spurtCounter = 0
+
+  packetDataLength = undefined
 
   // Status bits
   lowBattery = false
@@ -34,6 +37,7 @@ export class PrinterConnection implements SerialConnection {
 
   timer = 0
   timerAction: () => void = () => {}
+  resetTime = 0 // Reinits the printer if no packets received in timeout
 
   onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
     this.packetBuffer.push(byte)
@@ -41,11 +45,19 @@ export class PrinterConnection implements SerialConnection {
     if (!this.bufferIsValid()) {
       console.log("[PRINTER]: Invalid packet", [...this.packetBuffer])
       this.packetBuffer = []
-    } else if (this.packetBuffer.length === 9) {
+    } else if (this.packetBuffer.length === 6) {
+      this.packetDataLength = this.packetBuffer[4] + (this.packetBuffer[5] << 8)
+    } else if (
+      this.packetDataLength !== undefined
+      && this.packetBuffer.length === 9 + this.packetDataLength
+    ) {
       this.timer = CLOCKS_1_MS
       this.timerAction = () => respond(0x81) // Magic keep alive signal
       return
-    } else if (this.bufferIsFinished()) {
+    } else if (
+      this.packetDataLength !== undefined
+      && this.packetBuffer.length >= 10 + this.packetDataLength
+    ) {
       this.executeCommand()
 
       const status = this.statusByte()
@@ -55,7 +67,8 @@ export class PrinterConnection implements SerialConnection {
     }
 
     respond(0x00)
-    return
+
+    this.resetTime = CLOCKS_500_MS
   }
 
   private bufferIsValid(): boolean {
@@ -68,12 +81,6 @@ export class PrinterConnection implements SerialConnection {
     }
 
     return true
-  }
-
-  private bufferIsFinished(): boolean {
-    if (this.packetBuffer.length < 10) { return false }
-    const dataLength = this.packetBuffer[4] + (this.packetBuffer[5] << 8)
-    return this.packetBuffer.length >= 10 + dataLength
   }
 
   private executeCommand(): void {
@@ -100,6 +107,7 @@ export class PrinterConnection implements SerialConnection {
     }
 
     this.packetBuffer = []
+    this.packetDataLength = undefined
   }
 
   private initialise(): void {
@@ -245,6 +253,22 @@ export class PrinterConnection implements SerialConnection {
       if (this.timer <= 0) {
         this.timerAction()
         this.timer = 0
+      }
+    }
+
+    if (this.resetTime > 0) {
+      this.resetTime -= cycles
+      if (this.resetTime <= 0) {
+        console.log("[PRINTER] Packet timeout hit, reinitialising")
+        this.tileBuffer.clearTiles()
+        this.tileDataCursor = 0
+
+        this.unprocessedData = false
+        this.packetError = false
+        this.checksumError = false
+        this.otherError = false
+        this.imageDataFull = false
+        this.resetTime = 0
       }
     }
   }

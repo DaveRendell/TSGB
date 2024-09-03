@@ -116,7 +116,7 @@ export function loadImmediate16BitRegister(
       )}`,
     length: 3,
     toCode(bytes, emulator) {
-      return `ld ${describeWordLocation(register)([]), describePointerFromBytes(bytes, emulator)}`
+      return `ld ${describeWordLocation(register)([])}, ${describePointerFromBytes(bytes, emulator)}`
     }
   }
 }

@@ -70,6 +70,12 @@ const toSections = (sections: Section[], line: string): Section[] => {
       name, start, end, symbols: []
     }]
   } else if (trimmedLine.startsWith("EMPTY")) {
+    // Check if whole bank is empty
+    if (trimmedLine === "EMPTY") {
+      return [{
+        name: "EMPTY", start: 0x4000, end: 0x8000, symbols: []
+      }]
+    }
     const range = trimmedLine.split(" ")[1]
     let start: number, end: number
     if (range.includes("-")) {
