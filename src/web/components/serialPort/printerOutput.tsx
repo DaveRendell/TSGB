@@ -17,6 +17,7 @@ export default function PrinterOutput({ printer }: Props) {
   }, [printerDisplay.current])
 
   return <>
+    <button onClick={() => printer.clearOutput()}>Clear</button><br/>
     Output:<br/>
     <canvas className="printer-output" ref={printerDisplay} width={160} height={0}/>
   </>

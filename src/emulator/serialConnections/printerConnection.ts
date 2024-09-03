@@ -253,6 +253,18 @@ export class PrinterConnection implements SerialConnection {
     }
   }
 
+  clearOutput() {
+    this.output.height = 0
+    this.renderRowCursor = 0
+
+    if (this.displayCanvas) {
+      this.displayCanvas.height = 0
+      const context = this.output.getContext("2d")!
+      const displayContext = this.displayCanvas.getContext("2d")!
+      displayContext.putImageData(context.getImageData(0, 0, 160, this.output.height), 0, 0)
+    }
+  }
+
   isConnected: boolean = true
 
   updateClock(cycles: number): void {
