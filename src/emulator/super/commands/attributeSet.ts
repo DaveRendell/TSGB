@@ -7,7 +7,7 @@ export default function attributeSet(
   const attributeFileId = data[0] & 0x3f
   const cancelMask = data[0] & 0x40
 
-  console.log("[SUPER] ATTR_SET command received", { attributeFileId, cancelMask })
+  superEmulator.log("ATTR_SET command received", { attributeFileId, cancelMask })
 
   superEmulator.attributes.data = superEmulator.storedAttributeFiles[attributeFileId]
 }

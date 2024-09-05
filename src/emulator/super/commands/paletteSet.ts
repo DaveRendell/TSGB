@@ -15,7 +15,7 @@ export default function paletteSet(
   const cancelMask = (flags & 0x40) > 0
   const atfId = flags & 0x3F
 
-  console.log("[SUPER] PAL_SET command received", {
+  superEmulator.log("PAL_SET command received", {
     paletteIds,
     applyAtf,
     cancelMask,

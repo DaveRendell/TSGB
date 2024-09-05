@@ -12,7 +12,7 @@ export default function attributeCharacters(superEmulator: SuperEmulator, data: 
     (byte >> 0) & 0x3,
   ]).slice(0, dataSetCount)
 
-  console.log("[SUPER] ATTR_CHR command received", { xStart, yStart, direction, dataSets })
+  superEmulator.log("ATTR_CHR command received", { xStart, yStart, direction, dataSets })
 
   superEmulator.attributes.setCharacters(xStart, yStart, direction, dataSets)
 }

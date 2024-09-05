@@ -70,6 +70,8 @@ export default class SuperEmulator {
   // Currently displayed screen attributes
   attributes: AttributeFile = new AttributeFile()
 
+  commandLog: string[] = []
+
   constructor() {
 
   }
@@ -139,7 +141,7 @@ export default class SuperEmulator {
         return attributeTransfer(this)
     }
 
-    console.log(`[SUPER] Received unsupported command ${valueDisplay(commandCode)} - ${commandName(commandCode)} with data [${data.map(x => valueDisplay(x)).join(",")}]`)
+    this.log(`Received unsupported command ${valueDisplay(commandCode)} - ${commandName(commandCode)} with data`, data)
   }
 
   receiveVramTransfer(data: number[]): void {
@@ -175,6 +177,11 @@ export default class SuperEmulator {
         console.log("[SUPER] Stored VRAM transfer in Attributes")
         break
     }
+  }
+
+  log(line: string, ...params: any[]) {
+    this.commandLog.push(`${line} - ${JSON.stringify(params)}`)
+    console.log("[SUPER] " + line, ...params)
   }
 }
 
