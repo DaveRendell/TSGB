@@ -164,7 +164,7 @@ export default class SuperEmulator {
           const file: number[][] = []
           for (let row = 0; row < 18; row++) {
             file.push(
-              data.slice(90 * fileId + 5 * row).slice(0, 5).flatMap(byte => [
+              bytes.slice(90 * fileId + 5 * row).slice(0, 5).flatMap(byte => [
                 (byte >> 6) & 0x3,
                 (byte >> 4) & 0x3,
                 (byte >> 2) & 0x3,
@@ -174,7 +174,7 @@ export default class SuperEmulator {
           }
           this.storedAttributeFiles.push(file)
         }
-        console.log("[SUPER] Stored VRAM transfer in Attributes")
+        console.log("[SUPER] Stored VRAM transfer in Attributes", this.storedAttributeFiles)
         break
     }
   }
