@@ -7,7 +7,7 @@ import FlagsDisplay from "./flagsDisplay"
 import Interrupts from "./interrupts"
 import CodeDisplay from "./codeDisplay"
 import CpuController from "../cpuController"
-import { updateGame } from "../../indexedDb/gameStore"
+import { mutateGame, updateGame } from "../../indexedDb/gameStore"
 
 interface Props {
   emulator: Emulator
@@ -33,8 +33,23 @@ export default function CodeDebugger({ emulator }: Props) {
     emulator.storedGame.breakpoints
       ? emulator.storedGame.breakpoints.push([0, address])
       : emulator.storedGame.breakpoints = [[0, address]]
-    updateGame(emulator.storedGame)
+    mutateGame(
+      emulator.storedGame.id,
+      (game) => game.breakpoints = emulator.storedGame.breakpoints
+    )
     emulator.cpu.breakpoints.add(address)
+  }
+
+  const deleteBreakpoint = (address: number): void => {
+    emulator.storedGame.breakpoints
+      ? emulator.storedGame.breakpoints =
+        emulator.storedGame.breakpoints.filter(([_bank, breakpointAddress]) => address !== breakpointAddress)
+      : []
+      mutateGame(
+        emulator.storedGame.id,
+        (game) => game.breakpoints = emulator.storedGame.breakpoints
+      )
+      emulator.cpu.breakpoints.delete(address)
   }
 
   if (emulator.cpu.running) {
@@ -64,7 +79,7 @@ export default function CodeDebugger({ emulator }: Props) {
               <ul>
                 {[...breakpoints].map(address =>
                   <li key={address}>
-                    {addressDisplay(address)} <button onClick={() => memory.cpu.breakpoints.delete(address)}>X</button>
+                    {addressDisplay(address)} <button onClick={() => deleteBreakpoint(address)}>X</button>
                   </li>)}
               </ul>
             </p>}
