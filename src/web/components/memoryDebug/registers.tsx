@@ -23,8 +23,8 @@ export default function Registers({ emulator }: Props) {
     <h3>Registers</h3>
     <table>
       <tbody>
-        {internalRegisters.map(([name, value]) =>
-          <tr><td>{name}</td><td>{displayValue(value)}</td><td>({describeAddress(value, emulator)})</td></tr>)}
+        {internalRegisters.map(([name, value], i) =>
+          <tr key={i}><td>{name}</td><td>{displayValue(value)}</td><td>({describeAddress(value, emulator)})</td></tr>)}
       </tbody>
     </table>
   </div>

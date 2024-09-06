@@ -90,11 +90,12 @@ export default function GameLoader({ setEmulator }: Props) {
         <>Fetching games...</>
       ) : (
         <div className="library">
-          {storedGames.map((game) => (
+          {storedGames.map((game, i) => (
             <LibraryCard
               game={game}
               playGame={loadGame(game)}
               openOptions={openOptions(game)}
+              key={i}
             />
           ))}
         </div>

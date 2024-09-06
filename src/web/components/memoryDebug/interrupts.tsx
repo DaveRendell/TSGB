@@ -67,8 +67,8 @@ export default function Interrupts({ emulator }: Props) {
         </tr>
       </thead>
       <tbody>
-        {state.interrupts.map(interrupt =>
-          <tr>
+        {state.interrupts.map((interrupt, i) =>
+          <tr key={i}>
             <td>{interrupt.name}</td>
             <td>
               <input

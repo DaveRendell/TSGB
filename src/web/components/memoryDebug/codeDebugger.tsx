@@ -63,7 +63,7 @@ export default function CodeDebugger({ emulator }: Props) {
               Breakpoints:
               <ul>
                 {[...breakpoints].map(address =>
-                  <li>
+                  <li key={address}>
                     {addressDisplay(address)} <button onClick={() => memory.cpu.breakpoints.delete(address)}>X</button>
                   </li>)}
               </ul>

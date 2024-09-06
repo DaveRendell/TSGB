@@ -11,6 +11,7 @@ export async function getGameList(): Promise<StoredGame[]> {
     request.onerror = reject
     request.onsuccess = () => {
       resolve(request.result as StoredGame[])
+      transaction.commit()
     }
   })
 }
@@ -44,7 +45,10 @@ export async function addGame(file: File): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = store.add(storedGame)
     request.onerror = reject
-    request.onsuccess = () => resolve()
+    request.onsuccess = () => {
+      transaction.commit()
+      resolve()
+    }
   })
 }
 
@@ -57,7 +61,10 @@ export async function deleteGame(key: number): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = store.delete(key)
     request.onerror = reject
-    request.onsuccess = () => resolve()
+    request.onsuccess = () => {
+      transaction.commit()
+      resolve()
+    }
   })
 }
 
@@ -70,7 +77,10 @@ export async function updateGame(game: StoredGame): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = store.put(game)
     request.onerror = reject
-    request.onsuccess = () => resolve()
+    request.onsuccess = () => {
+      transaction.commit()
+      resolve()
+    }
   })
 }
 
@@ -95,7 +105,10 @@ export const persistSave =
     return new Promise((resolve, reject) => {
       const request = store.put(game)
       request.onerror = reject
-      request.onsuccess = () => resolve()
+      request.onsuccess = () => {
+        transaction.commit()
+        resolve()
+      }
     })
   }
 
@@ -121,6 +134,9 @@ export const persistSave =
     return new Promise((resolve, reject) => {
       const request = store.put(game)
       request.onerror = reject
-      request.onsuccess = () => resolve()
+      request.onsuccess = () => {
+        transaction.commit()
+        resolve()
+      }
     })
   }

@@ -50,7 +50,7 @@ export default function CodeDisplay({ focus, linesAbove, linesBelow, emulator }:
   return <table className="code-display">
     <tbody>
       {lines.map(line =>
-        <tr className={rowClass(line)}>
+        <tr className={rowClass(line)} key={line.address}>
           <td className={breakpointClass(line)}>
             <input type="checkbox"
               checked={breakpoints.has(line.address)}
@@ -58,7 +58,7 @@ export default function CodeDisplay({ focus, linesAbove, linesBelow, emulator }:
             />
           </td>
           <td><pre>{addressDisplay(line.address)}</pre></td>
-          <td><pre>{line.asCode}</pre></td><br/>
+          <td><pre>{line.asCode}</pre></td>
           <td><pre>{line.bytes.map(byte => byte.toString(16).padStart(2, "0")).join(" ")}</pre></td>
         </tr>
       )}

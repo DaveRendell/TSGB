@@ -3,6 +3,7 @@ import { StoredGame } from "../indexedDb/storedGame"
 import { deleteGame, persistSave, updateGame } from "../indexedDb/gameStore"
 import "../gameOptions.css"
 import { EmulatorMode } from "../../emulator/emulator"
+import { addressDisplay } from "../../helpers/displayHexNumbers"
 
 interface Props {
   game: StoredGame
@@ -129,6 +130,15 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <button className="chunky-button danger-button" onClick={() => deleteGame(game.id)}>Delete Game</button>
       <button className="chunky-button danger-button" onClick={() => deleteSave()}>Delete Save</button>
       <br />
+      {game.breakpoints && game.breakpoints.length > 0 && <>
+          Breakpoints:
+          <ul>
+            {game.breakpoints.map(breakpoint =>
+              <li key={breakpoint.join(":")}><code>{breakpoint[0]}:{addressDisplay(breakpoint[1])}</code></li>
+            )}
+          </ul>
+        </>
+      }
     </section>
   )
 }
