@@ -5,6 +5,8 @@ import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import "./codeDisplay.css"
 import { updateGame } from "../../indexedDb/gameStore"
 import FocusControl from "./focusControl"
+import { describePointer } from "../../../emulator/cpu/instructions/instructionHelpers"
+import findSymbol from "../../../emulator/debug/findSymbol"
 
 interface Props {
   linesAbove: number,
@@ -63,8 +65,13 @@ export default function CodeDisplay({ linesAbove, linesBelow, emulator }: Props)
       />
       <pre className="code-display">
         { 
-          lines.map(line => 
-            <div className={rowClass(line)} key={line.address}>
+          lines.map(line => {
+            const symbol = findSymbol(emulator.debugMap, line.address, emulator.memory)
+            
+            return <div className={rowClass(line)} key={line.address}>
+              { (symbol.address === line.address) &&
+                <div>{fitToWidth(symbol.name + "::", 52)}</div>
+              }
               <span className={breakpointClass(line)}>
                 <input type="checkbox"
                   checked={breakpoints.has(line.address)}
@@ -72,7 +79,8 @@ export default function CodeDisplay({ linesAbove, linesBelow, emulator }: Props)
                 />
               </span>
               {formatLine(line)}
-            </div>)
+            </div>
+          })
         }
       </pre>
   </div>
