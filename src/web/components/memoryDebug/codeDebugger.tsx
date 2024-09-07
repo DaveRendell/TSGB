@@ -43,9 +43,9 @@ export default function CodeDebugger({ emulator }: Props) {
         <CodeDisplay
           emulator={emulator}
           linesAbove={10}
-          linesBelow={20}
+          linesBelow={30}
         />
-        <div>
+        <div className="tools-panel">
           <CpuController cpu={emulator.cpu} />
           <Stack emulator={emulator} />
           <Registers emulator={emulator} />

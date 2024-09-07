@@ -1,5 +1,5 @@
-.code-panel {
-  width: 100%;
+.tools-panel {
+  max-width: 30%;
 }
 
 .code-panel label {
@@ -21,7 +21,7 @@
   border-radius: 0.5em;
   font-size: 1.5em;
   border-collapse: collapse;
-  width: 100%;
+  padding: 0.5em;
 }
 
 .code-display .pc-line {

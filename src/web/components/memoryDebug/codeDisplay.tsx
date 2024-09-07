@@ -61,22 +61,32 @@ export default function CodeDisplay({ linesAbove, linesBelow, emulator }: Props)
         setFocus={setFocus}
         pc={emulator.cpu.registers.PC.word}
       />
-      <table className="code-display">
-      <tbody>
-        {lines.map(line =>
-          <tr className={rowClass(line)} key={line.address}>
-            <td className={breakpointClass(line)}>
-              <input type="checkbox"
-                checked={breakpoints.has(line.address)}
-                onChange={() => toggleBreakpoint(line)}
-              />
-            </td>
-            <td><pre>{addressDisplay(line.address)}</pre></td>
-            <td><pre>{line.asCode}</pre></td>
-            <td><pre>{line.bytes.map(byte => byte.toString(16).padStart(2, "0")).join(" ")}</pre></td>
-          </tr>
-        )}
-      </tbody>
-    </table>
+      <pre className="code-display">
+        { 
+          lines.map(line => 
+            <div className={rowClass(line)} key={line.address}>
+              <span className={breakpointClass(line)}>
+                <input type="checkbox"
+                  checked={breakpoints.has(line.address)}
+                  onChange={() => toggleBreakpoint(line)}
+                />
+              </span>
+              {formatLine(line)}
+            </div>)
+        }
+      </pre>
   </div>
+}
+
+const formatLine = (line: Line): string =>
+  `$${line.address.toString(16).padStart(4, "0")}  ` // 7 char
+  + fitToWidth(line.asCode, 40)
+  + "  " + line.bytes.map(byte => byte.toString(16).padStart(2, "0")).join(" ").padEnd(8, " ")
+
+const fitToWidth = (input: string, length: number): string => {
+  if (input.length <= length) {
+    return input.padEnd(length, " ")
+  }
+
+  return input.slice(0, length - 3) + "..."
 }
