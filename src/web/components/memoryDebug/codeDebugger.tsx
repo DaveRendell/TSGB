@@ -14,7 +14,6 @@ interface Props {
 }
 
 export default function CodeDebugger({ emulator }: Props) {
-  const memory = emulator.memory
   const breakpoints = emulator.cpu.breakpoints
 
   const [newBreakpointInput, setNewBreakpointInput] = React.useState("")
@@ -64,7 +63,6 @@ export default function CodeDebugger({ emulator }: Props) {
       <div className="flex-horizontally">
         <CodeDisplay
           emulator={emulator}
-          focus={emulator.cpu.registers.PC.word}
           linesAbove={10}
           linesBelow={20}
         />

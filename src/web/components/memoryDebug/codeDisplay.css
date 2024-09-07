@@ -1,10 +1,27 @@
+.code-panel {
+  width: 100%;
+}
+
+.code-panel label {
+  margin-left: 0.25em;
+}
+
+.code-panel input[type=text] {
+  width: 3em;
+  margin-left: 0.25em;
+}
+
+.code-panel button {
+  margin-left: 0.25em;
+}
+
 .code-display {
   background-color: #2f2f2f;
   color: #f0f0f0;
   border-radius: 0.5em;
-  width: 100%;
   font-size: 1.5em;
   border-collapse: collapse;
+  width: 100%;
 }
 
 .code-display .pc-line {
@@ -13,6 +30,10 @@
 
 .code-display .breakpoint-line {
   background-color: rgb(185, 91, 57);
+}
+
+.code-display .focus-line {
+  background-color: lightslategray;
 }
 
 .breakpoint {
