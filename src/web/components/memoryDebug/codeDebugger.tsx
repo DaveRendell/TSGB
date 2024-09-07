@@ -8,6 +8,7 @@ import Interrupts from "./interrupts"
 import CodeDisplay from "./codeDisplay"
 import CpuController from "../cpuController"
 import { mutateGame, updateGame } from "../../indexedDb/gameStore"
+import Breakpoints from "./breakpoints"
 
 interface Props {
   emulator: Emulator
@@ -16,7 +17,6 @@ interface Props {
 export default function CodeDebugger({ emulator }: Props) {
   const breakpoints = emulator.cpu.breakpoints
 
-  const [newBreakpointInput, setNewBreakpointInput] = React.useState("")
 
   // Enable breakpoints when this tab is open
   React.useEffect(() => {
@@ -28,28 +28,7 @@ export default function CodeDebugger({ emulator }: Props) {
     }
   }, [emulator])
 
-  const addBreakpoint = (address: number): void => {
-    emulator.storedGame.breakpoints
-      ? emulator.storedGame.breakpoints.push([0, address])
-      : emulator.storedGame.breakpoints = [[0, address]]
-    mutateGame(
-      emulator.storedGame.id,
-      (game) => game.breakpoints = emulator.storedGame.breakpoints
-    )
-    emulator.cpu.breakpoints.add(address)
-  }
-
-  const deleteBreakpoint = (address: number): void => {
-    emulator.storedGame.breakpoints
-      ? emulator.storedGame.breakpoints =
-        emulator.storedGame.breakpoints.filter(([_bank, breakpointAddress]) => address !== breakpointAddress)
-      : []
-      mutateGame(
-        emulator.storedGame.id,
-        (game) => game.breakpoints = emulator.storedGame.breakpoints
-      )
-      emulator.cpu.breakpoints.delete(address)
-  }
+  
 
   if (emulator.cpu.running) {
     return <section>
@@ -72,21 +51,7 @@ export default function CodeDebugger({ emulator }: Props) {
           <Registers emulator={emulator} />
           <FlagsDisplay flagsRegister={emulator.cpu.registers.F} />
           <Interrupts emulator={emulator} />
-          { breakpoints.size > 0 && <p>
-              Breakpoints:
-              <ul>
-                {[...breakpoints].map(address =>
-                  <li key={address}>
-                    {addressDisplay(address)} <button onClick={() => deleteBreakpoint(address)}>X</button>
-                  </li>)}
-              </ul>
-            </p>}
-          <input
-            className="narrow"
-            value={newBreakpointInput}
-            type="text"
-            onChange={e => setNewBreakpointInput(e.target.value)}/>
-          <button onClick={() => addBreakpoint(parseInt("0x" + newBreakpointInput))}>Add breakpoint</button>
+          <Breakpoints emulator={emulator} />
         </div>
       </div>
     </section>
