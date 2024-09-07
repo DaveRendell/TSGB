@@ -44,7 +44,9 @@ export default function CodeDisplay({ linesAbove, linesBelow, emulator }: Props)
     ? "pc-line"
     : emulator.cpu.breakpoints.has(line.address)
       ? "breakpoint-line"
-      : ""
+      : line.address === focus
+        ? "focus-line"
+        : ""
 
   const breakpointClass = (line: Line) =>
     emulator.cpu.breakpoints.has(line.address)

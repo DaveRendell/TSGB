@@ -36,6 +36,15 @@ export default function Breakpoints({ emulator }: Props) {
   }
 
   return <div>
+    <h3>Breakpoints</h3>
+    <label htmlFor="break-on-interrupt">Break on interrupt</label>
+    <input
+      type="checkbox"
+      name="break-on-interrupt"
+      checked={emulator.cpu.breakOnInterrupt}
+      onChange={(e) => emulator.cpu.breakOnInterrupt = e.target.checked}
+    />
+    <br/>
     <input
             className="narrow"
             value={newBreakpointInput}

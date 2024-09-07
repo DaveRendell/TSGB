@@ -10,7 +10,7 @@ export default function Tabs({ tabs }: Props) {
   return (
     <section>
       <nav className="tabs">
-        <ul>
+        <ul className="tab-list">
           {Object.keys(tabs).map((name, i) =>
             name == activeTab ? (
               <li key={i} className="selected">

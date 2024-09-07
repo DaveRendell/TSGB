@@ -50,18 +50,18 @@ body {
   padding: 1em;
 }
 
-.tabs ul {
+ul.tab-list {
   list-style-type: none;
   margin-bottom: 0;
   padding: 0;
 }
 
-.tabs ul li {
+ul.tab-list li {
   display: inline-block;
   vertical-align: bottom;
 }
 
-.tabs ul li.selected {
+ul.tab-list li.selected {
   display: inline-block;
   border-radius: 0.5em 0.5em 0 0;
   border: 1px solid slategray;
@@ -69,13 +69,13 @@ body {
   background-color: lightgray;
 }
 
-.tabs ul li button {
+ul.tab-list li button {
   display: inline-block;
   border-radius: 0.5em 0.5em 0 0;
   border: 1px solid slategray;
 }
 
-.tabs ul li + li {
+ul.tab-list li + li {
   display: inline-block;
   margin-left: 0.125em;
 }

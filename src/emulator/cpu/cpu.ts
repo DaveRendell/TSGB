@@ -52,6 +52,7 @@ export default class CPU {
   debugMode = false
   debuggingEnabled = false
   breakpoints: Set<number> = new Set()
+  breakOnInterrupt = false
 
   onInstructionComplete: () => void = () => {}
   onError: (error: Error) => void = () => {}
@@ -207,6 +208,10 @@ export default class CPU {
         this.isHalted = false
       } else {
         this.handleInterrupt(interrupt)
+      }
+      if (this.debuggingEnabled && this.breakOnInterrupt) {
+        this.running = false
+        return
       }
     }
 
