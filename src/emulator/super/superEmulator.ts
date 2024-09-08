@@ -1,11 +1,13 @@
 import { valueDisplay } from "../../helpers/displayHexNumbers"
 import SgbScanlineRenderer from "../graphics/sgbScanlineRenderer"
+import { TileStore } from "../memory/tileStore"
 import AttributeFile from "./attributeFile"
 import attributeBlock from "./commands/attributeBlock"
 import attributeCharacters from "./commands/attributeCharacters"
 import attributeDivide from "./commands/attributeDivide"
 import attributeLine from "./commands/attributeLine"
 import attributeTransfer from "./commands/attributeTransfer"
+import characterTransfer from "./commands/characterTransfer"
 import maskEnable from "./commands/maskEnable"
 import palettePair from "./commands/palettePair"
 import paletteSet from "./commands/paletteSet"
@@ -15,6 +17,7 @@ import SuperPalette from "./superPalette"
 type VramTransferType =
   "palette"
   | "attribute"
+  | "character"
 
 export default class SuperEmulator {
   scanlineRenderer: SgbScanlineRenderer
@@ -26,6 +29,7 @@ export default class SuperEmulator {
 
   // Receiving VRAM transfer
   vramTransferType: VramTransferType = "palette"
+  tileDestination: 0 | 0x1000 = 0
 
   // 512 Palettes in Super RAM
   storedPalettes: SuperPalette[] = [
@@ -70,6 +74,9 @@ export default class SuperEmulator {
   palettes: SuperPalette[] = this.storedPalettes.slice(0, 4)
   // Currently displayed screen attributes
   attributes: AttributeFile = new AttributeFile()
+
+  // Border data
+  borderTiles = new TileStore(256, 4)
 
   commandLog: string[] = []
 
@@ -138,6 +145,9 @@ export default class SuperEmulator {
       case 0x0A: // PAL_SET
         return paletteSet(this, data)
 
+      case 0x13: // CHR_TRN
+        return characterTransfer(this, data)
+
       case 0x15: // ATTR_TRN
         return attributeTransfer(this)
 
@@ -179,6 +189,12 @@ export default class SuperEmulator {
           this.storedAttributeFiles.push(file)
         }
         console.log("[SUPER] Stored VRAM transfer in Attributes", this.storedAttributeFiles)
+        break
+
+      case "character":
+        let byteCursor = this.tileDestination
+        bytes.slice(0, 0x1000).forEach(byte => this.borderTiles.writeByte(byteCursor++, byte))
+        console.log("[SUPER] Border tile data transfer complete")
         break
     }
   }

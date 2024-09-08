@@ -177,6 +177,12 @@ h1 {
   height: 256px;
 }
 
+.super-tileset-debug-canvas {
+  image-rendering: pixelated;
+  width: 256px;
+  height: 256px;
+}
+
 .background-debug-canvas {
   image-rendering: pixelated;
   width: 512px;
