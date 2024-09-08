@@ -6,6 +6,7 @@ import { PalletteRegister } from "../memory/registers/lcdRegisters";
 import { Sprite } from "../memory/sprite";
 import { VRAM } from "../memory/vram";
 import SuperEmulator from "../super/superEmulator";
+import { MaskMode } from "../super/commands/maskEnable";
 
 
 /**
@@ -22,6 +23,8 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
   vramTransferRequested = false
   vramTransferInProgress = false
   vramTransferBuffer: number[] = []
+
+  maskMode: MaskMode = "UNMASK"
 
   constructor(registers: IoRegisters, vram: VRAM, oam: OAM, superEmulator: SuperEmulator) {
     super(registers, vram, oam)
@@ -100,7 +103,17 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
   override renderScreen(): void {
     if (this.canvas && this.lcdControl.enabled) {
       const screenContext = this.canvas.getContext("2d")!
-      screenContext.drawImage(this.buffer, 0, 0)
+      if (this.maskMode === "UNMASK") {
+        screenContext.drawImage(this.buffer, 0, 0)
+      }
+      if (this.maskMode === "BLACK") {
+        screenContext.fillStyle = "black"
+        screenContext.fillRect(0, 0, 160, 144)
+      }
+      if (this.maskMode === "BLANK") {
+        screenContext.fillStyle = "white" // actually colour 0?
+        screenContext.fillRect(0, 0, 160, 144)
+      }
     }
 
     if (this.vramTransferInProgress) {

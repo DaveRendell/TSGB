@@ -28,4 +28,7 @@ export default function paletteSet(
   if (applyAtf) {
     superEmulator.attributes.data = superEmulator.storedAttributeFiles[atfId]
   }
+  if (cancelMask) {
+    superEmulator.scanlineRenderer.maskMode = "UNMASK"
+  }
 }

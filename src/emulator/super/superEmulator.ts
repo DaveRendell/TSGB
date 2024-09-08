@@ -6,6 +6,7 @@ import attributeCharacters from "./commands/attributeCharacters"
 import attributeDivide from "./commands/attributeDivide"
 import attributeLine from "./commands/attributeLine"
 import attributeTransfer from "./commands/attributeTransfer"
+import maskEnable from "./commands/maskEnable"
 import palettePair from "./commands/palettePair"
 import paletteSet from "./commands/paletteSet"
 import paletteTransfer from "./commands/paletteTransfer"
@@ -139,6 +140,9 @@ export default class SuperEmulator {
 
       case 0x15: // ATTR_TRN
         return attributeTransfer(this)
+
+      case 0x17: // MASK_EN
+        return maskEnable(this, data)
     }
 
     this.log(`Received unsupported command ${valueDisplay(commandCode)} - ${commandName(commandCode)} with data`, data)
