@@ -1,5 +1,6 @@
 .tools-panel {
   max-width: 30%;
+  overflow-x: hidden;
 }
 
 .code-panel label {
@@ -60,4 +61,8 @@
 
 .code-display pre {
   margin: 0;
+}
+
+.cpu-control-button {
+  width: 6em;
 }

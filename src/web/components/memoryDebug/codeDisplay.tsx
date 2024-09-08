@@ -69,7 +69,7 @@ export default function CodeDisplay({ linesAbove, linesBelow, emulator }: Props)
             const symbol = findSymbol(emulator.debugMap, line.address, emulator.memory)
             
             return <div className={rowClass(line)} key={line.address}>
-              { (symbol.address === line.address) &&
+              { symbol && (symbol.address === line.address) &&
                 <div>{fitToWidth(symbol.name + "::", 52)}</div>
               }
               <span className={breakpointClass(line)}>

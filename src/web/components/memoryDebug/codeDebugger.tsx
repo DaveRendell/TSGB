@@ -6,7 +6,7 @@ import Registers from "./registers"
 import FlagsDisplay from "./flagsDisplay"
 import Interrupts from "./interrupts"
 import CodeDisplay from "./codeDisplay"
-import CpuController from "../cpuController"
+import CpuController from "./cpuController"
 import { mutateGame, updateGame } from "../../indexedDb/gameStore"
 import Breakpoints from "./breakpoints"
 
