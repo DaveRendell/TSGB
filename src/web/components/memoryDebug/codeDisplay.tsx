@@ -43,11 +43,12 @@ export default function CodeDisplay({ linesAbove, linesBelow, emulator }: Props)
   }
 
   const rowClass = (line: Line) => emulator.cpu.registers.PC.word === line.address
-    ? "pc-line"
-    : emulator.cpu.breakpoints.has(line.address)
-      ? "breakpoint-line"
-      : line.address === focus
-        ? "focus-line"
+    ? emulator.cpu.breakpoints.has(line.address)
+      ? "breakpoint-line" : "pc-line"
+    : line.address === focus
+      ? "focus-line"
+      : emulator.cpu.debugCallStack.includes(line.address)
+        ? "stack-line"
         : ""
 
   const breakpointClass = (line: Line) =>

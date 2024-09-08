@@ -37,6 +37,10 @@
   background-color: lightslategray;
 }
 
+.code-display .stack-line {
+  background-color: #2b2b56;
+}
+
 .breakpoint {
   opacity: 0;
   text-align: center;
