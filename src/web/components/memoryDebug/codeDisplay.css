@@ -59,6 +59,7 @@
 .breakpoint input[type=checkbox] {
   position: relative;
   top: -2px;
+  left: -4px;
 }
 
 .code-display td {

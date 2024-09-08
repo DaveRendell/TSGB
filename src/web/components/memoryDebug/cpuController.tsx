@@ -10,9 +10,11 @@ interface Props {
 export default function CpuController({ cpu }: Props) {
   const step = () => {
     const currentStackDepth = cpu.debugCallStack.length
+    cpu.running = true
     do {
       cpu.executeInstruction()
-    } while (cpu.debugCallStack.length > currentStackDepth)
+    } while (cpu.debugCallStack.length > currentStackDepth && cpu.running)
+      cpu.running = false
   }
 
   const stepInto = () => {
@@ -21,9 +23,11 @@ export default function CpuController({ cpu }: Props) {
 
   const stepOut = () => {
     const currentStackDepth = cpu.debugCallStack.length
-    while (cpu.debugCallStack.length >= currentStackDepth) {
+    cpu.running = true
+    while (cpu.debugCallStack.length >= currentStackDepth && cpu.running) {
       cpu.executeInstruction()
     }
+    cpu.running = false
   }
 
   const run = () => {

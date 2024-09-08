@@ -17,10 +17,14 @@ interface Props {
 export default function CodeDisplay({ linesAbove, linesBelow, emulator }: Props) {
   const [focus, setFocus] = React.useState(emulator.cpu.registers.PC.word)
 
-  const lines = getCodeAroundAddress(focus, emulator, linesAbove, linesBelow)
+  const lines = getCodeAroundAddress(
+    focus,
+    emulator,
+    Math.min(linesAbove, focus - 1),
+    linesBelow)
 
-  const nextAddress = lines[lines.findIndex(line => line.address == focus) + 1].address
-  const previousAddress = lines[lines.findIndex(line => line.address == focus) - 1].address
+  const nextAddress = lines[lines.findIndex(line => line.address == focus) + 1]?.address
+  const previousAddress = lines[lines.findIndex(line => line.address == focus) - 1]?.address
   
   const breakpoints = emulator.cpu.breakpoints
   const toggleBreakpoint = (line: Line) => {
