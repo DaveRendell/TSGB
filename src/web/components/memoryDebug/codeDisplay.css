@@ -41,6 +41,8 @@
   opacity: 0;
   text-align: center;
   vertical-align: middle;
+  accent-color: coral;
+  height: 100%;
 }
 
 .breakpoint.breakpoint-active {
@@ -50,9 +52,9 @@
 .breakpoint:hover {
   opacity: 1;
 }
-
-.breakpoint {
-  accent-color: coral;
+.breakpoint input[type=checkbox] {
+  position: relative;
+  top: -2px;
 }
 
 .code-display td {

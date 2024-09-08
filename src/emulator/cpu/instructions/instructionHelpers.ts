@@ -130,17 +130,17 @@ export const describeWordLocation = (
 ): ((values: number[]) => string) => {
   switch (name) {
     case WordLocation.PC:
-      return () => "PC"
+      return () => "pc"
     case WordLocation.SP:
-      return () => "SP"
+      return () => "sp"
     case WordLocation.HL:
-      return () => "HL"
+      return () => "hl"
     case WordLocation.AF:
-      return () => "AF"
+      return () => "af"
     case WordLocation.BC:
-      return () => "BC"
+      return () => "bc"
     case WordLocation.DE:
-      return () => "DE"
+      return () => "de"
   }
 }
 

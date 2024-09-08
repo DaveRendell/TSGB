@@ -162,7 +162,7 @@ export function aluOperationImmediate(operation: AluOperation): Instruction {
     description: ([value]) => `${operation} A,${valueDisplay(value)}`,
     length: 2,
     toCode(bytes) {
-      return `${operation} A,${valueDisplay(bytes[1])}`
+      return `${operation} a,${valueDisplay(bytes[1])}`
     }
   }
 }

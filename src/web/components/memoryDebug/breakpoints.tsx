@@ -2,6 +2,7 @@ import * as React from "react"
 import { addressDisplay } from "../../../helpers/displayHexNumbers"
 import { Emulator } from "../../../emulator/emulator"
 import { mutateGame } from "../../indexedDb/gameStore"
+import describeAddress from "./describeAddress"
 
 interface Props {
   emulator: Emulator
@@ -46,15 +47,15 @@ export default function Breakpoints({ emulator }: Props) {
     />
     <br/>
     <input
-            className="narrow"
-            value={newBreakpointInput}
-            type="text"
-            onChange={e => setNewBreakpointInput(e.target.value)}/>
-          <button onClick={() => addBreakpoint(parseInt("0x" + newBreakpointInput))}>Add breakpoint</button>
+      className="narrow"
+      value={newBreakpointInput}
+      type="text"
+      onChange={e => setNewBreakpointInput(e.target.value)}/>
+    <button onClick={() => addBreakpoint(parseInt("0x" + newBreakpointInput))}>Add breakpoint</button>
     <ul>
       {[...breakpoints].map(address =>
         <li key={address}>
-          {addressDisplay(address)} <button onClick={() => deleteBreakpoint(address)}>X</button>
+          {addressDisplay(address)} <button onClick={() => deleteBreakpoint(address)}>X</button> ({describeAddress(address, emulator)})
         </li>)}
     </ul>
   </div>

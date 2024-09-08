@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Emulator } from "../../../emulator/emulator"
 import describeAddress from "./describeAddress"
-import useAnimationFrame from "../../hooks/useAnimationFrame"
 
 interface Props {
   emulator: Emulator
