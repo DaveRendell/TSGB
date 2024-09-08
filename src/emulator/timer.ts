@@ -32,7 +32,6 @@ export default class Timer {
   }
 
   updateClock(cycles: number): void {
-    this.timerCycles += cycles
     this.divCycles += cycles
 
     if (this.divCycles > DIV_CYCLE_ROLLOVER) {
@@ -41,6 +40,7 @@ export default class Timer {
     }
 
     if (this.control.enabled) {
+      this.timerCycles += cycles
       const timerRollover = this.getTimerRollover()
       if (this.timerCycles > timerRollover) {
         this.timerCycles -= timerRollover
