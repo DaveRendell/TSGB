@@ -16,22 +16,6 @@ interface PrimaryDifficultySelectionState {
   remoteSelection: number,
 }
 
-interface PrimaryInGame {
-  name: "primary-in-game"
-}
-
-// Secondary states
-interface SecondaryMusicSelectionState {
-  name: "secondary-music-selection",
-  currentSelection: number
-}
-
-interface SecondaryDifficultySelectionState {
-  name: "secondary-difficulty-selection",
-  localSelection: number,
-  remoteSelection: number,
-}
-
 interface PrimaryDataHandshake {
   name: "primary-data-handshake",
   started: boolean
@@ -51,6 +35,24 @@ interface PrimarySendingPieceData {
   handshakeCounter: number,
 }
 
+interface PrimaryInGame {
+  name: "primary-in-game"
+  paused: boolean
+  opponentLines: number
+}
+
+// Secondary states
+interface SecondaryMusicSelectionState {
+  name: "secondary-music-selection",
+  currentSelection: number
+}
+
+interface SecondaryDifficultySelectionState {
+  name: "secondary-difficulty-selection",
+  localSelection: number,
+  remoteSelection: number,
+}
+
 interface SecondaryNegotiationHandshake {
   name: "secondary-negotiation-handshake",
   primaryHandshakeByte: number,
@@ -68,6 +70,8 @@ interface SecondaryReceivingData {
 
 interface SecondaryInGame {
   name: "secondary-in-game"
+  paused: boolean
+  opponentLines: number
 }
 
 type GameStates =

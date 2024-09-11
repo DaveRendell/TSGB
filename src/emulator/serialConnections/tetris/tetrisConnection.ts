@@ -19,6 +19,9 @@ const DATA_FINISHED = 0x30
 
 const ROUND_START_MAGIC_BYTES = [0x30, 0x00, 0x02, 0x02, 0x20]
 
+const PAUSE_BYTE = 0x94
+const UNPAUSE_RESPONSE_BYTE = 0xFF 
+
 const CLOCKS_5_MS = 5 * 4194304 / 1000
 const CLOCKS_30_MS = 30 * 4194304 / 1000
 const CLOCKS_500_MS = 500 * 4194304 / 1000
@@ -154,6 +157,19 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
     }
 
     if (this.gameState.state.name === "primary-in-game") {
+      if (this.gameState.state.paused) {
+        if (byte !== PAUSE_BYTE) {
+          this.gameState.state.paused = false
+          this.sendMessage({ type: "pause", paused: false })
+          respond(UNPAUSE_RESPONSE_BYTE)
+        }
+      } else {
+        if (byte === PAUSE_BYTE) {
+          this.gameState.state.paused = true
+          this.sendMessage({ type: "pause", paused: true })
+          respond(0x00)
+        }
+      }
       respond(0x00)
     }
 
@@ -226,9 +242,11 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
                   nextState: {
                     name: "secondary-receiving-data",
                     data: [...message.pieceData, ...ROUND_START_MAGIC_BYTES],
-                    nextStateClockStart: CLOCKS_5_MS,
+                    nextStateClockStart: CLOCKS_500_MS,
                     nextState: {
-                      name: "secondary-in-game"
+                      name: "secondary-in-game",
+                      paused: false,
+                      opponentLines: 0
                     }
                   }
                 }
@@ -236,7 +254,13 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
             }
           }
         }
-        return      
+        return
+
+      case "secondary-in-game":
+        if (message.type === "pause") {
+          this.gameState.state.paused = message.paused
+        }
+        return
     }
 
     console.error(`Incorrect message type ${message.type} in state ${this.gameState.state.name}`)
@@ -304,6 +328,8 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.serialRegisters.responseFromSecondary(NEGOTIATION_RESPONSE_BYTE)
           this.gameState.state = {
             name: "primary-in-game",
+            paused: false,
+            opponentLines: 0
           }
         }
       }
@@ -348,6 +374,19 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           }        
         }
       }
-    }    
+
+      if (this.gameState.state.name === "secondary-in-game") {
+        if (this.gameState.state.paused) {
+          this.serialRegisters.pushFromExternal(PAUSE_BYTE)
+        } else {
+          this.serialRegisters.pushFromExternal(
+            this.gameState.state.opponentLines,
+            (response) => {
+              //
+            })
+        }
+        this.clockTimer += CLOCKS_5_MS
+      }
+    }
   }
 }

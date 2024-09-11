@@ -31,12 +31,18 @@ interface RoundDataMessage {
   pieceData: number[],
 }
 
+interface PauseMessage {
+  type: "pause",
+  paused: boolean
+}
+
 export type TetrisMessage =
   NegotiationMessage
   | MusicSelectionUpdateMessage
   | MusicConfirmationMessage
   | DifficultySelectionMessage
   | RoundDataMessage
+  | PauseMessage
 
 export function parseMessage(message: any): TetrisMessage {
   if (
@@ -90,6 +96,15 @@ export function parseMessage(message: any): TetrisMessage {
         type: "round-data",
         lineData: message.lineData,
         pieceData: message.pieceData,
+      }
+    }
+  }
+
+  if (message.type === "pause") {
+    if ("paused" in message) {
+      return {
+        type: "pause",
+        paused: message.paused
       }
     }
   }
