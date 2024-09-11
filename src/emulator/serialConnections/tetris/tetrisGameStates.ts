@@ -48,30 +48,22 @@ interface PrimarySendingPieceData {
   dataBuffer: number[],
   lineData: number[],
   finished: boolean,
-  handshakeCounter: number
+  handshakeCounter: number,
 }
 
 interface SecondaryNegotiationHandshake {
   name: "secondary-negotiation-handshake",
   primaryHandshakeByte: number,
   secondaryHandshakeByte: number,
-  nextState: GameStates
+  nextState: GameStates,
+  nextStateClockStart: number,
 }
 
-interface SecondaryReceivingRoundLines {
-  name: "secondary-receiving-round-lines",
-  dataBuffer: number[]
-  piecesData: number[]
-}
-
-interface SecondaryReceivingRoundPieces {
-  name: "secondary-receiving-round-pieces"
-  dataBuffer: number[]
-}
-
-interface SecondaryReceivingMagicBytes {
-  name: "secondary-receiving-magic-bytes"
-  dataBuffer: number[]
+interface SecondaryReceivingData {
+  name: "secondary-receiving-data",
+  data: number[],
+  nextState: GameStates,
+  nextStateClockStart: number,
 }
 
 interface SecondaryInGame {
@@ -86,12 +78,10 @@ type GameStates =
   | PrimarySendingLineData
   | PrimarySendingPieceData
   | PrimaryInGame
-  | SecondaryNegotiationHandshake
   | SecondaryMusicSelectionState
   | SecondaryDifficultySelectionState
-  | SecondaryReceivingRoundLines
-  | SecondaryReceivingRoundPieces
-  | SecondaryReceivingMagicBytes
+  | SecondaryNegotiationHandshake
+  | SecondaryReceivingData
   | SecondaryInGame
 
 export default GameStates
