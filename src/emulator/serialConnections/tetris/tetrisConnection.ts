@@ -202,16 +202,22 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.gameState.state.remoteSelection = message.selection
         }
         if (message.type === "round-data") {
-          this.serialRegisters.pushFromExternal(DIFFICULTY_CHOICE_CONFIRM)
           this.gameState.state = {
-            name: "secondary-receiving-round-lines",
-            dataBuffer: [
-              DIFFICULTY_CHOICE_CONFIRM,
-              NEGOTIATION_REQUEST_BYTE,
-              ...message.lineData,
-              NEGOTIATION_REQUEST_BYTE,
-            ],
-            piecesData: message.pieceData
+            name: "secondary-negotiation-handshake",
+            primaryHandshakeByte: DIFFICULTY_CHOICE_CONFIRM,
+            secondaryHandshakeByte: DIFFICULTY_CHOICE_RESPONSE,
+            nextStateClockStart: CLOCKS_5_MS,
+            nextState: {
+              name: "secondary-negotiation-handshake",
+              primaryHandshakeByte: NEGOTIATION_REQUEST_BYTE,
+              secondaryHandshakeByte: NEGOTIATION_RESPONSE_BYTE,
+              nextStateClockStart: CLOCKS_5_MS,
+              nextState: {
+                name: "secondary-receiving-round-lines",
+                dataBuffer: message.lineData,
+                piecesData: message.pieceData
+              }
+            }
           }
         }
         return      
@@ -286,15 +292,48 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         }
       }
 
+      if (this.gameState.state.name === "secondary-negotiation-handshake") {
+        const {
+          primaryHandshakeByte,
+          secondaryHandshakeByte,
+          nextState,
+          nextStateClockStart
+        } = this.gameState.state
+        this.serialRegisters.pushFromExternal(
+          primaryHandshakeByte,
+          (secondaryResponse) => {
+            if (secondaryResponse === secondaryHandshakeByte) {
+              this.gameState.state = nextState
+              this.clockTimer = nextStateClockStart
+            } else {
+              this.clockTimer += CLOCKS_5_MS
+            }
+          })
+      }
+
       if (this.gameState.state.name === "secondary-receiving-round-lines") {
-        if (this.gameState.state.dataBuffer.length === 0) {
+        if (this.serialRegisters.unreadSerialData) {
+          console.log("Clunk 2")
+          this.clockTimer = CLOCKS_5_MS
+          return
+        }
+        if (this.gameState.state.dataBuffer.length === 0 && !this.serialRegisters.unreadSerialData) {
           this.gameState.state = {
-            name: "secondary-receiving-round-pieces",
-            dataBuffer: this.gameState.state.piecesData
+            name: "secondary-negotiation-handshake",
+            primaryHandshakeByte: NEGOTIATION_REQUEST_BYTE,
+            secondaryHandshakeByte: NEGOTIATION_RESPONSE_BYTE,
+            nextStateClockStart: CLOCKS_5_MS,
+            nextState: {
+              name: "secondary-receiving-round-pieces",
+              dataBuffer: this.gameState.state.piecesData
+            }
           }
+          this.clockTimer += CLOCKS_5_MS
         } else {
-          if (this.serialRegisters.dataBuffer === undefined) {
+          if (this.serialRegisters.dataBuffer === undefined && !this.serialRegisters.unreadSerialData) {
             const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
+            console.log(["TETRIS - pushing line byte", valueDisplay(nextByte)])
+
             this.serialRegisters.pushFromExternal(nextByte)
   
             if (this.gameState.state.dataBuffer.length === 0 || nextByte === NEGOTIATION_REQUEST_BYTE) {
@@ -310,14 +349,20 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
       }
 
       if (this.gameState.state.name === "secondary-receiving-round-pieces") {
-        if (this.gameState.state.dataBuffer.length === 0) {
+        if (this.serialRegisters.unreadSerialData) {
+          console.log("Clunk 2")
+          this.clockTimer = CLOCKS_5_MS
+          return
+        }
+        if (this.gameState.state.dataBuffer.length === 0 && !this.serialRegisters.unreadSerialData) {
           this.gameState.state = {
             name: "secondary-receiving-magic-bytes",
             dataBuffer: [0x30, 0x00, 0x02, 0x02, 0x20]
           }
         } else {
-          if (this.serialRegisters.dataBuffer === undefined) {
+          if (this.serialRegisters.dataBuffer === undefined && !this.serialRegisters.unreadSerialData) {
             const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
+            console.log(["TETRIS - pushing piece byte", valueDisplay(nextByte)])
             this.serialRegisters.pushFromExternal(nextByte)
 
             if (this.gameState.state.dataBuffer.length === 0 || nextByte === NEGOTIATION_REQUEST_BYTE || nextByte === DIFFICULTY_CHOICE_CONFIRM) {
@@ -333,19 +378,30 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
       }
 
       if (this.gameState.state.name === "secondary-receiving-magic-bytes") {
-        if (this.gameState.state.dataBuffer.length === 0) {
+        if (this.serialRegisters.unreadSerialData) {
+          console.log("Clunk 2")
+          this.clockTimer = CLOCKS_5_MS
+          return
+        }
+        if (this.gameState.state.dataBuffer.length === 0 && !this.serialRegisters.unreadSerialData) {
           this.gameState.state = {
             name: "secondary-in-game",
           }
         } else {
-          const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
-          this.serialRegisters.pushFromExternal(nextByte)
+          if (this.serialRegisters.dataBuffer === undefined && !this.serialRegisters.unreadSerialData) {
+            const [nextByte] = this.gameState.state.dataBuffer.splice(0, 1)
+            console.log(["TETRIS - pushing magic byte", valueDisplay(nextByte)])
+            this.serialRegisters.pushFromExternal(nextByte)
 
-          if (this.gameState.state.dataBuffer.length === 0) {
-            this.clockTimer = CLOCKS_500_MS
+            if (this.gameState.state.dataBuffer.length === 0) {
+              this.clockTimer = CLOCKS_500_MS
+            } else {
+              this.clockTimer = CLOCKS_30_MS
+            }
           } else {
-            this.clockTimer = CLOCKS_30_MS
-          }
+            console.log("CLUNK")
+            this.clockTimer = CLOCKS_5_MS
+          }          
         }
       }
     }    

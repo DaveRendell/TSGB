@@ -51,6 +51,12 @@ interface PrimarySendingPieceData {
   handshakeCounter: number
 }
 
+interface SecondaryNegotiationHandshake {
+  name: "secondary-negotiation-handshake",
+  primaryHandshakeByte: number,
+  secondaryHandshakeByte: number,
+  nextState: GameStates
+}
 
 interface SecondaryReceivingRoundLines {
   name: "secondary-receiving-round-lines",
@@ -80,6 +86,7 @@ type GameStates =
   | PrimarySendingLineData
   | PrimarySendingPieceData
   | PrimaryInGame
+  | SecondaryNegotiationHandshake
   | SecondaryMusicSelectionState
   | SecondaryDifficultySelectionState
   | SecondaryReceivingRoundLines

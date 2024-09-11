@@ -1,7 +1,5 @@
+import { valueDisplay } from "../../../helpers/displayHexNumbers"
 import { ByteRef } from "../../refs/byteRef"
-import { DebugConnection } from "../../serialConnections/debugConnection"
-import { PrinterConnection } from "../../serialConnections/printerConnection"
-import { SerialConnection } from "../../serialConnections/serialConnection"
 import { SerialPort } from "../../serialConnections/serialPort"
 import { Interrupt, InterruptRegister } from "./interruptRegisters"
 
@@ -23,6 +21,8 @@ export default class SerialRegisters {
   // Used if a transfer is queued  by primary but secondary hasn't enabled transfers
   dataBuffer: number | undefined = undefined
 
+  unreadSerialData: boolean = false
+
   constructor(serialPort: SerialPort, interruptRegister: InterruptRegister) {
     this.serialPort = serialPort
     this.interruptRegister = interruptRegister
@@ -30,6 +30,8 @@ export default class SerialRegisters {
     const self = this
     this.serialDataRegister = {
       get byte() {
+        self.unreadSerialData = false
+        console.log("Serial - reading byte", valueDisplay(self.data))
         return self.data
       },
       set byte(value) {
@@ -58,6 +60,7 @@ export default class SerialRegisters {
 
   responseFromSecondary(byte: number): void {
     this.data = byte
+    this.unreadSerialData = true
     this.transferEnabled = false
     this.interruptRegister.setInterrupt(Interrupt.Serial)
   }
@@ -72,6 +75,7 @@ export default class SerialRegisters {
     if (this.transferEnabled) {
       const previousDataValue = this.data
       this.data = externalByte
+      this.unreadSerialData = true
       this.interruptRegister.setInterrupt(Interrupt.Serial)
       return respond(previousDataValue)
     }
