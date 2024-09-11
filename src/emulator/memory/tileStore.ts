@@ -2,28 +2,30 @@ type Tile = number[][]
 
 export class TileStore {
   size: number
+  bitDepth: number
   tiles: Tile[]
   flippedTiles: Tile[]
 
-  constructor(size: number) {
+  constructor(size: number, bitDepth: number = 2) {
     this.size = size
+    this.bitDepth = bitDepth
     this.clearTiles()
   }
 
   writeByte(offsetAddress: number, value: number): void {
-    const tileNumber = offsetAddress >> 4
-    const rowNumber = (offsetAddress & 0xf) >> 1
+    const tileNumber = Math.floor(offsetAddress / (8 * this.bitDepth))
+    const rowNumber = Math.floor((offsetAddress % (8 * this.bitDepth)) / this.bitDepth)
     // Stores whether we're adjusting the first or second byte that defines a row.
-    const rowByteIndex = offsetAddress & 1
+    const rowByteIndex = offsetAddress & (this.bitDepth - 1)
 
     for (let i = 0; i < 8; i++) {
       const bit = (value & 1) << rowByteIndex
       value >>= 1
 
-      this.tiles[tileNumber][rowNumber][7 - i] &= 1 << (1 - rowByteIndex)
+      this.tiles[tileNumber][rowNumber][7 - i] &= 1 << ((this.bitDepth - 1) - rowByteIndex)
       this.tiles[tileNumber][rowNumber][7 - i] |= bit
 
-      this.flippedTiles[tileNumber][rowNumber][i] &= 1 << (1 - rowByteIndex)
+      this.flippedTiles[tileNumber][rowNumber][i] &= 1 << ((this.bitDepth - 1) - rowByteIndex)
       this.flippedTiles[tileNumber][rowNumber][i] |= bit
     }
   }
