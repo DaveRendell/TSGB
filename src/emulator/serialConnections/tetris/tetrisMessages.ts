@@ -36,6 +36,11 @@ interface PauseMessage {
   paused: boolean
 }
 
+interface LinesMessage {
+  type: "lines",
+  lines: number
+}
+
 export type TetrisMessage =
   NegotiationMessage
   | MusicSelectionUpdateMessage
@@ -43,6 +48,7 @@ export type TetrisMessage =
   | DifficultySelectionMessage
   | RoundDataMessage
   | PauseMessage
+  | LinesMessage
 
 export function parseMessage(message: any): TetrisMessage {
   if (
@@ -105,6 +111,15 @@ export function parseMessage(message: any): TetrisMessage {
       return {
         type: "pause",
         paused: message.paused
+      }
+    }
+  }
+
+  if (message.type === "lines") {
+    if ("lines" in message) {
+      return {
+        type: "lines",
+        lines: message.lines
       }
     }
   }

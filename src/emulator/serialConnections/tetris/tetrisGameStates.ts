@@ -38,6 +38,7 @@ interface PrimarySendingPieceData {
 interface PrimaryInGame {
   name: "primary-in-game"
   paused: boolean
+  lines: number
   opponentLines: number
 }
 
@@ -71,6 +72,7 @@ interface SecondaryReceivingData {
 interface SecondaryInGame {
   name: "secondary-in-game"
   paused: boolean
+  lines: number
   opponentLines: number
 }
 

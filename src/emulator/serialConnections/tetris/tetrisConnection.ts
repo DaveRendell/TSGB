@@ -169,6 +169,10 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.sendMessage({ type: "pause", paused: true })
           respond(0x00)
         }
+        if (byte !== this.gameState.state.lines) {
+          this.gameState.state.lines = byte
+          this.sendMessage({ type: "lines", lines: byte })
+        }
       }
       respond(0x00)
     }
@@ -246,6 +250,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
                     nextState: {
                       name: "secondary-in-game",
                       paused: false,
+                      lines: 0,
                       opponentLines: 0
                     }
                   }
@@ -329,6 +334,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.gameState.state = {
             name: "primary-in-game",
             paused: false,
+            lines: 0,
             opponentLines: 0
           }
         }
@@ -379,10 +385,19 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         if (this.gameState.state.paused) {
           this.serialRegisters.pushFromExternal(PAUSE_BYTE)
         } else {
+          const self = this
+          const currentState = this.gameState.state
+          const currentLines = this.gameState.state.lines
           this.serialRegisters.pushFromExternal(
             this.gameState.state.opponentLines,
             (response) => {
-              //
+              if (response === 0xFF) { // Ignore this
+                return
+              }
+              if (response !== currentLines) {
+                currentState.lines = response
+                self.sendMessage({ type: "lines", lines: response})
+              }
             })
         }
         this.clockTimer += CLOCKS_5_MS
