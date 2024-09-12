@@ -72,6 +72,7 @@ interface SecondaryReceivingData {
 interface SecondaryInGame {
   name: "secondary-in-game"
   paused: boolean
+  linesBuffer: number
   lines: number
   opponentLines: number
 }

@@ -114,8 +114,6 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
 
     if (this.gameState.state.name === "primary-sending-line-data") {
       if (byte === NEGOTIATION_REQUEST_BYTE) {
-        console.log("Finished line data", this.gameState.state.dataBuffer.map(valueDisplay))
-
         this.gameState.state.finished = true
         this.clockTimer = CLOCKS_30_MS
         return
@@ -138,7 +136,6 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
       }
 
       if (byte === DATA_FINISHED) {
-        console.log("Finished piece data", this.gameState.state.dataBuffer.map(valueDisplay))
         this.sendMessage({
           type: "round-data",
           pieceData: this.gameState.state.dataBuffer,
@@ -157,24 +154,28 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
     }
 
     if (this.gameState.state.name === "primary-in-game") {
+      console.log("P IN G", byte)
       if (this.gameState.state.paused) {
         if (byte !== PAUSE_BYTE) {
           this.gameState.state.paused = false
           this.sendMessage({ type: "pause", paused: false })
           respond(UNPAUSE_RESPONSE_BYTE)
+          return
         }
       } else {
         if (byte === PAUSE_BYTE) {
           this.gameState.state.paused = true
           this.sendMessage({ type: "pause", paused: true })
           respond(0x00)
+          return
         }
         if (byte !== this.gameState.state.lines) {
           this.gameState.state.lines = byte
           this.sendMessage({ type: "lines", lines: byte })
         }
+        respond(this.gameState.state.opponentLines)
+        return
       }
-      respond(0x00)
     }
 
     console.log(`[TETRIS DEBUG] Uncaught byte ${valueDisplay(byte)} (state: ${this.gameState.state.name})`)
@@ -183,12 +184,6 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
 
   override receiveMessage(message: TetrisMessage): void {
     console.log("[TETRIS] Received message", message)
-
-    if (message.type === "round-data" && message.pieceData.length < 256) {
-      console.log(message)
-      throw new Error("WTF!")
-    }
-
     switch(this.gameState.state.name) {
       case "negotiation":
         if (message.type === "negotiation") {
@@ -250,6 +245,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
                     nextState: {
                       name: "secondary-in-game",
                       paused: false,
+                      linesBuffer: 0,
                       lines: 0,
                       opponentLines: 0
                     }
@@ -261,11 +257,21 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         }
         return
 
+      case "primary-in-game":
+        if (message.type === "lines") {
+          this.gameState.state.opponentLines = message.lines
+          return
+        }
+
       case "secondary-in-game":
         if (message.type === "pause") {
           this.gameState.state.paused = message.paused
+          return
         }
-        return
+        if (message.type === "lines") {
+          this.gameState.state.opponentLines = message.lines
+          return
+        }
     }
 
     console.error(`Incorrect message type ${message.type} in state ${this.gameState.state.name}`)
@@ -387,20 +393,20 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         } else {
           const self = this
           const currentState = this.gameState.state
-          const currentLines = this.gameState.state.lines
           this.serialRegisters.pushFromExternal(
             this.gameState.state.opponentLines,
             (response) => {
-              if (response === 0xFF) { // Ignore this
+              if (response === 0xFF) { // Signals that last byte was the lines total?
+                if (currentState.linesBuffer !== currentState.lines) {
+                  currentState.lines = currentState.linesBuffer
+                  self.sendMessage({ type: "lines", lines: currentState.lines})
+                }
                 return
               }
-              if (response !== currentLines) {
-                currentState.lines = response
-                self.sendMessage({ type: "lines", lines: response})
-              }
+              currentState.linesBuffer = response
             })
         }
-        this.clockTimer += CLOCKS_5_MS
+        this.clockTimer += 2 * CLOCKS_5_MS
       }
     }
   }

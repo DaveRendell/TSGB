@@ -31,7 +31,6 @@ export default class SerialRegisters {
     this.serialDataRegister = {
       get byte() {
         self.unreadSerialData = false
-        console.log("Serial - reading byte", valueDisplay(self.data))
         return self.data
       },
       set byte(value) {
