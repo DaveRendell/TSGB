@@ -154,7 +154,6 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
     }
 
     if (this.gameState.state.name === "primary-in-game") {
-      console.log("P IN G", byte)
       if (this.gameState.state.paused) {
         if (byte !== PAUSE_BYTE) {
           this.gameState.state.paused = false
@@ -173,7 +172,17 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.gameState.state.lines = byte
           this.sendMessage({ type: "lines", lines: byte })
         }
-        respond(this.gameState.state.opponentLines)
+        if (this.gameState.state.attackLines > 0) {
+          console.log("!!! PUSHING attack: ", this.gameState.state.attackLines)
+          respond(0x80 + this.gameState.state.attackLines)
+          this.gameState.state.attackLines = 0
+          return
+        }
+        respond(
+          this.gameState.state.responseCycleCounter++ === 3
+           ? this.gameState.state.opponentLines
+           : 0xFF
+        )
         return
       }
     }
@@ -259,6 +268,10 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
 
       case "primary-in-game":
         if (message.type === "lines") {
+          if (this.gameState.state.opponentLines > message.lines) {
+            console.log("queueing attack", this.gameState.state.opponentLines, message.lines, this.gameState.state.opponentLines - message.lines)
+            this.gameState.state.attackLines = this.gameState.state.opponentLines - message.lines
+          }
           this.gameState.state.opponentLines = message.lines
           return
         }
@@ -341,7 +354,9 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
             name: "primary-in-game",
             paused: false,
             lines: 0,
-            opponentLines: 0
+            opponentLines: 0,
+            attackLines: 0,
+            responseCycleCounter: 0
           }
         }
       }

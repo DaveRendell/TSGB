@@ -40,6 +40,8 @@ interface PrimaryInGame {
   paused: boolean
   lines: number
   opponentLines: number
+  attackLines: number
+  responseCycleCounter: number // todo: probably delete
 }
 
 // Secondary states
