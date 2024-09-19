@@ -169,6 +169,27 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           respond(0x00)
           return
         }
+
+        if (byte === 0x77) { // Won round (cleared 30 lines)
+          this.sendMessage({ type: "round-end", outcome: "won" })
+          respond(this.gameState.state.opponentLines)
+          this.gameState.state = {
+            name: "primary-round-end-screen",
+            stage: "waiting",
+          }
+          return
+        }
+
+        if (byte === 0xaa) { // Lost round
+          this.sendMessage({ type: "round-end", outcome: "lost" })
+          respond(this.gameState.state.opponentLines)
+          this.gameState.state = {
+            name: "primary-round-end-screen",
+            stage: "waiting",
+          }
+          return
+        }
+
         if (byte !== this.gameState.state.lines) {
           if (byte & 0x80) {
             this.sendMessage({ type: "attack", size: byte & 0xF})
@@ -183,11 +204,18 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.gameState.state.attackLines = 0
           return
         }
-        respond(
-          this.gameState.state.opponentLines
-        )
+        respond(this.gameState.state.opponentLines)
         return
       }
+    }
+
+    if (this.gameState.state.name === "primary-round-end-screen") {
+      console.log("RECV", valueDisplay(byte))
+      if (byte === 0x43) {
+        console.log("Next stage?")
+        return
+      }
+      respond(0x34)
     }
 
     console.log(`[TETRIS DEBUG] Uncaught byte ${valueDisplay(byte)} (state: ${this.gameState.state.name})`)
@@ -279,6 +307,13 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.gameState.state.attackLines = message.size
           return
         }
+        if (message.type === "round-end") {
+          this.gameState.state = {
+            name: "primary-round-end-screen",
+            stage: "waiting",
+          }
+          return
+        }
 
       case "secondary-in-game":
         if (message.type === "pause") {
@@ -291,6 +326,18 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         }
         if (message.type === "attack") {
           this.gameState.state.attackLines = message.size
+          return
+        }
+        if (message.type === "round-end") {
+          this.gameState.state = {
+            name: "secondary-round-end-screen",
+            opponentState: message.outcome,
+            stage: "waiting",
+          }
+          this.serialRegisters.pushFromExternal(
+            message.outcome === "won" ? 0x77 : 0xaa
+          )
+          this.clockTimer = CLOCKS_5_MS
           return
         }
     }
@@ -420,6 +467,25 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           const handleResponse = (response: number) => {
             if (response == 0x00) { return }
 
+            if (response === 0x77) { // Won round (got 30 lines)
+              self.sendMessage({ type: "round-end", outcome: "won" })
+              self.gameState.state = {
+                name: "secondary-round-end-screen",
+                stage: "waiting",
+              }
+              return
+            }
+
+            if (response === 0xaa) { // Lost round
+              self.sendMessage({ type: "round-end", outcome: "lost" })
+              self.gameState.state = {
+                name: "secondary-round-end-screen",
+                stage: "waiting",
+              }
+              this.clockTimer = CLOCKS_5_MS
+              return
+            }
+
             if ((response & 0x80) > 0 && response !== 0xFF) {
               console.log("attack byte?", response.toString(16))
               self.sendMessage({ type: "attack", size: response & 0xf})
@@ -453,6 +519,34 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           }
         }
         this.clockTimer += CLOCKS_5_MS
+      }
+
+      if (this.gameState.state.name === "secondary-round-end-screen") {
+        if (this.gameState.state.stage === "terminating") {
+          this.serialRegisters.pushFromExternal(0x43)
+          console.log("Next state?")
+          return
+        }
+        if (this.gameState.state.stage === "responding") {
+          this.serialRegisters.pushFromExternal(0x34)
+          this.gameState.state.stage = "terminating"
+          this.clockTimer += CLOCKS_500_MS
+          return
+        }
+        if (this.gameState.state.opponentState) {
+          const currentState = this.gameState.state
+          this.serialRegisters.pushFromExternal(
+            this.gameState.state.opponentState === "won" ? 0x77 : 0xaa,
+            (response) => {
+              console.log("RESP", valueDisplay(response))
+              if (response === 0x34) {
+                currentState.stage = "responding"
+              }
+            }
+          )
+          this.clockTimer += CLOCKS_5_MS
+          return
+        }
       }
     }
   }

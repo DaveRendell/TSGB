@@ -46,6 +46,11 @@ interface AttackMessage {
   size: number
 }
 
+interface RoundEndMessage {
+  type: "round-end"
+  outcome: "won" | "lost"
+}
+
 export type TetrisMessage =
   NegotiationMessage
   | MusicSelectionUpdateMessage
@@ -55,6 +60,7 @@ export type TetrisMessage =
   | PauseMessage
   | LinesMessage
   | AttackMessage
+  | RoundEndMessage
 
 export function parseMessage(message: any): TetrisMessage {
   if (
@@ -136,6 +142,17 @@ export function parseMessage(message: any): TetrisMessage {
         type: "attack",
         size: message.size
       }
+    }
+  }
+
+  if (
+    message.type === "round-end"
+    && "outcome" in message
+    && (message.outcome === "won" || message.outcome === "lost") 
+  ) {
+    return {
+      type: "round-end",
+      outcome: message.outcome
     }
   }
 

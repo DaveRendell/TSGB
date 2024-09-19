@@ -44,6 +44,11 @@ interface PrimaryInGame {
   responseCycleCounter: number // todo: probably delete
 }
 
+interface PrimaryRoundEndScreen {
+  name: "primary-round-end-screen"
+  stage: "waiting" | "responding"
+}
+
 // Secondary states
 interface SecondaryMusicSelectionState {
   name: "secondary-music-selection",
@@ -80,6 +85,12 @@ interface SecondaryInGame {
   attackLines: number
 }
 
+interface SecondaryRoundEndScreen {
+  name: "secondary-round-end-screen"
+  opponentState?: "won" | "lost"
+  stage: "waiting" | "responding" | "terminating"
+}
+
 type GameStates =
   NegotiationState
   | PrimaryMusicSelectionState
@@ -88,10 +99,12 @@ type GameStates =
   | PrimarySendingLineData
   | PrimarySendingPieceData
   | PrimaryInGame
+  | PrimaryRoundEndScreen
   | SecondaryMusicSelectionState
   | SecondaryDifficultySelectionState
   | SecondaryNegotiationHandshake
   | SecondaryReceivingData
   | SecondaryInGame
+  | SecondaryRoundEndScreen
 
 export default GameStates
