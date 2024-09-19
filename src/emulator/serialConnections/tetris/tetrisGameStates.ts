@@ -77,6 +77,7 @@ interface SecondaryInGame {
   linesBuffer: number
   lines: number
   opponentLines: number
+  attackLines: number
 }
 
 type GameStates =

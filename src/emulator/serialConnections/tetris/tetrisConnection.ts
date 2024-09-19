@@ -22,6 +22,7 @@ const ROUND_START_MAGIC_BYTES = [0x30, 0x00, 0x02, 0x02, 0x20]
 const PAUSE_BYTE = 0x94
 const UNPAUSE_RESPONSE_BYTE = 0xFF 
 
+const CLOCKS_1_MS = 1 * 4194304 / 1000
 const CLOCKS_5_MS = 5 * 4194304 / 1000
 const CLOCKS_30_MS = 30 * 4194304 / 1000
 const CLOCKS_500_MS = 500 * 4194304 / 1000
@@ -169,8 +170,12 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           return
         }
         if (byte !== this.gameState.state.lines) {
-          this.gameState.state.lines = byte
-          this.sendMessage({ type: "lines", lines: byte })
+          if (byte & 0x80) {
+            this.sendMessage({ type: "attack", size: byte & 0xF})
+          } else {
+            this.gameState.state.lines = byte
+            this.sendMessage({ type: "lines", lines: byte })
+          }
         }
         if (this.gameState.state.attackLines > 0) {
           console.log("!!! PUSHING attack: ", this.gameState.state.attackLines)
@@ -179,9 +184,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           return
         }
         respond(
-          this.gameState.state.responseCycleCounter++ === 3
-           ? this.gameState.state.opponentLines
-           : 0xFF
+          this.gameState.state.opponentLines
         )
         return
       }
@@ -256,7 +259,8 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
                       paused: false,
                       linesBuffer: 0,
                       lines: 0,
-                      opponentLines: 0
+                      opponentLines: 0,
+                      attackLines: 0,
                     }
                   }
                 }
@@ -268,11 +272,11 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
 
       case "primary-in-game":
         if (message.type === "lines") {
-          if (this.gameState.state.opponentLines > message.lines) {
-            console.log("queueing attack", this.gameState.state.opponentLines, message.lines, this.gameState.state.opponentLines - message.lines)
-            this.gameState.state.attackLines = this.gameState.state.opponentLines - message.lines
-          }
           this.gameState.state.opponentLines = message.lines
+          return
+        }
+        if (message.type === "attack") {
+          this.gameState.state.attackLines = message.size
           return
         }
 
@@ -283,6 +287,10 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         }
         if (message.type === "lines") {
           this.gameState.state.opponentLines = message.lines
+          return
+        }
+        if (message.type === "attack") {
+          this.gameState.state.attackLines = message.size
           return
         }
     }
@@ -408,20 +416,43 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         } else {
           const self = this
           const currentState = this.gameState.state
-          this.serialRegisters.pushFromExternal(
-            this.gameState.state.opponentLines,
-            (response) => {
-              if (response === 0xFF) { // Signals that last byte was the lines total?
-                if (currentState.linesBuffer !== currentState.lines) {
-                  currentState.lines = currentState.linesBuffer
-                  self.sendMessage({ type: "lines", lines: currentState.lines})
-                }
-                return
+
+          const handleResponse = (response: number) => {
+            if (response == 0x00) { return }
+
+            if ((response & 0x80) > 0 && response !== 0xFF) {
+              console.log("attack byte?", response.toString(16))
+              self.sendMessage({ type: "attack", size: response & 0xf})
+              return
+            }
+
+            if (response === 0xFF) { // Signals that last byte was the lines total?
+              if (currentState.attackLines > 0) {
+                console.log("Clearing attack lines", self.serialRegisters.unreadSerialData)
+                currentState.attackLines = 0
               }
-              currentState.linesBuffer = response
-            })
+
+              if (currentState.linesBuffer !== currentState.lines) {
+                currentState.lines = currentState.linesBuffer
+                self.sendMessage({ type: "lines", lines: currentState.lines})
+              }
+              return
+            }
+            currentState.linesBuffer = response
+          }
+
+          if (currentState.attackLines > 0) {
+            console.log("!!! PUSHING attack: ", this.gameState.state.attackLines)
+            this.serialRegisters.pushFromExternal(
+              0x80 + currentState.attackLines,
+              handleResponse)
+          } else {
+            this.serialRegisters.pushFromExternal(
+              this.gameState.state.opponentLines,
+              handleResponse)
+          }
         }
-        this.clockTimer += 2 * CLOCKS_5_MS
+        this.clockTimer += CLOCKS_5_MS
       }
     }
   }

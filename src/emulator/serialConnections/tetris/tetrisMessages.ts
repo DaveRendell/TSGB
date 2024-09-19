@@ -41,6 +41,11 @@ interface LinesMessage {
   lines: number
 }
 
+interface AttackMessage {
+  type: "attack"
+  size: number
+}
+
 export type TetrisMessage =
   NegotiationMessage
   | MusicSelectionUpdateMessage
@@ -49,6 +54,7 @@ export type TetrisMessage =
   | RoundDataMessage
   | PauseMessage
   | LinesMessage
+  | AttackMessage
 
 export function parseMessage(message: any): TetrisMessage {
   if (
@@ -120,6 +126,15 @@ export function parseMessage(message: any): TetrisMessage {
       return {
         type: "lines",
         lines: message.lines
+      }
+    }
+  }
+
+  if (message.type === "attack") {
+    if ("size" in message) {
+      return {
+        type: "attack",
+        size: message.size
       }
     }
   }
