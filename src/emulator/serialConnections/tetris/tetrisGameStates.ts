@@ -46,6 +46,7 @@ interface PrimaryInGame {
 
 interface PrimaryRoundEndScreen {
   name: "primary-round-end-screen"
+  opponentState?: "won" | "lost"
   stage: "waiting" | "responding"
 }
 

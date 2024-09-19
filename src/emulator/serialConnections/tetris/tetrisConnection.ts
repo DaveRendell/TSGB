@@ -215,7 +215,16 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         console.log("Next stage?")
         return
       }
+      if (byte === 0x02) {
+        this.gameState.state.opponentState = undefined
+      }
+      if (this.gameState.state.opponentState) {
+        console.log("Pushing", valueDisplay(this.gameState.state.opponentState === "won" ? 0x77 : 0xaa))
+        respond(this.gameState.state.opponentState === "won" ? 0x77 : 0xaa)
+        return
+      }
       respond(0x34)
+      return
     }
 
     console.log(`[TETRIS DEBUG] Uncaught byte ${valueDisplay(byte)} (state: ${this.gameState.state.name})`)
@@ -311,6 +320,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.gameState.state = {
             name: "primary-round-end-screen",
             stage: "waiting",
+            opponentState: message.outcome,
           }
           return
         }
@@ -533,10 +543,14 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.clockTimer += CLOCKS_500_MS
           return
         }
-        if (this.gameState.state.opponentState) {
+        if (this.gameState.state.stage === "waiting") {
           const currentState = this.gameState.state
           this.serialRegisters.pushFromExternal(
-            this.gameState.state.opponentState === "won" ? 0x77 : 0xaa,
+            this.gameState.state.opponentState === "won"
+              ? 0x77 :
+              this.gameState.state.opponentState === "lost"
+                ? 0xaa
+                : 0x00,
             (response) => {
               console.log("RESP", valueDisplay(response))
               if (response === 0x34) {
