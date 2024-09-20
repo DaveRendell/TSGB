@@ -174,7 +174,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.sendMessage({ type: "round-end", outcome: "won" })
           respond(this.gameState.state.opponentLines)
           this.gameState.state = {
-            name: "primary-round-end-screen",
+            name: "primary-round-ending",
             stage: "waiting",
           }
           return
@@ -184,7 +184,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           this.sendMessage({ type: "round-end", outcome: "lost" })
           respond(this.gameState.state.opponentLines)
           this.gameState.state = {
-            name: "primary-round-end-screen",
+            name: "primary-round-ending",
             stage: "waiting",
           }
           return
@@ -209,10 +209,9 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
       }
     }
 
-    if (this.gameState.state.name === "primary-round-end-screen") {
-      console.log("RECV", valueDisplay(byte))
+    if (this.gameState.state.name === "primary-round-ending") {
       if (byte === 0x43) {
-        console.log("Next stage?")
+        this.gameState.state = { name: "primary-round-end-screen", stage: "waiting" }
         return
       }
       if (byte === 0x02) {
@@ -225,6 +224,22 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
       }
       respond(0x34)
       return
+    }
+
+    if (this.gameState.state.name === "primary-round-end-screen") {
+      if (byte === 0x60) {
+        respond(0x27)
+        return
+      }
+
+      if (byte === 0x79) {
+        this.gameState.state = {
+          name: "primary-data-handshake",
+          started: false
+        }
+        return
+      }
+
     }
 
     console.log(`[TETRIS DEBUG] Uncaught byte ${valueDisplay(byte)} (state: ${this.gameState.state.name})`)
@@ -318,12 +333,13 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         }
         if (message.type === "round-end") {
           this.gameState.state = {
-            name: "primary-round-end-screen",
+            name: "primary-round-ending",
             stage: "waiting",
             opponentState: message.outcome,
           }
           return
         }
+        break
 
       case "secondary-in-game":
         if (message.type === "pause") {
@@ -340,7 +356,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         }
         if (message.type === "round-end") {
           this.gameState.state = {
-            name: "secondary-round-end-screen",
+            name: "secondary-round-ending",
             opponentState: message.outcome,
             stage: "waiting",
           }
@@ -348,6 +364,25 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
             message.outcome === "won" ? 0x77 : 0xaa
           )
           this.clockTimer = CLOCKS_5_MS
+          return
+        }
+        break
+        
+
+      case "secondary-round-end-screen":
+        if (message.type === "next-round") {
+          this.gameState.state.stage = "byte-1"
+          this.serialRegisters.pushFromExternal(0x60)
+          this.clockTimer = CLOCKS_30_MS
+          return
+        }
+
+        if (message.type === "round-data") {
+          
+          this.serialRegisters.pushFromExternal(0x60)
+          this.gameState.state.stage = "byte-1"
+          this.clockTimer = CLOCKS_30_MS
+          
           return
         }
     }
@@ -471,6 +506,10 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         if (this.gameState.state.paused) {
           this.serialRegisters.pushFromExternal(PAUSE_BYTE)
         } else {
+          if (this.serialRegisters.unreadSerialData) {
+            this.clockTimer += CLOCKS_5_MS
+            return
+          }
           const self = this
           const currentState = this.gameState.state
 
@@ -480,7 +519,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
             if (response === 0x77) { // Won round (got 30 lines)
               self.sendMessage({ type: "round-end", outcome: "won" })
               self.gameState.state = {
-                name: "secondary-round-end-screen",
+                name: "secondary-round-ending",
                 stage: "waiting",
               }
               return
@@ -489,7 +528,7 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
             if (response === 0xaa) { // Lost round
               self.sendMessage({ type: "round-end", outcome: "lost" })
               self.gameState.state = {
-                name: "secondary-round-end-screen",
+                name: "secondary-round-ending",
                 stage: "waiting",
               }
               this.clockTimer = CLOCKS_5_MS
@@ -531,10 +570,15 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
         this.clockTimer += CLOCKS_5_MS
       }
 
-      if (this.gameState.state.name === "secondary-round-end-screen") {
+      if (this.gameState.state.name === "secondary-round-ending") {
         if (this.gameState.state.stage === "terminating") {
           this.serialRegisters.pushFromExternal(0x43)
-          console.log("Next state?")
+          this.gameState.state = {
+            name: "secondary-round-end-screen",
+            stage: "waiting",
+            pieceData: [],
+            lineData: []
+          }
           return
         }
         if (this.gameState.state.stage === "responding") {
@@ -560,6 +604,49 @@ export default class TetrisConnection extends OnlineConnection<TetrisMessage> {
           )
           this.clockTimer += CLOCKS_5_MS
           return
+        }
+      }
+
+      if (this.gameState.state.name === "secondary-round-end-screen") {
+        if (this.gameState.state.stage === "byte-1") {
+          this.serialRegisters.pushFromExternal(0x79)
+          this.gameState.state.stage = "byte-2"
+          this.clockTimer += CLOCKS_30_MS
+          return
+        }
+
+        if (this.gameState.state.stage === "byte-2") {
+          this.gameState.state = {
+            name: "secondary-negotiation-handshake",
+            primaryHandshakeByte: NEGOTIATION_REQUEST_BYTE,
+            secondaryHandshakeByte: NEGOTIATION_RESPONSE_BYTE,
+            nextStateClockStart: CLOCKS_5_MS,
+            nextState: {
+              name: "secondary-receiving-data",
+              data: this.gameState.state.lineData,
+              nextStateClockStart: CLOCKS_5_MS,
+              nextState: {
+                name: "secondary-negotiation-handshake",
+                primaryHandshakeByte: NEGOTIATION_REQUEST_BYTE,
+                secondaryHandshakeByte: NEGOTIATION_RESPONSE_BYTE,
+                nextStateClockStart: CLOCKS_5_MS,
+                nextState: {
+                  name: "secondary-receiving-data",
+                  data: [...this.gameState.state.pieceData, ...ROUND_START_MAGIC_BYTES],
+                  nextStateClockStart: CLOCKS_500_MS,
+                  nextState: {
+                    name: "secondary-in-game",
+                    paused: false,
+                    linesBuffer: 0,
+                    lines: 0,
+                    opponentLines: 0,
+                    attackLines: 0,
+                  }
+                }
+              }
+            }
+          }
+          this.clockTimer = CLOCKS_30_MS
         }
       }
     }

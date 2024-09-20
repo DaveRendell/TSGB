@@ -51,6 +51,10 @@ interface RoundEndMessage {
   outcome: "won" | "lost"
 }
 
+interface NextRoundMessage {
+  type: "next-round"
+}
+
 export type TetrisMessage =
   NegotiationMessage
   | MusicSelectionUpdateMessage
@@ -61,6 +65,7 @@ export type TetrisMessage =
   | LinesMessage
   | AttackMessage
   | RoundEndMessage
+  | NextRoundMessage
 
 export function parseMessage(message: any): TetrisMessage {
   if (
@@ -154,6 +159,10 @@ export function parseMessage(message: any): TetrisMessage {
       type: "round-end",
       outcome: message.outcome
     }
+  }
+
+  if (message.type === "next-round") {
+    return { type: "next-round" }
   }
 
   throw new Error("Unknown message type")
