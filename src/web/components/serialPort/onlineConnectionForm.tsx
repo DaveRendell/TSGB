@@ -1,15 +1,19 @@
 import * as React from "react"
 
 import OnlineConnection from "../../../emulator/serialConnections/onlineConnection";
-import { TetrisMessage } from "../../../emulator/serialConnections/tetris/tetrisMessages";
+import GameState from "../../../emulator/serialConnections/gameState";
+import useAnimationFrame from "../../hooks/useAnimationFrame";
 
 interface Props {
-  serialConnection: OnlineConnection<TetrisMessage>
+  serialConnection: OnlineConnection<any, GameState<any>>
 }
 
 export default function OnlineConnectionForm({ serialConnection }: Props) {
   const [connectionId, setConnectionId] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(serialConnection.state.name === "connected")
+  const [stateName, setStateName] = React.useState(serialConnection.gameState.name)
+  const [subState, setSubState] = React.useState(JSON.stringify(serialConnection.gameState.state))
+
 
   React.useEffect(() => {
     serialConnection.connectedCallback = () => {
@@ -17,8 +21,20 @@ export default function OnlineConnectionForm({ serialConnection }: Props) {
     }
   }, [serialConnection])
 
+  useAnimationFrame(() => {
+    setStateName(serialConnection.gameState.name)
+    setSubState(JSON.stringify(serialConnection.gameState.state))
+  }, [serialConnection])
+
   if (isConnected) {
-    return <>Connected!</>
+    return <div>
+      <p>Connected</p>
+      <p>Current state: {stateName}</p>
+      <p>Substate:</p>
+      <code>
+        {subState}
+      </code>
+    </div>
   }
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {

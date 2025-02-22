@@ -2,6 +2,7 @@ import Peer, { DataConnection } from "peerjs"
 import StateMachine from "../../helpers/stateMachine"
 import { SerialConnection } from "./serialConnection"
 import SerialRegisters from "../memory/registers/serialRegisters"
+import GameState from "./gameState"
 
 
 interface DisconnectedState {
@@ -15,14 +16,23 @@ interface ConnectedState {
 
 type ConnectionState = DisconnectedState | ConnectedState
 
-export default class OnlineConnection<MessageType> extends StateMachine<ConnectionState> implements SerialConnection {
+export default class OnlineConnection<
+  MessageType,
+  GameStateType extends GameState<MessageType>
+> extends StateMachine<ConnectionState> implements SerialConnection {
   isConnected: boolean = false;
   peer: Peer
   serialRegisters: SerialRegisters
+  gameState: GameStateType
+  clockTimer = 0
   connectedCallback: () => void = () => {}
   parseMessage: (raw: any) => MessageType
 
-  constructor(serialRegisters: SerialRegisters, parseMessage: (raw: any) => MessageType) {
+  constructor(
+    serialRegisters: SerialRegisters,
+    initialGameStateFactory: (self: OnlineConnection<MessageType, GameStateType>) => GameStateType,
+    parseMessage: (raw: any) => MessageType
+  ) {
     super(
       { name: "disconnected" },
       { logPrefix: "ONLINE", logStateChanges: true }
@@ -36,14 +46,20 @@ export default class OnlineConnection<MessageType> extends StateMachine<Connecti
       this.state = { name: "connected", connection }
       this.connectedCallback()
     })
+    this.gameState = initialGameStateFactory(this)
+    this.gameState.onEntry()
   }
 
-  onReceiveByteFromConsole(_byte: number, respond: (byte: number) => void): void {
-    throw new Error("Method not implemented.");
+  onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
+    this.gameState.onReceiveByteFromConsole(byte, respond)
   }
 
   updateClock(cycles: number): void {
-    throw new Error("Method not implemented.");
+    if (this.clockTimer <= 0) { return }
+    this.clockTimer -= cycles
+    if (this.clockTimer <= 0) {
+      this.gameState.onClockTimeout()
+    }
   }
 
   sendMessage(message: MessageType): void {
@@ -55,7 +71,17 @@ export default class OnlineConnection<MessageType> extends StateMachine<Connecti
   }
 
   receiveMessage(message: MessageType): void{
-    throw new Error("Method not implemented.");
+    console.log("[ONLINE] Receiving message", message)
+    this.gameState.onReceiveMessage(message)
+  }
+
+  setGameState(newState: GameStateType) {
+    this.gameState = newState
+    this.gameState.onEntry()
+  }
+
+  setClockMs(milliseconds: number) {
+    this.clockTimer = milliseconds * 4194304 / 1000
   }
 
   async setupConnection(connectionId: string): Promise<void> {
@@ -65,7 +91,9 @@ export default class OnlineConnection<MessageType> extends StateMachine<Connecti
       connection.on("open", () => {
         this.state = { name: "connected", connection }
         const self = this
-        connection.on("data", (data) => self.receiveMessage(this.parseMessage(data)))
+        connection.on("data", (data) => {
+          self.receiveMessage(this.parseMessage(data))
+        })
         resolve()
       })
       connection.on("error", reject)
