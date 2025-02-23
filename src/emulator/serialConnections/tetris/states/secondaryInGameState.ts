@@ -9,6 +9,7 @@ interface State {
   lines: number
   opponentLines: number
   attackLines: number
+  attackPushCounter: number
 }
 const PAUSE_BYTE = 0x94
 const WON_ROUND_BYTE = 0x77
@@ -26,6 +27,7 @@ export default class SecondaryInGameState extends TetrisState {
       lines: 0,
       opponentLines: 0,
       attackLines: 0,
+      attackPushCounter: 0,
     }
   }
 
@@ -36,13 +38,14 @@ export default class SecondaryInGameState extends TetrisState {
   override onReceiveMessage(message: TetrisMessage): void {
     switch (message.type) {
       case "pause":
-        this.state.paused = true
+        this.state.paused = message.paused
         break
       case "lines":
         this.state.opponentLines = message.lines
         break
       case "attack":
         this.state.attackLines = message.size
+        this.state.attackPushCounter = 0
         break
       case "round-end":
         this.connection.setGameState(
@@ -102,7 +105,10 @@ export default class SecondaryInGameState extends TetrisState {
         }
 
         if (response === 0xFF) {
-          this.state.attackLines = 0
+          if (this.state.attackLines > 0 && this.state.attackPushCounter > 4) {
+            console.log("Clearing attack lines")
+            this.state.attackLines = 0
+          }
           if (this.state.linesBuffer !== this.state.lines) {
             this.state.lines = this.state.linesBuffer
             this.connection.sendMessage({
@@ -115,6 +121,8 @@ export default class SecondaryInGameState extends TetrisState {
       }
 
       if (this.state.attackLines > 0) {
+        console.log("Pushing attack lines", this.state.attackLines)
+        this.state.attackPushCounter++
         this.connection.serialRegisters.pushFromExternal(
           0x80 + this.state.attackLines,
           handleResponse

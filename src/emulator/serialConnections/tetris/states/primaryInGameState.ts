@@ -44,6 +44,9 @@ export default class PrimaryInGameState extends TetrisState {
         })
         respond(UNPAUSE_RESPONSE_BYTE)
         return
+      } else if (byte === PAUSE_BYTE) {
+        respond(0x00)
+        return
       }
     } else {
       if (byte === PAUSE_BYTE) {
