@@ -2,10 +2,12 @@ import TetrisConnection from "../tetrisConnection"
 import { TetrisMessage } from "../tetrisMessages"
 import TetrisState from "../tetrisState"
 import SecondaryDataTransferState from "./secondaryDataTransferState"
+import SecondaryDifficultySelectionState from "./secondaryDifficultySelectionState"
 
 interface State {
   waiting: boolean,
   firstByteSent: boolean,
+  roundOver: boolean,
   lineData: number[],
   pieceData: number[],
 }
@@ -22,6 +24,7 @@ export default class SecondaryRoundEndScreenState extends TetrisState {
     this.state = {
       waiting: true,
       firstByteSent: false,
+      roundOver: false,
       lineData: [],
       pieceData: [],
     }
@@ -36,6 +39,13 @@ export default class SecondaryRoundEndScreenState extends TetrisState {
       this.state.waiting = false
       this.state.lineData = message.lineData
       this.state.pieceData = message.pieceData
+      this.connection.setClockMs(5)
+      return
+    }
+
+    if (message.type === "next-round") {
+      this.state.waiting = false
+      this.state.roundOver = true
       this.connection.setClockMs(5)
       return
     }
@@ -59,6 +69,12 @@ export default class SecondaryRoundEndScreenState extends TetrisState {
         NEXT_ROUND,
         (response) => {
           if (response === NEXT_ROUND_ACKNOLEDGEMENT) {
+            if (this.state.roundOver) {
+              this.connection.setGameState(
+                new SecondaryDifficultySelectionState(this.connection)
+              )
+              return
+            }
             this.connection.setGameState(
               new SecondaryDataTransferState(
                 this.connection, this.state.pieceData, this.state.lineData, false

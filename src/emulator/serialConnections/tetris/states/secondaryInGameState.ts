@@ -48,6 +48,11 @@ export default class SecondaryInGameState extends TetrisState {
         this.connection.setGameState(
           new SecondaryRoundEndingState(this.connection, message.outcome)
         )
+        if (message.outcome === "won") {
+          this.connection.opponentRoundsWon++
+        } else {
+          this.connection.roundsWon++
+        }
         this.connection.serialRegisters.pushFromExternal(
           message.outcome === "won" ? WON_ROUND_BYTE : LOST_ROUND_BYTE
         )
@@ -71,6 +76,7 @@ export default class SecondaryInGameState extends TetrisState {
           this.connection.sendMessage({
             type: "round-end", outcome: "won"
           })
+          this.connection.roundsWon++
           this.connection.setGameState(
             new SecondaryRoundEndingState(this.connection)
           )
@@ -81,6 +87,7 @@ export default class SecondaryInGameState extends TetrisState {
           this.connection.sendMessage({
             type: "round-end", outcome: "lost"
           })
+          this.connection.opponentRoundsWon++
           this.connection.setGameState(
             new SecondaryRoundEndingState(this.connection)
           )

@@ -60,6 +60,7 @@ export default class PrimaryInGameState extends TetrisState {
       this.connection.sendMessage({
         type: "round-end", outcome: "won"
       })
+      this.connection.roundsWon++
       respond(this.state.opponentLines)
       this.connection.setGameState(
         new PrimaryRoundEndingState(this.connection)
@@ -71,6 +72,7 @@ export default class PrimaryInGameState extends TetrisState {
       this.connection.sendMessage({
         type: "round-end", outcome: "lost"
       })
+      this.connection.opponentRoundsWon++
       respond(this.state.opponentLines)
       this.connection.setGameState(
         new PrimaryRoundEndingState(this.connection)
@@ -110,6 +112,11 @@ export default class PrimaryInGameState extends TetrisState {
         this.connection.setGameState(
           new PrimaryRoundEndingState(this.connection, message.outcome)
         )
+        if (message.outcome === "won") {
+          this.connection.opponentRoundsWon++
+        } else {
+          this.connection.roundsWon++
+        }
         break
     }
   }

@@ -2,6 +2,7 @@ import TetrisConnection from "../tetrisConnection"
 import { TetrisMessage } from "../tetrisMessages"
 import TetrisState from "../tetrisState"
 import PrimaryDataHandshakeState from "./primaryDataHandshakeState"
+import PrimaryDifficultySelectionState from "./primaryDifficultySelectionState"
 
 interface State {
 }
@@ -34,6 +35,13 @@ export default class PrimaryRoundEndScreenState extends TetrisState {
       return
     }
     if (byte === NEXT_ROUND) {
+      if (this.connection.gameOver()) {
+        this.connection.setGameState(
+          new PrimaryDifficultySelectionState(this.connection)
+        )
+        this.connection.sendMessage({ type: "next-round" })
+        return
+      }
       this.connection.setGameState(
         new PrimaryDataHandshakeState(this.connection)
       )
