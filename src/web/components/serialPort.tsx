@@ -8,6 +8,7 @@ import PrinterOutput from "./serialPort/printerOutput"
 import { MonGen1MirrorConnection } from "../../emulator/serialConnections/monGen1MirrorConnection"
 import TetrisConnection from "../../emulator/serialConnections/tetris/tetrisConnection"
 import OnlineConnectionForm from "./serialPort/onlineConnectionForm"
+import Gen1Connection from "../../emulator/serialConnections/gen1Link/gen1Connection"
 
 interface Props {
   emulator: Emulator
@@ -21,6 +22,7 @@ function createConnection(connectionType: ConnectionType, emulator: Emulator) {
     case "printer": return new PrinterConnection()
     case "gen-1-mirror": return new MonGen1MirrorConnection(emulator)
     case "tetris": return new TetrisConnection(emulator.memory.registers.serialRegisters)
+    case "gen1": return new Gen1Connection(emulator.memory.registers.serialRegisters)
   }
 }
 export default function SerialPort({ emulator }: Props) {
@@ -70,6 +72,14 @@ export default function SerialPort({ emulator }: Props) {
       />
       <label htmlFor="tetris">Tetris online multiplayer link</label>
       <br/>
+      <input
+        type="radio"
+        id="gen1"
+        checked={linkType == "gen1"}
+        onChange={handleChange("gen1")}
+      />
+      <label htmlFor="gen1">Pokemon Generation 1 online multiplayer link</label>
+      <br/>
 
       <br/>
 
@@ -81,6 +91,12 @@ export default function SerialPort({ emulator }: Props) {
 
       {
         emulator.serialPort.type === "tetris" && <OnlineConnectionForm
+          serialConnection={emulator.serialPort.connection}
+        />
+      }
+
+      {
+        emulator.serialPort.type === "gen1" && <OnlineConnectionForm
           serialConnection={emulator.serialPort.connection}
         />
       }

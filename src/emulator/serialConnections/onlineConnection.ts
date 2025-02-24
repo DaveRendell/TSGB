@@ -25,6 +25,7 @@ export default class OnlineConnection<
   serialRegisters: SerialRegisters
   gameState: GameStateType
   clockTimer = 0
+  isHost: boolean = false
   connectedCallback: () => void = () => {}
   parseMessage: (raw: any) => MessageType
 
@@ -44,11 +45,15 @@ export default class OnlineConnection<
       const self = this
       connection.on("data", (data) => self.receiveMessage(parseMessage(data)))
       this.state = { name: "connected", connection }
+      this.isHost = true
       this.connectedCallback()
+      this.onConnection()
     })
     this.gameState = initialGameStateFactory(this)
     this.gameState.onEntry()
   }
+
+  onConnection(): void {}
 
   onReceiveByteFromConsole(byte: number, respond: (byte: number) => void): void {
     this.gameState.onReceiveByteFromConsole(byte, respond)
@@ -85,6 +90,7 @@ export default class OnlineConnection<
   }
 
   async setupConnection(connectionId: string): Promise<void> {
+    this.isHost = false
     const connection = this.peer.connect(connectionId)
 
     return new Promise((resolve, reject) => {
