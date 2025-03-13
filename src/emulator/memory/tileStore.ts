@@ -13,20 +13,27 @@ export class TileStore {
   }
 
   writeByte(offsetAddress: number, value: number): void {
-    const tileNumber = Math.floor(offsetAddress / (8 * this.bitDepth))
-    const rowNumber = Math.floor((offsetAddress % (8 * this.bitDepth)) / this.bitDepth)
-    // Stores whether we're adjusting the first or second byte that defines a row.
-    const rowByteIndex = offsetAddress & (this.bitDepth - 1)
+    const bytesPerTile = 8 * this.bitDepth
+    const tileNumber = Math.floor(offsetAddress / bytesPerTile)
+
+    // Bit planes grouped in pairs
+    const bitPlaneId = (offsetAddress % bytesPerTile) >> 4
+
+    const rowNumber = ((offsetAddress % bytesPerTile) - (bitPlaneId << 4)) >> 1
+
+    const bitToSet = (bitPlaneId << 1) + (offsetAddress & 1)
 
     for (let i = 0; i < 8; i++) {
-      const bit = (value & 1) << rowByteIndex
+      const setMask = 1 << bitToSet
+      const unsetMask = ~setMask
+      if (value & 1) {
+        this.tiles[tileNumber][rowNumber][7 - i] |= setMask
+        this.flippedTiles[tileNumber][rowNumber][i] |= setMask
+      } else {
+        this.tiles[tileNumber][rowNumber][7 - i] &= unsetMask
+        this.flippedTiles[tileNumber][rowNumber][i] &= unsetMask
+      }
       value >>= 1
-
-      this.tiles[tileNumber][rowNumber][7 - i] &= 1 << ((this.bitDepth - 1) - rowByteIndex)
-      this.tiles[tileNumber][rowNumber][7 - i] |= bit
-
-      this.flippedTiles[tileNumber][rowNumber][i] &= 1 << ((this.bitDepth - 1) - rowByteIndex)
-      this.flippedTiles[tileNumber][rowNumber][i] |= bit
     }
   }
 

@@ -7,12 +7,17 @@ import { addressDisplay } from "../../helpers/displayHexNumbers"
 
 interface Props {
   game: StoredGame
-  playGame: (game: StoredGame, mode: EmulatorMode | undefined, colouriseDmg: boolean) => () => Promise<void>
+  playGame: (
+    game: StoredGame, mode: EmulatorMode | undefined,
+    colouriseDmg: boolean,
+    debug: boolean
+  ) => () => Promise<void>
   closeOptions: () => void
 }
 
 export default function GameOptions({ game, playGame, closeOptions }: Props) {
   const [name, setName] = React.useState(game.title)
+  const [debug, setDebug] = React.useState(false)
 
   const downloadSave = () => {
     if (game.save) {
@@ -75,28 +80,35 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <div>
         {
           !colourSupport && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false)}>Play</button>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, true)}>Play (colourised)</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false, debug)}>Play</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, true, debug)}>Play (colourised)</button>
           </>
         }
         {
           (colourSupport && !colourExclusive) && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false)}>Play in Colour mode</button>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false)}>Play in Monochrome mode</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false, debug)}>Play in Colour mode</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false, debug)}>Play in Monochrome mode</button>
           </>
         }
         {
           (colourSupport && colourExclusive) && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false)}>Play</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false, debug)}>Play</button>
           </>
         }
         {
           <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.SGB, false)}>Play (Super Mode)</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.SGB, false, debug)}>Play (Super Mode)</button>
           </>
         }
         <button className="chunky-button" onClick={closeOptions}>Back</button>
         <br />
+        <label><input
+          type="checkbox"
+          checked={debug}
+          onChange={(e) => setDebug(e.target.checked)}
+        /> Start in debug mode</label>
+        
+        {debug}
       </div>
       <br />
       <form onSubmit={updateName}>

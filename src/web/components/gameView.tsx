@@ -24,10 +24,6 @@ export default function GameView({ emulator, unload }: Props) {
   const [showMenu, setShowMenu] = React.useState(false)
 
   React.useEffect(() => {
-    emulator.cpu.run()
-  }, [])
-
-  React.useEffect(() => {
     const interval = setInterval(() => setToggle((t) => !t), 1000)
     return () => {
       clearInterval(interval)

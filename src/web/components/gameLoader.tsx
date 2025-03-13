@@ -1,10 +1,7 @@
 import * as React from "react"
-import Memory from "../../emulator/memory/memoryMap"
-import useLocalFile from "../hooks/useLocalFile"
-import { Cartridge } from "../../emulator/memory/cartridges/cartridge"
 import { createCartridge } from "../../emulator/memory/cartridges/createCartridge"
 import { StoredGame } from "../indexedDb/storedGame"
-import { getGameList, addGame, deleteGame, updateGame } from "../indexedDb/gameStore"
+import { getGameList, addGame } from "../indexedDb/gameStore"
 import LibraryCard from "./libraryCard"
 import GameOptions from "./gameOptions"
 import { Emulator, EmulatorMode } from "../../emulator/emulator"
@@ -32,7 +29,8 @@ export default function GameLoader({ setEmulator }: Props) {
   const loadGame = (
     game: StoredGame,
     mode: EmulatorMode | undefined = undefined,
-    colouriseDmg = false
+    colouriseDmg = false,
+    debug: boolean = false,
   ) => async () => {
     const cartridge = await createCartridge(game)
     mode ??= cartridge.colourSupport
@@ -41,13 +39,17 @@ export default function GameLoader({ setEmulator }: Props) {
     const debugMap: DebugMap = game.mapFile
       ? await parseMap(game.mapFile)
       : undefined
-    setEmulator(new Emulator(
+    const emulator = new Emulator(
       cartridge,
       mode,
       colouriseDmg,
       debugMap,
-      game
-    ))
+      game,
+    )
+    if (!debug) {
+      emulator.cpu.run()
+    }
+    setEmulator(emulator)
   }
 
   const closeOptions = () => setOptionsFocusGame(undefined)
