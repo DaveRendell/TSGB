@@ -7,6 +7,7 @@ interface Props {
 
 export function SuperTilesDebug({ superEmulator }: Props) {
   const canvas = React.useRef<HTMLCanvasElement>(null)
+  const [highlightedTileId, setHighlightedTileId] = React.useState<number | null>(null)
   const requestRef = React.useRef<number>()
 
   const fillCanvas = () => {
@@ -23,7 +24,7 @@ export function SuperTilesDebug({ superEmulator }: Props) {
             for (let col = 0; col < 8; col++) {
               const x = (tileCol << 3) + col
               const pixelId = (y << 7) + x
-              const colourValue = rowData[col] << 4
+              const colourValue = 15 - rowData[col] << 4
               imageData.data[(pixelId << 2) + 0] = colourValue
               imageData.data[(pixelId << 2) + 1] = colourValue
               imageData.data[(pixelId << 2) + 2] = colourValue
@@ -34,19 +35,46 @@ export function SuperTilesDebug({ superEmulator }: Props) {
       }
       
       context.putImageData(imageData, 0, 0)
+      if (highlightedTileId !== null) {
+        context.beginPath()
+        context.lineWidth = 1
+        context.strokeStyle = "blue"
+        context.rect(
+          ((highlightedTileId % 16) << 3) - 1,
+          (Math.floor(highlightedTileId / 16) << 3) - 1,
+          10,
+          10
+        )
+        context.stroke()
+      }
     }
     requestRef.current = requestAnimationFrame(fillCanvas)
   }
 
+  const onMouseOver = (e: React.MouseEvent) => {
+      const rect = canvas.current.getBoundingClientRect()
+      const tileRow = (e.clientY - rect.top) >> 4
+      const tileCol = (e.clientX - rect.left) >> 4
+      setHighlightedTileId((tileRow << 4) + tileCol)
+    }
+
   React.useEffect(() => {
     fillCanvas()
     return () => cancelAnimationFrame(requestRef.current)
-  }, [canvas.current])
+  }, [canvas.current, highlightedTileId])
 
-  return <canvas
-    className="super-tileset-debug-canvas"
-    ref={canvas}
-    width="128"
-    height="128"
-  />
+  return <>
+    <canvas
+      className="super-tileset-debug-canvas"
+      ref={canvas}
+      width="128"
+      height="128"
+      onMouseMove={onMouseOver}
+      onMouseLeave={() => setHighlightedTileId(null)}
+    />
+    <br/>
+    {highlightedTileId !== null && <div>
+      Tile ID: <code>{highlightedTileId.toString(16).padStart(2, "0")} ({highlightedTileId})</code>
+    </div>}
+  </>
 }
