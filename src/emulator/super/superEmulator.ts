@@ -12,12 +12,21 @@ import maskEnable from "./commands/maskEnable"
 import palettePair from "./commands/palettePair"
 import paletteSet from "./commands/paletteSet"
 import paletteTransfer from "./commands/paletteTransfer"
+import tilemapTransfer from "./commands/tilemapTransfer"
 import SuperPalette from "./superPalette"
 
 type VramTransferType =
   "palette"
   | "attribute"
   | "character"
+  | "tilemap"
+
+interface TileMapEntry {
+  tileId: number,
+  paletteId: number,
+  flipX: boolean,
+  flipY: boolean,
+}
 
 export default class SuperEmulator {
   scanlineRenderer: SgbScanlineRenderer
@@ -77,6 +86,9 @@ export default class SuperEmulator {
 
   // Border data
   borderTiles = new TileStore(256, 4)
+  tilemap: TileMapEntry[] = new Array(32 * 28).map(_ => ({
+    tileId: 0, paletteId: 0, flipX: false, flipY: false,
+  }))
 
   commandLog: string[] = []
 
@@ -148,6 +160,9 @@ export default class SuperEmulator {
       case 0x13: // CHR_TRN
         return characterTransfer(this, data)
 
+      case 0x14: // PCT_TRN
+        return tilemapTransfer(this)
+
       case 0x15: // ATTR_TRN
         return attributeTransfer(this)
 
@@ -195,6 +210,18 @@ export default class SuperEmulator {
         let byteCursor = this.tileDestination
         bytes.slice(0, 0x1000).forEach(byte => this.borderTiles.writeByte(byteCursor++, byte))
         console.log("[SUPER] Border tile data transfer complete")
+        break
+
+      case "tilemap":
+        for (let i = 0; i < 32 * 28; i++) {
+          const tileId = data[2 * i]
+          const attributeByte = data[2 * i + 1]
+          const paletteId = attributeByte & 3
+          const flipX = (attributeByte & 0x40) > 0
+          const flipY = (attributeByte & 0x80) > 0
+          this.tilemap[i] = { tileId, paletteId, flipX, flipY }
+        }
+        // TODO 3 border palettes 800-85F
         break
     }
   }
