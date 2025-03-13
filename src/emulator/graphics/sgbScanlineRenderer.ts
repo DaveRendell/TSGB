@@ -26,7 +26,13 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
 
   maskMode: MaskMode = "UNMASK"
 
-  constructor(registers: IoRegisters, vram: VRAM, oam: OAM, superEmulator: SuperEmulator) {
+  borderEnabled: boolean
+  borderRedrawNeeded = true
+
+  screenX: number
+  screenY: number
+
+  constructor(registers: IoRegisters, vram: VRAM, oam: OAM, superEmulator: SuperEmulator, borderEnabled: boolean) {
     super(registers, vram, oam)
     this.mode = EmulatorMode.DMG
     this.superEmulator = superEmulator
@@ -34,6 +40,9 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
 
     this.backgroundPalette = registers.backgroundPallete
     this.objectPalettes = [registers.objectPallete0, registers.objectPallete1]
+    this.borderEnabled = borderEnabled
+    this.screenX = borderEnabled ? 6 * 8 : 0
+    this.screenY = borderEnabled ? 5 * 8 : 0
   }
 
   getBackgroundTileRow = (offset: number, backgroundY: number): number[] => {
@@ -104,15 +113,20 @@ export default class SgbScanlineRenderer extends BaseScanlineRenderer {
     if (this.canvas && this.lcdControl.enabled) {
       const screenContext = this.canvas.getContext("2d")!
       if (this.maskMode === "UNMASK") {
-        screenContext.drawImage(this.buffer, 0, 0)
+        screenContext.drawImage(this.buffer, this.screenX, this.screenY)
       }
       if (this.maskMode === "BLACK") {
         screenContext.fillStyle = "black"
-        screenContext.fillRect(0, 0, 160, 144)
+        screenContext.fillRect(this.screenX, this.screenY, 160, 144)
       }
       if (this.maskMode === "BLANK") {
         screenContext.fillStyle = "white" // actually colour 0?
-        screenContext.fillRect(0, 0, 160, 144)
+        screenContext.fillRect(this.screenX, this.screenY, 160, 144)
+      }
+
+      if (this.borderEnabled && this.borderRedrawNeeded) {
+        this.superEmulator.drawBorder(this.canvas)
+        this.borderRedrawNeeded = false
       }
     }
 

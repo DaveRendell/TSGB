@@ -34,12 +34,13 @@ export class Emulator {
     mode: EmulatorMode,
     colouriseDmg: boolean = false,
     debugMap: DebugMap | undefined = undefined,
-    storedGame: StoredGame
+    storedGame: StoredGame,
+    borderEnabled: boolean = false
   ) {
     this.mode = mode
     this.serialPort = { type: "debug", connection: new DebugConnection() }
     if (this.mode === EmulatorMode.SGB) {
-      this.superEmulator = new SuperEmulator()
+      this.superEmulator = new SuperEmulator(borderEnabled)
     }
     this.memory = new Memory(cartridge, this.mode, this.serialPort, this.superEmulator)
     this.controller = new Controller(this.memory)

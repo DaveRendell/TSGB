@@ -34,11 +34,6 @@ body {
   vertical-align: middle;
 }
 
-.screen {
-  display: block;
-  margin: 0 auto;
-}
-
 .pixelated {
   image-rendering: pixelated;
 }
@@ -84,6 +79,14 @@ ul.tab-list li + li {
   display: block;
   width: 320px;
   height: 288px;
+  margin: 0 auto;
+}
+
+.screen-border {
+  display: block;
+  width: 512px;
+  height: 448px;
+  margin: 0 auto;
 }
 
 .console {
@@ -94,6 +97,18 @@ ul.tab-list li + li {
   border-radius: 0.5em 0.5em 3em 0.5em;
   box-shadow: 0 2px 1px #504c4c;
   touch-action: none;
+}
+
+.console-border {
+  background-color: #9e98a1;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0.5em;
+  border-radius: 0.5em 0.5em 0.5em 0.5em;
+  box-shadow: 0 2px 1px #504c4c;
+  touch-action: none;
+  margin-top: 1em;
+  min-height: 8em;
 }
 
 .bevel {

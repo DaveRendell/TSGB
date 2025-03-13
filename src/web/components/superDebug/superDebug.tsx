@@ -4,6 +4,7 @@ import SuperPalettes from "./superPalettes"
 import AttributeDebug from "./attributeDebug"
 import CommandLog from "./commandLog"
 import { SuperTilesDebug } from "./superTilesDebug"
+import BorderDebug from "./borderDebug"
 
 interface Props {
   emulator: Emulator
@@ -14,6 +15,7 @@ type SuperDebugTab =
   | "Palettes"
   | "Attributes"
   | "Border Tiles"
+  | "Border"
 
 export default function SuperDebug({ emulator }: Props) {
   const [tab, setTab] = React.useState<SuperDebugTab>("Command Log")
@@ -28,6 +30,8 @@ export default function SuperDebug({ emulator }: Props) {
         return <AttributeDebug superEmulator={emulator.superEmulator} />
       case "Border Tiles":
         return <SuperTilesDebug superEmulator={emulator.superEmulator} />
+      case "Border":
+        return <BorderDebug superEmulator={emulator.superEmulator} />
     }
   }
   
@@ -38,6 +42,7 @@ export default function SuperDebug({ emulator }: Props) {
       <option id="Palettes">Palettes</option>
       <option id="Attributes">Attributes</option>
       <option id="Border Tiles">Border Tiles</option>
+      <option id="Border">Border</option>
     </select>
     <br />
     { getTab() }

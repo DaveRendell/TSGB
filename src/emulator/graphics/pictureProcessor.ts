@@ -71,7 +71,7 @@ export default class PictureProcessor {
       )
     } else if (mode === EmulatorMode.SGB) {
       this.scanlineRenderer = new SgbScanlineRenderer(
-        this.memory.registers, this.memory.vram, this.memory.oam, superEmulator)
+        this.memory.registers, this.memory.vram, this.memory.oam, superEmulator, superEmulator.borderEnabled)
     }
   }
 

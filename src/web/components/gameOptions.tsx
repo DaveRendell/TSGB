@@ -10,7 +10,8 @@ interface Props {
   playGame: (
     game: StoredGame, mode: EmulatorMode | undefined,
     colouriseDmg: boolean,
-    debug: boolean
+    debug: boolean,
+    borderEnabled: boolean,
   ) => () => Promise<void>
   closeOptions: () => void
 }
@@ -80,24 +81,25 @@ export default function GameOptions({ game, playGame, closeOptions }: Props) {
       <div>
         {
           !colourSupport && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false, debug)}>Play</button>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, true, debug)}>Play (colourised)</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false, debug, false)}>Play</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, true, debug, false)}>Play (colourised)</button>
           </>
         }
         {
           (colourSupport && !colourExclusive) && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false, debug)}>Play in Colour mode</button>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false, debug)}>Play in Monochrome mode</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false, debug, false)}>Play in Colour mode</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.DMG, false, debug, false)}>Play in Monochrome mode</button>
           </>
         }
         {
           (colourSupport && colourExclusive) && <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false, debug)}>Play</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.CGB, false, debug, false)}>Play</button>
           </>
         }
         {
           <>
-            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.SGB, false, debug)}>Play (Super Mode)</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.SGB, false, debug, false)}>Play (Super Mode)</button>
+            <button className="chunky-button action-button" onClick={playGame(game, EmulatorMode.SGB, false, debug, true)}>Play (Super Mode with borders)</button>
           </>
         }
         <button className="chunky-button" onClick={closeOptions}>Back</button>

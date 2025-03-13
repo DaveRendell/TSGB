@@ -3,10 +3,11 @@ import CPU from "../../emulator/cpu/cpu"
 import PictureProcessor from "../../emulator/graphics/pictureProcessor"
 
 interface Props {
-  cpu: CPU
+  cpu: CPU,
+  borderEnabled: boolean,
 }
 
-export default function Display({ cpu }: Props) {
+export default function Display({ cpu, borderEnabled }: Props) {
   const canvas = React.useRef<HTMLCanvasElement>(null)
 
   React.useEffect(() => {
@@ -15,9 +16,11 @@ export default function Display({ cpu }: Props) {
     }
   }, [canvas])
 
+  const screenClass = borderEnabled ? "screen-border" : "screen"
+
   return (
     <section>
-      <canvas className="screen pixelated" width="160" height="144" ref={canvas} />
+      <canvas className={`${screenClass} pixelated`} width={borderEnabled ? 32 * 8 : 160} height={borderEnabled ? 28 * 8 : 144} ref={canvas} />
     </section>
   )
 }

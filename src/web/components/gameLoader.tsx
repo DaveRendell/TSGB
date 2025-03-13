@@ -31,6 +31,7 @@ export default function GameLoader({ setEmulator }: Props) {
     mode: EmulatorMode | undefined = undefined,
     colouriseDmg = false,
     debug: boolean = false,
+    borderEnabled: boolean = false,
   ) => async () => {
     const cartridge = await createCartridge(game)
     mode ??= cartridge.colourSupport
@@ -45,6 +46,7 @@ export default function GameLoader({ setEmulator }: Props) {
       colouriseDmg,
       debugMap,
       game,
+      borderEnabled
     )
     if (!debug) {
       emulator.cpu.run()

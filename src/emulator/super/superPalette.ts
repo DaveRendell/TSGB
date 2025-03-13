@@ -7,7 +7,7 @@ export default class SuperPalette {
   ]
 
   constructor(bytes: number[]) {
-    for (let colourId = 0; colourId < 4; colourId++) {
+    for (let colourId = 0; colourId < (bytes.length >> 1); colourId++) {
       const byte1 = bytes[(colourId << 1) + 0]
       const byte2 = bytes[(colourId << 1) + 1]
 

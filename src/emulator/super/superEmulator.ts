@@ -40,6 +40,8 @@ export default class SuperEmulator {
   vramTransferType: VramTransferType = "palette"
   tileDestination: 0 | 0x1000 = 0
 
+  borderEnabled: boolean
+
   // 512 Palettes in Super RAM
   storedPalettes: SuperPalette[] = [
     new SuperPalette([0xBF, 0x67, 0x5B, 0x26, 0xB5, 0x10, 0x66, 0x28]),
@@ -86,14 +88,17 @@ export default class SuperEmulator {
 
   // Border data
   borderTiles = new TileStore(256, 4)
-  tilemap: TileMapEntry[] = new Array(32 * 28).map(_ => ({
+  tilemap: TileMapEntry[] = new Array(32 * 28).fill(0).map(_ => ({
     tileId: 0, paletteId: 0, flipX: false, flipY: false,
   }))
+  borderPalettes: SuperPalette[] = [
+    new SuperPalette([0, 0]), new SuperPalette([0, 0]), new SuperPalette([0, 0])
+  ]
 
   commandLog: string[] = []
 
-  constructor() {
-
+  constructor(borderEnabled: boolean) {
+    this.borderEnabled = borderEnabled
   }
 
   receivePacket(packet: number[]): void {
@@ -214,14 +219,18 @@ export default class SuperEmulator {
 
       case "tilemap":
         for (let i = 0; i < 32 * 28; i++) {
-          const tileId = data[2 * i]
-          const attributeByte = data[2 * i + 1]
-          const paletteId = attributeByte & 3
+          const tileId = bytes[2 * i]
+          const attributeByte = bytes[2 * i + 1]
+          const paletteId = (attributeByte >> 2) & 3
           const flipX = (attributeByte & 0x40) > 0
           const flipY = (attributeByte & 0x80) > 0
           this.tilemap[i] = { tileId, paletteId, flipX, flipY }
         }
-        // TODO 3 border palettes 800-85F
+        for (let i = 0; i < 3; i++) {
+          this.borderPalettes[i] =
+            new SuperPalette(bytes.slice(0x800 + i * 32, 0x800 + (i + 1) * 32))
+        }
+        this.scanlineRenderer.borderRedrawNeeded = true
         break
     }
   }
@@ -229,6 +238,34 @@ export default class SuperEmulator {
   log(line: string, ...params: any[]) {
     this.commandLog.push(`${line} - ${JSON.stringify(params)}`)
     console.log("[SUPER] " + line, ...params)
+  }
+
+  drawBorder(canvas: HTMLCanvasElement): void {
+    const context = canvas.getContext("2d")!
+    const imageData = context.createImageData(32 * 8, 28 * 8)
+    for (let tileRow = 0; tileRow < 28; tileRow++) {
+      for (let tileCol = 0; tileCol < 32; tileCol++) {
+        const inGbScreen = (tileRow >= 5 && tileRow <= 22) && (tileCol >= 6 && tileCol <= 25)
+        console.log(inGbScreen)
+        const tileMapIndex = (tileRow << 5) + tileCol
+        const { tileId, paletteId, flipX, flipY } = this.tilemap[tileMapIndex]
+        for (let row = 0; row < 8; row++) {
+          const y = (tileRow << 3) + row
+          const rowData = this.borderTiles.readRow(tileId, row, flipX, flipY)
+          for (let col = 0; col < 8; col++) {
+            const x = (tileCol << 3) + col
+            const pixelId = (y << 8) + x
+            const colourId = rowData[col]
+            const colour = this.borderPalettes[paletteId].colours[colourId]
+            imageData.data[(pixelId << 2) + 0] = colour[0]
+            imageData.data[(pixelId << 2) + 1] = colour[1]
+            imageData.data[(pixelId << 2) + 2] = colour[2]
+            imageData.data[(pixelId << 2) + 3] = (inGbScreen && colourId === 0) ? 0 : 255
+          }
+        }
+      }
+    }
+    context.putImageData(imageData, 0, 0)
   }
 }
 

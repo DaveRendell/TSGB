@@ -53,6 +53,8 @@ export default function GameView({ emulator, unload }: Props) {
     tabs["Dashboard"] = () => <PkmnGen1Dashboard emulator={emulator} />
   }
 
+  const borderEnabled = emulator.superEmulator && emulator.superEmulator.borderEnabled
+
   return (
     <main>
       <div className="control-buttons floating-panel">
@@ -70,12 +72,19 @@ export default function GameView({ emulator, unload }: Props) {
           Unload
         </button>
       </div>
-      <div className="console">
-        <div className="bevel">
-          <Display cpu={emulator.cpu} />
+      {
+        borderEnabled ? <>
+            <Display cpu={emulator.cpu} borderEnabled={borderEnabled}/>
+          <div className="console-border">
+          <Joypad controller={emulator.controller} />
+          </div>
+        </> : <div className="console">
+          <div className="bevel">
+            <Display cpu={emulator.cpu} borderEnabled={borderEnabled}/>
+          </div>
+          <Joypad controller={emulator.controller} />
         </div>
-        <Joypad controller={emulator.controller} />
-      </div>
+      }
 
       {error && <p>Error: {error}</p>}
       <br/>
