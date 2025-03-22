@@ -70,6 +70,8 @@ export default class SecondaryRoundEndScreenState extends TetrisState {
         (response) => {
           if (response === NEXT_ROUND_ACKNOLEDGEMENT) {
             if (this.state.roundOver) {
+              this.connection.roundsWon = 0
+              this.connection.opponentRoundsWon = 0
               this.connection.setGameState(
                 new SecondaryDifficultySelectionState(this.connection)
               )

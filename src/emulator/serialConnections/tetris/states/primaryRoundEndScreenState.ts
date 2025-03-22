@@ -36,6 +36,8 @@ export default class PrimaryRoundEndScreenState extends TetrisState {
     }
     if (byte === NEXT_ROUND) {
       if (this.connection.gameOver()) {
+        this.connection.roundsWon = 0
+        this.connection.opponentRoundsWon = 0
         this.connection.setGameState(
           new PrimaryDifficultySelectionState(this.connection)
         )
